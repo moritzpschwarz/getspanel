@@ -1,0 +1,19 @@
+Package: getspanel
+Title: general-to-specific modelling of panel data
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Moritz",
+           family = "Schwarz",
+           role = c("aut", "cre"),
+           email = "moritz.schwarz@scmo.eu",
+           comment = c(ORCID = "0000-0003-0340-3780"))
+Description: Uses the gets package for Panel Data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    testthat
+Imports: 
+    gets
