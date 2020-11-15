@@ -104,13 +104,13 @@ isatpanel <- function(
         sis1 <- as.matrix(rep(1,Tsample))
         colnames(sis1) <- "sis1"
 
-        sism <- cbind(sis1, sim(Tsample))
+        sism <- cbind(sis1, gets::sim(Tsample))
 
         colnames(sism) <- paste(mxbreakname, "t", 1:NCOL(sism), sep="")
 
       } else { #if it is a constant, then drop the intercept, then break model (2)
 
-        sism <- sim(Tsample)
+        sism <- gets::sim(Tsample)
         colnames(sism) <- paste(mxbreakname, "t", 2:(NCOL(sism)+1), sep="")
 
       }
@@ -142,7 +142,7 @@ isatpanel <- function(
       {
 
         sistlist <- do.call("list", rep(list(sist), N))
-        sispan <- as.matrix(bdiag(sistlist))
+        sispan <- as.matrix(Matrix::bdiag(sistlist))
 
       }
 
@@ -232,7 +232,7 @@ isatpanel <- function(
 
     ###if individual FEs needed
     if (effect %in% c("individual", "twoways")){
-      iddum <- dummy_cols(data.frame(id=id),select_columns = "id",remove_first_dummy = FALSE,remove_selected_columns = TRUE)
+      iddum <- fastDummies::dummy_cols(data.frame(id=id),select_columns = "id",remove_first_dummy = FALSE,remove_selected_columns = TRUE)
       idnames <- paste("id", unique(id), sep="")
 
       ##### Individual FEs
@@ -243,7 +243,7 @@ isatpanel <- function(
 
     ###if time FEs needed
     if (effect %in% c("time", "twoways")){
-      timedum <- dummy_cols(data.frame(time=time),select_columns = "time",remove_selected_columns = TRUE,remove_first_dummy = FALSE)
+      timedum <- fastDummies::dummy_cols(data.frame(time=time),select_columns = "time",remove_selected_columns = TRUE,remove_first_dummy = FALSE)
       timenames <- paste("time", unique(time), sep="")
 
       ####time FEs
@@ -390,7 +390,7 @@ isatpanel <- function(
   ####### Estimate
   ###############################
 
-  ispan <- isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   ###############################
   ############## Return output

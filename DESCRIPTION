@@ -16,4 +16,10 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat
 Imports: 
-    gets
+    gets,
+    fixest,
+    fastDummies,
+    Matrix,
+    lfe
+Depends: 
+    R (>= 2.10)
