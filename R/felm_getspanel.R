@@ -5,7 +5,8 @@
 #' @param effect Fixed Effect specification
 #' @param time Character vector of name of the time variable
 #' @param id Character vector of the name of the group variable
-#' @param cluster Character vector of the variable(s) to cluster Standard Errors at
+#' @param cluster Character vector of the variable(s)
+#' to cluster Standard Errors at
 #' @param ... Further arguments to pass to gets::isat
 #'
 #' @return
@@ -23,18 +24,21 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
   }
   out$df <- out$n - out$k
   if (out$k > 0) {
-    # in arx, all column names of a matrix are removed - here we use a generic x_ because we only use the coefficient positions anyway
+    # in arx, all column names of a matrix are removed
+    # here we use a generic x_ because we only use the coefficient positions anyway
     if(is.null(colnames(x)) && dim(x)[2]>1){
       x <- as.matrix(x)
       colnames(x) <- paste0("x_",1:dim(x)[2])}
-    # in case there is only one regressor left, R converts it to a nameless matrix - so colnames would be NULL
+    # in case there is only one regressor left, R converts it to a nameless matrix
+    # so colnames would be NULL
     if(is.null(colnames(x)) && dim(x)[2]==1){
       x <- as.matrix(x)
       colnames(x) <- "x"}
 
     est_df <- data.frame(y,x,individual = id,time)
 
-    # fixest always uses the first FE to cluster the standard errors. When twoways, we need to arrange them in the right order to match
+    # fixest always uses the first FE to cluster the standard errors.
+    # When twoways, we need to arrange them in the right order to match
     # the cluster argument
     parse_FE <- if(effect == "twoways") {
       if (cluster == "individual") {
@@ -49,22 +53,26 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     } else if (effect == "none") {
       "0"
     } else {
-      stop("No Fixed Effect Specification was selected. Choose from 'twoways', 'time', 'individual', or 'none'")
+      stop("No Fixed Effect Specification was selected.
+           Choose from 'twoways', 'time', 'individual', or 'none'")
     }
     #browser()
 
-    if(cluster=="none"){cluster = "0"}
+    if(cluster=="none"){cluster <- "0"}
 
     if(!cluster %in% c("individual","time", "0")){
-      stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
+      stop("Please only use 'none', 'individual' or 'time' for the cluster variable.
+           Other specifications have not yet been implmented.")
     }
 
     # Check if the cluster variable is a fixed effect
     if((!cluster %in% c("twoway","twoways","0","none")) && !grepl(cluster,parse_FE)){
-      stop("The cluster variable is not selected as a Fixed Effect. This is currently not recommended.")
+      stop("The cluster variable is not selected as a Fixed Effect.
+           This is currently not recommended.")
     }
 
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),"|",parse_FE,"| 0 |",cluster))
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),
+                                        "|",parse_FE,"| 0 |",cluster))
     tmp <- lfe::felm(formula = parsed_formula,data = est_df)
 
     out$coefficients <- coef(tmp)
@@ -83,59 +91,3 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
   return(out)
 }
-
-#
-#
-#
-#
-# felmFun <- function(y, mxreg, time, id, cluster, effect, ...){
-#   require(lfe)
-#
-#   if(effect == "nested"){stop("Effect = nested is currently not possible with engine felm Use plm as engine for nested effect.")}
-#   #if(!is.null(model)){stop("Model specification (e.g. pooling, within, between, random, fd, or ht) is currently not possible with engine felm. Use plm as engine to use a model argument.")}
-#   ##create list:
-#   result <- list()
-#   ##n, k and df:
-#   result$n <- length(y)
-#
-#   if( is.null(mxreg) || NCOL(mxreg) == 0 ){
-#     result$k <- 0
-#   } else {
-#     result$k <- NCOL(mxreg)
-#   }
-#   result$df <- result$n - result$k
-#   ##call felm if k > 0:
-#   if( result$k > 0 ){
-#
-#     mxreg <- dropvar(mxreg)
-#
-#     if(is.null(colnames(mxreg))){
-#       if(!is.matrix(mxreg)){
-#         mxreg <- as.matrix(mxreg)
-#         colnames(mxreg) <- paste0("x_felm_",1)
-#       } else {
-#         colnames(mxreg) <- paste0("x_felm_",1:ncol(mxreg))
-#       }
-#
-#     }
-#
-#     yx <- data.frame(y,mxreg,time,individual = id)
-#
-#     parse_FE <- if(effect == "twoways"){
-#       "time + individual"} else if(effect == "time"){
-#         "time"} else if (effect == "individual"){
-#           "individual"} else {
-#             "0"}
-#     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(mxreg),collapse = " + "),"|",parse_FE,"| 0 |",cluster))
-#       tmp <- felm(formula = parsed_formula,data = yx)
-#       result$coefficients <- coef(tmp)
-#       result$vcov <- vcov(tmp)
-#       result$logl <- as.numeric(logLik(tmp))
-#   } else {
-#     result$coefficients <- NULL
-#     result$vcov <- NULL
-#     result$logl <- sum(dnorm(y, sd = sqrt(var(y)), log = TRUE))
-#   }
-#   ##return result:
-#   return(result)
-# }

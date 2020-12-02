@@ -15,7 +15,7 @@
 
 
 fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
-
+  #browser()
   out <- list()
   out$n <- length(y)
   if (is.null(x)) {
