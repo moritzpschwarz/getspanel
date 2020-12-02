@@ -17,6 +17,7 @@
 #' @param user.estimator Use a user.estimator
 #' @param cluster cluster Standard Errors at this level
 #' @param plm_model Type of PLM model (only if engine = "PLM")
+#' @param ar Autoregressive Term to be inlucded. default is 0.
 #' @param ... Further arguments to gets::isat
 #'
 #' @return
@@ -38,10 +39,19 @@ isatpanel <- function(
   user.estimator = NULL,
   cluster = "individual",
   plm_model=NULL,
+  ar=0,
   ...
 )
 {
+  # Set up Infrastructure
+  out <- list()
+  out$inputdata <- data.frame(id,time,y,mxreg,mxbreak)
+
+  # Remove any spaces in the id variables (e.g. United Kingdom becomes UnitedKingdom)
   id <- gsub(" ","",id)
+  # stats::lag()
+
+
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)){
@@ -352,6 +362,7 @@ isatpanel <- function(
         effect = effect,
         cluster = cluster
       )
+      mc = FALSE
     }
     if(engine == "fixest"){
       user.estimator <- list(
@@ -361,6 +372,7 @@ isatpanel <- function(
         effect = effect,
         cluster = cluster
       )
+      mc = FALSE
     }
     if(engine == "plm"){
       user.estimator <- list(
@@ -371,25 +383,34 @@ isatpanel <- function(
         cluster = cluster,
         model = plm_model
       )
+      mc = FALSE
     }
 
   }
 
   if(is.null(engine)){
     user.estimator <- NULL
+    mc = TRUE
   }
 
   #############################
   ####### Estimate
   ###############################
 
-  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=TRUE, ...)
+  #ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=TRUE, ...)
+  ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=mc, ...)
 
   ###############################
   ############## Return output
   ############################
 
-  return(ispan)
+  out$isatpanel.result <- ispan
+  #out$finaldata <- cbind(out$inputdata,ispan$aux$mX[,!colnames(ispan$aux$mX) %in% names(out$inputdata)])
+
+
+  class(out) <- "isatpanel"
+
+  return(out)
 
 
 } ###ispan function ends
