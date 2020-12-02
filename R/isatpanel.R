@@ -9,7 +9,7 @@
 #' @param time Time
 #' @param mxreg The co-variates matrix
 #' @param mxbreak The break matrix
-#' @param break.method Break Method
+#' @param break.method Break Method, one of "both" or "individual"
 #' @param effect Fixed Effect specification
 #' @param iis use Impulse Indicator Saturation
 #' @param na.remove remove NAs
@@ -41,18 +41,13 @@ isatpanel <- function(
   ...
 )
 {
-
-  #require(dummies)
-  #require(Matrix)
-  #require(fastDummies)
-  #require(gets)
+  id <- gsub(" ","",id)
 
   mxnames <- colnames(mxreg)
-
   if (!is.null(mxreg)){
     mxreg <- as.matrix(mxreg)
     if (is.null(mxnames)) {
-      mxnames <- paste("x", 1:NCOL(mxreg), sep="")
+      mxnames <- paste("x", seq_len(NCOL(mxreg)), sep="")
     }
   } else {
     mxnames <- NULL
@@ -80,7 +75,7 @@ isatpanel <- function(
     ###### Loop over number of variables allowed to break and create break matrix
     ################################
 
-    for (n in 1: nbreaks)
+    for (n in seq_len(NCOL(mxbreak)))
     {
       if (multibreak){
 
@@ -99,19 +94,18 @@ isatpanel <- function(
         }
       }
 
-
       if (var(mxbreak, na.rm = TRUE)!=0){ #if mxbreak is not a constant, then don't drop the intercept
         sis1 <- as.matrix(rep(1,Tsample))
         colnames(sis1) <- "sis1"
 
         sism <- cbind(sis1, gets::sim(Tsample))
 
-        colnames(sism) <- paste(mxbreakname, "t", 1:NCOL(sism), sep="")
+        colnames(sism) <- paste(mxbreakname, "t", seq_len(NCOL(sism)), sep="")
 
       } else { #if it is a constant, then drop the intercept, then break model (2)
 
         sism <- gets::sim(Tsample)
-        colnames(sism) <- paste(mxbreakname, "t", 2:(NCOL(sism)+1), sep="")
+        colnames(sism) <- paste(mxbreakname, "t", (seq_len(ncol(sism))+1), sep="")
 
       }
 
@@ -351,7 +345,7 @@ isatpanel <- function(
       stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
     }
     if(engine == "felm"){
-      user.estimator = list(
+      user.estimator <- list(
         name = "felmFun",
         time = time,
         id = id,
@@ -360,7 +354,7 @@ isatpanel <- function(
       )
     }
     if(engine == "fixest"){
-      user.estimator = list(
+      user.estimator <- list(
         name = "fixestFun",
         time = time,
         id = id,
@@ -369,7 +363,7 @@ isatpanel <- function(
       )
     }
     if(engine == "plm"){
-      user.estimator = list(
+      user.estimator <- list(
         name = "plmFun",
         time = time,
         id = id,
@@ -382,15 +376,14 @@ isatpanel <- function(
   }
 
   if(is.null(engine)){
-    user.estimator=NULL
+    user.estimator <- NULL
   }
-
 
   #############################
   ####### Estimate
   ###############################
 
-  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=TRUE, ...)
 
   ###############################
   ############## Return output
