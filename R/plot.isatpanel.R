@@ -1,34 +1,45 @@
-plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "fixed", ...){
+plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", ...){
 
-  df <- isatpanelobject$inputdata
+  df <- isatpanelobject$estimateddata
   indicators <- isatpanelobject$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
 
-  fitted <- isatpanelobject$isatpanel.result$fit
+  if(is.null(isatpanelobject$isatpanel.result$fit)){
+    fitted <- isatpanelobject$isatpanel.result$mean.fit
+  } else {
+    fitted <- isatpanelobject$isatpanel.result$fit
+  }
+
   df <- cbind(df,fitted)
 
 
   df %>%
-    dplyr::select(-mxbreak) %>%
+    #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
     filter(grepl("iis",name)) %>%
     filter(value == 1) -> impulses
 
   df %>%
-    dplyr::select(-mxbreak) %>%
+    #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
     filter(grepl("sis",name)) %>%
+    filter(!grepl("fesis",name)) %>%
     filter(value == 1) -> steps
 
-  df %>%
-    dplyr::select(starts_with("mxbreak"),-mxbreak) %>%
-    pivot_longer(cols = everything()) %>%
-    separate(col = name,sep = "id",into = c("time","id")) %>%
-    mutate(time = as.numeric(gsub("mxbreak1t","",time))) %>%
-    select(-value) %>%
-    mutate(time = time + min(df$time)-1) %>%
-    distinct(time,id) -> mxbreak
+  if(any(grepl("fesis",names(df)))){
+    df %>%
+      dplyr::select(starts_with("fesis")) %>%
+      pivot_longer(cols = everything()) %>%
+      separate(col = name,sep = "\\.",into = c("id","time")) %>%
+      mutate(id = gsub("fesis","",id),
+             time = as.numeric(time)) %>%
+      select(-value) %>%
+      #mutate(time = time + min(df$time)-1) %>%
+      distinct(time,id) -> fesis
+  } else {fesis <- NULL}
+
+
 
 
   ggplot2::ggplot(df, aes(
@@ -43,12 +54,15 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
     geom_vline(data = impulses,aes(xintercept = time),color="grey",size = 0.1) +
 
     # Steps
-    geom_vline(data = steps, aes(xintercept = time),color="green",size = 0.1) +
+    geom_vline(data = steps, aes(xintercept = time),color="darkgreen",size = 0.1) -> g
 
-    # mxbreaks
-    geom_vline(data = mxbreak, aes(xintercept = time),color="blue",size = 0.1) +
+  # fesis
+  if(!is.null(fesis)){
+    g = g + geom_vline(data = fesis, aes(xintercept = time),color="blue",size = 0.1)
+  }
 
 
+  g +
     geom_line(aes(y = y),size = 1, linetype = 1, color="black") +
     geom_line(linetype = 1, color="blue") +
 

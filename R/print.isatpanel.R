@@ -1,11 +1,3 @@
-#' Title
-#'
-#' @param x
-#'
-#' @return
-#'
-#'
-#'
-print.isatpanel <- function(x, ...){
-  x$isatpanel.result
+print.isatpanel <- function(obj){
+  print(obj$isatpanel.result)
 }
