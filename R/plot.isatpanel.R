@@ -74,7 +74,7 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
           panel.background = element_blank(),
           panel.grid.major.y = element_line(colour = "grey",size = 0.1)) +
 
-    labs(title = "Panel Saturation",subtitle = "Grey: Impulse - Blue: mxbreak - Green: Steps\nBlue line fitted") -> plot
+    labs(title = "Panel Saturation",subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted") -> plot
 
   return(plot)
 }
