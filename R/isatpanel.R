@@ -8,16 +8,19 @@
 #' @param id Individual
 #' @param time Time
 #' @param mxreg The co-variates matrix
-#' @param mxbreak The break matrix
-#' @param break.method Break Method, one of "both" or "individual"
 #' @param effect Fixed Effect specification
-#' @param iis use Impulse Indicator Saturation
 #' @param na.remove remove NAs
 #' @param engine Function to use
 #' @param user.estimator Use a user.estimator
 #' @param cluster cluster Standard Errors at this level
 #' @param plm_model Type of PLM model (only if engine = "PLM")
-#' @param ar Autoregressive Term to be inlucded. default is 0.
+#' @param ar Autoregressive Term to be included. default is 0.
+#' @param iis use Impulse Indicator Saturation
+#' @param jiis use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
+#' @param jsis use Join Step Indicator Saturation (steps are common across all units)
+#' @param fesis Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
+#' @param csis Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
+#' @param cfesis Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param ... Further arguments to gets::isat
 #'
 #' @return
@@ -30,32 +33,55 @@ isatpanel <- function(
   id,
   time,
   mxreg,
-  mxbreak,
-  break.method = c("individual"),
+  #mxbreak,
+  #break.method = c("individual"),
   effect = c("individual"),
-  iis = FALSE,
+
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
   cluster = "individual",
   plm_model=NULL,
+
+  iis = FALSE,
+  jiis = FALSE,
+  jsis = FALSE,
+  fesis = FALSE,
+  csis = FALSE,
+  cfesis = FALSE,
+  csis_var = colnames(mxreg),
+  cfesis_var = colnames(mxreg),
+
   ar=0,
   ...
 )
 {
+  # Error checks
+  if(!is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
+  if(!is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
+
+  if(effect == "both" | effect == "time" & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
+
+  if(!is.numeric(ar)){stop("The ar argument must be numeric.")}
+  if(ar<0){stop("The ar argument must be greater than or equal to 0.")}
+  if(!ar%%1==0){stop("The ar argument must be an integer.")} # check if the numeric value of ar is an integer - the is.integer checks the type
+
+  # Transformations (to do: time, country and mxbreak as grepl character vectors)
+  if(is.data.frame(mxreg)){mxreg <- as.matrix(mxreg)}
+
   # Set up Infrastructure
   out <- list()
-  out$inputdata <- data.frame(id,time,y,mxreg,mxbreak)
+  out$inputdata <- data.frame(id,time,y,mxreg)
 
   # Remove any spaces in the id variables (e.g. United Kingdom becomes UnitedKingdom)
   id <- gsub(" ","",id)
-  # stats::lag()
-
 
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)){
     mxreg <- as.matrix(mxreg)
+
+    # if the mxreg does not have column names, they get x1, x2, etc. below
     if (is.null(mxnames)) {
       mxnames <- paste("x", seq_len(NCOL(mxreg)), sep="")
     }
@@ -66,165 +92,113 @@ isatpanel <- function(
   ############# Get sample length and id out
   Tsample  <- length(unique(time))
   N <- length(unique(id))
-  breakvar <- mxbreak
 
-  #if a breakvariable is specified:
-  #### determine if there are more than one variables allowed to break
-  if (!is.null(mxbreak)) {
-    if (NCOL(mxbreak) > 1 ){
-      multibreak <- TRUE
-      nbreaks <- NCOL(mxbreak)
-    } else {
-      multibreak <- FALSE
-      nbreaks <- 1
+
+  df <- data.frame(id,time)
+
+
+  # Autoregressive Term
+  if(ar>0){
+    ar_df <- cbind(cbind(df,y),mxreg)
+    ar_df <- group_by(ar_df,id)
+
+    ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x){
+      y = x$y
+      gets::regressorsMean(y=y, mxreg = mxreg,ar = ar,return.as.zoo = FALSE)
+    })
+    ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)))
+
+    # get data back out
+    y <- ar_df_processed$y
+    mxreg <- ar_df_processed[,!names(ar_df_processed) %in% c("y")]
+    Tsample <- Tsample-ar
+
+    # Adjust the time and id vectors
+    df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x){x[!x$time == min(x$time),]})),row.names = NULL)
+    time <- df$time
+    id <- df$id
+
+    # Adjust mxnames
+    mxnames <- append(paste0("ar",1:ar),mxnames)
+  }
+
+  df_base <- df
+
+
+
+  # Break Methods -----------------------------------------------------------
+
+
+  # jsis = TRUE
+  if(jsis){
+    jsis_df <- as.data.frame(cbind(time = unique(time),gets::sim(Tsample)))
+    df <- merge(df,jsis_df, by="time", all.x = TRUE,sort=FALSE)
+  }
+
+  #jiis = TRUE - This is just like a time FE
+  if(jiis){
+    jiis_df <- as.data.frame(cbind(time = unique(time),gets::iim(Tsample)))
+    df <- merge(df,jiis_df, by="time", all.x = TRUE,sort=FALSE)
+  }
+
+  # fesis = TRUE
+  if(fesis){
+    # Create a balanced data.frame
+    df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
+    # Extract the names for the balanced data.frame
+    fesis_names <- paste0("fesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
+
+    sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
+    fesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
+    names(fesis_df) <- fesis_names
+
+    fesis_df <- cbind(df_balanced,fesis_df)
+
+    df <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+  }
+
+  # csis = TRUE
+  if(csis){
+    csis_init <- merge(df_base,as.data.frame(cbind(time = unique(time),gets::sim(Tsample))),by="time",sort=FALSE)
+    csis_df <- csis_init[,c("id","time")]
+    for(i in csis_var){
+      csis_intermed <- csis_init[,!names(csis_init) %in% c("id","time")] * mxreg[,i]
+      names(csis_intermed) <- paste0(i,".",names(csis_intermed))
+      csis_df <- cbind(csis_df,csis_intermed)
     }
-    #### list where break matrices are stored
-    sispanxlist <- list()
+    df <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+  }
 
-    ###############################
-    ###### Loop over number of variables allowed to break and create break matrix
-    ################################
+  # cfesis=TRUE
+  if(cfesis){
+    # Create a balanced data.frame
+    df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
+    # Extract the names for the balanced data.frame
+    fesis_names <- paste0("fesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
 
-    for (n in seq_len(NCOL(mxbreak)))
-    {
-      if (multibreak){
+    sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
+    fesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
+    names(fesis_df) <- fesis_names
 
-        mxbreak <- breakvar[,n]
-        mxbreakname <- colnames(mxbreak)
-        if (is.null(mxbreakname)){
-          mxbreakname <- paste("mxbreak", n,  sep="")
-        }
+    cfesis_df <- cbind(df_balanced,fesis_df)
 
-      } else {
-
-        breakvar <- breakvar
-        mxbreakname <- colnames(mxbreak)
-        if (is.null(mxbreakname)){
-          mxbreakname <- "mxbreak1"
-        }
-      }
-
-      if (var(mxbreak, na.rm = TRUE)!=0){ #if mxbreak is not a constant, then don't drop the intercept
-        sis1 <- as.matrix(rep(1,Tsample))
-        colnames(sis1) <- "sis1"
-
-        sism <- cbind(sis1, gets::sim(Tsample))
-
-        colnames(sism) <- paste(mxbreakname, "t", seq_len(NCOL(sism)), sep="")
-
-      } else { #if it is a constant, then drop the intercept, then break model (2)
-
-        sism <- gets::sim(Tsample)
-        colnames(sism) <- paste(mxbreakname, "t", (seq_len(ncol(sism))+1), sep="")
-
-      }
-
-      sist <- as.matrix(sism)
-
-      ##############################
-      ############## create break matrix depending on method
-      #############################
-
-      if (break.method=="time"){    #if we are forcing breaks to be common over i
-
-        ###drop the first column
-        sist <- sist[,-1]
-        sispan <- do.call(rbind, replicate(N, sist, simplify=FALSE))
-
-      }
-
-      if (break.method=="individual"){
-
-        IN <- diag(N)
-        rT <- rep(1, Tsample)
-        ###- first column because one id has to be the base
-        sispan <- kronecker(IN[,-1], rT)
-
-      }
-
-      if (break.method=="both")
-      {
-
-        sistlist <- do.call("list", rep(list(sist), N))
-        sispan <- as.matrix(Matrix::bdiag(sistlist))
-
-      }
-
-      ####### multiply break matrix by break variable
-      sispanx <- mxbreak*sispan
-
-      #########################
-      ######## name the break matrix
-      ##############################
-
-      if (break.method=="individual"){
-        colnames(sispanx) <- paste(mxbreakname, "id", seq(from=2, to=N, by=1), sep="")
-      }
-
-
-      if (break.method=="both"){
-        cn <- colnames(sist)
-        ids <- unique(id)
-        index <- Tsample
-        if (var(mxbreak, na.rm = TRUE)==0){
-          index <- Tsample-1
-        }
-        idsn <- matrix(t(matrix(ids,length(ids), (index) )))
-        cnn <- rep(cn, N)
-        length(cnn)
-        cnnp <- paste(cnn, "id", idsn, sep="")
-        colnames(sispanx) <- cnnp
-
-      } #if both closed
-
-      ######################
-      ########### remove rows from the break matrix that are missing in the sample
-      ######################
-
-      if (na.remove) ###drop the rows to match the NROWs of y which will be dropped later
-      {
-
-        if (!is.null(mxreg))
-        {
-          rel.xy <- cbind(y, mxreg)
-        } else {
-          rel.xy <- y
-        }
-
-        if (any(!complete.cases(rel.xy)))  {
-          remove <- which(!complete.cases(rel.xy)==TRUE)
-
-          if (!is.null(mxbreak)){
-            sispanx <- sispanx[-remove,]
-          }
-
-        }
-      } #na.remove closed
-
-
-      sispanxlist[[n]] <- sispanx
-
-    } ####looping over breaks n ends
-
-    #####################
-    #### combine all the break matrices
-    ###################
-
-    sispanx <- do.call(cbind, sispanxlist)
-
-  }  else { ## if is null mxbreak, ie. not a break variable given
-
-    sispanx <- FALSE
-
-  } ##is null mxbreak closed
-
-  if (!is.null(mxreg))
-  {
-    if (NCOL(mxreg)>1){
-      colnames(mxreg) <-  mxnames
-    } else {
-      names(mxreg) <- mxnames
+    for(i in cfesis_var){
+      cfesis_intermed <- cfesis_df[,!names(cfesis_df) %in% c("id","time")]*mxreg[,i]
+      names(cfesis_intermed) <- paste0(i,".",names(cfesis_intermed))
+      cfesis_df <- cbind(cfesis_df,cfesis_intermed)
     }
+
+    df <- merge(df,cfesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+  }
+
+  # delete any columns that are 0 (can be included if panel not balanced)
+  df <- df[, colSums(df != 0) > 0]
+
+
+  if(any(fesis,jsis,jiis,csis,cfesis)){
+    sispanx <- as.matrix(df[,!names(df) %in% c("id","time")])
+  } else {
+    sispanx = FALSE
   }
 
 
@@ -240,8 +214,8 @@ isatpanel <- function(
       idnames <- paste("id", unique(id), sep="")
 
       ##### Individual FEs
-      iddum_r <- as.matrix(iddum[,-1])
-      idnames_r <- idnames[-1]
+      iddum_r <- as.matrix(iddum)
+      idnames_r <- idnames
 
     }
 
@@ -251,8 +225,8 @@ isatpanel <- function(
       timenames <- paste("time", unique(time), sep="")
 
       ####time FEs
-      timedum_r <- as.matrix(timedum[,-1])
-      timenames_r <- timenames[-1]
+      timedum_r <- as.matrix(timedum)
+      timenames_r <- timenames
 
     }
 
@@ -260,10 +234,10 @@ isatpanel <- function(
 
       if (!is.null(mxreg))
       {
-        mx <- cbind(mxreg, iddum[,-1])
+        mx <- cbind(mxreg, iddum)
         colnames(mx) <- c(mxnames, idnames_r)
       } else {
-        mx <- iddum[,-1]
+        mx <- iddum
         colnames(mx) <- (idnames_r)
       }
 
@@ -276,10 +250,10 @@ isatpanel <- function(
 
       if (!is.null(mxreg))
       {
-        mx <- cbind(mxreg, timedum[,-1])
+        mx <- cbind(mxreg, timedum)
         colnames(mx) <- c(mxnames, timenames_r)
       } else {
-        mx <- timedum[,-1]
+        mx <- timedum
         colnames(mx) <- timenames_r
       }
 
@@ -289,10 +263,10 @@ isatpanel <- function(
 
       if (!is.null(mxreg))
       {
-        mx <- cbind(mxreg, iddum[,-1], timedum[,-1])
+        mx <- cbind(mxreg, iddum, timedum)
         colnames(mx) <- c(mxnames, idnames_r, timenames_r)
       } else {
-        mx <- cbind(iddum[,-1], timedum[,-1])
+        mx <- cbind(iddum, timedum)
         colnames(mx) <- c(idnames_r, timenames_r)
       }
 
@@ -324,8 +298,7 @@ isatpanel <- function(
   ########## Remove NA observations
   #################################
 
-  if (na.remove)
-  {
+  if (na.remove)  {
 
     if (!is.null(mxreg))
     {
@@ -340,9 +313,6 @@ isatpanel <- function(
 
       y <- y[-remove]
       mx <- mx[-remove,]
-
-
-
     }
   }
 
@@ -388,21 +358,24 @@ isatpanel <- function(
 
   }
 
+
   if(is.null(engine)){
     user.estimator <- NULL
     mc = TRUE
   }
 
+  out$estimateddata <- data.frame(id,time,y,mx)
+
   #############################
   ####### Estimate
   ###############################
-
   #ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=TRUE, ...)
-  ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=mc, ...)
+  ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   ###############################
   ############## Return output
   ############################
+
 
   out$isatpanel.result <- ispan
   #out$finaldata <- cbind(out$inputdata,ispan$aux$mX[,!colnames(ispan$aux$mX) %in% names(out$inputdata)])
