@@ -27,6 +27,10 @@ Imports:
     fixest,
     fastDummies,
     Matrix,
-    lfe
+    lfe,
+    ggplot2,
+    dplyr,
+    tidyr,
+    magrittr
 Depends: 
     R (>= 2.10)
