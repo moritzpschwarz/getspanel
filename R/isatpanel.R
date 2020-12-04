@@ -8,7 +8,7 @@
 #' @param id Individual
 #' @param time Time
 #' @param mxreg The co-variates matrix
-#' @param effect Fixed Effect specification
+#' @param effect Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".
 #' @param na.remove remove NAs
 #' @param engine Function to use
 #' @param user.estimator Use a user.estimator
@@ -22,6 +22,11 @@
 #' @param csis Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param ... Further arguments to gets::isat
+#' @param data
+#' @param formula Please specify formula argument. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
+#' @param index
+#' @param csis_var
+#' @param cfesis_var
 #'
 #' @return
 #' @export
@@ -29,12 +34,13 @@
 #' @examples isatpanel(y)
 
 isatpanel <- function(
-  y,
-  id,
-  time,
-  mxreg,
-  #mxbreak,
-  #break.method = c("individual"),
+  data=NULL,
+  formula=NULL,
+  index=NULL,
+  y=NULL,
+  id=NULL,
+  time=NULL,
+  mxreg=NULL,
   effect = c("individual"),
 
   na.remove = TRUE,
@@ -56,11 +62,13 @@ isatpanel <- function(
   ...
 )
 {
-  # Error checks
-  if(!is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
-  if(!is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
 
-  if(effect == "both" | effect == "time" & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
+  # Error checks
+  if(! effect %in% c("twoways", "individual", "time","none")){stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
+
+
+
+  if((effect == "both" | effect == "time") & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
 
   if(!is.numeric(ar)){stop("The ar argument must be numeric.")}
   if(ar<0){stop("The ar argument must be greater than or equal to 0.")}
@@ -68,6 +76,75 @@ isatpanel <- function(
 
   # Transformations (to do: time, country and mxbreak as grepl character vectors)
   if(is.data.frame(mxreg)){mxreg <- as.matrix(mxreg)}
+
+
+  # Formula, Index and Data arguments
+  if(!is.null(y) | !is.null(mxreg) | !is.null(time) | !is.null(id) & (!is.null(formula) | !is.null(data))){
+    stop("Either specify your model using the data, formula, and index arguments or through y, id, time, and mxreg. Specifying both is not allowed.")
+  }
+
+
+
+
+  if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))){
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$drop.unused.levels <- TRUE
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval(mf, parent.frame())
+
+
+    mt <- attr(mf, "terms")
+
+    if(effect != "none"){
+      attr(mt,"intercept") <- 0 # This forces no intercept!!!
+    }
+
+
+
+    y <- model.response(mf, "numeric")
+    # offset <- model.offset(mf)
+    # mlm <- is.matrix(y)
+    x <- model.matrix(mt, mf)
+
+    # ny <- if (mlm){
+    #   nrow(y)
+    # } else {length(y)}
+    # if (is.empty.model(mt)) {
+    #   x <- NULL
+    #   z <- list(coefficients = if (mlm) matrix(NA_real_, 0,
+    #                                            ncol(y)) else numeric(), residuals = y, fitted.values = 0 *
+    #               y, weights = w, rank = 0L, df.residual = if (!is.null(w)) sum(w !=
+    #                                                                               0) else ny)
+    #   if (!is.null(offset)) {
+    #     z$fitted.values <- offset
+    #     z$residuals <- y - offset
+    #   }
+    # }
+    # else {
+    #
+    #   z <- if (is.null(w))
+    #     lm.fit(x, y, offset = offset, singular.ok = singular.ok,
+    #            ...)
+    #   else lm.wfit(x, y, w, offset = offset, singular.ok = singular.ok,
+    #                ...)
+    # }
+
+    id <- factor(data[,index[1]])
+    time <- data[,index[2]]
+    mxreg <- x
+
+    if(missing(csis_var)){csis_var <- colnames(mxreg)}
+    if(missing(cfesis_var)){csis_var <- colnames(mxreg)}
+
+  }
+
+
+  # Some more checks
+  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
+  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
+
 
   # Set up Infrastructure
   out <- list()
@@ -100,7 +177,6 @@ isatpanel <- function(
   # Autoregressive Term
   if(ar>0){
     ar_df <- cbind(cbind(df,y),mxreg)
-    ar_df <- group_by(ar_df,id)
 
     ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x){
       y = x$y
@@ -128,17 +204,30 @@ isatpanel <- function(
 
   # Break Methods -----------------------------------------------------------
 
+  BreakList <- list()
 
   # jsis = TRUE
   if(jsis){
     jsis_df <- as.data.frame(cbind(time = unique(time),gets::sim(Tsample)))
-    df <- merge(df,jsis_df, by="time", all.x = TRUE,sort=FALSE)
-  }
+
+    # merge with df to ensure order is correct
+    current <- merge(df,jsis_df, by="time", all.x = TRUE,sort=FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(jsis=as.matrix(current[,!names(current) %in% c("id","time")])))
+}
 
   #jiis = TRUE - This is just like a time FE
   if(jiis){
     jiis_df <- as.data.frame(cbind(time = unique(time),gets::iim(Tsample)))
-    df <- merge(df,jiis_df, by="time", all.x = TRUE,sort=FALSE)
+
+    # merge with df to ensure order is correct
+    current <- merge(df,jiis_df, by="time", all.x = TRUE,sort=FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(jiis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # fesis = TRUE
@@ -154,7 +243,13 @@ isatpanel <- function(
 
     fesis_df <- cbind(df_balanced,fesis_df)
 
-    df <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+
+    # merge with df to ensure order is correct
+    current <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(fesis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # csis = TRUE
@@ -166,7 +261,13 @@ isatpanel <- function(
       names(csis_intermed) <- paste0(i,".",names(csis_intermed))
       csis_df <- cbind(csis_df,csis_intermed)
     }
-    df <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+
+    # merge with df to ensure order is correct
+    current <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(csis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # cfesis=TRUE
@@ -174,7 +275,7 @@ isatpanel <- function(
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
-    fesis_names <- paste0("fesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
+    fesis_names <- paste0("cfesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
 
     sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
     fesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
@@ -188,15 +289,21 @@ isatpanel <- function(
       cfesis_df <- cbind(cfesis_df,cfesis_intermed)
     }
 
-    df <- merge(df,cfesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+
+    # merge with df to ensure order is correct
+    current <- merge(df,cfesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(cfesis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # delete any columns that are 0 (can be included if panel not balanced)
-  df <- df[, colSums(df != 0) > 0]
+  #df <- df[, colSums(df != 0) > 0]
 
 
   if(any(fesis,jsis,jiis,csis,cfesis)){
-    sispanx <- as.matrix(df[,!names(df) %in% c("id","time")])
+    sispanx <- BreakList
   } else {
     sispanx = FALSE
   }

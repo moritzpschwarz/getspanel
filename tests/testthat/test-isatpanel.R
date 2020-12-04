@@ -15,6 +15,38 @@ plot(pandata_simulated$gdp[pandata_simulated$country==3], type="l", main="Countr
 plot(pandata_simulated$gdp[pandata_simulated$country==4], type="l", main="Country 4 (No Break)")
 
 
+
+
+
+
+isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"))
+
+newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
+
+newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
+
+newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1)
+
+
+
+
+
+
+
+
+mf <- match.call(expand.dots = FALSE)
+m <- match(c("formula", "data", "index"), names(mf), 0L)
+mf <- mf[c(1L, m)]
+
+
+
+
+
+
+
+
+
+
 ###############################################################
 ############ Different Break Specifications (corresponding to the 4 cases in the paper) #################
 ##############################################################
