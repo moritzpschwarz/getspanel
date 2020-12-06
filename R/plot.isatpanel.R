@@ -1,4 +1,18 @@
-plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", ...){
+#' Plotting an isatpanel object
+#'
+#' @param isatpanelobject
+#' @param max.id.facet
+#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
+#' @param ... Further arguments to be passed to ggplot2.
+#'
+#' @return
+#' @export
+#'
+#'
+plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
+
+  #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
+
 
   df <- isatpanelobject$estimateddata
   indicators <- isatpanelobject$isatpanel.result$aux$mX
@@ -6,9 +20,9 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
   df <- cbind(df,indicators)
 
   if(is.null(isatpanelobject$isatpanel.result$fit)){
-    fitted <- isatpanelobject$isatpanel.result$mean.fit
+    fitted <- as.numeric(isatpanelobject$isatpanel.result$mean.fit)
   } else {
-    fitted <- isatpanelobject$isatpanel.result$fit
+    fitted <- as.numeric(isatpanelobject$isatpanel.result$fit)
   }
 
   df <- cbind(df,fitted)
@@ -17,32 +31,42 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
   df %>%
     #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
-    filter(grepl("iis",name)) %>%
-    filter(value == 1) -> impulses
+    dplyr::filter(grepl("iis",name)) %>%
+    dplyr::filter(value == 1) -> impulses
 
   df %>%
     #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
-    filter(grepl("sis",name)) %>%
-    filter(!grepl("fesis",name)) %>%
-    filter(value == 1) -> steps
+    dplyr::filter(grepl("sis",name)) %>%
+    dplyr::filter(!grepl("fesis",name)) %>%
+    dplyr::filter(value == 1) -> steps
 
-  if(any(grepl("fesis",names(df)))){
+  if(any(grepl("^fesis",names(df)))){
     df %>%
       dplyr::select(starts_with("fesis")) %>%
-      pivot_longer(cols = everything()) %>%
-      separate(col = name,sep = "\\.",into = c("id","time")) %>%
-      mutate(id = gsub("fesis","",id),
-             time = as.numeric(time)) %>%
-      select(-value) %>%
+      tidyr::pivot_longer(cols = everything()) %>%
+      tidyr::separate(col = name,sep = "\\.",into = c("id","time")) %>%
+      dplyr::mutate(id = gsub("fesis","",id),
+                    time = as.numeric(time)) %>%
+      dplyr::select(-value) %>%
       #mutate(time = time + min(df$time)-1) %>%
-      distinct(time,id) -> fesis
+      dplyr::distinct(time,id) -> fesis
   } else {fesis <- NULL}
 
+  if(any(grepl("cfesis",names(df)))){
+    df %>%
+      dplyr::select(contains("cfesis")) %>%
+      tidyr::pivot_longer(cols = everything()) %>%
+      tidyr::separate(col = name,sep = "\\.",into = c("variable","id","time")) %>%
+      dplyr::mutate(id = gsub("cfesis","",id),
+                    time = as.numeric(time)) %>%
+      dplyr::select(-value) %>%
+      #mutate(time = time + min(df$time)-1) %>%
+      dplyr::distinct(variable, time,id) -> cfesis
+  } else {cfesis <- NULL}
 
 
-
-  ggplot2::ggplot(df, aes(
+  ggplot2::ggplot(df, ggplot2::aes(
     x = time,
     y = fitted,
     group = id,
@@ -51,30 +75,42 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
 
 
     # Impulses
-    geom_vline(data = impulses,aes(xintercept = time),color="grey",size = 0.1) +
+    ggplot2::geom_vline(data = impulses,ggplot2::aes(xintercept = time),color="grey",size = 0.1) +
 
     # Steps
-    geom_vline(data = steps, aes(xintercept = time),color="darkgreen",size = 0.1) -> g
+    ggplot2::geom_vline(data = steps, ggplot2::aes(xintercept = time),color="darkgreen",size = 0.1) -> g
 
   # fesis
   if(!is.null(fesis)){
-    g = g + geom_vline(data = fesis, aes(xintercept = time),color="blue",size = 0.1)
+    g = g + ggplot2::geom_vline(data = fesis, ggplot2::aes(xintercept = time),color="blue",size = 0.1)
+  }
+
+  # cfesis
+  if(!is.null(cfesis)){
+    g = g + ggplot2::geom_vline(data = cfesis, ggplot2::aes(xintercept = time,linetype = variable),color="blue",size = 0.1)
   }
 
 
   g +
-    geom_line(aes(y = y),size = 1, linetype = 1, color="black") +
-    geom_line(linetype = 1, color="blue") +
+    ggplot2::geom_line(ggplot2::aes(y = y),size = 1, linetype = 1, color="black") +
+    ggplot2::geom_line(linetype = 1, color="blue") +
 
     # Faceting
-    facet_wrap( ~ id, scales = facet.scales) +
+    ggplot2::facet_wrap( ~ id, scales = facet.scales) +
 
-    theme(legend.position = "none",
-          strip.background = element_blank(),
-          panel.background = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey",size = 0.1)) +
+    ggplot2::theme(legend.position = "none",
+                   strip.background = ggplot2::element_blank(),
+                   panel.border = ggplot2::element_rect(colour = "grey",fill = NA),
+                   panel.background = ggplot2::element_blank(),
+                   panel.grid.major.y = ggplot2::element_line(colour = "grey",size = 0.1)) +
 
-    labs(title = "Panel Saturation",subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted") -> plot
+    ggplot2::labs(title = title,subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted", y = NULL, x = NULL) -> plotoutput
 
-  return(plot)
+
+  # browser
+  #   if(interactive){
+  #     plotoutput <- plotly::ggplotly(p = plotoutput)
+  #   }
+
+  return(plotoutput)
 }

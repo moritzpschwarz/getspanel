@@ -5,38 +5,41 @@
 \title{Panel isat function}
 \usage{
 isatpanel(
-  y,
-  id,
-  time,
-  mxreg,
-  mxbreak,
-  break.method = c("individual"),
+  data = NULL,
+  formula = NULL,
+  index = NULL,
   effect = c("individual"),
-  iis = FALSE,
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
   cluster = "individual",
-  plm_model = NULL,
+  ar = 0,
+  iis = FALSE,
+  jiis = FALSE,
+  jsis = FALSE,
+  fesis = FALSE,
+  csis = FALSE,
+  cfesis = FALSE,
+  csis_var = colnames(mxreg),
+  csis_id = NULL,
+  cfesis_var = colnames(mxreg),
+  cfesis_id = NULL,
+  plot = FALSE,
+  y = NULL,
+  id = NULL,
+  time = NULL,
+  mxreg = NULL,
   ...
 )
 }
 \arguments{
-\item{y}{Year}
+\item{data}{The input data.frame object.}
 
-\item{id}{Individual}
+\item{formula}{Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.}
 
-\item{time}{Time}
+\item{index}{Specify the name of the group and time column in the format c("id", "time").}
 
-\item{mxreg}{The co-variates matrix}
-
-\item{mxbreak}{The break matrix}
-
-\item{break.method}{Break Method}
-
-\item{effect}{Fixed Effect specification}
-
-\item{iis}{use Impulse Indicator Saturation}
+\item{effect}{Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".}
 
 \item{na.remove}{remove NAs}
 
@@ -46,9 +49,33 @@ isatpanel(
 
 \item{cluster}{cluster Standard Errors at this level}
 
-\item{plm_model}{Type of PLM model (only if engine = "PLM")}
+\item{ar}{Autoregressive Term to be included. default is 0.}
+
+\item{iis}{use Impulse Indicator Saturation}
+
+\item{jiis}{use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.}
+
+\item{jsis}{use Join Step Indicator Saturation (steps are common across all units)}
+
+\item{fesis}{Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.}
+
+\item{csis}{Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
+
+\item{cfesis}{Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
+
+\item{plot}{Logical. Should the final object be plotted? Default is TRUE.}
+
+\item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
+
+\item{id}{Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the grouping variable as a character or factor}
+
+\item{time}{Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the time variable as an integer or numeric.}
+
+\item{mxreg}{The co-variates matrix}
 
 \item{...}{Further arguments to gets::isat}
+
+\item{plm_model}{Type of PLM model (only if engine = "PLM")}
 }
 \value{
 

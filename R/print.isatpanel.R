@@ -1,3 +1,11 @@
+#' Printing isatpanel results
+#'
+#' @param obj
+#'
+#' @return
+#' @export
+#'
+#'
 print.isatpanel <- function(obj){
-  print(obj$isatpanel.result)
+  gets::print.isat(obj$isatpanel.result)
 }
