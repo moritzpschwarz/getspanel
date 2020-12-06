@@ -16,29 +16,36 @@ plot(pandata_simulated$gdp[pandata_simulated$country==4], type="l", main="Countr
 
 
 
-
-
+# Normal testing
 
 isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"))
-
 newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
-
 newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
-
 newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1)
 
 
+# Unit testing
+test_that("Initial Tests Isatpanel on simulated data",{
+
+  expect_output(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year")))
+
+  newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
+
+  newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
 
 
 
 
 
-
-mf <- match.call(expand.dots = FALSE)
-m <- match(c("formula", "data", "index"), names(mf), 0L)
-mf <- mf[c(1L, m)]
+})
 
 
+test_that("Test the cfesis and csis arguments",{
+
+  newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1)
+  newmethod_cfesis_sub <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE,cfesis_id = c("2","3"), ar = 1)
+
+})
 
 
 

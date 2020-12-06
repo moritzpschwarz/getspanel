@@ -17,7 +17,8 @@ felmFun(y, x, effect, time, id, cluster = "individual", ...)
 
 \item{id}{Character vector of the name of the group variable}
 
-\item{cluster}{Character vector of the variable(s) to cluster Standard Errors at}
+\item{cluster}{Character vector of the variable(s)
+to cluster Standard Errors at}
 
 \item{...}{Further arguments to pass to gets::isat}
 }

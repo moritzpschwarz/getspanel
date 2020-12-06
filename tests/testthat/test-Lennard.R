@@ -1,6 +1,6 @@
 # rm(list = ls())
 # library(gets)
-# library(dplyr)
+ library(dplyr)
 # library(tidyr)
 # library(ggplot2)
 # library(gridExtra)
@@ -59,6 +59,24 @@ is_default_ar1 <- isatpanel(
   iis=TRUE,
   t.pval=0.01,
   ar=1)
+
+
+
+is_default_ar1_cfesiseu15 <- isatpanel(
+  y=dat$ltransport.emissions_pc,
+  id=dat$country,
+  time=dat$year,
+  mxreg=controls,
+  fesis = TRUE,
+  effect="twoways",
+  iis=TRUE,
+  cfesis = TRUE,
+  cfesis_id = c("Italy"),
+  #cfesis_id = c("Croatia", "Bulgaria", "Cyprus", "Czech Republic", "Estonia", "Hungary", "Lithuania", "Latvia", "Malta", "Poland", "Romania", "Slovak Republic", "Slovenia"),
+  t.pval=0.01,
+  ar=1)
+
+
 
 
 is_default <- isatpanel(
@@ -152,3 +170,33 @@ form <- as.formula(paste0("y ~ ",paste0(names(df %>% select(-time,-id,-y,-mxbrea
 plm(formula = form,data = df,effect = "twoways",model = "within",index = c("id","time")) -> plm_obj
 
 purtest(df %>% select(-mxbreak,-id,-time))
+
+
+
+
+
+
+
+
+
+
+
+
+############
+# EU 31
+
+
+is_default_ar1_cfesiseu15 <- isatpanel(
+  y=dat$ltransport.emissions_pc,
+  id=dat$country,
+  time=dat$year,
+  mxreg=controls,
+  fesis = TRUE,
+  effect="twoways",
+  iis=TRUE,
+  cfesis = TRUE,
+  cfesis_id = c("Croatia"),
+  #cfesis_id = c("Croatia", "Bulgaria", "Cyprus", "Czech Republic", "Estonia", "Hungary", "Lithuania", "Latvia", "Malta", "Poland", "Romania", "Slovak Republic", "Slovenia"),
+  t.pval=0.01,
+  ar=1)
+
