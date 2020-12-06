@@ -1,4 +1,18 @@
-plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", ...){
+#' Plotting an isatpanel object
+#'
+#' @param isatpanelobject
+#' @param max.id.facet
+#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
+#' @param ... Further arguments to be passed to ggplot2.
+#'
+#' @return
+#' @export
+#'
+#'
+plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
+
+  #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
+
 
   df <- isatpanelobject$estimateddata
   indicators <- isatpanelobject$isatpanel.result$aux$mX
@@ -6,9 +20,9 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
   df <- cbind(df,indicators)
 
   if(is.null(isatpanelobject$isatpanel.result$fit)){
-    fitted <- isatpanelobject$isatpanel.result$mean.fit
+    fitted <- as.numeric(isatpanelobject$isatpanel.result$mean.fit)
   } else {
-    fitted <- isatpanelobject$isatpanel.result$fit
+    fitted <- as.numeric(isatpanelobject$isatpanel.result$fit)
   }
 
   df <- cbind(df,fitted)
@@ -33,7 +47,7 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
       tidyr::pivot_longer(cols = everything()) %>%
       tidyr::separate(col = name,sep = "\\.",into = c("id","time")) %>%
       dplyr::mutate(id = gsub("fesis","",id),
-             time = as.numeric(time)) %>%
+                    time = as.numeric(time)) %>%
       dplyr::select(-value) %>%
       #mutate(time = time + min(df$time)-1) %>%
       dplyr::distinct(time,id) -> fesis
@@ -44,7 +58,7 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
       dplyr::select(contains("cfesis")) %>%
       tidyr::pivot_longer(cols = everything()) %>%
       tidyr::separate(col = name,sep = "\\.",into = c("variable","id","time")) %>%
-      dplyr::mutate(id = gsub("fesis","",id),
+      dplyr::mutate(id = gsub("cfesis","",id),
                     time = as.numeric(time)) %>%
       dplyr::select(-value) %>%
       #mutate(time = time + min(df$time)-1) %>%
@@ -85,11 +99,18 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
     ggplot2::facet_wrap( ~ id, scales = facet.scales) +
 
     ggplot2::theme(legend.position = "none",
-          strip.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.grid.major.y = ggplot2::element_line(colour = "grey",size = 0.1)) +
+                   strip.background = ggplot2::element_blank(),
+                   panel.border = ggplot2::element_rect(colour = "grey",fill = NA),
+                   panel.background = ggplot2::element_blank(),
+                   panel.grid.major.y = ggplot2::element_line(colour = "grey",size = 0.1)) +
 
-    ggplot2::labs(title = "Panel Saturation",subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted") -> plot
+    ggplot2::labs(title = title,subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted", y = NULL, x = NULL) -> plotoutput
 
-  return(plot)
+
+  # browser
+  #   if(interactive){
+  #     plotoutput <- plotly::ggplotly(p = plotoutput)
+  #   }
+
+  return(plotoutput)
 }

@@ -4,9 +4,9 @@
 
 #' Panel isat function
 #'
-#' @param y Year
-#' @param id Individual
-#' @param time Time
+#' @param y Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.
+#' @param id Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the grouping variable as a character or factor
+#' @param time Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the time variable as an integer or numeric.
 #' @param mxreg The co-variates matrix
 #' @param effect Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".
 #' @param na.remove remove NAs
@@ -22,11 +22,12 @@
 #' @param csis Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param ... Further arguments to gets::isat
-#' @param data
-#' @param formula Please specify formula argument. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
-#' @param index
+#' @param data The input data.frame object.
+#' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
+#' @param index Specify the name of the group and time column in the format c("id", "time").
 #' @param csis_var
 #' @param cfesis_var
+#' @param plot Logical. Should the final object be plotted? Default is TRUE.
 #'
 #' @return
 #' @export
@@ -37,18 +38,14 @@ isatpanel <- function(
   data=NULL,
   formula=NULL,
   index=NULL,
-  y=NULL,
-  id=NULL,
-  time=NULL,
-  mxreg=NULL,
   effect = c("individual"),
 
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
   cluster = "individual",
-  plm_model=NULL,
 
+  ar=0,
   iis = FALSE,
   jiis = FALSE,
   jsis = FALSE,
@@ -56,9 +53,17 @@ isatpanel <- function(
   csis = FALSE,
   cfesis = FALSE,
   csis_var = colnames(mxreg),
+  csis_id = NULL,
   cfesis_var = colnames(mxreg),
+  cfesis_id = NULL,
 
-  ar=0,
+  plot = FALSE,
+  #plm_model=NULL,
+
+  y=NULL,
+  id=NULL,
+  time=NULL,
+  mxreg=NULL,
   ...
 )
 {
@@ -77,13 +82,14 @@ isatpanel <- function(
   # Transformations (to do: time, country and mxbreak as grepl character vectors)
   if(is.data.frame(mxreg)){mxreg <- as.matrix(mxreg)}
 
-
   # Formula, Index and Data arguments
-  if(!is.null(y) | !is.null(mxreg) | !is.null(time) | !is.null(id) & (!is.null(formula) | !is.null(data))){
+  if((!is.null(y) | !is.null(mxreg) | !is.null(time) | !is.null(id)) & (!is.null(formula) | !is.null(data))){
     stop("Either specify your model using the data, formula, and index arguments or through y, id, time, and mxreg. Specifying both is not allowed.")
   }
 
-
+  # csis and cfesis
+  if(csis == FALSE & (!missing(csis_var) | !missing(csis_id))){stop("You cannot specify csis_id or csis_var when csis = FALSE.")}
+  if(cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))){stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
 
 
   if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))){
@@ -94,42 +100,14 @@ isatpanel <- function(
     mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
 
-
     mt <- attr(mf, "terms")
 
     if(effect != "none"){
       attr(mt,"intercept") <- 0 # This forces no intercept!!!
     }
-
-
-
     y <- model.response(mf, "numeric")
-    # offset <- model.offset(mf)
-    # mlm <- is.matrix(y)
-    x <- model.matrix(mt, mf)
 
-    # ny <- if (mlm){
-    #   nrow(y)
-    # } else {length(y)}
-    # if (is.empty.model(mt)) {
-    #   x <- NULL
-    #   z <- list(coefficients = if (mlm) matrix(NA_real_, 0,
-    #                                            ncol(y)) else numeric(), residuals = y, fitted.values = 0 *
-    #               y, weights = w, rank = 0L, df.residual = if (!is.null(w)) sum(w !=
-    #                                                                               0) else ny)
-    #   if (!is.null(offset)) {
-    #     z$fitted.values <- offset
-    #     z$residuals <- y - offset
-    #   }
-    # }
-    # else {
-    #
-    #   z <- if (is.null(w))
-    #     lm.fit(x, y, offset = offset, singular.ok = singular.ok,
-    #            ...)
-    #   else lm.wfit(x, y, w, offset = offset, singular.ok = singular.ok,
-    #                ...)
-    # }
+    x <- model.matrix(mt, mf)
 
     id <- factor(data[,index[1]])
     time <- data[,index[2]]
@@ -141,11 +119,6 @@ isatpanel <- function(
   }
 
 
-  # Some more checks
-  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
-  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
-
-
   # Set up Infrastructure
   out <- list()
   out$inputdata <- data.frame(id,time,y,mxreg)
@@ -153,6 +126,15 @@ isatpanel <- function(
   # Remove any spaces in the id variables (e.g. United Kingdom becomes UnitedKingdom)
   id <- gsub(" ","",id)
 
+
+  # Some more checks
+  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
+  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
+
+  # If the coefficient based methods are not specified for a group subset, they will be applied to all id's.
+  # An example would be: test for separate coefficient estimates for post-soviet countries
+  if(is.null(csis_id)){csis_id <- unique(id)}
+  if(is.null(cfesis_id)){cfesis_id <- unique(id)}
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)){
@@ -259,8 +241,12 @@ isatpanel <- function(
     for(i in csis_var){
       csis_intermed <- csis_init[,!names(csis_init) %in% c("id","time")] * mxreg[,i]
       names(csis_intermed) <- paste0(i,".",names(csis_intermed))
+
       csis_df <- cbind(csis_df,csis_intermed)
     }
+
+    # Set all indicators to 0 for ids which are not in csis_id
+    csis_df[csis_df$id %in% csis_id,!names(csis_df) %in% c("id","time")] <- 0
 
     # merge with df to ensure order is correct
     current <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
@@ -269,6 +255,7 @@ isatpanel <- function(
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(csis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
+
 
   # cfesis=TRUE
   if(cfesis){
@@ -288,6 +275,9 @@ isatpanel <- function(
       names(cfesis_intermed) <- paste0(i,".",names(cfesis_intermed))
       cfesis_df <- cbind(cfesis_df,cfesis_intermed)
     }
+
+    # Set all indicators to 0 for ids which are not in cfesis_id
+    cfesis_df[!cfesis_df$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
 
 
     # merge with df to ensure order is correct
@@ -470,8 +460,9 @@ isatpanel <- function(
     user.estimator <- NULL
     mc = TRUE
   }
+  estimateddata <- data.frame(id,time,y,mx)
+  out$estimateddata <- estimateddata
 
-  out$estimateddata <- data.frame(id,time,y,mx)
 
   #############################
   ####### Estimate
@@ -485,7 +476,16 @@ isatpanel <- function(
 
 
   out$isatpanel.result <- ispan
-  #out$finaldata <- cbind(out$inputdata,ispan$aux$mX[,!colnames(ispan$aux$mX) %in% names(out$inputdata)])
+
+
+  # Create a final data object
+  indicators <- out$isatpanel.result$aux$mX
+  indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
+  out$finaldata <- data.frame(estimateddata, indicators)
+
+  if(plot == TRUE){
+    plot.isatpanel(ispan)
+  }
 
 
   class(out) <- "isatpanel"
