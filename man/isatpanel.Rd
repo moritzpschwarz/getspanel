@@ -12,7 +12,7 @@ isatpanel(
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
-  cluster = "individual",
+  cluster = "none",
   ar = 0,
   iis = FALSE,
   jiis = FALSE,
@@ -47,7 +47,7 @@ isatpanel(
 
 \item{user.estimator}{Use a user.estimator}
 
-\item{cluster}{cluster Standard Errors at this level}
+\item{cluster}{cluster Standard Errors at this level. Default is "none". Possible values are: "indvidiual", "time", or "twoways".}
 
 \item{ar}{Autoregressive Term to be included. default is 0.}
 
@@ -63,7 +63,11 @@ isatpanel(
 
 \item{cfesis}{Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
-\item{plot}{Logical. Should the final object be plotted? Default is TRUE.}
+\item{csis_var}{The csis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+
+\item{cfesis_var}{The cfesis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+
+\item{plot}{Logical. Should the final object be plotted? Default is FALSE.}
 
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
 

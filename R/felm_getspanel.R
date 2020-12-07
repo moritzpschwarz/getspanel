@@ -1,4 +1,4 @@
-#' Title
+#' Title Use the 'lfe' package to estimate models
 #'
 #' @param y dependent variable
 #' @param x matrix of regressors
@@ -9,11 +9,12 @@
 #' to cluster Standard Errors at
 #' @param ... Further arguments to pass to gets::isat
 #'
+#' @export
 #' @return
 #'
 
 felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
-
+  #browser()
   out <- list()
   out$n <- length(y)
   if (is.null(x)) {
@@ -35,7 +36,7 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       x <- as.matrix(x)
       colnames(x) <- "x"}
 
-    est_df <- data.frame(y,x,individual = id,time)
+    est_df <- data.frame(y,x,individual = as.factor(id),time = as.factor(time))
 
     # fixest always uses the first FE to cluster the standard errors.
     # When twoways, we need to arrange them in the right order to match
@@ -73,6 +74,10 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),
                                         "|",parse_FE,"| 0 |",cluster))
+
+    suppressWarnings(tmp <- lfe::felm(formula = parsed_formula,data = est_df))
+
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(row.names(na.omit(tmp$coefficients)),collapse = " + "),"|",parse_FE,"| 0 |",cluster))
     tmp <- lfe::felm(formula = parsed_formula,data = est_df)
 
     out$coefficients <- coef(tmp)

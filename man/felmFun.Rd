@@ -2,7 +2,7 @@
 % Please edit documentation in R/felm_getspanel.R
 \name{felmFun}
 \alias{felmFun}
-\title{Title}
+\title{Title Use the 'lfe' package to estimate models}
 \usage{
 felmFun(y, x, effect, time, id, cluster = "individual", ...)
 }
@@ -26,5 +26,5 @@ to cluster Standard Errors at}
 
 }
 \description{
-Title
+Title Use the 'lfe' package to estimate models
 }
