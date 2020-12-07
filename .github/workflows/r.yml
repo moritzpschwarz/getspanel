@@ -27,7 +27,7 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
-        
+
     steps:
       - uses: actions/checkout@v2
 
@@ -40,8 +40,8 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), "../.github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), "../.github/R-version")
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
       - name: Cache R packages
@@ -49,8 +49,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('../.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('../.github/R-version') }}-1-
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
@@ -65,23 +65,23 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
-      
-      #### Comment: This is a super useful debug feature - not needed in standard mode. 
+
+      #### Comment: This is a super useful debug feature - not needed in standard mode.
       # Uncomment the two lines below to use
       # Then open the WebURL (looks something like: WebURL: https://tmate.io/t/Y8a5sMXkQFzK9uUMwvuzH7YPd)
       # There you're on a black screen, which is a terminal - might be needed to hit CRTL + C to escape the black screen mode
       # Then you have a Linux console
       # open R by typing just the letter R
       # this should start an R console
-      # Run the same command that is run on GitHub Actions, which is: 
-      # 
+      # Run the same command that is run on GitHub Actions, which is:
+      #
       # rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
       #
       # and then you can debug as much as you like (e.g. include broswer() in the code files or set options(error=recover))
 
-      #- name: Debugging with tmate 
+      #- name: Debugging with tmate
       #  uses: mxschmitt/action-tmate@v3.1
-      
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
