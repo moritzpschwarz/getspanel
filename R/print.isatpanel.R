@@ -1,6 +1,6 @@
 #' Printing isatpanel results
 #'
-#' @param obj
+#' @param obj An isatpanel object.
 #'
 #' @return
 #' @export

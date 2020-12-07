@@ -1,0 +1,57 @@
+---
+title: "getspanel: Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{getspanel: Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE
+)
+```
+
+```{r setup}
+library(getspanel)
+```
+
+Currently the package is called \texttt{getspanel} to align with the \texttt{gets} package, but it's main function of course remains the **isatpanel** function.
+
+A quick overview over what has changed:
+
+-   We can now use the function approach as well as the traditional gets approach. This means that we can specify a model using `y` and `mxreg` as well as `time` and `id` as vectors, but we can now also simply supply a `data.frame` and a `function` in the form `y ~ x + z + I(x^2)` to e.g. specify polynomials. This means we will then need an `index` argument, which specifies the
+
+-   The `ar` argument now works
+
+-   We can now use the `fixest` package to speed up model estimation with large `i` (for short panels, the default method is still faster).The package can be activated using the new `engine` argument.
+
+-   Using the `fixest` package also allows us to calculate **clustered standard errors**.
+
+-   We can now be certain that unbalanced panels would work as intended, which was not the case before.
+
+-   The `mxbreak` and `break.method` arguments have been removed. Instead the function now produces the break matrix itself. This now implements the following saturation methods in a user friendly way:
+
+    -   **iis**: Impulse Indicator Saturation
+    -   **jsis**: **Joint** Step Indicator Saturation (Common Breaks over time)
+    -   **csis**: **Coefficient** Step Indicator Saturation (Common Coefficient Breaks over time)
+    -   **fesis**: **Fixed Effect** Step Indicator Saturation (Breaks in the Group Fixed Effect over time)
+    -   **cfesis**: **Coefficient Fixed Effect** Step Indicator Saturation (Breaks in the coefficient for each individual)
+
+# The isatpanel function
+
+We first load the artificially created data.
+
+```{r}
+data("pandata_simulated")
+head(pandata_simulated)
+```
+
+Let's go through the various cases.
+
+```{r, eval= FALSE}
+isatpanel(data = pandata_simulated,formula = gdp ~ temp, index = c("country","year"),effect = "twoways",ar = 1,fesis = TRUE)
+```

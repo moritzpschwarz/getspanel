@@ -13,7 +13,13 @@
 )
 }
 \arguments{
+\item{isatpanelobject}{An object produced by the isatpanel function}
+
+\item{max.id.facet}{The resulting plot will be faceted for each individual in the panel. Beyond a certain number, this might result in unreadable figures. Default set at 16.}
+
 \item{facet.scales}{To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".}
+
+\item{title}{Plot title. Must be a character vector.}
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }

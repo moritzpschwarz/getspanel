@@ -12,7 +12,7 @@
 #' @param na.remove remove NAs
 #' @param engine Function to use
 #' @param user.estimator Use a user.estimator
-#' @param cluster cluster Standard Errors at this level
+#' @param cluster cluster Standard Errors at this level. Default is "none". Possible values are: "indvidiual", "time", or "twoways".
 #' @param plm_model Type of PLM model (only if engine = "PLM")
 #' @param ar Autoregressive Term to be included. default is 0.
 #' @param iis use Impulse Indicator Saturation
@@ -25,16 +25,17 @@
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
-#' @param csis_var
-#' @param cfesis_var
-#' @param plot Logical. Should the final object be plotted? Default is TRUE.
+#' @param csis_var The csis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
+#' @param cfesis_var The cfesis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
+#' @param plot Logical. Should the final object be plotted? Default is FALSE.
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #' data(pandata_simulated)
-#' isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
+#' isatpanel(data = pandata_simluated, gdp ~ temp, index = c("country","year"),
+#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
 
 isatpanel <- function(
   data=NULL,
@@ -45,7 +46,7 @@ isatpanel <- function(
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
-  cluster = "individual",
+  cluster = "none",
 
   ar=0,
   iis = FALSE,
@@ -72,9 +73,6 @@ isatpanel <- function(
 
   # Error checks
   if(! effect %in% c("twoways", "individual", "time","none")){stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
-
-  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
-  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
 
 
   if((effect == "both" | effect == "time") & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
@@ -199,9 +197,14 @@ isatpanel <- function(
     current <- merge(df,jsis_df, by="time", all.x = TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if(!identical(drop,integer(0))){
+      current <- current[,-drop]
+    }
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(jsis=as.matrix(current[,!names(current) %in% c("id","time")])))
-}
+  }
 
   #jiis = TRUE - This is just like a time FE
   if(jiis){
@@ -211,6 +214,11 @@ isatpanel <- function(
     current <- merge(df,jiis_df, by="time", all.x = TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if(!identical(drop,integer(0))){
+      current <- current[,-drop]
+    }
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(jiis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
@@ -228,11 +236,17 @@ isatpanel <- function(
 
     fesis_df <- cbind(df_balanced,fesis_df)
 
-
     # merge with df to ensure order is correct
     current <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if(!identical(drop,integer(0))){
+      current <- current[,-drop]
+    }
+
+
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(fesis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
@@ -255,6 +269,11 @@ isatpanel <- function(
     current <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if(!identical(drop,integer(0))){
+      current <- current[,-drop]
+    }
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(csis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
@@ -287,12 +306,14 @@ isatpanel <- function(
     current <- merge(df,cfesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if(!identical(drop,integer(0))){
+      current <- current[,-drop]
+    }
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(cfesis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
-
-  # delete any columns that are 0 (can be included if panel not balanced)
-  #df <- df[, colSums(df != 0) > 0]
 
 
   if(any(fesis,jsis,jiis,csis,cfesis)){
@@ -304,89 +325,21 @@ isatpanel <- function(
 
 
   if(is.null(engine)){
-    ###########################################
-    ####generating Fixed effects
-    ##########################################
-
-    ###if individual FEs needed
-    if (effect %in% c("individual", "twoways")){
-      iddum <- fastDummies::dummy_cols(data.frame(id=id),select_columns = "id",remove_first_dummy = FALSE,remove_selected_columns = TRUE)
-      idnames <- paste("id", unique(id), sep="")
-
-      ##### Individual FEs
-      iddum_r <- as.matrix(iddum)
-      idnames_r <- idnames
-
-    }
-
-    ###if time FEs needed
-    if (effect %in% c("time", "twoways")){
-      timedum <- fastDummies::dummy_cols(data.frame(time=time),select_columns = "time",remove_selected_columns = TRUE,remove_first_dummy = FALSE)
-      timenames <- paste("time", unique(time), sep="")
-
-      ####time FEs
-      timedum_r <- as.matrix(timedum)
-      timenames_r <- timenames
-
-    }
-
-    if (effect == "individual"){
-
-      if (!is.null(mxreg))
-      {
-        mx <- cbind(mxreg, iddum)
-        colnames(mx) <- c(mxnames, idnames_r)
-      } else {
-        mx <- iddum
-        colnames(mx) <- (idnames_r)
-      }
 
 
-    } #if indiv. closed
+    ####
+    # Generating Fixed effects ------------------------------------------------
+    ####
+    FE <- vector()
+    if(effect %in% c("individual", "twoways")){FE <- append(FE,"id")}
+    if(effect %in% c("time", "twoways")){FE <- append(FE,"time")}
 
-    if(effect == "time"){
+    dummies <- fastDummies::dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
+    dummies <- dummies[,!names(dummies)%in%c("id","time")]
+    names(dummies) <- gsub("_","",names(dummies))
 
-      #  NROW(timedum)
+    mx <- cbind(mxreg,dummies)
 
-      if (!is.null(mxreg))
-      {
-        mx <- cbind(mxreg, timedum)
-        colnames(mx) <- c(mxnames, timenames_r)
-      } else {
-        mx <- timedum
-        colnames(mx) <- timenames_r
-      }
-
-    } #if time close
-
-    if(effect == "twoways"){
-
-      if (!is.null(mxreg))
-      {
-        mx <- cbind(mxreg, iddum, timedum)
-        colnames(mx) <- c(mxnames, idnames_r, timenames_r)
-      } else {
-        mx <- cbind(iddum, timedum)
-        colnames(mx) <- c(idnames_r, timenames_r)
-      }
-
-    } #if twoways closed
-
-    if(effect == "none"){
-
-      if (!is.null(mxreg))
-      {
-        mx <- mxreg
-
-        if (NCOL(mx)>1){
-          colnames(mx) <-  mxnames
-        } else {
-          names(mx) <- mxnames
-        }
-      } else { #there are no fixed effects and no regressors
-        mx <- NULL
-      }
-    }
   } else {
     # If an engine is selected, we don't create fixed effects
     mx <- mxreg
@@ -461,9 +414,9 @@ isatpanel <- function(
 
   if(is.null(engine)){
     user.estimator <- NULL
-    mc = TRUE
   }
-  estimateddata <- data.frame(id,time,y,mx)
+  estimateddata <- data.frame(id,time,y)
+  estimateddata <- cbind(estimateddata,mx)
   out$estimateddata <- estimateddata
 
 
@@ -486,9 +439,11 @@ isatpanel <- function(
   indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
   out$finaldata <- data.frame(estimateddata, indicators)
 
-  if(plot == TRUE){
-    plot.isatpanel(ispan)
-  }
+  try(
+    if(plot == TRUE){
+      plot.isatpanel(ispan)
+    }
+  )
 
 
   class(out) <- "isatpanel"

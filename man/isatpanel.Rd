@@ -84,5 +84,7 @@ isatpanel(
 Panel isat function
 }
 \examples{
-isatpanel(y)
+data(pandata_simulated)
+isatpanel(data = pandata_simluated, gdp ~ temp, index = c("country","year"),
+effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
 }

@@ -7,7 +7,7 @@
 \method{print}{isatpanel}(obj)
 }
 \arguments{
-\item{obj}{}
+\item{obj}{An isatpanel object.}
 }
 \value{
 

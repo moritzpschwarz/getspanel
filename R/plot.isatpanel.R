@@ -1,8 +1,9 @@
 #' Plotting an isatpanel object
 #'
-#' @param isatpanelobject
-#' @param max.id.facet
+#' @param isatpanelobject An object produced by the isatpanel function
+#' @param max.id.facet The resulting plot will be faceted for each individual in the panel. Beyond a certain number, this might result in unreadable figures. Default set at 16.
 #' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
+#' @param title Plot title. Must be a character vector.
 #' @param ... Further arguments to be passed to ggplot2.
 #'
 #' @return
@@ -29,13 +30,11 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
 
 
   df %>%
-    #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
     dplyr::filter(grepl("iis",name)) %>%
     dplyr::filter(value == 1) -> impulses
 
   df %>%
-    #dplyr::select(-mxbreak) %>%
     tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
     dplyr::filter(grepl("sis",name)) %>%
     dplyr::filter(!grepl("fesis",name)) %>%
@@ -49,7 +48,6 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
       dplyr::mutate(id = gsub("fesis","",id),
                     time = as.numeric(time)) %>%
       dplyr::select(-value) %>%
-      #mutate(time = time + min(df$time)-1) %>%
       dplyr::distinct(time,id) -> fesis
   } else {fesis <- NULL}
 
@@ -61,7 +59,6 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
       dplyr::mutate(id = gsub("cfesis","",id),
                     time = as.numeric(time)) %>%
       dplyr::select(-value) %>%
-      #mutate(time = time + min(df$time)-1) %>%
       dplyr::distinct(variable, time,id) -> cfesis
   } else {cfesis <- NULL}
 
@@ -70,7 +67,6 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
     x = time,
     y = fitted,
     group = id,
-    #color = id
   )) +
 
 

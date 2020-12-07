@@ -18,7 +18,7 @@ plot(pandata_simulated$gdp[pandata_simulated$country==4], type="l", main="Countr
 
 # Normal testing
 
-isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"))
+isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"), fesis=TRUE)
 newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
 newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
 newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1)
@@ -27,15 +27,11 @@ newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(te
 # Unit testing
 test_that("Initial Tests Isatpanel on simulated data",{
 
-  expect_output(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year")))
+  expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"),fesis = TRUE))
 
-  newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
+  #newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
 
-  newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
-
-
-
-
+  expect_message(newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1))
 
 })
 
@@ -48,6 +44,24 @@ test_that("Test the cfesis and csis arguments",{
 })
 
 
+#newmethod_cfesis <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1)
+
+
+
+
+test_that("Standard Error Options using fixest",{
+
+  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest"))
+  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
+})
+
+
+
+test_that("Check unbalanced panel",{
+  # Create an unbalanced panel (deleting first 20 years of Country 3)
+  unbalanced_panel <- subset(pandata_simulated,country %in% c(1,2,4) | (country==3 & year > 1920))
+  expect_silect(result <- isatpanel(data = unbalanced_panel,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE))
+})
 
 
 

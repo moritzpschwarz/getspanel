@@ -13,9 +13,7 @@
 
 
 
-
 fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
-  #browser()
   out <- list()
   out$n <- length(y)
   if (is.null(x)) {
@@ -35,7 +33,8 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       x <- as.matrix(x)
       colnames(x) <- "x"}
 
-    est_df <- data.frame(y,x,individual = id,time)
+    est_df <- data.frame(y,individual = id,time)
+    est_df <- cbind(est_df,x)
 
     # fixest always uses the first FE to cluster the standard errors. When twoways, we need to arrange them in the right order to match
     # the cluster argument
@@ -48,7 +47,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     } else if (effect == "time") {
       "time"
     } else if (effect == "individual") {
-      "id"
+      "individual"
     } else if (effect == "none") {
       "0"
     } else {
@@ -91,76 +90,3 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
   return(out)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-#
-#
-#
-#
-# fixestFun <- function(y, mxreg, time, id, cluster, effect, ...){
-#   require(fixest)
-#
-#   if(effect == "nested"){stop("Effect = nested is currently not possible with engine fixest. Use plm as engine for nested effect.")}
-#   #if(!is.null(model)){stop("Model specification (e.g. pooling, within, between, random, fd, or ht) is currently not possible with engine fixest. Use plm as engine to use a model argument.")}
-#
-#   ##create list:
-#   result <- list()
-#   ##n, k and df:
-#   result$n <- length(y)
-#
-#   if( is.null(mxreg) || NCOL(mxreg) == 0 ){
-#     result$k <- 0
-#   } else {
-#     result$k <- NCOL(mxreg)
-#   }
-#   result$df <- result$n - result$k
-#   ##call felm if k > 0:
-#   if( result$k > 0 ){
-#
-#
-#     if(is.null(colnames(mxreg))){
-#       if(!is.matrix(mxreg)){
-#         mxreg <- as.matrix(mxreg)
-#         colnames(mxreg) <- paste0("x_felm_",1)
-#       } else {
-#         colnames(mxreg) <- paste0("x_felm_",1:ncol(mxreg))
-#       }
-#
-#     }
-#     yx <- data.frame(y,mxreg,time,individual = id)
-#
-#     parse_FE <- if(effect == "twoways"){
-#       "time + individual"} else if(effect == "time"){
-#         "time"} else if (effect == "individual"){
-#           "individual"} else {
-#             "0"}
-#     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(mxreg),collapse = " + "),"|",parse_FE))
-#     tmp <- feols(fml = parsed_formula,data = yx,panel.id = c("time","individual"), notes=FALSE) #, se = yx[,cluster])
-#     result$coefficients <- coef(tmp)
-#     result$vcov <- vcov(tmp)
-#     result$logl <- as.numeric(logLik(tmp))
-#   } else {
-#     result$coefficients <- NULL
-#     result$vcov <- NULL
-#     result$logl <- sum(dnorm(y, sd = sqrt(var(y)), log = TRUE))
-#   }
-#   ##return result:
-#   return(result)
-# }
-
-
