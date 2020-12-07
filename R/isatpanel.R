@@ -32,7 +32,9 @@
 #' @return
 #' @export
 #'
-#' @examples isatpanel(y)
+#' @examples
+#' data(pandata_simulated)
+#' isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
 
 isatpanel <- function(
   data=NULL,
@@ -71,6 +73,8 @@ isatpanel <- function(
   # Error checks
   if(! effect %in% c("twoways", "individual", "time","none")){stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
 
+  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
+  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
 
 
   if((effect == "both" | effect == "time") & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
@@ -159,7 +163,6 @@ isatpanel <- function(
   # Autoregressive Term
   if(ar>0){
     ar_df <- cbind(cbind(df,y),mxreg)
-
     ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x){
       y = x$y
       gets::regressorsMean(y=y, mxreg = mxreg,ar = ar,return.as.zoo = FALSE)

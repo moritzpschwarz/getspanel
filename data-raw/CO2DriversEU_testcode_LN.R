@@ -47,7 +47,7 @@ for(sample in list(EU15)){
   for(dv in list(dat$ltransport.emissions_pc)){
 
     # Specify control variables:
-    controls <- cbind(dat$lgdp, dat$lgdp_sq)
+    controls <- data.frame(dat %>% select(lgdp,lgdp_sq))
     # Break analysis:
     is2 <- isatpanel(
       y=dv,
@@ -57,12 +57,12 @@ for(sample in list(EU15)){
       mxbreak=c(dat$const),
       break.method="both",
       effect="twoways",
-      #engine = "fixest",
+      engine = "fixest",
       iis=TRUE,
       t.pval=0.01)
 
     # Output analysis results:
-    print(is)
+    print(is2)
 
   }
 }
@@ -71,6 +71,83 @@ library(plm)
 library(tidyverse)
 library(lmtest)
 library(sandwich)
+
+data %>%
+  select(country,year) %>%
+  filter(country %in% EU15) %>%
+  filter(year>=1995) %>%
+  mutate(country = as.factor(country),
+         year = as.factor(year)) -> input_df
+input_df %>%
+  bind_cols(.,y = is2$aux$y) %>%
+  bind_cols(.,is2$aux$mX %>% as_tibble) -> new_data
+
+
+
+
+new_data %>%
+  lm(y~.-1,data = .) %>% summary
+
+formula_felm_uncl <- paste("y ~ ",paste0(new_data %>% select(-country,-year,-y) %>% names,collapse = " + "),"| country + year | 0 | 0 ") %>% as.formula()
+lfe::felm(formula = formula_felm_uncl,new_data) %>%
+  summary
+
+
+formula_felm_clu <- paste("y ~ ",paste0(new_data %>% select(-country,-year,-y) %>% names,collapse = " + "),"| country + year | 0 | country ") %>% as.formula()
+lfe::felm(formula = formula_felm_clu,new_data) %>%
+  summary
+
+# Fixest Package (same as used in isat)
+formula_fixest_clu <- paste("y ~ ",paste0(new_data %>% select(-country,-year,-y) %>% names,collapse = " + "),"| country + year") %>% as.formula()
+fixest::feols(fml = formula_fixest_clu,new_data) %>%
+  summary
+
+
+
+
+
+
+
+# Plotting
+
+
+plot(is2)
+
+
+
+new_data %>%
+  select(starts_with("iis"))
+
+cbind(new_data,fitted = is2$fit) %>%
+  ggplot(aes(y=fitted,x=year,group=country)) +
+  geom_line() +
+  facet_wrap(~country) +
+  theme(legend.position = "none")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+data %>%
+  select(country,year) %>%
+  filter(country %in% EU15) %>%
+  filter(year>=1995) %>%
+  mutate(country = as.factor(country),
+         year = as.factor(year)) %>%
+  bind_cols(.,y = is2$aux$y) %>%
+  bind_cols(.,is2$aux$mX %>% as_tibble) %>%
+  lm(y~.-1,data = .) %>% summary
+
+
 
 
 prepare_robust <- function(isat_object,
@@ -106,7 +183,7 @@ prepare_robust <- function(isat_object,
 
 }
 
-df <- prepare_robust(is1)
+df <- prepare_robust(is2)
 
 df %>%
   pdata.frame(index = c("country","year")) -> pdata

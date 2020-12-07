@@ -44,7 +44,7 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
   if(any(grepl("^fesis",names(df)))){
     df %>%
       dplyr::select(starts_with("fesis")) %>%
-      tidyr::pivot_longer(cols = everything()) %>%
+      tidyr::pivot_longer(cols = dplyr::everything()) %>%
       tidyr::separate(col = name,sep = "\\.",into = c("id","time")) %>%
       dplyr::mutate(id = gsub("fesis","",id),
                     time = as.numeric(time)) %>%

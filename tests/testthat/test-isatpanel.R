@@ -58,88 +58,122 @@ test_that("Test the cfesis and csis arguments",{
 ############ Different Break Specifications (corresponding to the 4 cases in the paper) #################
 ##############################################################
 
-##########################################################
-###### 1: Allowing for breaks in individual fixed effects
+
+
+
+test_that("Simple Fixest Test",{
+  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual"))
+})
+
+test_that("Simple Default Test",{
+  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,cluster = "individual"))
+})
+
+
+test_that("Simple Default Test with AR1",{
+  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,cluster = "individual",ar=1))
+})
+
+
 #
-is1 <- isatpanel(y=pandata_simulated$gdp,
-                 id=pandata_simulated$country,
-                 time=pandata_simulated$year,
-                 mxreg=pandata_simulated$temp,
-                 mxbreak=c(pandata_simulated$const),
-                 break.method="both",
-                 effect="twoways",
-                 iis=FALSE,
-                 t.pval=0.01)
-
-
-
-is1_felm <- isatpanel(y=pandata_simulated$gdp,
-                      id=pandata_simulated$country,
-                      time=pandata_simulated$year,
-                      mxreg=pandata_simulated$temp,
-                      mxbreak=c(pandata_simulated$const),
-                      break.method="both",
-                      effect="twoways",
-                      iis=FALSE,
-                      t.pval=0.01,
-                      engine = "felm",
-                      cluster = "individual")
-
-
-
-is1_felm_standardSE <- isatpanel(y=pandata_simulated$gdp,
-                                 id=pandata_simulated$country,
-                                 time=pandata_simulated$year,
-                                 mxreg=pandata_simulated$temp,
-                                 mxbreak=c(pandata_simulated$const),
-                                 break.method="both",
-                                 effect="twoways",
-                                 iis=FALSE,
-                                 t.pval=0.01,
-                                 engine = "felm",
-                                 cluster = "none")
-
-
-
-is1_fixest <- isatpanel(y=pandata_simulated$gdp,
-                        id=pandata_simulated$country,
-                        time=pandata_simulated$year,
-                        mxreg=pandata_simulated$temp,
-                        mxbreak=c(pandata_simulated$const),
-                        break.method="both",
-                        effect="twoways",
-                        iis=FALSE,
-                        t.pval=0.01,
-                        engine = "fixest",
-                        cluster = "individual")
-
-
-is1_fixest_standardSE <- isatpanel(y=pandata_simulated$gdp,
-                                   id=pandata_simulated$country,
-                                   time=pandata_simulated$year,
-                                   mxreg=pandata_simulated$temp,
-                                   mxbreak=c(pandata_simulated$const),
-                                   break.method="both",
-                                   effect="twoways",
-                                   iis=FALSE,
-                                   t.pval=0.01,
-                                   engine = "fixest",
-                                   cluster = "none")
-
-
-
-is1_fixest_timeclus <- isatpanel(y=pandata_simulated$gdp,
-                                 id=pandata_simulated$country,
-                                 time=pandata_simulated$year,
-                                 mxreg=pandata_simulated$temp,
-                                 mxbreak=c(pandata_simulated$const),
-                                 break.method="both",
-                                 effect="twoways",
-                                 iis=FALSE,
-                                 t.pval=0.01,
-                                 engine = "fixest",
-                                 cluster = "time")
 #
+# is1 <- isatpanel(y=pandata_simulated$gdp,
+#                  id=pandata_simulated$country,
+#                  time=pandata_simulated$year,
+#                  mxreg=pandata_simulated$temp,
+#                  mxbreak=c(pandata_simulated$const),
+#                  break.method="both",
+#                  effect="twoways",
+#                  iis=FALSE,
+#                  t.pval=0.01,
+#                  engine = "felm",
+#                  cluster = "individual")
+#
+#
+#
+#
+# ##########################################################
+# ###### 1: Allowing for breaks in individual fixed effects
+# #
+# is1 <- isatpanel(y=pandata_simulated$gdp,
+#                  id=pandata_simulated$country,
+#                  time=pandata_simulated$year,
+#                  mxreg=pandata_simulated$temp,
+#                  mxbreak=c(pandata_simulated$const),
+#                  break.method="both",
+#                  effect="twoways",
+#                  iis=FALSE,
+#                  t.pval=0.01)
+#
+#
+#
+# is1_felm <- isatpanel(y=pandata_simulated$gdp,
+#                       id=pandata_simulated$country,
+#                       time=pandata_simulated$year,
+#                       mxreg=pandata_simulated$temp,
+#                       mxbreak=c(pandata_simulated$const),
+#                       break.method="both",
+#                       effect="twoways",
+#                       iis=FALSE,
+#                       t.pval=0.01,
+#                       engine = "felm",
+#                       cluster = "individual")
+#
+#
+#
+# is1_felm_standardSE <- isatpanel(y=pandata_simulated$gdp,
+#                                  id=pandata_simulated$country,
+#                                  time=pandata_simulated$year,
+#                                  mxreg=pandata_simulated$temp,
+#                                  mxbreak=c(pandata_simulated$const),
+#                                  break.method="both",
+#                                  effect="twoways",
+#                                  iis=FALSE,
+#                                  t.pval=0.01,
+#                                  engine = "felm",
+#                                  cluster = "none")
+#
+#
+#
+# is1_fixest <- isatpanel(y=pandata_simulated$gdp,
+#                         id=pandata_simulated$country,
+#                         time=pandata_simulated$year,
+#                         mxreg=pandata_simulated$temp,
+#                         mxbreak=c(pandata_simulated$const),
+#                         break.method="both",
+#                         effect="twoways",
+#                         iis=FALSE,
+#                         t.pval=0.01,
+#                         engine = "fixest",
+#                         cluster = "individual")
+#
+#
+# is1_fixest_standardSE <- isatpanel(y=pandata_simulated$gdp,
+#                                    id=pandata_simulated$country,
+#                                    time=pandata_simulated$year,
+#                                    mxreg=pandata_simulated$temp,
+#                                    mxbreak=c(pandata_simulated$const),
+#                                    break.method="both",
+#                                    effect="twoways",
+#                                    iis=FALSE,
+#                                    t.pval=0.01,
+#                                    engine = "fixest",
+#                                    cluster = "none")
+#
+#
+#
+# is1_fixest_timeclus <- isatpanel(y=pandata_simulated$gdp,
+#                                  id=pandata_simulated$country,
+#                                  time=pandata_simulated$year,
+#                                  mxreg=pandata_simulated$temp,
+#                                  mxbreak=c(pandata_simulated$const),
+#                                  break.method="both",
+#                                  effect="twoways",
+#                                  iis=FALSE,
+#                                  t.pval=0.01,
+#                                  engine = "fixest",
+#                                  cluster = "time")
+# #
 # ##################################################################
 # ###### 2: Allowing for breaks in time (common across individuals)
 #
