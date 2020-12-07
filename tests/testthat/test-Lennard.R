@@ -8,7 +8,7 @@
 
 set.seed(123)
 
-data <- read.csv("data-raw/CO2DriversEU_dataset_v1.csv")
+data(co2driverseu)
 data <- data[-1]
 
 data$lgdp_sq <- data$lgdp^2
@@ -34,8 +34,8 @@ syear <- 1995
 runit <- "Austria"
 
 
-dat <- filter(data, country %in% EU15, year>=syear)
-controls <- data.frame(dat %>% select(lgdp,lgdp_sq))
+dat <- dplyr::filter(data, country %in% EU15, year>=syear)
+controls <- data.frame(dat %>% dplyr::select(lgdp,lgdp_sq))
 # y=dat$ltransport.emissions_pc
 # id=dat$country
 # time=dat$year
@@ -46,7 +46,9 @@ controls <- data.frame(dat %>% select(lgdp,lgdp_sq))
 
 
 # Specify control variables:
-controls <- data.frame(dat %>% select(lgdp,lgdp_sq))
+test_that("test",{
+  expect_silent(controls <- data.frame(dat %>% dplyr::select(lgdp,lgdp_sq)))
+})
 
 
 is_default_ar1 <- isatpanel(
