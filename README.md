@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-The goal of getspanel is to …
+A panel adaptation of the `gets` package [see here](https://cran.r-project.org/web/packages/gets/index.html).
 
 ## Installation
 
