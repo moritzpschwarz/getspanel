@@ -35,13 +35,7 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(getspanel)
-## basic example code
-```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
 data("pandata_simulated")
 
 is <- isatpanel(data = pandata_simulated,formula = gdp ~ temp, index = c("country","year"),effect = "twoways",ar = 1,fesis = TRUE)
