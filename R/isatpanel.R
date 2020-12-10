@@ -56,7 +56,7 @@ isatpanel <- function(
   csis = FALSE,
   cfesis = FALSE,
   csis_var = colnames(mxreg),
-  csis_id = NULL,
+  fesis_id = NULL,
   cfesis_var = colnames(mxreg),
   cfesis_id = NULL,
 
@@ -89,10 +89,13 @@ isatpanel <- function(
     stop("Either specify your model using the data, formula, and index arguments or through y, id, time, and mxreg. Specifying both is not allowed.")
   }
 
-  # csis and cfesis
-  if(csis == FALSE & (!missing(csis_var) | !missing(csis_id))){stop("You cannot specify csis_id or csis_var when csis = FALSE.")}
-  if(cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))){stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
+  if(is.null(engine) & cluster != "none"){stop("Cluster specifications are currently only implemented for engine = 'fixest'. Either select cluster = 'none' or engine = 'fixest'.")}
 
+
+  # csis and cfesis
+  if(csis == FALSE & (!missing(csis_var))){stop("You cannot specify csis_var when csis = FALSE.")}
+  if(cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))){stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
+  if(fesis == FALSE & (!missing(fesis_id))){stop("You cannot specify fesis_id when fesis = FALSE.")}
 
   if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))){
     mf <- match.call(expand.dots = FALSE)
@@ -135,7 +138,7 @@ isatpanel <- function(
 
   # If the coefficient based methods are not specified for a group subset, they will be applied to all id's.
   # An example would be: test for separate coefficient estimates for post-soviet countries
-  if(is.null(csis_id)){csis_id <- unique(id)}
+  if(is.null(fesis_id)){fesis_id <- unique(id)}
   if(is.null(cfesis_id)){cfesis_id <- unique(id)}
 
   mxnames <- colnames(mxreg)
@@ -236,6 +239,9 @@ isatpanel <- function(
 
     fesis_df <- cbind(df_balanced,fesis_df)
 
+    # Set all indicators to 0 for ids which are not in fesis_id
+    fesis_df[!fesis_df$id %in% fesis_id,!names(fesis_df) %in% c("id","time")] <- 0
+
     # merge with df to ensure order is correct
     current <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
@@ -262,8 +268,6 @@ isatpanel <- function(
       csis_df <- cbind(csis_df,csis_intermed)
     }
 
-    # Set all indicators to 0 for ids which are not in csis_id
-    csis_df[csis_df$id %in% csis_id,!names(csis_df) %in% c("id","time")] <- 0
 
     # merge with df to ensure order is correct
     current <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
@@ -278,32 +282,32 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(csis=as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-
   # cfesis=TRUE
   if(cfesis){
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
-    fesis_names <- paste0("cfesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
+    cfesis_names <- paste0("cfesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
 
     sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
-    fesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
-    names(fesis_df) <- fesis_names
+    cfesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
+    names(cfesis_df) <- cfesis_names
 
-    cfesis_df <- cbind(df_balanced,fesis_df)
+    cfesis_df <- cbind(df_balanced,cfesis_df)
+    cfesis_out <- df_balanced
 
     for(i in cfesis_var){
       cfesis_intermed <- cfesis_df[,!names(cfesis_df) %in% c("id","time")]*mxreg[,i]
       names(cfesis_intermed) <- paste0(i,".",names(cfesis_intermed))
-      cfesis_df <- cbind(cfesis_df,cfesis_intermed)
+      cfesis_out <- cbind(cfesis_out,cfesis_intermed)
     }
 
     # Set all indicators to 0 for ids which are not in cfesis_id
-    cfesis_df[!cfesis_df$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
+    cfesis_out[!cfesis_out$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
 
 
     # merge with df to ensure order is correct
-    current <- merge(df,cfesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    current <- merge(df,cfesis_out,by = c("id","time"),all.x=TRUE,sort=FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
@@ -338,7 +342,7 @@ isatpanel <- function(
     dummies <- dummies[,!names(dummies)%in%c("id","time")]
     names(dummies) <- gsub("_","",names(dummies))
 
-    mx <- cbind(mxreg,dummies)
+    mx <- cbind(mxreg,dummies[-1])
 
   } else {
     # If an engine is selected, we don't create fixed effects
@@ -393,7 +397,8 @@ isatpanel <- function(
         time = time,
         id = id,
         effect = effect,
-        cluster = cluster
+        cluster = cluster,
+        envir = environment()
       )
       mc = FALSE
     }
@@ -418,7 +423,6 @@ isatpanel <- function(
   estimateddata <- data.frame(id,time,y)
   estimateddata <- cbind(estimateddata,mx)
   out$estimateddata <- estimateddata
-
 
   #############################
   ####### Estimate

@@ -21,7 +21,7 @@ isatpanel(
   csis = FALSE,
   cfesis = FALSE,
   csis_var = colnames(mxreg),
-  csis_id = NULL,
+  fesis_id = NULL,
   cfesis_var = colnames(mxreg),
   cfesis_id = NULL,
   plot = FALSE,
