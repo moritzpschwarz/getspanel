@@ -7,18 +7,22 @@
 
 <!-- badges: end -->
 
-The goal of getspanel is to …
+This package is in the **early stage of its development** and will therefore contain many bugs and errros. 
+
+The package is a panel adaptation of the `gets` package [see here](https://cran.r-project.org/web/packages/gets/index.html).
+
+This code is being developed by Felix Pretis and Moritz Schwarz. The associated paper will be published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis, Schwarz and Sucarrat. 
 
 ## Installation
-
+<!--
 You can install the released version of getspanel from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("getspanel")
 ```
-
-And the development version from [GitHub](https://github.com/) with:
+ -->
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -31,29 +35,21 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(getspanel)
-## basic example code
+library(tidyverse) # needed for the plots
+
+data("pandata_simulated")
+
+is <- isatpanel(data = pandata_simulated,
+                   formula = gdp ~ temp, 
+                   index = c("country","year"),
+                   
+                   effect = "twoways",
+                   
+                   fesis = TRUE)
+
+is
+
+plot(is)
+
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
