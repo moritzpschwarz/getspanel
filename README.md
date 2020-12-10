@@ -35,10 +35,17 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(getspanel)
+library(tidyverse) # needed for the plots
 
 data("pandata_simulated")
 
-is <- isatpanel(data = pandata_simulated,formula = gdp ~ temp, index = c("country","year"),effect = "twoways",ar = 1,fesis = TRUE)
+is <- isatpanel(data = pandata_simulated,
+                   formula = gdp ~ temp, 
+                   index = c("country","year"),
+                   
+                   effect = "twoways",
+                   
+                   fesis = TRUE)
 
 is
 
