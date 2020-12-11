@@ -383,7 +383,7 @@ isatpanel <- function(
     }
     if(engine == "felm"){
       user.estimator <- list(
-        name = "felmFun",
+        name = getspanel:::felmFun,
         time = time,
         id = id,
         effect = effect,
@@ -393,7 +393,7 @@ isatpanel <- function(
     }
     if(engine == "fixest"){
       user.estimator <- list(
-        name = "fixestFun",
+        name = getspanel:::fixestFun,
         time = time,
         id = id,
         effect = effect,
