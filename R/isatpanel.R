@@ -61,7 +61,7 @@ isatpanel <- function(
   cfesis_id = NULL,
 
   plot = FALSE,
-  #plm_model=NULL,
+  plm_model = "within",
 
   y=NULL,
   id=NULL,
@@ -404,7 +404,7 @@ isatpanel <- function(
     }
     if(engine == "plm"){
       user.estimator <- list(
-        name = "plmFun",
+        name = getspanel:::plmFun,
         time = time,
         id = id,
         effect = effect,

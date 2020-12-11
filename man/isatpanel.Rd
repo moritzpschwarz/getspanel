@@ -25,6 +25,7 @@ isatpanel(
   cfesis_var = colnames(mxreg),
   cfesis_id = NULL,
   plot = FALSE,
+  plm_model = "within",
   y = NULL,
   id = NULL,
   time = NULL,
@@ -69,6 +70,8 @@ isatpanel(
 
 \item{plot}{Logical. Should the final object be plotted? Default is FALSE.}
 
+\item{plm_model}{Type of PLM model (only if engine = "PLM")}
+
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
 
 \item{id}{Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the grouping variable as a character or factor}
@@ -78,8 +81,6 @@ isatpanel(
 \item{mxreg}{The co-variates matrix}
 
 \item{...}{Further arguments to gets::isat}
-
-\item{plm_model}{Type of PLM model (only if engine = "PLM")}
 }
 \value{
 
