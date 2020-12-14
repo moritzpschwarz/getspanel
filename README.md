@@ -39,7 +39,7 @@ library(tidyverse) # needed for the plots
 
 data("pandata_simulated")
 
-is <- isatpanel(data = pandata_simulated,
+is1 <- isatpanel(data = pandata_simulated,
                    formula = gdp ~ temp, 
                    index = c("country","year"),
                    
@@ -47,9 +47,57 @@ is <- isatpanel(data = pandata_simulated,
                    
                    fesis = TRUE)
 
-is
+is1
 
-plot(is)
+plot(is1)
+
+```
+An example using coefficient step indicator saturation: 
 
 ```
 
+is2 <- isatpanel(data = pandata_simulated,
+                   formula = gdp ~ temp, 
+                   index = c("country","year"),
+                   
+                   effect = "twoways",
+                   
+                   csis = TRUE)
+                   
+                   
+is2     
+
+plot(is2)
+```
+
+and an example of Coefficient Fixed-Effect Step indicator saturation: 
+
+```
+
+is3 <- isatpanel(data = pandata_simulated,
+                   formula = gdp ~ temp, 
+                   index = c("country","year"),
+                   
+                   effect = "twoways",
+                   
+                   cfesis = TRUE)
+                   
+is3
+
+plot(is3)
+
+```
+
+We can also use e.g. the `fixest` package to estimate our models: 
+
+```
+is4 <- isatpanel(data = pandata_simulated,
+                   formula = gdp ~ temp, 
+                   index = c("country","year"),
+                   
+                   effect = "twoways",
+                   engine = "fixest",
+                   
+                   fesis = TRUE)
+
+```
