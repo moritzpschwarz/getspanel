@@ -54,7 +54,7 @@ plot(is1)
 ```
 An example using coefficient step indicator saturation: 
 
-```
+``` r
 
 is2 <- isatpanel(data = pandata_simulated,
                    formula = gdp ~ temp, 
@@ -72,7 +72,7 @@ plot(is2)
 
 and an example of Coefficient Fixed-Effect Step indicator saturation: 
 
-```
+``` r
 
 is3 <- isatpanel(data = pandata_simulated,
                    formula = gdp ~ temp, 
@@ -90,7 +90,7 @@ plot(is3)
 
 We can also use e.g. the `fixest` package to estimate our models: 
 
-```
+``` r
 is4 <- isatpanel(data = pandata_simulated,
                    formula = gdp ~ temp, 
                    index = c("country","year"),
