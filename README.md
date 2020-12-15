@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-This package is in the **early stage of its development** and will therefore contain many bugs and errros. 
+This package is a **development version** and will therefore contain some bugs and errros. 
 
 The package is a panel adaptation of the `gets` package [see here](https://cran.r-project.org/web/packages/gets/index.html).
 
