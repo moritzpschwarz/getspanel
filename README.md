@@ -11,7 +11,8 @@ This package is a **development version** and will therefore contain some bugs a
 
 The package is a panel adaptation of the `gets` package [see here](https://cran.r-project.org/web/packages/gets/index.html).
 
-This code is being developed by Felix Pretis and Moritz Schwarz. The associated paper will be published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis, Schwarz and Sucarrat. 
+This code is being developed by Felix Pretis and Moritz Schwarz. 
+The associated paper will be published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis, Schwarz and Sucarrat. 
 
 ## Installation
 <!--
