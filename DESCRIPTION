@@ -23,13 +23,13 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    lfe
 Imports: 
     gets,
     fixest,
     fastDummies,
     Matrix,
-    lfe,
     ggplot2,
     dplyr,
     tidyr,
