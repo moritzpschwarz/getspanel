@@ -1,6 +1,7 @@
 ---
 title: "getspanel: Getting Started"
-output: rmarkdown::html_vignette
+#output: rmarkdown::html_vignette
+output: prettydoc::html_pretty
   code_download: true
 
 vignette: >
