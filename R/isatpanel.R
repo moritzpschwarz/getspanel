@@ -421,7 +421,14 @@ isatpanel <- function(
     user.estimator <- NULL
   }
   estimateddata <- data.frame(id,time,y)
-  estimateddata <- cbind(estimateddata,mx)
+  if(is.null(engine)){
+    # if FE are manually created we only use mxreg (which is with the id and time column but not the FE)
+    estimateddata <- cbind(estimateddata,mxreg)
+  } else {
+    # if FE are not manually created, i.e. an engine is used, we use mx
+    estimateddata <- cbind(estimateddata,mx)
+  }
+
   out$estimateddata <- estimateddata
 
   #############################
@@ -440,7 +447,13 @@ isatpanel <- function(
 
   # Create a final data object
   indicators <- out$isatpanel.result$aux$mX
-  indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
+  if(is.null(engine)){
+    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),names(dummies))]
+  } else {
+    indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
+  }
+
+
   out$finaldata <- data.frame(estimateddata, indicators)
 
   try(

@@ -1,6 +1,7 @@
 ---
 title: "getspanel: Getting Started"
 output: rmarkdown::html_vignette
+  code_download: true
 
 vignette: >
   %\VignetteIndexEntry{getspanel: Getting Started}
