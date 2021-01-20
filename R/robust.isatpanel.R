@@ -4,12 +4,11 @@
 #' @param robust Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity?
 #' @param HAC Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used?
 #' @param type Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang
-#' @param cluster
+#' @param cluster 'group' or 'time' or FALSE
 #'
 #' @return
 #' @export
 #'
-#' @examples
 robust.isatpanel <- function(object,
                              robust = TRUE,
                              HAC = FALSE,
