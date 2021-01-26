@@ -160,13 +160,12 @@ isatpanel <- function(
 
   df <- data.frame(id,time)
 
-
   # Autoregressive Term
   if(ar>0){
     ar_df <- cbind(cbind(df,y),mxreg)
     ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x){
       y = x$y
-      gets::regressorsMean(y=y, mxreg = mxreg,ar = ar,return.as.zoo = FALSE)
+      gets::regressorsMean(y=y, mxreg = mxreg,ar = c(1:ar),return.as.zoo = FALSE)
     })
     ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)))
 
@@ -176,7 +175,11 @@ isatpanel <- function(
     Tsample <- Tsample-ar
 
     # Adjust the time and id vectors
-    df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x){x[!x$time == min(x$time),]})),row.names = NULL)
+    # The code below removes the minimum time period for each group as many times as the AR term sets out
+    for(a in 1:max(ar)){
+      df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x){x[!x$time == min(x$time),]})),row.names = NULL)
+    }
+
     time <- df$time
     id <- df$id
 
@@ -185,8 +188,6 @@ isatpanel <- function(
   }
 
   df_base <- df
-
-
 
   # Break Methods -----------------------------------------------------------
 
