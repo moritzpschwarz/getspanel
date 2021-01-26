@@ -21,7 +21,7 @@ plmFun(y, x, time, id, cluster, effect, model = "pooling", ...)
 
 \item{model}{model specification}
 
-\item{...}{}
+\item{...}{Further arguments passed to plm}
 }
 \value{
 

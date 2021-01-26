@@ -60,7 +60,14 @@ test_that("Standard Error Options using fixest",{
 test_that("Check unbalanced panel",{
   # Create an unbalanced panel (deleting first 20 years of Country 3)
   unbalanced_panel <- subset(pandata_simulated,country %in% c(1,2,4) | (country==3 & year > 1920))
-  expect_silect(result <- isatpanel(data = unbalanced_panel,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE))
+  expect_silent(result <- isatpanel(
+    data = unbalanced_panel,
+    formula = gdp ~ temp + I(temp ^ 2),
+    index = c("country", "year"),
+    fesis = TRUE,
+    ar = 1,
+    print.searchinfo = FALSE
+  ))
 })
 
 
@@ -76,11 +83,32 @@ test_that("Check unbalanced panel",{
 
 
 test_that("Simple Fixest Test",{
-  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual"))
+  expect_message(isatpanel(
+    y = pandata_simulated$gdp,
+    id = pandata_simulated$country,
+    time = pandata_simulated$year,
+    mxreg = pandata_simulated$temp,
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    t.pval = 0.01,
+    engine = "fixest",
+    cluster = "individual"
+  ))
 })
 
 test_that("Simple Default Test",{
-  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,cluster = "individual"))
+  expect_message(isatpanel(
+    y = pandata_simulated$gdp,
+    id = pandata_simulated$country,
+    time = pandata_simulated$year,
+    mxreg = pandata_simulated$temp,
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    t.pval = 0.01,
+    cluster = "none"
+  ))
 })
 
 
