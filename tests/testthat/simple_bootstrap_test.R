@@ -27,8 +27,8 @@ start.time <- Sys.time()
 is1 <- isat(y, mxreg=cbind(x1, x2), t.pval=0.05, sis=FALSE, iis=TRUE, max.block.size=2)
 is1
 
-is1 <- isat(y, mxreg=NULL, t.pval=0.05, sis=FALSE, iis=TRUE, max.block.size=2)
-is1
+#is1 <- isat(y, mxreg=NULL, t.pval=0.05, sis=FALSE, iis=TRUE, max.block.size=2)
+#is1
 
 outliertest(is1)
 end.time <- Sys.time()
@@ -54,15 +54,14 @@ test1 <- distorttest.boot(
   clean.sample = TRUE,
   scale.t.pval = 1,
   parametric = FALSE,
-  parallel = FALSE,
-  ncore = 2,
+  parallel = TRUE,
   max.block.size = 2,
   turbo = FALSE
 )
 test1
 
-hist(test1$coefdist.res$prop)
-abline(v=test1$prop.full, col="orange")
+#hist(test1$coefdist.res$prop)
+#abline(v=test1$prop.full, col="orange")
 
 outliertest(is1)
 
@@ -72,9 +71,3 @@ end.time <- Sys.time()
 time.diff <-  end.time - start.time
 print(paste("Boot Complete in", sep=""))
 print(time.diff)
-
-x <- is1
-clean.sample <- FALSE
-scale.t.pval <- 1
-nboot <- 50
-parallel <- TRUE
