@@ -2,15 +2,11 @@
 #### Simulation for the IS distortion tests: runs either under the alternative or under the null
 ################################################
 
-rm(list = ls())  #clear the workspace
-
 ###############################
-setwd("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/code")
+
 
 library(gets)
 
-source("distorttest_v5.R")
-source("bootstrap_fun_v3.R")
 
 #install.packages("metap")
 #install.packages("goftest")
@@ -67,20 +63,20 @@ if (bootstrap==FALSE){
       spec_list <- list(p_alpha = p_alpha_c, lambda = lambda_c, out_prop = out_prop_c, nreg = px, sample=sample_c, ar=ar_c, dist=dist_c)
     } else { #null simulation
       spec_list <- list(p_alpha = p_alpha_c, nreg = px, sample=sample_c, ar=ar_c, dist=dist_c)
-      
+
     }
-  
+
 } else { #bootstrap is true
- 
+
     if (alternative == TRUE){
       spec_list <- list(p_alpha = p_alpha_c, lambda = lambda_c, out_prop = out_prop_c, nreg = px, sample=sample_c, ar=ar_c, dist=dist_c, clean.sample = clean.sample_c, boot.pval.scale=boot.pval.scale_c)
     } else { #null simulation
       spec_list <- list(p_alpha = p_alpha_c, nreg = px, sample=sample_c, ar=ar_c,  dist=dist_c, clean.sample = clean.sample_c, boot.pval.scale=boot.pval.scale_c)
-      
+
     }
-   
-}  
-  
+
+}
+
 specs <- expand.grid(spec_list)
 specs$id <- seq(1:NROW(specs))
 
@@ -115,18 +111,18 @@ for (j in 1: spec_n){
   #j <- 1
   p_alpha <-   specs$p_alpha[j]
   ar <- specs$ar[j]
-  
+
   if (bootstrap){
-  
-    clean.sample <- specs$clean.sample[j]  
+
+    clean.sample <- specs$clean.sample[j]
     boot.pval.scale <- specs$boot.pval.scale[j]
   }
-  
+
   p <- specs$nreg[j]
   dist <- specs$dist[j]
-  
-  
-  
+
+
+
 if (alternative){
   out_lam <- specs$lambda[j]
   out_prop <- specs$out_prop[j]
@@ -140,12 +136,12 @@ if (alternative){
   loc_limit <-   floor(T*1)
 
   if (p > 0){
-    pcoef <- c(rep(0.5, p))  
+    pcoef <- c(rep(0.5, p))
   } else {
     pcoef <- NULL
   }
- 
-  
+
+
 is.dates.list <- list()
 isalt.dates.list <- list()
 
@@ -171,16 +167,16 @@ for (i in 1:reps){
   #i <- 1
   if (alternative){
     print(paste("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", reps, sep="") )
-    
+
   } else {
     print(paste("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", reps, sep="") )
-    
+
   }
 
-  
-  
+
+
 if (alternative){
-noutl <- floor(out_prop*T)  
+noutl <- floor(out_prop*T)
 out_loc <- rdunif(noutl, 0, loc_limit)
 } else {
   noutl <- 0
@@ -191,116 +187,116 @@ out_loc <- rdunif(noutl, 0, loc_limit)
 
   out_loc_s_T1 <- as.vector(rep(0,T+1))
   out_loc_s_T1[out_loc] <- 1
-  
+
   out_loc_s <- out_loc_s_T1[2:(T+1)]
-  
+
   if (dist=="norm"){
-    eps_T1 <-  rnorm((T+1), 0, 1)  
+    eps_T1 <-  rnorm((T+1), 0, 1)
   } else if (dist=="t3"){
-    eps_T1 <-  rt((T+1), df=3)  
+    eps_T1 <-  rt((T+1), df=3)
   } else if (dist=="cauchy"){
-    eps_T1 <-  rcauchy((T+1))  
+    eps_T1 <-  rcauchy((T+1))
   } else if (dist=="uniform"){
-    eps_T1 <-  runif((T+1))  
+    eps_T1 <-  runif((T+1))
   }else if (dist=="lognorm"){
-    eps_T1 <-  rlnorm((T+1), 0, 1)  
+    eps_T1 <-  rlnorm((T+1), 0, 1)
   }
 
-  
+
   eps <-  eps_T1[2:(T+1)]
-  
+
   y_x_T1 <- as.vector(rep(NA, T+1))
-  
+
   if ( p > 0){
-    
+
     if (p > 1){
-      mx_T1 <- matrix(rnorm((T+1)*p, 0, 1), ncol=p) 
+      mx_T1 <- matrix(rnorm((T+1)*p, 0, 1), ncol=p)
       mx <- mx_T1[2:(T+1),]
-      colnames(mx) <- paste("x", seq(1:p), sep="")  
+      colnames(mx) <- paste("x", seq(1:p), sep="")
     } else {
-      mx_T1 <- matrix(rnorm((T+1)*p, 0, 1), ncol=p) 
+      mx_T1 <- matrix(rnorm((T+1)*p, 0, 1), ncol=p)
       mx <- mx_T1[2:(T+1),]
-      #names(mx) <- paste("x", seq(1:p), sep="")  
+      #names(mx) <- paste("x", seq(1:p), sep="")
     }
 
-    
-   
-    
+
+
+
     if (ar !=0){
-      
+
       if (p > 1){
         y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
       } else {
-        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1] 
+        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
       }
-      
-      
+
+
       for (t in 2:((T+1))){
         if (p > 1){
-          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1] 
+          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
         } else {
-          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]  
+          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
         }
-           
+
       }
 
      # yx <- y_x_T1[2:T]
     } else {
      if (p > 1){
-       y_x <- mx%*%pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]  
+       y_x <- mx%*%pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
      } else {
-       y_x <- mx*pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1] 
+       y_x <- mx*pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
      }
-         
-    
-      
-    }
-    
 
-    
+
+
+    }
+
+
+
   } else {
     mx <- NULL
-    
+
     if (ar !=0){
-      
+
       if (p > 1){
-        y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]  
+        y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
       } else {
-        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]  
+        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
       }
-    
+
       for (t in 2:(T)){
         if (p > 1){
-          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1] 
+          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
         } else {
-          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1] 
+          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
         }
-        
+
       }
-      
-      
+
+
     } else {
       if (alternative){
-        y_x <- out_loc_s*out_lam +  eps  
+        y_x <- out_loc_s*out_lam +  eps
       } else {
         y_x <-  eps
       }
 
-      
+
     }
 
-    
+
   }
 
 
 
-  
+
 if (ar != 0){
     is1 <- isat(y_x_T1, mxreg=mx_T1, ar=1, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
-    
+
   } else {
     is1 <- isat(y_x, mxreg=mx, ar=NULL, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
-    
+
   }
 
 
@@ -335,12 +331,12 @@ coefdif.euclid <- sqrt(sum(dist1$coef.diff^2)) #euclidian distance of coefficien
 # xx <- rnorm(100000)
 # (1-ecdf(xx)(1.96))*2
 # #0.99
-# 
-# 
+#
+#
 # aycdf(c(0, .5, .7))
-# 
+#
 # prop.full <- outl1$proportion$estimate
-# 
+#
 # boot.p.prop <- 2*min(sum(dist1.boot$coefdist.res$prop > prop.full)/nboot,  sum(dist1.boot$coefdist.res$prop <= prop.full)/nboot) #check the p-values here.
 
 #######################
@@ -357,10 +353,10 @@ if (bootstrap){
   res$is.dist1.boot.L2.p[i] <- dist1.boot$boot.p.L2
   res$is.dist1.boot.L1.p[i] <- dist1.boot$boot.p.L1
   res$is.dist1.boot.dist.p[i] <- dist1.boot$boot.p.dist
-  
+
   res$is.prop.boot.p[i] <- dist1.boot$boot.p.prop
   res$is.prop.boot.test.p[i] <- dist1.boot$boot.p.prop.stat
-  
+
 }
 
 res$is.avg.dist.pct[i] <- coefdif.prop.abs.m
@@ -385,9 +381,9 @@ sum_rej_05_list <- list()
 sum_rej_01_list <- list()
 
 for (l in 1:spec_n){
-  
+
  # l <- 1
-res <- list.res[[l]]   
+res <- list.res[[l]]
 
 res.rej05 <- res[,2:NCOL(res)]
 res.rej05$rej <- NA
@@ -403,33 +399,33 @@ res.rej05$rej.prop.boot <- NA
 
 res.rej05$rej[res.rej05$is.dist1.p > 0.05] <- 999
 res.rej05$rej[res.rej05$is.dist1.p < 0.05] <- 1
-res.rej05$rej[res.rej05$rej > 1] <- 0  
+res.rej05$rej[res.rej05$rej > 1] <- 0
 
 res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p > 0.05] <- 999
 res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p < 0.05] <- 1
-res.rej05$rej.L2.boot[res.rej05$rej.L2.boot > 1] <- 0  
+res.rej05$rej.L2.boot[res.rej05$rej.L2.boot > 1] <- 0
 
 res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p > 0.05] <- 999
 res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p < 0.05] <- 1
-res.rej05$rej.L1.boot[res.rej05$rej.L1.boot > 1] <- 0  
+res.rej05$rej.L1.boot[res.rej05$rej.L1.boot > 1] <- 0
 
 res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p > 0.05] <- 999
 res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p < 0.05] <- 1
-res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0  
+res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0
 
 
 ####proportion test
 res.rej05$rej.prop.test[res.rej05$is.prop.test.p > 0.05] <- 999
 res.rej05$rej.prop.test[res.rej05$is.prop.test.p < 0.05] <- 1
-res.rej05$rej.prop.test[res.rej05$rej.prop.test > 1] <- 0  
+res.rej05$rej.prop.test[res.rej05$rej.prop.test > 1] <- 0
 
 res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p > 0.05] <- 999
 res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p < 0.05] <- 1
-res.rej05$rej.prop.test.boot[res.rej05$rej.prop.test.boot > 1] <- 0  
+res.rej05$rej.prop.test.boot[res.rej05$rej.prop.test.boot > 1] <- 0
 
 res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p > 0.05] <- 999
 res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p < 0.05] <- 1
-res.rej05$rej.prop.boot[res.rej05$rej.prop.boot > 1] <- 0  
+res.rej05$rej.prop.boot[res.rej05$rej.prop.boot > 1] <- 0
 
 
 
@@ -456,32 +452,32 @@ res.rej01$rej.prop.boot <- NA
 
 res.rej01$rej[res.rej01$is.dist1.p > 0.01] <- 999
 res.rej01$rej[res.rej01$is.dist1.p < 0.01] <- 1
-res.rej01$rej[res.rej01$rej > 1] <- 0  
+res.rej01$rej[res.rej01$rej > 1] <- 0
 
 res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p > 0.01] <- 999
 res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p < 0.01] <- 1
-res.rej01$rej.L2.boot[res.rej01$rej.L2.boot > 1] <- 0  
+res.rej01$rej.L2.boot[res.rej01$rej.L2.boot > 1] <- 0
 
 res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p > 0.01] <- 999
 res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p < 0.01] <- 1
-res.rej01$rej.L1.boot[res.rej01$rej.L1.boot > 1] <- 0  
+res.rej01$rej.L1.boot[res.rej01$rej.L1.boot > 1] <- 0
 
 res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p > 0.01] <- 999
 res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p < 0.01] <- 1
-res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0 
+res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0
 
 ###proportion test
 res.rej01$rej.prop.test[res.rej01$is.prop.test.p > 0.01] <- 999
 res.rej01$rej.prop.test[res.rej01$is.prop.test.p < 0.01] <- 1
-res.rej01$rej.prop.test[res.rej01$rej.prop.test > 1] <- 0  
+res.rej01$rej.prop.test[res.rej01$rej.prop.test > 1] <- 0
 
 res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p > 0.01] <- 999
 res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p < 0.01] <- 1
-res.rej01$rej.prop.test.boot[res.rej01$rej.prop.test.boot > 1] <- 0  
+res.rej01$rej.prop.test.boot[res.rej01$rej.prop.test.boot > 1] <- 0
 
 res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p > 0.01] <- 999
 res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p < 0.01] <- 1
-res.rej01$rej.prop.boot[res.rej01$rej.prop.boot > 1] <- 0 
+res.rej01$rej.prop.boot[res.rej01$rej.prop.boot > 1] <- 0
 
 
 
@@ -515,10 +511,10 @@ sum_tab
 if (alternative){
   write.csv(sum_tab, "./simulations/alt_v1_boot_wprop.csv", row.names = FALSE)
 #  write.csv(uncond, "./simulations/uncond_alt_v2.csv", row.names = FALSE)
-  
+
 } else {
   write.csv(sum_tab, "./simulations/null_v1_boot_wprop.csv", row.names = FALSE)
-#  write.csv(uncond, "./simulations/uncond_null_v2.csv", row.names = FALSE)  
+#  write.csv(uncond, "./simulations/uncond_null_v2.csv", row.names = FALSE)
 }
 
 
