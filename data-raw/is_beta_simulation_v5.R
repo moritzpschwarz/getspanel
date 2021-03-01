@@ -183,13 +183,16 @@ list.reg <- list()
 
 start.time <- Sys.time()
 
-save(specs, file = here("data-raw", "simulations", "spec_list.RData"))
+#save(specs, file = here("data-raw", "simulations", "spec_list.RData"))
 
-library(doMC)
-registerDoMC(detectCores()-1)  # coefsamples if enough cores available - otherwise total-1
-foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
-  #for (j in 1:spec_n){
+# library(doMC)
+# registerDoMC(detectCores()-1)  # coefsamples if enough cores available - otherwise total-1
+# foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
+for (j in 500:spec_n){
   #j <- 1
+  print(j)
+  if(file.exists(here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+
   p_alpha <-   specs$p_alpha[j]
   ar <- specs$ar[j]
 
@@ -253,8 +256,12 @@ foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
   }
 
 
-  for (i in 1:specs$reps[j]){
+  library(doMC)
+  registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
+  foreach(i = 1:specs$reps[j], .packages = loadedNamespaces()) %dopar% {
+  #for (i in 1:specs$reps[j]){
     #i <- 1
+
     # if (specs$hypothesis[j]=="alternative"){
     #   print(paste("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
     #
@@ -400,10 +407,10 @@ foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
 
       dist1.boot <-  distorttest.boot(
         x = is1,
-        nboot = nboot,
-        clean.sample = clean.sample,
+        nboot = specs$nboot[j],
+        clean.sample = specs$clean.sample[j],
         parametric = parametric,
-        scale.t.pval = boot.pval.scale,
+        scale.t.pval = specs$boot.pval.scale[j],
         parallel = FALSE,
         #parallel = boot.parallel,
         #ncore = cores,
