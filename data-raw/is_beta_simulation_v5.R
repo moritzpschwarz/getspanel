@@ -19,7 +19,7 @@ library(here)
 # library(goftest)
 # library(gets)
 # library(car)
-# library(purrr)
+library(purrr)
 # library(KSgeneral)
 
 #install.packages("KSgeneral")
@@ -34,9 +34,9 @@ library(here)
 #nboot <- 1000 #number of bootstrap replications
 clean.sample_c <- c(FALSE, TRUE) #bootstrap on clean sample, TRUE or FALSE
 boot.pval.scale_c <- c(1, 5) #scale the p-value
-boot.parallel <- TRUE #parallelize bootstrap (significant speed gains!)
-cores <- parallel::detectCores()-1 #number of cores for bootstrap
-#cores <- 7 #number of cores for bootstrap
+# boot.parallel <- TRUE #parallelize bootstrap (significant speed gains!)
+# cores <- parallel::detectCores()-1 #number of cores for bootstrap
+# cores <- 7 #number of cores for bootstrap
 parametric <- FALSE #nonparametric or parametric bootstrap
 #############
 
@@ -169,12 +169,20 @@ specs <- specs[!(specs$id %in% spec.drop),]
 
 
 #################### All the different specifications to be looped over, each with "reps" number of replications.
-spec_n <- NROW(specs)
-spec_n
+
 
 specs$id.seq <- seq(1:NROW(specs))
 # ###### Total runs:
 # spec_n*reps
+
+## DELETE THIS!!!!
+# specs <- specs[specs$id==740,]
+# specs$reps <- 1
+# specs$nboot <- 10
+###
+
+spec_n <- NROW(specs)
+spec_n
 
 ######################################
 
@@ -188,7 +196,7 @@ start.time <- Sys.time()
 # library(doMC)
 # registerDoMC(detectCores()-1)  # coefsamples if enough cores available - otherwise total-1
 # foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
-for (j in 500:spec_n){
+for (j in 1:spec_n){
   #j <- 1
   print(j)
   if(file.exists(here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
@@ -256,10 +264,10 @@ for (j in 500:spec_n){
   }
 
 
-  library(doMC)
-  registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
-  foreach(i = 1:specs$reps[j], .packages = loadedNamespaces()) %dopar% {
-  #for (i in 1:specs$reps[j]){
+  #library(doMC)
+  #registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
+  #foreach(i = 1:specs$reps[j], .packages = loadedNamespaces()) %dopar% {
+  for (i in 1:specs$reps[j]){
     #i <- 1
 
     # if (specs$hypothesis[j]=="alternative"){
@@ -411,9 +419,9 @@ for (j in 500:spec_n){
         clean.sample = specs$clean.sample[j],
         parametric = parametric,
         scale.t.pval = specs$boot.pval.scale[j],
-        parallel = FALSE,
-        #parallel = boot.parallel,
-        #ncore = cores,
+        #parallel = FALSE,
+        parallel = TRUE,
+        ncore = parallel::detectCores()-1,
         max.block.size = max.block.size
       )
 
