@@ -9,6 +9,8 @@ sum_rej_01_list <- list()
 load(here("data-raw","simulations","spec_list.RData"))
 spec_n <- NROW(specs)
 
+missing <- 0
+
 for (l in 1:spec_n){
 
   # l <- 1
@@ -17,6 +19,7 @@ for (l in 1:spec_n){
     load(here("data-raw","simulations",paste0(paste0(specs[l,],collapse = "_"),".RData")))
   } else{
     print(paste0("File Specification ",l," skipped - not found."))
+    missing <- missing + 1
     next
   }
 
@@ -126,6 +129,8 @@ for (l in 1:spec_n){
 
 
 }
+
+print(paste0("Number of files still missing: ",missing))
 
 
 sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
