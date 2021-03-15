@@ -19,7 +19,7 @@ library(here)
 # library(goftest)
 # library(gets)
 # library(car)
-# library(purrr)
+ library(purrr)
 # library(KSgeneral)
 
 #install.packages("KSgeneral")
