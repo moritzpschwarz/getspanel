@@ -7,11 +7,7 @@ rm(list = ls())  #clear the workspace
 select <- dplyr::select
 
 
-
-global.climate <- read.csv ("./data/estimation data/globalclimatedataset_merged_revised.csv")
-
-
-iso <- as.character(global.climate$iso)
+global.climate <- read_csv(here("data-raw/projections/globalclimatedataset_merged_revised.csv"))
 
 ####Variables
 temp <- global.climate$UDel_mean
