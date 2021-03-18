@@ -10,6 +10,35 @@
 #' @param ... Further arguments to be passed to ??
 #'
 #' @return
+#' @examples
+#' #' # A quick example with 10 replications
+#' data(Nile)
+#' Nile[10] <- Nile[10]+1000 # to ensure there is an indicator retained
+#' nile <- isat(Nile, sis=FALSE, iis=TRUE, plot=TRUE, t.pval=0.005)
+#'
+#' distorttest.boot(nile, nboot = 10)
+#'
+#' # Another example with co-variates
+#' dat <- hpdata[,c("GD", "GNPQ", "FSDJ")]
+#' Y <- ts(dat$GD,start = 1959, frequency = 4)
+#' mxreg <- ts(dat[,c("GNPQ","FSDJ")],start = 1959, frequency = 4)
+#' m1 <- isat(y = Y, mc = TRUE, sis = FALSE, iis = TRUE)
+#' m2 <- isat(y = Y, mc = TRUE, sis = FALSE, iis = TRUE, ar = 1)
+#' m3 <- isat(y = Y, mxreg = mxreg, mc = TRUE, sis = FALSE, iis = TRUE)
+#' m4 <- isat(y = Y, mxreg = mxreg, mc = TRUE, sis = FALSE, iis = TRUE, ar = 1)
+#'
+#' distorttest(m1)
+#' distorttest(m2)
+#' distorttest(m3)
+#' distorttest(m4)
+#'
+#' # bootstrap
+#' db1 <- distorttest.boot(m1, nboot = 10)
+#' db2 <- distorttest.boot(m2, nboot = 10)
+#' db3 <- distorttest.boot(m3, nboot = 10)
+#' db4 <- distorttest.boot(m4, nboot = 10)
+#'
+#' db4.clean <- distorttest.boot(m4, nboot = 10, clean.sample = TRUE)
 #' @export
 #'
 distorttest.boot <- function(
@@ -132,7 +161,7 @@ distorttest.boot <- function(
   coefdist.res <- data.frame(matrix(NA, nrow=nboot, ncol=1))
   names(coefdist.res) <- "boot"
   coefdist.res$boot <- seq(1:nboot)
-  if (NCOL(names(dist.full$coef.diff)) > 1){
+  if (length(names(dist.full$coef.diff)) > 1){
     coefdist.res$L2 <- apply(coefdist.sample[,names(dist.full$coef.diff)], 1, function(x)  sqrt(sum(x^2)))
     coefdist.res$L1 <- apply(coefdist.sample[,names(dist.full$coef.diff)], 1, function(x)  sum(abs(x)))
   } else {
@@ -212,6 +241,8 @@ distorttest.boot <- function(
 
 
   out$dist.full <- dist.full
+
+  class(out) <- "distorttest.boot"
 
   return(out)
 
