@@ -9,94 +9,98 @@ rm(list = ls())
 here <- here::here
 select <- dplyr::select
 
-execute_isat <- TRUE
+execute_isat <- FALSE
 
 
 dat <- vroom(file = here("data-raw/projections/damage_curve_country_dataset_timetrends_updated02-19.csv"))
 
 
-# # Estimate M1 -------------------------------------------------------------
-#
-# dat %>%
-#   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
-#   select(-iso,-year) %>%
-#   lm(diff.ln_gdp_cap~.-1,data = .) -> m1
-#
-# dat %>%
-#   select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-#   select(-iso,-year) %>%
-#   lm(diff.ln_gdp_cap~.-1,data = .) -> m1_L1
-#
-#
-# # Process M1 --------------------------------------------------------------
-#
-#
-# m1 %>%
-#   tidy %>%
-#   filter(is.na(estimate)) %>%
-#   pull(term) -> m1_drop
-#
-# m1_L1 %>%
-#   tidy %>%
-#   filter(is.na(estimate)) %>%
-#   pull(term) -> m1_L1_drop
-#
-#
-#
-# # Estimate M2 -------------------------------------------------------------
-#
-# dat %>%
-#   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
-#   select(-iso,-year,-all_of(m1_drop)) %>%
-#   drop_na -> m2_data
-# lm(diff.ln_gdp_cap~.-1,data = m2_data) -> m2
-#
-#
-# dat %>%
-#   select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-#   select(-iso,-year,-all_of(m1_L1_drop)) %>%
-#   drop_na -> m2_L1_data
-# lm(diff.ln_gdp_cap~.-1,data = m2_L1_data) -> m2_L1
-#
-#
-#
-#
-# # Isat --------------------------------------------------------------------
-#
-# if(execute_isat){
-#   m2.isat <- isat(
-#     y = m2_data %>% pull(diff.ln_gdp_cap),
-#     mxreg = m2_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
-#     mc = FALSE,
-#     iis = TRUE,
-#     t.pval = 0.01,
-#     sis = FALSE,
-#     max.block.size = 2,
-#     parallel.options = detectCores()-1,
-#     print.searchinfo = TRUE
-#   )
-#
-#   save(m2.isat, file = here("data-raw","projections","m2.isat.RData"))
-#
-#
-#
-#   m2.isat_L1 <- isat(
-#     y = m2_L1_data %>% pull(diff.ln_gdp_cap),
-#     mxreg = m2_L1_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
-#     mc = FALSE,
-#     iis = TRUE,
-#     t.pval = 0.01,
-#     sis = FALSE,
-#     max.block.size = 2,
-#     parallel.options = detectCores()-1,
-#     print.searchinfo = TRUE
-#   )
-#   save(m2.isat_L1, file = here("data-raw","projections","m2.isat_L1.RData"))
-#
-# } else {
-#   load(file = here("data-raw","projections","m2.isat.RData"))
-#   load(file = here("data-raw","projections","m2.isat_L1.RData"))
-# }
+# Estimate M1 -------------------------------------------------------------
+
+dat %>%
+  select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
+  select(-iso,-year) %>%
+  lm(diff.ln_gdp_cap~.-1,data = .) -> m1
+
+dat %>%
+  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
+  select(-iso,-year) %>%
+  lm(diff.ln_gdp_cap~.-1,data = .) -> m1_L1
+
+
+# Process M1 --------------------------------------------------------------
+
+
+m1 %>%
+  tidy %>%
+  filter(is.na(estimate)) %>%
+  pull(term) -> m1_drop
+
+m1_L1 %>%
+  tidy %>%
+  filter(is.na(estimate)) %>%
+  pull(term) -> m1_L1_drop
+
+
+
+# Estimate M2 -------------------------------------------------------------
+
+dat %>%
+  select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
+  select(-iso,-year,-all_of(m1_drop)) %>%
+  drop_na -> m2_data
+lm(diff.ln_gdp_cap~.-1,data = m2_data) -> m2
+
+
+dat %>%
+  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
+  select(-iso,-year,-all_of(m1_L1_drop)) %>%
+  drop_na -> m2_L1_data
+lm(diff.ln_gdp_cap~.-1,data = m2_L1_data) -> m2_L1
+
+
+# save m2 ---------------------------------------------------------------
+
+#save(m2, file = here("data-raw/projections/m2.RData"))
+#save(m2_L1, file = here("data-raw/projections/m2_L1.RData"))
+
+
+# Isat --------------------------------------------------------------------
+
+if(execute_isat){
+  m2.isat <- isat(
+    y = m2_data %>% pull(diff.ln_gdp_cap),
+    mxreg = m2_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
+    mc = FALSE,
+    iis = TRUE,
+    t.pval = 0.01,
+    sis = FALSE,
+    #max.block.size = 2,
+    parallel.options = detectCores()-1,
+    print.searchinfo = TRUE
+  )
+
+  save(m2.isat, file = here("data-raw","projections","m2.isat_block30.RData"))
+
+
+
+  m2.isat_L1 <- isat(
+    y = m2_L1_data %>% pull(diff.ln_gdp_cap),
+    mxreg = m2_L1_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
+    mc = FALSE,
+    iis = TRUE,
+    t.pval = 0.01,
+    sis = FALSE,
+    #max.block.size = 2,
+    parallel.options = detectCores()-1,
+    print.searchinfo = TRUE
+  )
+  save(m2.isat_L1, file = here("data-raw","projections","m2.isat_L1.RData"))
+
+} else {
+  load(file = here("data-raw","projections","m2.isat_block30.RData"))
+  load(file = here("data-raw","projections","m2.isat_L1_block30.RData"))
+}
 
 
 # Adaptation --------------------------------------------------------------
@@ -150,11 +154,16 @@ dat %>%
 lm(diff.ln_gdp_cap~.-1,data = am2_L1_data) -> am2_L1
 
 
+# save am2 ---------------------------------------------------------------
+
+#save(am2, file = here("data-raw/projections/am2.RData"))
+#save(am2_L1, file = here("data-raw/projections/am2_L1.RData"))
+
 
 
 # Isat --------------------------------------------------------------------
 
-#if(execute_isat){
+if(execute_isat){
   am2.isat <- isat(
     y = am2_data %>% pull(diff.ln_gdp_cap),
     mxreg = am2_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
@@ -184,8 +193,8 @@ lm(diff.ln_gdp_cap~.-1,data = am2_L1_data) -> am2_L1
   )
   save(am2.isat_L1, file = here("data-raw","projections","am2.isat_L1.RData"))
 
-# } else {
-#   load(file = here("data-raw","projections","am2.isat.RData"))
-#   load(file = here("data-raw","projections","am2.isat_L1.RData"))
-# }
+} else {
+  load(file = here("data-raw","projections","am2.isat.RData"))
+  load(file = here("data-raw","projections","am2.isat_L1.RData"))
+}
 
