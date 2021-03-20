@@ -196,10 +196,34 @@ start.time <- Sys.time()
 # library(doMC)
 # registerDoMC(detectCores()-1)  # coefsamples if enough cores available - otherwise total-1
 # foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
-for (j in 1:spec_n){
+
+#for (j in 1:spec_n){
+
+spec_order <- 1:spec_n
+spec_order <- spec_order[!spec_order < 401]
+spec_order <- spec_order[order(specs[spec_order,"sample"])]
+
+new_order <- specs[spec_order,c("id.seq","sample","lambda")]
+new_order1 <- new_order[new_order$sample != 150,]
+new_order2 <- new_order1[new_order1$lambda %in% c(2,4,6,NA),]
+
+new_order3 <- new_order[new_order$sample == 150,]
+new_order4 <- new_order[new_order$lambda %in% 3 & new_order$sample!=150,]
+
+new_order_final <- rbind(rbind(new_order2, new_order3),new_order4)
+
+for (j in new_order_final$id.seq){
+
   #j <- 1
   print(j)
   if(file.exists(here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+  if(file.exists(here("data-raw", "simulations",paste0("Running_",j,".txt")))){
+    next
+    } else {
+    file.create(here("data-raw", "simulations",paste0("Running_",j,".txt")))
+  }
+
+
 
   p_alpha <-   specs$p_alpha[j]
   ar <- specs$ar[j]
@@ -269,6 +293,7 @@ for (j in 1:spec_n){
   #foreach(i = 1:specs$reps[j], .packages = loadedNamespaces()) %dopar% {
   for (i in 1:specs$reps[j]){
     #i <- 1
+    print(i)
 
     # if (specs$hypothesis[j]=="alternative"){
     #   print(paste("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
@@ -485,166 +510,166 @@ for (j in 1:spec_n){
   list.res[[j]] <- res
 
   save(res, file = here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))
-
+  unlink(here("data-raw", "simulations",paste0("Running_",j,".txt")))
 } #j loop  closed
 
 
-
-save(list.res, file = here("data-raw",paste0("outlier_sim_loopresult_full_",Sys.Date(),".RData")))
-
-
-
-
-########### Analyse Simulation: compare p-values to 0.01 and 0.05 cut-offs
-
-sum_list <- list()
-sum_rej_05_list <- list()
-sum_rej_01_list <- list()
-
-for (l in 1:spec_n){
-
-  # l <- 1
-  res <- list.res[[l]]
-
-  res.rej05 <- res[,2:NCOL(res)]
-  res.rej05$rej <- NA
-  res.rej05$rej.L2.boot <- NA
-  res.rej05$rej.L1.boot <- NA
-  res.rej05$rej.dist.boot <- NA
-
-  res.rej05$rej.prop.test <- NA
-  res.rej05$rej.prop.test.boot <- NA
-  res.rej05$rej.prop.boot <- NA
-
-
-
-  res.rej05$rej[res.rej05$is.dist1.p > 0.05] <- 999
-  res.rej05$rej[res.rej05$is.dist1.p < 0.05] <- 1
-  res.rej05$rej[res.rej05$rej > 1] <- 0
-
-  res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p > 0.05] <- 999
-  res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p < 0.05] <- 1
-  res.rej05$rej.L2.boot[res.rej05$rej.L2.boot > 1] <- 0
-
-  res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p > 0.05] <- 999
-  res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p < 0.05] <- 1
-  res.rej05$rej.L1.boot[res.rej05$rej.L1.boot > 1] <- 0
-
-  res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p > 0.05] <- 999
-  res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p < 0.05] <- 1
-  res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0
-
-
-  ####proportion test
-  res.rej05$rej.prop.test[res.rej05$is.prop.test.p > 0.05] <- 999
-  res.rej05$rej.prop.test[res.rej05$is.prop.test.p < 0.05] <- 1
-  res.rej05$rej.prop.test[res.rej05$rej.prop.test > 1] <- 0
-
-  res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p > 0.05] <- 999
-  res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p < 0.05] <- 1
-  res.rej05$rej.prop.test.boot[res.rej05$rej.prop.test.boot > 1] <- 0
-
-  res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p > 0.05] <- 999
-  res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p < 0.05] <- 1
-  res.rej05$rej.prop.boot[res.rej05$rej.prop.boot > 1] <- 0
-
-
-
-
-
-  res.rej05$id <- res$id
-  res.rej05$id.seq <- res$id.seq
-
-
-  sum_rej_05_list[[l]] <- colMeans(res.rej05, na.rm = TRUE)
-
-
-  res.rej01 <- res[,2:NCOL(res)]
-  res.rej01$rej <- NA
-  res.rej01$rej.L2.boot <- NA
-  res.rej01$rej.L1.boot <- NA
-  res.rej01$rej.dist.boot <- NA
-
-  res.rej01$rej.prop.test <- NA
-  res.rej01$rej.prop.test.boot <- NA
-  res.rej01$rej.prop.boot <- NA
-
-
-
-  res.rej01$rej[res.rej01$is.dist1.p > 0.01] <- 999
-  res.rej01$rej[res.rej01$is.dist1.p < 0.01] <- 1
-  res.rej01$rej[res.rej01$rej > 1] <- 0
-
-  res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p > 0.01] <- 999
-  res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p < 0.01] <- 1
-  res.rej01$rej.L2.boot[res.rej01$rej.L2.boot > 1] <- 0
-
-  res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p > 0.01] <- 999
-  res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p < 0.01] <- 1
-  res.rej01$rej.L1.boot[res.rej01$rej.L1.boot > 1] <- 0
-
-  res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p > 0.01] <- 999
-  res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p < 0.01] <- 1
-  res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0
-
-  ###proportion test
-  res.rej01$rej.prop.test[res.rej01$is.prop.test.p > 0.01] <- 999
-  res.rej01$rej.prop.test[res.rej01$is.prop.test.p < 0.01] <- 1
-  res.rej01$rej.prop.test[res.rej01$rej.prop.test > 1] <- 0
-
-  res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p > 0.01] <- 999
-  res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p < 0.01] <- 1
-  res.rej01$rej.prop.test.boot[res.rej01$rej.prop.test.boot > 1] <- 0
-
-  res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p > 0.01] <- 999
-  res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p < 0.01] <- 1
-  res.rej01$rej.prop.boot[res.rej01$rej.prop.boot > 1] <- 0
-
-
-
-
-
-  res.rej01$id <- res$id
-  res.rej01$id.seq <- res$id.seq
-
-  sum_rej_01_list[[l]] <- colMeans(res.rej01, na.rm = TRUE)
-
-
-}
-
-
-sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
-names(sum.05) <- names(sum_rej_05_list[[1]])
-sum.05$test.lev <- 0.05
-
-sum.01 <- do.call(rbind.data.frame, sum_rej_01_list)
-names(sum.01) <- names(sum_rej_01_list[[1]])
-sum.01$test.lev <- 0.01
-
-###combine
-sum.01.m <- merge(sum.01, specs, by="id")
-sum.05.m <- merge(sum.05, specs, by="id")
-
-sum_tab <- rbind(sum.01.m, sum.05.m)
-
-sum_tab
-
-if (alternative){
-  write.csv(sum_tab, here("data-raw/simulations/alt_v1_boot_wprop.csv"), row.names = FALSE)
-  #write.csv(sum_tab, "./simulations/alt_v1_boot_wprop.csv", row.names = FALSE)
-  #  write.csv(uncond, "./simulations/uncond_alt_v2.csv", row.names = FALSE)
-
-} else {
-  write.csv(sum_tab, here("data-raw/simulations/null_v1_boot_wprop.csv"), row.names = FALSE)
-  #write.csv(sum_tab, "./simulations/null_v1_boot_wprop.csv", row.names = FALSE)
-  #  write.csv(uncond, "./simulations/uncond_null_v2.csv", row.names = FALSE)
-}
-
-
-end.time <- Sys.time()
-time.taken <- end.time - start.time
-time.taken
-
-print(paste("Simulation Complete in:"))
-print(time.taken)
-
+#
+# save(list.res, file = here("data-raw",paste0("outlier_sim_loopresult_full_",Sys.Date(),".RData")))
+#
+#
+#
+#
+# ########### Analyse Simulation: compare p-values to 0.01 and 0.05 cut-offs
+#
+# sum_list <- list()
+# sum_rej_05_list <- list()
+# sum_rej_01_list <- list()
+#
+# for (l in 1:spec_n){
+#
+#   # l <- 1
+#   res <- list.res[[l]]
+#
+#   res.rej05 <- res[,2:NCOL(res)]
+#   res.rej05$rej <- NA
+#   res.rej05$rej.L2.boot <- NA
+#   res.rej05$rej.L1.boot <- NA
+#   res.rej05$rej.dist.boot <- NA
+#
+#   res.rej05$rej.prop.test <- NA
+#   res.rej05$rej.prop.test.boot <- NA
+#   res.rej05$rej.prop.boot <- NA
+#
+#
+#
+#   res.rej05$rej[res.rej05$is.dist1.p > 0.05] <- 999
+#   res.rej05$rej[res.rej05$is.dist1.p < 0.05] <- 1
+#   res.rej05$rej[res.rej05$rej > 1] <- 0
+#
+#   res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p > 0.05] <- 999
+#   res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p < 0.05] <- 1
+#   res.rej05$rej.L2.boot[res.rej05$rej.L2.boot > 1] <- 0
+#
+#   res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p > 0.05] <- 999
+#   res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p < 0.05] <- 1
+#   res.rej05$rej.L1.boot[res.rej05$rej.L1.boot > 1] <- 0
+#
+#   res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p > 0.05] <- 999
+#   res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p < 0.05] <- 1
+#   res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0
+#
+#
+#   ####proportion test
+#   res.rej05$rej.prop.test[res.rej05$is.prop.test.p > 0.05] <- 999
+#   res.rej05$rej.prop.test[res.rej05$is.prop.test.p < 0.05] <- 1
+#   res.rej05$rej.prop.test[res.rej05$rej.prop.test > 1] <- 0
+#
+#   res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p > 0.05] <- 999
+#   res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p < 0.05] <- 1
+#   res.rej05$rej.prop.test.boot[res.rej05$rej.prop.test.boot > 1] <- 0
+#
+#   res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p > 0.05] <- 999
+#   res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p < 0.05] <- 1
+#   res.rej05$rej.prop.boot[res.rej05$rej.prop.boot > 1] <- 0
+#
+#
+#
+#
+#
+#   res.rej05$id <- res$id
+#   res.rej05$id.seq <- res$id.seq
+#
+#
+#   sum_rej_05_list[[l]] <- colMeans(res.rej05, na.rm = TRUE)
+#
+#
+#   res.rej01 <- res[,2:NCOL(res)]
+#   res.rej01$rej <- NA
+#   res.rej01$rej.L2.boot <- NA
+#   res.rej01$rej.L1.boot <- NA
+#   res.rej01$rej.dist.boot <- NA
+#
+#   res.rej01$rej.prop.test <- NA
+#   res.rej01$rej.prop.test.boot <- NA
+#   res.rej01$rej.prop.boot <- NA
+#
+#
+#
+#   res.rej01$rej[res.rej01$is.dist1.p > 0.01] <- 999
+#   res.rej01$rej[res.rej01$is.dist1.p < 0.01] <- 1
+#   res.rej01$rej[res.rej01$rej > 1] <- 0
+#
+#   res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p > 0.01] <- 999
+#   res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p < 0.01] <- 1
+#   res.rej01$rej.L2.boot[res.rej01$rej.L2.boot > 1] <- 0
+#
+#   res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p > 0.01] <- 999
+#   res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p < 0.01] <- 1
+#   res.rej01$rej.L1.boot[res.rej01$rej.L1.boot > 1] <- 0
+#
+#   res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p > 0.01] <- 999
+#   res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p < 0.01] <- 1
+#   res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0
+#
+#   ###proportion test
+#   res.rej01$rej.prop.test[res.rej01$is.prop.test.p > 0.01] <- 999
+#   res.rej01$rej.prop.test[res.rej01$is.prop.test.p < 0.01] <- 1
+#   res.rej01$rej.prop.test[res.rej01$rej.prop.test > 1] <- 0
+#
+#   res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p > 0.01] <- 999
+#   res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p < 0.01] <- 1
+#   res.rej01$rej.prop.test.boot[res.rej01$rej.prop.test.boot > 1] <- 0
+#
+#   res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p > 0.01] <- 999
+#   res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p < 0.01] <- 1
+#   res.rej01$rej.prop.boot[res.rej01$rej.prop.boot > 1] <- 0
+#
+#
+#
+#
+#
+#   res.rej01$id <- res$id
+#   res.rej01$id.seq <- res$id.seq
+#
+#   sum_rej_01_list[[l]] <- colMeans(res.rej01, na.rm = TRUE)
+#
+#
+# }
+#
+#
+# sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
+# names(sum.05) <- names(sum_rej_05_list[[1]])
+# sum.05$test.lev <- 0.05
+#
+# sum.01 <- do.call(rbind.data.frame, sum_rej_01_list)
+# names(sum.01) <- names(sum_rej_01_list[[1]])
+# sum.01$test.lev <- 0.01
+#
+# ###combine
+# sum.01.m <- merge(sum.01, specs, by="id")
+# sum.05.m <- merge(sum.05, specs, by="id")
+#
+# sum_tab <- rbind(sum.01.m, sum.05.m)
+#
+# sum_tab
+#
+# if (alternative){
+#   write.csv(sum_tab, here("data-raw/simulations/alt_v1_boot_wprop.csv"), row.names = FALSE)
+#   #write.csv(sum_tab, "./simulations/alt_v1_boot_wprop.csv", row.names = FALSE)
+#   #  write.csv(uncond, "./simulations/uncond_alt_v2.csv", row.names = FALSE)
+#
+# } else {
+#   write.csv(sum_tab, here("data-raw/simulations/null_v1_boot_wprop.csv"), row.names = FALSE)
+#   #write.csv(sum_tab, "./simulations/null_v1_boot_wprop.csv", row.names = FALSE)
+#   #  write.csv(uncond, "./simulations/uncond_null_v2.csv", row.names = FALSE)
+# }
+#
+#
+# end.time <- Sys.time()
+# time.taken <- end.time - start.time
+# time.taken
+#
+# print(paste("Simulation Complete in:"))
+# print(time.taken)
+#
