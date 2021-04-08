@@ -2,6 +2,9 @@
 .Rhistory
 .Rapp.history
 
+# projection files (due to their size)
+data-raw/projections/projfiles/*
+
 # Session Data files
 .RData
 
@@ -38,3 +41,4 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 inst/doc
+.Rproj.user
