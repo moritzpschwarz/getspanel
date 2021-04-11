@@ -88,8 +88,17 @@ project_standard <- function(model,
     unique -> climate_vars_sq
 
 
+
   ## Load climate data
   climate %>%
+    # add the lags if needed
+    {if(any(grepl("^l[0-9]\\.",climate_vars))){
+      group_by(.,final_temp, iso) %>%
+        mutate(across(.cols = all_of(grep("^l[0-9]\\.",climate_vars, invert = TRUE, value = TRUE)),
+                      .fns = lag,
+                      .names = "l1.{.col}")) %>%
+        ungroup
+    }else{.}} %>%
     select(model,rcp,ensemble,final_temp,iso,year,all_of(climate_vars_lin),
            all_of(paste0(climate_vars_sq,"_2"))) %>%
     drop_na -> climate_subset
@@ -187,21 +196,21 @@ project_standard <- function(model,
 climate_path <- here("data-raw","projections","corrected_anomaly_climatedata.csv")
 climate <- vroom(climate_path)
 
-load(here("data-raw/projections/m2.RData"))
-project_standard(m2,climate, coefsamples = 100, modelname = "m2")
-rm(m2)
+# load(here("data-raw/projections/m2.RData"))
+# project_standard(m2,climate, coefsamples = 100, modelname = "m2")
+# rm(m2)
 
-# load(here("data-raw/projections/m2_L1.RData"))
-# project_standard(m2_L1,climate, coefsamples = 100, modelname = "m2_L1")
-# rm(m2_L1)
+load(here("data-raw/projections/m2_L1.RData"))
+project_standard(model = m2_L1,climate, coefsamples = 100, modelname = "m2_L1")
+rm(m2_L1)
 
-load(here("data-raw/projections/m2.isat.RData"))
-project_standard(m2.isat,climate, coefsamples = 100, modelname = "m2.isat")
-rm(m2.isat)
+# load(here("data-raw/projections/m2.isat.RData"))
+# project_standard(m2.isat,climate, coefsamples = 100, modelname = "m2.isat")
+# rm(m2.isat)
 
-# load(here("data-raw/projections/m2_L1.isat.RData"))
-# project_standard(m2.isat_L1,climate, coefsamples = 100, modelname = "m2_L1.isat")
-# rm(m2.isat_L1)
+load(here("data-raw/projections/m2.isat_L1.RData"))
+project_standard(m2.isat_L1,climate, coefsamples = 100, modelname = "m2_L1.isat")
+rm(m2.isat_L1)
 
 
 
@@ -216,8 +225,11 @@ select <- dplyr::select
 
 socio <- c("Mueller")
 model<- c(
-  "m2",
-  "m2.isat"
+  "m2_[0-9]",
+  "m2.isat",
+  "m2_L1_",
+  "m2_L1.isat",
+  NULL
 )
 
 
@@ -232,30 +244,31 @@ for(i in socio){
 
     # Carry out the merging of the files
     indv_files <- list.files(here("data-raw","projections","projfiles"),pattern = paste(i,j,sep="_"),full.names = TRUE)
-    indv_files <- indv_files[!grepl("massive",indv_files)]}
-  if(!grepl("isat",j)){indv_files <- indv_files[!grepl("isat",indv_files)]}
+    indv_files <- indv_files[!grepl("massive",indv_files)]
+    if(!grepl("isat",j)){indv_files <- indv_files[!grepl("isat",indv_files)]}
 
 
-  massive_overall <- tibble()
-  for(k in seq_along(indv_files)){
-    print(k)
-    load(indv_files[k])
+    massive_overall <- tibble()
+    for(k in seq_along(indv_files)){
+      print(k)
+      load(indv_files[k])
 
-    done %>%
-      filter(year > 2089) %>%
+      done %>%
+        filter(year > 2089) %>%
 
-      mutate(diff = gdp_cap_hundred_climate / gdp_cap_hundred) %>%
-      drop_na %>%
+        mutate(diff = gdp_cap_hundred_climate / gdp_cap_hundred) %>%
+        drop_na %>%
 
-      group_by(iso,final_temp,realisation) %>%
+        group_by(iso,final_temp,realisation) %>%
 
-      summarise(diff = mean(diff),.groups =  "drop") %>%
-      ungroup %>%
-      bind_rows(massive_overall,.) -> massive_overall
+        summarise(diff = mean(diff),.groups =  "drop") %>%
+        ungroup %>%
+        bind_rows(massive_overall,.) -> massive_overall
 
-    rm(done)
+      rm(done)
+    }
+    save(massive_overall, file=here("data-raw","projections","projfiles",paste0(i,"_",j,"_massive_EOC.RData")))
   }
-  save(massive_overall, file=here("data-raw","projections","projfiles",paste0(i,"_",j,"_massive_EOC.RData")))
 }
 
 
@@ -280,16 +293,18 @@ for(type in c("sq")){
 
     load(files[i])
 
-    tibble(name = gsub("_massive_EOC", "",
+    tibble(name = gsub("_EOC", "",
                        gsub(".RData", "", gsub(paste0(here("data-raw","projections","projfiles"),"/"),"",files[i]), fixed = T))) %>%
-      mutate(name = case_when(name=="Mueller_m2"~"Mueller_Contemp_Base",
-                              name=="Mueller_m2.isat"~"Contemp_IIS",
+      mutate(name = case_when(name=="Mueller_m2_massive"~"Mueller_Contemp_Base",
+                              name=="Mueller_m2.isat_massive"~"Mueller_Contemp_IIS",
+                              name=="Mueller_m2_L1_massive"~"Mueller_Lagged_Base",
+                              name=="Mueller_m2_L1.isat_massive"~"Mueller_Lagged_IIS",
                               TRUE~name)) %>%
       separate(name, sep = "_", into = c("baseline", "model","spec"),fill = "right") -> name_df
 
     baseline <- name_df$baseline
     model <- name_df$model
-    specification <- ifelse(is.na(name_df$spec),"standard",name_df$spec)
+    specification <- name_df$spec
 
 
     success <- FALSE
@@ -351,4 +366,28 @@ for(type in c("sq")){
 }
 
 
+
+# Plotting ----------------------------------------------------------------
+
+
+overall_df <- read_csv(here("data-raw","projections",paste0("all_models_quantiles_sq.csv")))
+
+
+overall_df %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = specification, fill = specification, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3) +
+  geom_line(aes(y  = med), size = 1) +
+  geom_hline(aes(yintercept = 0), size = 1)+
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")})+
+  theme_minimal() +
+  facet_wrap(~model)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  ggsave(here("data-raw/projections/out/projections.pdf"), height = 6, width = 8)
 
