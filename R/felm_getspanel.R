@@ -73,11 +73,16 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     }
 
     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),
+                                        ifelse(effect == "none","-1",""),
                                         "|",parse_FE,"| 0 |",cluster))
 
     suppressWarnings(tmp <- lfe::felm(formula = parsed_formula,data = est_df))
 
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(row.names(na.omit(tmp$coefficients)),collapse = " + "),"|",parse_FE,"| 0 |",cluster))
+    parsed_formula <- as.formula(
+      paste0("y ~ ",paste0(row.names(na.omit(tmp$coefficients)),collapse = " + "),
+             ifelse(effect == "none","-1",""),
+             "|",parse_FE,"| 0 |",cluster)
+      )
     tmp <- lfe::felm(formula = parsed_formula,data = est_df)
 
     out$coefficients <- coef(tmp)

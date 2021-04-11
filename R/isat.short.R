@@ -546,7 +546,7 @@ isat.short <- function(
 
   ##make return object:
   ##-------------------
-  #browser()
+
   ##do final gets:
   getsis <- gets.Fun(y, mXis, untransformed.residuals=NULL,
                      user.estimator=userEstArg, gum.result=NULL, t.pval=t.pval,

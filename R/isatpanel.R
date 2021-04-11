@@ -21,7 +21,7 @@
 #' @param fesis Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
 #' @param csis Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
-#' @param ... Further arguments to gets::isat
+#' @param ... Further arguments to gets::isat()
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
@@ -107,9 +107,8 @@ isatpanel <- function(
 
     mt <- attr(mf, "terms")
 
-    if(effect != "none"){
-      attr(mt,"intercept") <- 0 # This forces no intercept!!!
-    }
+    attr(mt,"intercept") <- 0 # This forces no intercept!!!
+
     y <- model.response(mf, "numeric")
 
     x <- model.matrix(mt, mf)
@@ -329,8 +328,7 @@ isatpanel <- function(
 
 
 
-  if(is.null(engine)){
-
+  if(is.null(engine) && effect != "none"){
 
     ####
     # Generating Fixed effects ------------------------------------------------
@@ -343,7 +341,12 @@ isatpanel <- function(
     dummies <- dummies[,!names(dummies)%in%c("id","time")]
     names(dummies) <- gsub("_","",names(dummies))
 
-    mx <- cbind(mxreg,dummies[-1])
+    if(effect == "twoways"){
+      mx <- cbind(mxreg,dummies[-1])
+    } else if(effect=="individual"|effect=="time"){
+      mx <- cbind(mxreg,dummies)
+    }
+
 
   } else {
     # If an engine is selected, we don't create fixed effects
@@ -432,6 +435,9 @@ isatpanel <- function(
 
   out$estimateddata <- estimateddata
 
+  # add a manual intercept if no FE selected
+  if(effect == "none"){mx <- cbind(mconst = 1, mx)}
+
   #############################
   ####### Estimate
   ###############################
@@ -449,7 +455,7 @@ isatpanel <- function(
   # Create a final data object
   indicators <- out$isatpanel.result$aux$mX
   if(is.null(engine)){
-    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),names(dummies))]
+    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),if(exists("dummies")){names(dummies)}else{NULL})]
   } else {
     indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
   }

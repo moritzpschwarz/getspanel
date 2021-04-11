@@ -42,14 +42,14 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       if (cluster == "individual") {
         "individual + time"
       } else {
-        "time + individual"
+        "| time + individual"
       }
     } else if (effect == "time") {
-      "time"
+      "| time"
     } else if (effect == "individual") {
-      "individual"
+      "| individual"
     } else if (effect == "none") {
-      "0"
+      ""
     } else {
       stop("No Fixed Effect Specification was selected. Choose from 'twoways', 'time', 'individual', or 'none'")
     }
@@ -63,7 +63,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
     }
 
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),"|",parse_FE))
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),parse_FE))
 
     tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes=FALSE)
 
