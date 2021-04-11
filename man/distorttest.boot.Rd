@@ -38,3 +38,33 @@ distorttest.boot(
 \description{
 Bootstrap Distortion Test Function
 }
+\examples{
+#' # A quick example with 10 replications
+data(Nile)
+Nile[10] <- Nile[10]+1000 # to ensure there is an indicator retained
+nile <- isat(Nile, sis=FALSE, iis=TRUE, plot=TRUE, t.pval=0.005)
+
+distorttest.boot(nile, nboot = 10)
+
+# Another example with co-variates
+dat <- hpdata[,c("GD", "GNPQ", "FSDJ")]
+Y <- ts(dat$GD,start = 1959, frequency = 4)
+mxreg <- ts(dat[,c("GNPQ","FSDJ")],start = 1959, frequency = 4)
+m1 <- isat(y = Y, mc = TRUE, sis = FALSE, iis = TRUE)
+m2 <- isat(y = Y, mc = TRUE, sis = FALSE, iis = TRUE, ar = 1)
+m3 <- isat(y = Y, mxreg = mxreg, mc = TRUE, sis = FALSE, iis = TRUE)
+m4 <- isat(y = Y, mxreg = mxreg, mc = TRUE, sis = FALSE, iis = TRUE, ar = 1)
+
+distorttest(m1)
+distorttest(m2)
+distorttest(m3)
+distorttest(m4)
+
+# bootstrap
+db1 <- distorttest.boot(m1, nboot = 10)
+db2 <- distorttest.boot(m2, nboot = 10)
+db3 <- distorttest.boot(m3, nboot = 10)
+db4 <- distorttest.boot(m4, nboot = 10)
+
+db4.clean <- distorttest.boot(m4, nboot = 10, clean.sample = TRUE)
+}
