@@ -134,11 +134,11 @@ print(paste0("Number of files still missing: ",missing))
 
 
 sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
-names(sum.05) <- names(sum_rej_05_list[[1]])
+names(sum.05) <- names(sum_rej_05_list[[401]])
 sum.05$test.lev <- 0.05
 
 sum.01 <- do.call(rbind.data.frame, sum_rej_01_list)
-names(sum.01) <- names(sum_rej_01_list[[1]])
+names(sum.01) <- names(sum_rej_01_list[[401]])
 sum.01$test.lev <- 0.01
 
 ###combine
@@ -178,7 +178,8 @@ sum_tab
 plot_specs_overall <- dplyr::distinct(specs,hypothesis,out_prop, bootstrap, dist, ar, p_alpha, nreg, lambda)
 
 
-for(boot in c(FALSE,TRUE)){
+#for(boot in c(FALSE,TRUE)){
+for(boot in c(TRUE)){
   for(hypo in c("null","alternative")){
 
     print(paste0("Boot: ",boot," Hypothesis: ",hypo))
