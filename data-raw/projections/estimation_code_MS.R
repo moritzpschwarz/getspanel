@@ -9,11 +9,12 @@ rm(list = ls())
 here <- here::here
 select <- dplyr::select
 
-execute_isat <- FALSE
+execute_isat <- TRUE
 
 
 dat <- vroom(file = here("data-raw/projections/damage_curve_country_dataset_timetrends_updated02-19.csv"))
 
+# No Adaptation -----------------------------------------------------------
 
 # Estimate M1 -------------------------------------------------------------
 
@@ -21,11 +22,6 @@ dat %>%
   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
   select(-iso,-year) %>%
   lm(diff.ln_gdp_cap~.-1,data = .) -> m1
-
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-  select(-iso,-year) %>%
-  lm(diff.ln_gdp_cap~.-1,data = .) -> m1_L1
 
 
 # Process M1 --------------------------------------------------------------
@@ -36,13 +32,6 @@ m1 %>%
   filter(is.na(estimate)) %>%
   pull(term) -> m1_drop
 
-m1_L1 %>%
-  tidy %>%
-  filter(is.na(estimate)) %>%
-  pull(term) -> m1_L1_drop
-
-
-
 # Estimate M2 -------------------------------------------------------------
 
 dat %>%
@@ -52,17 +41,9 @@ dat %>%
 lm(diff.ln_gdp_cap~.-1,data = m2_data) -> m2
 
 
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-  select(-iso,-year,-all_of(m1_L1_drop)) %>%
-  drop_na -> m2_L1_data
-lm(diff.ln_gdp_cap~.-1,data = m2_L1_data) -> m2_L1
-
-
 # save m2 ---------------------------------------------------------------
 
 #save(m2, file = here("data-raw/projections/m2.RData"))
-#save(m2_L1, file = here("data-raw/projections/m2_L1.RData"))
 
 
 # Isat --------------------------------------------------------------------
@@ -75,31 +56,17 @@ if(execute_isat){
     iis = TRUE,
     t.pval = 0.01,
     sis = FALSE,
-    #max.block.size = 2,
+    max.block.size = 2,
     parallel.options = detectCores()-1,
     print.searchinfo = TRUE
   )
 
-  save(m2.isat, file = here("data-raw","projections","m2.isat_block30.RData"))
+  save(m2.isat, file = here("data-raw","projections","m2.isat.RData"))
 
 
-
-  m2.isat_L1 <- isat(
-    y = m2_L1_data %>% pull(diff.ln_gdp_cap),
-    mxreg = m2_L1_data %>% select(-diff.ln_gdp_cap) %>% as.matrix,
-    mc = FALSE,
-    iis = TRUE,
-    t.pval = 0.01,
-    sis = FALSE,
-    #max.block.size = 2,
-    parallel.options = detectCores()-1,
-    print.searchinfo = TRUE
-  )
-  save(m2.isat_L1, file = here("data-raw","projections","m2.isat_L1.RData"))
 
 } else {
-  load(file = here("data-raw","projections","m2.isat_block30.RData"))
-  load(file = here("data-raw","projections","m2.isat_L1_block30.RData"))
+  load(file = here("data-raw","projections","m2.isat.RData"))
 }
 
 
@@ -115,14 +82,14 @@ dat %>%
   lm(diff.ln_gdp_cap~.-1,data = .) -> am1
 
 dat %>%
-  select(iso, year, ln_gdp_cap, diff.ln_gdp_cap,temp,temp_2, L1.temp, L1.temp_2, prcp, prcp_2,L1.prcp, L1.prcp_2, starts_with(c("year_","time_", "iso_"))) %>%
-  mutate(across(.cols = c(temp,temp_2, L1.temp, L1.temp_2, prcp, prcp_2,L1.prcp, L1.prcp_2), .fns = ~ . * cur_data() %>% pull(ln_gdp_cap), .names = "{.col}_int")) %>%
-  select(-iso,-year, -ln_gdp_cap) %>%
+  select(iso, year, L1.ln_gdp_cap, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2, starts_with(c("year_","time_", "iso_"))) %>%
+  mutate(across(.cols = c(temp,temp_2, prcp, prcp_2), .fns = ~ . * cur_data() %>% pull(L1.ln_gdp_cap), .names = "{.col}_int")) %>%
+  relocate(ends_with("int"),.after = prcp_2) %>%
+  select(-iso,-year, -L1.ln_gdp_cap) %>%
   lm(diff.ln_gdp_cap~.-1,data = .) -> am1_L1
 
 
 # Process AM1 --------------------------------------------------------------
-
 
 am1 %>%
   tidy %>%
@@ -147,17 +114,16 @@ lm(diff.ln_gdp_cap~.-1,data = am2_data) -> am2
 
 
 dat %>%
-  select(iso, year, diff.ln_gdp_cap, ln_gdp_cap, temp,temp_2, L1.temp, L1.temp_2, prcp, prcp_2,L1.prcp, L1.prcp_2, starts_with(c("year_","time_", "iso_"))) %>%
-  mutate(across(.cols = c(temp,temp_2, L1.temp, L1.temp_2, prcp, prcp_2,L1.prcp, L1.prcp_2), .fns = ~ . * cur_data() %>% pull(ln_gdp_cap), .names = "{.col}_int")) %>%
-  select(-iso,-year,-all_of(am1_L1_drop),-ln_gdp_cap) %>%
+  select(iso, year, L1.ln_gdp_cap, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2, starts_with(c("year_","time_", "iso_"))) %>%
+  mutate(across(.cols = c(temp,temp_2, prcp, prcp_2), .fns = ~ . * cur_data() %>% pull(L1.ln_gdp_cap), .names = "{.col}_int")) %>%
+  select(-iso,-year,-all_of(am1_L1_drop),-L1.ln_gdp_cap) %>%
   drop_na -> am2_L1_data
 lm(diff.ln_gdp_cap~.-1,data = am2_L1_data) -> am2_L1
 
-
 # save am2 ---------------------------------------------------------------
 
-#save(am2, file = here("data-raw/projections/am2.RData"))
-#save(am2_L1, file = here("data-raw/projections/am2_L1.RData"))
+save(am2, file = here("data-raw/projections/am2.RData"))
+save(am2_L1, file = here("data-raw/projections/am2_L1.RData"))
 
 
 
@@ -177,7 +143,6 @@ if(execute_isat){
   )
 
   save(am2.isat, file = here("data-raw","projections","am2.isat.RData"))
-
 
 
   am2.isat_L1 <- isat(
