@@ -30,11 +30,11 @@ isvarcor.isat <- function(isatobject){
 
 
 project <- function(stdmodel,
-                    climate,
-                    socioprojections,
+                    climate = climate,
+                    socioprojections = mueller_df,
                     socioprojections_type = "Mueller",
                     modelname = "m2",
-                    coefsamples = 1,
+                    coefsamples = 100,
                     seed = 123,
 
                     adaptation = FALSE,
@@ -224,9 +224,9 @@ project <- function(stdmodel,
       }
 
       effect_interaction %>%
-        bind_cols(effect_standard %>% select(contains("stdeffect"))) -> effect_interation
+        bind_cols(effect_standard %>% select(contains("stdeffect"))) -> effect_interaction
 
-      done <- mueller_df %>%
+      done <- socioprojections %>%
         select(-contains("fifty")) %>%
         filter(year==2017) %>%
         left_join(effect_interaction %>%

@@ -44,103 +44,83 @@ source(here("data-raw/projections/projection_functions.R"))
 climate_path <- here("data-raw","projections","corrected_anomaly_climatedata.csv")
 climate <- vroom(climate_path)
 
+# Load model files
 load(here("data-raw/projections/m2.RData"))
-project(stdmodel = m2,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "m2",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
-        adaptation = FALSE,
-        parallel = TRUE,
-        verbose = TRUE)
-
+load(here("data-raw/projections/am2.RData"))
 load(here("data-raw/projections/m2.isat.RData"))
-project(stdmodel = m2.isat,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "m2.isat",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
+load(here("data-raw/projections/am2.isat.RData"))
+load(here("data-raw/projections/am2_L1.RData"))
+load(here("data-raw/projections/am2.isat_L1.RData"))
+
+
+# # Test
+# final_temp_selection <- climate %>% distinct(final_temp) %>% slice(1,100, n()) %>% pull(final_temp)
+# iso_selection <- c("AUT","IND","FIN", "USA")
+#
+# climate_subset <- climate %>% filter(final_temp %in% final_temp_selection & iso %in% iso_selection)
+# mueller_df_subset <- mueller_df %>% filter(iso %in% iso_selection)
+#
+# project(stdmodel = m2,
+#         adaptmodel = am2,
+#         modelname = "am2",
+#         adaptation = TRUE,
+#         climate = climate_subset,
+#         socioprojections = mueller_df_subset,
+#         coefsamples = 1,
+#         parallel = FALSE)
+
+
+# Projections
+
+project(stdmodel = m2,
+        modelname = "m2",
         adaptation = FALSE,
-        parallel = TRUE,
-        verbose = TRUE)
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
+
+project(stdmodel = m2.isat,
+        modelname = "m2.isat",
+        adaptation = FALSE,
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
 
 # Adaptation
 
-## Contemp GDP
-load(here("data-raw/projections/am2.RData"))
 project(stdmodel = m2,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "am2",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
-        adaptation = TRUE,
         adaptmodel = am2,
-        parallel = TRUE,
-        verbose = TRUE)
-
-load(here("data-raw/projections/am2.isat.RData"))
-project(stdmodel = m2.isat,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "am2.isat",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
+        modelname = "am2",
         adaptation = TRUE,
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
+
+project(stdmodel = m2.isat,
         adaptmodel = am2.isat,
-        parallel = TRUE,
-        verbose = TRUE)
+        modelname = "am2.isat",
+        adaptation = TRUE,
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
 
+# Adaptation Lagged GDP
 
-
-load(here("data-raw/projections/am2_L1.RData"))
 project(stdmodel = m2,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "am2_L1",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
-        adaptation = TRUE,
         adaptmodel = am2_L1,
-        parallel = TRUE,
-        verbose = TRUE)
-
-load(here("data-raw/projections/am2.isat_L1.RData"))
-project(stdmodel = m2.isat,
-        climate = climate,
-        coefsamples = 100,
-        modelname = "am2.isat_L1",
-        socioprojections = mueller_df,
-        socioprojections_type = "Mueller",
-        seed = 123,
+        modelname = "am2_L1",
         adaptation = TRUE,
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
+
+project(stdmodel = m2.isat,
         adaptmodel = am2.isat_L1,
-        parallel = TRUE,
-        verbose = TRUE)
-
-
-
-
-
-
-# load(here("data-raw/projections/am2_L1.RData"))
-# project_standard(am2_L1,climate, coefsamples = 100, modelname = "am2_L1")
-# rm(m2.isat_L1)
-#
-# load(here("data-raw/projections/am2.isat_L1.RData"))
-# project_standard(am2.isat_L1,climate, coefsamples = 100, modelname = "am2.isat_L1")
-# rm(m2.isat_L1)
-#
-
-
-
+        modelname = "am2.isat_L1",
+        adaptation = TRUE,
+        climate = climate,
+        socioprojections = mueller_df,
+        seed = 123)
 
 # combine -----------------------------------------------------------------
 
@@ -151,8 +131,8 @@ select <- dplyr::select
 
 socio <- c("Mueller")
 model<- c(
-  #"m2",
-  #"m2.isat",
+  "m2",
+  "m2.isat",
   "am2",
   "am2.isat",
   "am2.isat_L1",
@@ -212,7 +192,7 @@ library(tidyverse)
 library(gets)
 library(here)
 library(vroom)
-library(MASS)
+# library(MASS)
 library(quantreg)
 
 rm(list = ls())
@@ -321,7 +301,7 @@ overall_df %>%
   scale_y_continuous(labels = scales::percent)+
   scale_x_continuous(labels = function(x){paste0(x,"°C")})+
   theme_minimal() +
-  facet_wrap(~model)+
+  #facet_wrap(~model)+
   coord_cartesian(ylim = c(-1,1))+
   labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
   ggsave(here("data-raw/projections/out/projections.pdf"), height = 6, width = 8)
