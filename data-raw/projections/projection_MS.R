@@ -1,3 +1,6 @@
+
+
+
 library(tidyverse)
 # library(data.table)
 library(gets)
@@ -10,41 +13,7 @@ select <- dplyr::select
 here <- here::here
 
 
-# Functions ---------------------------------------------------------------
-
-isvarcor.isat <- function(isatobject){
-
-
-  #################################################################################
-  ########## 1. Consistency correction of sigma estimate (affects all regressors)
-  vcov.mean.original <- isatobject$vcov.mean
-
-  vcov.mean.cor.1 <- isatobject$vcov.mean * as.numeric(isvarcor(isatobject$aux$t.pval, 1)[2]^2)
-  ###################################################################################
-
-  ###############################################################################################################
-  ######### 2. Correction for the variance of retained regressors (affects only fixed regressors, not impulses)
-  vcov.mean.cor.2 <- vcov.mean.cor.1
-  rel_names <- isatobject$aux$mXnames[!(isatobject$aux$mXnames %in% isatobject$ISnames)]
-  mcor <- 1
-  vcov.mean.cor.2[rel_names, rel_names] <- vcov.mean.cor.2[rel_names, rel_names] * as.numeric(isvareffcor(isatobject$aux$t.pval, 1, mcor)[2]^2)
-  ###############################################################################################################
-
-  isatobject <- isatobject
-  isatobject$vcov.mean <- vcov.mean.cor.2
-  isatobject$vcov.mean.cor.1 <- vcov.mean.cor.1
-  isatobject$vcov.mean.original <- vcov.mean.original
-
-  # correcting the S.E. in isatobject
-  isatobject$mean.results["std.error"] <- sqrt(diag(vcov.mean.cor.2))
-
-  return(isatobject)
-}
-
 # Load Mueller et al ------------------------------------------------------
-
-
-
 
 mueller <- readxl::read_excel(here("data-raw","projections","Predictive_ Distributions_by_Country.xlsx"),
                               skip = 6,
@@ -69,381 +38,106 @@ mueller_mean %>%
          gdp_cap = NULL) %>%
   select(iso,year,gdp_cap_fifty, gdp_cap_hundred,everything()) -> mueller_df
 
-project_standard <- function(stdmodel,
-                             climate,
-                             socioprojections,
-                             socioprojections_type = "Mueller",
-                             modelname = "m2",
-                             coefsamples = 1,
-                             seed = 123,
 
-                             adaptation = FALSE,
-                             max_GDP_restriction = TRUE,
-                             no_worse_off_restriction = TRUE,
-                             no_higher_baseline_restriction = TRUE,
-
-                             parallel = TRUE,
-                             verbose = TRUE,
-                             save_dir_here = "data-raw/projections/projfiles"){
-
-
-  # Variance correction ----
-  stdmodel <- isvarcor.isat(stdmodel)
-
-
-  ## Load Coefficients ----
-  set.seed(seed)
-  selection_coefs_standard <- MASS::mvrnorm(n = coefsamples, mu = stdmodel %>% coef(), Sigma = stdmodel %>% vcov()) %>%
-    {if (is.vector(.)) t(.) else .} %>%
-    data.frame() %>%
-    rename_all(~ tolower(.)) %>%
-    select(-starts_with(c("year", "iis", "time", "iso"))) %>%
-    rename_all(~ paste0(., "_coef"))
-
-  # If we are just using one coefsample, we simply use the mean estimate from the model
-  if(coefsamples==1){
-    stdmodel %>%
-      coef %>%
-      data.frame(variable = names(.),
-                 coefficient = .,
-                 row.names = NULL) %>%
-      pivot_wider(names_from = "variable",values_from = "coefficient") %>%
-      rename_all(~tolower(.)) %>%
-      select(-starts_with(c("year","iis","time","iso"))) %>%
-      rename_all(~paste0(.,"_coef")) -> selection_coefs_standard
-  }
-
-
-
-  ## Collect Relevant Information
-  selection_coefs_standard %>%
-    names %>%
-    gsub("_coef","",.) %>%
-    unique -> climate_vars
-
-  selection_coefs_standard %>%
-    names %>%
-    gsub("_coef|_2","",.) %>%
-    unique -> climate_vars_lin
-
-  selection_coefs_standard %>%
-    names %>%
-    grep("_2",.,value = TRUE) %>%
-    gsub("_coef|_2","",.) %>%
-    unique -> climate_vars_sq
-
-
-  if(adaptation){
-    # Prepare max restriction
-    if(socioprojections_type == "Mueller"){
-      base_gdp <- socioprojections %>% filter(year==2017) %>%
-        select(iso,gdp_cap_fifty,gdp_cap_hundred) %>%
-        rename(base_fifty = gdp_cap_fifty,
-               base_hundred = gdp_cap_hundred)
-      max_overall_gdp <- max(base_gdp$base_fifty)
-    } else if(socioprojections_type == "SSP"){
-      NULL # TO DO
-    } else {
-      stop("Variable 'socioprojections_type' not correct. Please choose either 'SSP' or 'Mueller'")
-    }
-
-
-    ####simulate coefficients, draw them form joint normal distribution
-    set.seed(123)
-    selection_coefs_adapt <- MASS::mvrnorm(n = coefsamples, mu = adaptmodel %>% coef(), Sigma = adaptmodel %>% vcov()) %>%
-      {if (is.vector(.)) t(.) else .} %>%
-      data.frame() %>%
-      rename_all(~ tolower(.)) %>%
-      select(-l1.diff.ln_gdp_cap, -starts_with(c("year", "iis", "time", "iso"))) %>%
-      rename_all(~ paste0(., "_coef"))
-
-    if(coefsamples==1){
-      adaptmodel %>%
-        coef %>%
-        data.frame(variable = names(.),
-                   coefficient = .,
-                   row.names = NULL) %>%
-        pivot_wider(names_from = "variable",values_from = "coefficient") %>%
-        rename_all(~tolower(.)) %>%
-        select(-l1.diff.ln_gdp_cap,-starts_with(c("year","iis","time","iso"))) %>%
-        rename_all(~paste0(.,"_coef")) -> selection_coefs_adapt
-    }
-
-    # Extract information from adaptation variables
-
-    selection_coefs_adapt %>%
-      names %>%
-      gsub("_coef","",.) %>%
-      grep("_int",.,value = TRUE) %>%
-      gsub("_int","",.) %>%
-      unique -> interaction_vars
-  }
-
-
-  ## Load climate data
-  climate %>%
-    # Commented out April 2021: Used to be needed if L1. of climate vars are included (e.g. L1.temp) but not needed anymore
-    # Code should work!
-    #
-    # # add the lags if needed
-    # {if(any(grepl("^l[0-9]\\.",climate_vars))){
-    #   group_by(.,final_temp, iso) %>%
-    #     mutate(across(.cols = all_of(grep("^l[0-9]\\.",climate_vars, invert = TRUE, value = TRUE)),
-    #                   .fns = lag,
-    #                   .names = "l1.{.col}")) %>%
-    #     ungroup
-    # }else{.}} %>%
-  select(model,rcp,ensemble,final_temp,iso,year,all_of(climate_vars_lin),
-         all_of(paste0(climate_vars_sq,"_2"))) %>%
-    drop_na -> climate_subset
-
-
-
-  internal_fun <- function(v,
-                           verbose,
-                           climate_subset,
-                           climate_vars,
-                           climate_vars_lin,
-                           climate_vars_sq,
-                           selection_coefs_standard,
-
-                           adaptation,
-                           selection_coefs_adapt,
-                           max_GDP_restriction,
-                           no_worse_off_restriction,
-                           no_higher_baseline_restriction,
-
-                           save_dir_here){
-
-    # Calculate the standard climate effect
-    effect_standard <- climate_subset
-    for(var in climate_vars){
-      #print(var)
-      climate_subset %>%
-        select(all_of(var)) %>%
-        pull %>% "*"(selection_coefs_standard %>%
-                       slice(v) %>%
-                       select(all_of(paste0(var,"_coef"))) %>%
-                       pull) %>%
-        as_tibble %>%
-        rename_all(~paste0(var,"_stdeffect"))  %>%
-        bind_cols(effect_standard,.) -> effect_standard
-    }
-
-    if(!adaptation){
-
-      done <- socioprojections %>%
-        select(-contains("fifty")) %>%
-        filter(year==2017) %>%
-        left_join(effect_standard %>%
-                    filter(year == 2017) %>%
-                    select(-model,-ensemble,-rcp),by = c("iso","year")) %>%
-        mutate(realisation = v) %>%
-        relocate(c(realisation,final_temp), .after = year)
-    } else if(adaptation){
-      effect_interaction <- climate_subset
-      # Calculate the climate effect
-      for(var in climate_vars){
-        #print(var)
-        climate_subset %>%
-          select(all_of(var)) %>%
-          pull %>% "*"(selection_coefs_adapt %>%
-                         slice(v) %>%
-                         select(all_of(paste0(var,"_coef"))) %>%
-                         pull) %>%
-          as_tibble %>%
-          rename_all(~paste0(var,"_logeffect"))  %>%
-          bind_cols(effect_interaction,.) -> effect_interaction
-      }
-
-      effect_interaction %>%
-        bind_cols(effect_standard %>% select(contains("stdeffect"))) -> effect_interation
-
-      done <- mueller_df %>%
-        select(-contains("fifty")) %>%
-        filter(year==2017) %>%
-        left_join(effect_interaction %>%
-                    filter(year == 2017) %>%
-                    select(-model,-ensemble),by = c("iso","year")) %>%
-
-        #drop_na %>%
-        mutate(realisation = v) %>%
-        relocate(c(realisation,final_temp), .after = year)
-    } else {stop("Error in 'adaptation' variable.")}
-
-
-    # Projection Loop
-
-    for(i in 2018:2099){
-      if(verbose){print(paste0("Realisation ",v," Year: ",i))}
-      done %>%
-        filter(year == i-1) %>%
-        select(iso, year, final_temp, realisation, contains("hundred")) %>% #,-contains("base")) %>%
-
-        left_join(if(!adaptation){effect_standard}else{effect_interaction} %>%
-                    filter(year == i-1) %>%
-                    mutate(realisation = v) %>%
-                    select(-model,-ensemble,-rcp),by = c("iso","year","final_temp","realisation")) %>%
-
-        mutate(gdp_cap_hundred = gdp_cap_hundred*hundred_mean) %>% # Baseline effect
-
-        mutate(total_stdeffect = rowSums(select(.,ends_with("stdeffect")))) %>% # Standard Climate Effect
-
-        # Adaptation section
-        {if(!adaptation){ # no adaptation
-
-          mutate(.,gdp_cap_hundred_climate = gdp_cap_hundred_climate*(hundred_mean + total_stdeffect))
-
-        } else { # this is with adaptation
-          mutate(.,
-                 # Effect of pure Climate variables in interaction model
-                 total_climlogeffect = rowSums(select(.,ends_with("logeffect"),-contains("_int_"))),
-                 # Effect of Climate - GDP interaction variables in interaction model
-                 total_inteffect =  rowSums(select(.,ends_with("_int_logeffect")))
-          ) %>%
-
-            # max GDP Restriction
-            {if(max_GDP_restriction){
-              mutate(.,interaction_effect_hundred = total_climlogeffect + total_inteffect*log(
-
-                ifelse(test = gdp_cap_hundred_climate>max_overall_gdp,
-                       yes = max_overall_gdp,
-                       no = gdp_cap_hundred_climate)))
-            } else {
-              mutate(.,interaction_effect_hundred = total_climlogeffect + total_inteffect*log(gdp_cap_hundred_climate))
-            }} %>%
-
-
-            # no worse off restriction
-            # Checks if adaptation effect is lower than standard effect
-            # always chooses higher of the two
-            {if(no_worse_off_restriction){
-              mutate(.,
-                     total_effect_this_year_hundred = ifelse(
-                       test = total_stdeffect > interaction_effect_hundred,
-                       yes = total_stdeffect,
-                       no = interaction_effect_hundred))
-            }else{.}} %>%
-
-            # no higher than baseline restriction
-            # checks: when interaction effect flips the sign of the growth effect
-            # (i.e. originally negative effect, but through interaction/adaptation now positive)
-            # then the positive growth effect cannot be higher than the baseline growth effect for this year
-            {if(no_higher_baseline_restriction) {
-              mutate(.,
-                     gdp_cap_hundred_climate = gdp_cap_hundred_climate *
-
-                       ifelse(
-                         test = sign(total_stdeffect)==-1 & sign(interaction_effect_hundred)==1, # is std effect negative but adaptation effect positive?
-                         yes = ifelse(
-                           test = hundred_mean<(total_effect_this_year_hundred+1), # is adaptation effect larger than baseline?
-                           yes = hundred_mean, # yes: take baseline
-                           no = (total_effect_this_year_hundred+1) # no: take adaptation effect
-                         ),
-                         no = hundred_mean + total_effect_this_year_hundred # just take baseline + adaptation effect
-                       )
-              )
-            } else { . }}
-        }} %>%
-
-        # Finishing up
-        mutate(.,year = i) %>%
-
-        bind_rows(done,.) -> done
-
-    }
-    save(done,file = here(save_dir_here,paste0(socioprojections_type,"_",modelname,"_",v,".RData")))
-  }
-
-
-
-  #   for(i in 2018:2099){
-  #     if(verbose){print(paste0("Realisation ",v," Year: ",i))}
-  #     done %>%
-  #       filter(year == i-1) %>%
-  #       select(iso, year, realisation, final_temp,contains("hundred")) %>%
-  #
-  #       left_join(effect_standard %>%
-  #                   filter(year == i-1) %>%
-  #                   mutate(realisation = v) %>%
-  #                   select(-model,-ensemble,-rcp),by = c("iso","year","final_temp","realisation")) %>%
-  #       mutate(total_climate_effect = rowSums(select(., ends_with("effect")))) %>%
-  #       mutate(gdp_cap_hundred = gdp_cap_hundred*hundred_mean,
-  #              gdp_cap_hundred_climate = gdp_cap_hundred_climate*(hundred_mean + total_climate_effect),
-  #              year = i) %>%
-  #       bind_rows(done,.) -> done
-  #
-  #   }
-  #
-  #   save(done,file = here(save_dir_here,paste0("Mueller_",modelname,"_",v,".RData")))
-  # }
-
-
-
-  if(parallel){
-    library(doMC)
-    registerDoMC(if(coefsamples < detectCores()){coefsamples} else {detectCores()-1})  # coefsamples if enough cores available - otherwise total-1
-    foreach(v=1:coefsamples,.packages = loadedNamespaces()) %dopar% {
-      if(verbose){print(v)}
-      internal_fun(v,
-                   verbose,
-                   climate_subset,
-                   climate_vars,
-                   climate_vars_lin,
-                   climate_vars_sq,
-                   selection_coefs_standard,
-
-                   adaptation,
-                   selection_coefs_adapt,
-                   max_GDP_restriction,
-                   no_worse_off_restriction,
-                   no_higher_baseline_restriction,
-
-                   save_dir_here)
-
-    }
-  } else {
-    for (v in 1:coefsamples){
-      if(verbose){print(v)}
-      internal_fun(v,
-                   verbose,
-                   climate_subset,
-                   climate_vars,
-                   climate_vars_lin,
-                   climate_vars_sq,
-                   selection_coefs_standard,
-
-                   adaptation,
-                   selection_coefs_adapt,
-                   max_GDP_restriction,
-                   no_worse_off_restriction,
-                   no_higher_baseline_restriction,
-
-                   save_dir_here)
-    }
-  }
-}
-
+source(here("data-raw/projections/projection_functions.R"))
 
 climate_path <- here("data-raw","projections","corrected_anomaly_climatedata.csv")
 climate <- vroom(climate_path)
 
-# load(here("data-raw/projections/m2.RData"))
-# project_standard(m2,climate, coefsamples = 100, modelname = "m2")
-# rm(m2)
+load(here("data-raw/projections/m2.RData"))
+project(stdmodel = m2,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "m2",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = FALSE,
+        parallel = TRUE,
+        verbose = TRUE)
 
-load(here("data-raw/projections/m2_L1.RData"))
-project_standard(model = m2_L1,climate, coefsamples = 100, modelname = "m2_L1")
-rm(m2_L1)
+load(here("data-raw/projections/m2.isat.RData"))
+project(stdmodel = m2.isat,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "m2.isat",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = FALSE,
+        parallel = TRUE,
+        verbose = TRUE)
 
-# load(here("data-raw/projections/m2.isat.RData"))
-# project_standard(m2.isat,climate, coefsamples = 100, modelname = "m2.isat")
-# rm(m2.isat)
+# Adaptation
 
-load(here("data-raw/projections/m2.isat_L1.RData"))
-project_standard(m2.isat_L1,climate, coefsamples = 100, modelname = "m2_L1.isat")
-rm(m2.isat_L1)
+## Contemp GDP
+load(here("data-raw/projections/am2.RData"))
+project(stdmodel = m2,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "am2",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = TRUE,
+        adaptmodel = am2,
+        parallel = TRUE,
+        verbose = TRUE)
 
+load(here("data-raw/projections/am2.isat.RData"))
+project(stdmodel = m2.isat,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "am2.isat",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = TRUE,
+        adaptmodel = am2.isat,
+        parallel = TRUE,
+        verbose = TRUE)
+
+
+
+load(here("data-raw/projections/am2_L1.RData"))
+project(stdmodel = m2,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "am2_L1",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = TRUE,
+        adaptmodel = am2_L1,
+        parallel = TRUE,
+        verbose = TRUE)
+
+load(here("data-raw/projections/am2.isat_L1.RData"))
+project(stdmodel = m2.isat,
+        climate = climate,
+        coefsamples = 100,
+        modelname = "am2.isat_L1",
+        socioprojections = mueller_df,
+        socioprojections_type = "Mueller",
+        seed = 123,
+        adaptation = TRUE,
+        adaptmodel = am2.isat_L1,
+        parallel = TRUE,
+        verbose = TRUE)
+
+
+
+
+
+
+# load(here("data-raw/projections/am2_L1.RData"))
+# project_standard(am2_L1,climate, coefsamples = 100, modelname = "am2_L1")
+# rm(m2.isat_L1)
+#
+# load(here("data-raw/projections/am2.isat_L1.RData"))
+# project_standard(am2.isat_L1,climate, coefsamples = 100, modelname = "am2.isat_L1")
+# rm(m2.isat_L1)
+#
 
 
 
@@ -457,10 +151,12 @@ select <- dplyr::select
 
 socio <- c("Mueller")
 model<- c(
-  "m2_[0-9]",
-  "m2.isat",
-  "m2_L1_",
-  "m2_L1.isat",
+  #"m2",
+  #"m2.isat",
+  "am2",
+  "am2.isat",
+  "am2.isat_L1",
+  "am2_L1",
   NULL
 )
 
@@ -473,12 +169,14 @@ for(i in socio){
     print(paste("full",i,j,sep="_"))
     #print(length(list.files(here("data","temp","projections"),pattern = paste("full",i,j,sep="_"))))
 
-
     # Carry out the merging of the files
     indv_files <- list.files(here("data-raw","projections","projfiles"),pattern = paste(i,j,sep="_"),full.names = TRUE)
     indv_files <- indv_files[!grepl("massive",indv_files)]
-    if(!grepl("isat",j)){indv_files <- indv_files[!grepl("isat",indv_files)]}
 
+    if(j == "m2"){indv_files <- indv_files[!grepl("m2.isat",indv_files)]}
+    if(j == "m2"){indv_files <- indv_files[!grepl("am2",indv_files)]}
+    if(j == "am2"){indv_files <- indv_files[!grepl("am2.isat|am2_L1",indv_files)]}
+    if(j == "am2.isat"){indv_files <- indv_files[!grepl("am2.isat_L1",indv_files)]}
 
     massive_overall <- tibble()
     for(k in seq_along(indv_files)){
@@ -489,7 +187,7 @@ for(i in socio){
         filter(year > 2089) %>%
 
         mutate(diff = gdp_cap_hundred_climate / gdp_cap_hundred) %>%
-        drop_na %>%
+        #drop_na %>%
 
         group_by(iso,final_temp,realisation) %>%
 
@@ -508,94 +206,99 @@ for(i in socio){
 
 # Quantiles ---------------------------------------------------------------
 
+
+library(tidyverse)
+# library(data.table)
+library(gets)
+library(here)
+library(vroom)
+library(MASS)
 library(quantreg)
 
 rm(list = ls())
 select <- dplyr::select
+here <- here::here
 
-for(type in c("sq")){
-  files  <- list.files(here("data-raw","projections","projfiles"),pattern = "massive_EOC", full.names = T)
-  #files <- grep("BMS",files,value=T,ignore.case = FALSE)
-  #files <- grep("revision|altrestr1",files,value=T,ignore.case = FALSE)
-  #files <- grep("Mueller",files,value=T,ignore.case = FALSE)
+type = "sq"
+files  <- list.files(here("data-raw","projections","projfiles"),pattern = "massive_EOC", full.names = T)
+files <- grep("_L1",files,value=T,ignore.case = FALSE, invert = TRUE)
+#files <- grep("revision|altrestr1",files,value=T,ignore.case = FALSE)
+#files <- grep("Mueller",files,value=T,ignore.case = FALSE)
 
-  overall_df <- tibble()
-  for(i in 1:length(files)){
-    print(gsub("_massive_EOC", "",gsub(".RData", "", gsub(paste0(here("data-raw","projections","projfiles"),"/"),"",files[i]), fixed = T)))
+overall_df <- tibble()
+for(i in 1:length(files)){
+  print(gsub("_massive_EOC", "",gsub(".RData", "", gsub(paste0(here("data-raw","projections","projfiles"),"/"),"",files[i]), fixed = T)))
 
-    load(files[i])
+  load(files[i])
 
-    tibble(name = gsub("_EOC", "",
-                       gsub(".RData", "", gsub(paste0(here("data-raw","projections","projfiles"),"/"),"",files[i]), fixed = T))) %>%
-      mutate(name = case_when(name=="Mueller_m2_massive"~"Mueller_Contemp_Base",
-                              name=="Mueller_m2.isat_massive"~"Mueller_Contemp_IIS",
-                              name=="Mueller_m2_L1_massive"~"Mueller_Lagged_Base",
-                              name=="Mueller_m2_L1.isat_massive"~"Mueller_Lagged_IIS",
-                              TRUE~name)) %>%
-      separate(name, sep = "_", into = c("baseline", "model","spec"),fill = "right") -> name_df
+  tibble(name = gsub("_EOC", "",
+                     gsub(".RData", "", gsub(paste0(here("data-raw","projections","projfiles"),"/"),"",files[i]), fixed = T))) %>%
+    mutate(name = case_when(name=="Mueller_m2_massive"~"Mueller_Standard_Base",
+                            name=="Mueller_m2.isat_massive"~"Mueller_Standard_IIS",
+                            name=="Mueller_am2_massive"~"Mueller_Adaptation_Base",
+                            name=="Mueller_am2.isat_massive"~"Mueller_Adaptation_IIS",
+                            name=="Mueller_am2_L1_massive"~"Mueller_AdaptationL1_Base",
+                            name=="Mueller_am2.isat_L1_massive"~"Mueller_AdaptationL1_IIS",
+                            TRUE~name)) %>%
+    separate(name, sep = "_", into = c("baseline", "model","spec"),fill = "right") -> name_df
 
-    baseline <- name_df$baseline
-    model <- name_df$model
-    specification <- name_df$spec
-
-
-    success <- FALSE
-
-    massive_overall %>%
-      distinct(final_temp)  -> temperature_axis
+  baseline <- name_df$baseline
+  model <- name_df$model
+  specification <- name_df$spec
 
 
+  success <- FALSE
+
+  massive_overall %>%
+    distinct(final_temp)  -> temperature_axis
 
 
-    while (!success) {
-      try({
+  while (!success) {
+    try({
 
-        form <- "diff ~ final_temp"
-        if(type=="sq"){form <- paste0(form,"+ I(final_temp*final_temp)")}
-        if(type=="cub"){form <- paste0(form," + I(final_temp*final_temp) + I(final_temp*final_temp*final_temp)")}
-        form <- as.formula(form)
+      form <- "diff ~ final_temp"
+      if(type=="sq"){form <- paste0(form,"+ I(final_temp*final_temp)")}
+      if(type=="cub"){form <- paste0(form," + I(final_temp*final_temp) + I(final_temp*final_temp*final_temp)")}
+      form <- as.formula(form)
 
-        vlow <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.025)
-        low <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.05)
-        midl <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.25)
-        med <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.5)
-        midh <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.75)
-        high <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.95)
-        vhigh <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.975)
-
-
-        tibble(
-          final_temp = temperature_axis$final_temp,
-          baseline = baseline,
-          model = model,
-          specification = specification,
-          scenario = "Hundred",
-          vlow  = predict(vlow, newdata = temperature_axis),
-          low  =  predict(low, newdata = temperature_axis),
-          midl  = predict(midl, newdata = temperature_axis),
-          med  =  predict(med, newdata = temperature_axis),
-          midh  = predict(midh, newdata = temperature_axis),
-          high  = predict(high, newdata = temperature_axis),
-          vhigh = predict(vhigh, newdata = temperature_axis)
-        ) %>%
-          bind_rows(overall_df, .) -> overall_df
-
-        success <- TRUE
-
-      },silent = FALSE)
-    }
+      vlow <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.025)
+      low <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.05)
+      midl <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.25)
+      med <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.5)
+      midh <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.75)
+      high <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.95)
+      vhigh <- rq(formula = form, data = massive_overall,method = "pfn",tau = 0.975)
 
 
-    rm(vlow,low,midh,midl,med,high,vhigh)
+      tibble(
+        final_temp = temperature_axis$final_temp,
+        baseline = baseline,
+        model = model,
+        specification = specification,
+        scenario = "Hundred",
+        vlow  = predict(vlow, newdata = temperature_axis),
+        low  =  predict(low, newdata = temperature_axis),
+        midl  = predict(midl, newdata = temperature_axis),
+        med  =  predict(med, newdata = temperature_axis),
+        midh  = predict(midh, newdata = temperature_axis),
+        high  = predict(high, newdata = temperature_axis),
+        vhigh = predict(vhigh, newdata = temperature_axis)
+      ) %>%
+        bind_rows(overall_df, .) -> overall_df
+
+      success <- TRUE
+
+    },silent = FALSE)
   }
 
 
-
-  overall_df %>% arrange(baseline,model,specification,scenario,final_temp) -> overall_df
-
-
-  write_csv(overall_df,here("data-raw","projections","projfiles",paste0("all_models_quantiles_",type,".csv")))
 }
+
+
+
+overall_df %>% arrange(baseline,model,specification,scenario,final_temp) -> overall_df
+
+write_csv(overall_df,here("data-raw","projections",paste0("all_models_quantiles_",type,".csv")))
 
 
 
@@ -622,4 +325,137 @@ overall_df %>%
   coord_cartesian(ylim = c(-1,1))+
   labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
   ggsave(here("data-raw/projections/out/projections.pdf"), height = 6, width = 8)
+
+
+# Plotting Map ----
+
+overall_df <- read_csv(here("data-raw","projections",paste0("all_models_quantiles_sq.csv")))
+
+
+overall_df %>%
+  mutate(baseline = case_when(baseline=="Mueller"~"MSW",
+                              TRUE~baseline)) %>%
+  mutate(across(c(where(is.double),-final_temp),~.-1)) %>%
+  rename(pc.025 = vlow,
+         pc.05 = low,
+         pc.25 = midl,
+         pc.5 = med,
+         pc.75 = midh,
+         pc.95 = high,
+         pc.975 = vhigh) -> df
+
+
+df %>%
+  mutate(sig.50 = ifelse(sign(pc.75)==sign(pc.25),1,0),
+         sig.90 = ifelse(sign(pc.95)==sign(pc.05),1,0),
+         sig.95 = ifelse(sign(pc.975)==sign(pc.025),1,0)) -> significance_all
+
+
+df %>%
+  mutate(map_position = round(final_temp),
+         map_position = ifelse(final_temp < 1.75,1,map_position)) %>%
+
+  # average over the map position
+  group_by(baseline,model,specification,scenario,map_position,iso) %>%
+  summarise(across(where(is.numeric),.fns = mean),.groups = "drop") %>%
+  mutate(sig.50 = ifelse(sign(pc.75)==sign(pc.25),1,0),
+         sig.90 = ifelse(sign(pc.95)==sign(pc.05),1,0),
+         sig.95 = ifelse(sign(pc.975)==sign(pc.025),1,0)) %>%
+  select(-starts_with("pc."),pc.5) %>%
+
+  # Joining on the iso codes
+  mutate(region = countrycode::countrycode(sourcevar = iso,origin = "iso3c",destination = "country.name")) %>%
+  relocate(region, .after = iso) %>%
+  mutate(region = case_when(region=="Myanmar (Burma)"~"Myanmar",
+                            region=="Bosnia & Herzegovina"~"Bosnia and Herzegovina",
+                            region=="Congo - Brazzaville"~"Republic of Congo",
+                            region=="Congo - Kinshasa"~"Democratic Republic of the Congo",
+                            TRUE~region)) -> map_values
+
+map_data("world") %>%
+  filter(!region=="Antarctica") %>%
+  mutate(region = case_when(region=="USA"~"United States",
+                            region=="UK"~"United Kingdom",
+                            region=="Czech Republic"~"Czechia",
+                            region=="Ivory Coast"~"Côte d’Ivoire",
+                            TRUE~region)) -> world_df
+
+
+
+
+# Maps
+
+## Manual: gets and LASSO combined
+
+# Main Figure for PNAS Submission Oct 2020
+# <2°C
+# 3.5°C
+# 4.5°C
+
+world_df %>%
+  full_join(df %>%
+              mutate(map_position = NA,
+                     map_position = case_when(final_temp < 2~"Below 2°C",
+                                              final_temp>=3&final_temp<4~"3.5°C",
+                                              final_temp>=4.5~">4.5°C")) %>%
+
+              # average over the map position
+              group_by(baseline,model,specification,scenario,map_position,iso) %>%
+              summarise(across(where(is.numeric),.fns = mean),.groups = "drop") %>%
+              mutate(sig.50 = ifelse(sign(pc.75)==sign(pc.25),1,0),
+                     sig.90 = ifelse(sign(pc.95)==sign(pc.05),1,0),
+                     sig.95 = ifelse(sign(pc.975)==sign(pc.025),1,0)) %>%
+              select(-starts_with("pc."),pc.5) %>%
+
+              # Joining on the iso codes
+              mutate(region = countrycode::countrycode(sourcevar = iso,origin = "iso3c",destination = "country.name")) %>%
+              relocate(region, .after = iso) %>%
+              mutate(region = case_when(region=="Myanmar (Burma)"~"Myanmar",
+                                        region=="Bosnia & Herzegovina"~"Bosnia and Herzegovina",
+                                        region=="Congo - Brazzaville"~"Republic of Congo",
+                                        region=="Congo - Kinshasa"~"Democratic Republic of the Congo",
+                                        TRUE~region))  %>%
+
+              ## HERE change from Schwarz and Pretis
+              filter(baseline=="MSW",
+                     specification=="standard",
+                     model %in% c("LASSO","gets")),by="region") %>%
+  # if 90% not significant, then NA
+  mutate(pc.5 = ifelse(sig.90 != 1, NA, pc.5)) -> intermed
+
+intermed %>%
+  filter(!is.na(map_position)) %>%
+  mutate(map_position = factor(map_position,levels = c("Below 2°C","3.5°C",">4.5°C"))) %>%
+  ggplot() +
+  facet_grid(map_position~model)+
+  geom_polygon(aes(x=long,y=lat,group=group),fill="grey",inherit.aes = FALSE,data = world_df)+
+  geom_polygon(aes(x=long,y=lat,group=group,fill=pc.5)) +
+  coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") +
+
+
+  #coord_quickmap()+
+  scale_fill_gradientn(colours = brewer.pal(name = "RdBu",n=11),
+                       breaks = seq(from = -1, to = 1, by = 0.2),
+                       guide = guide_colourbar(title = "Level Percentage Difference to baseline",
+                                               title.position = "top"),
+                       labels=c(as.character(scales::percent(seq(from = -1, to = 0.8, by = 0.2))),">100%"),
+                       limits=c(-1,1),
+                       oob=scales::squish,
+                       na.value = "grey") +
+  labs(x=NULL,y=NULL)+
+
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        strip.background = element_blank(),
+        panel.border = element_rect(colour = "grey",fill=NA),
+        text = element_text(family = "Georgia"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        legend.key.size = unit(0.25, "cm"),
+        legend.key.width = unit(1.5,"cm"),
+        legend.text = element_text(family = "Georgia",size=8)) +
+  #ggsave(filename = here("output","figures","Map_MSW_getsLASSO_standard.jpg"),height = 6,width = 6) +
+  NULL
+
+
 
