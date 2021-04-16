@@ -609,7 +609,7 @@ for(boot in c(TRUE)){
              lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.lam4, ylab="Null Rejection Frequency",
              xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", Clean Data Scale)"))
         lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
-        lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
+        #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
         lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
 
 
@@ -617,8 +617,8 @@ for(boot in c(TRUE)){
         abline(h=0.05, col="gray55")
         text(x=50, y=0.017, label="0.05", col="gray55")
 
-        legend(50, 0.7, c("Asympt", "L2", "L1", "Test Stat."),  bg=NA, bty = "n", title.adj=-0.03,
-               lty=c(1, 1, 2, 3), col=c("gray55", col.lam4, col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+        legend(50, 0.7, c("Asympt", "L2", "L1"),  bg=NA, bty = "n", title.adj=-0.03,
+               lty=c(1, 1, 2), col=c("gray55", col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
         dev.off()
       }
