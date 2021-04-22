@@ -53,7 +53,7 @@ load(here("data-raw/projections/am2_L1.RData"))
 load(here("data-raw/projections/am2.isat_L1.RData"))
 
 
-# # Test
+# # # Test
 # final_temp_selection <- climate %>% distinct(final_temp) %>% slice(1,100, n()) %>% pull(final_temp)
 # iso_selection <- c("AUT","IND","FIN", "USA")
 #
@@ -67,7 +67,44 @@ load(here("data-raw/projections/am2.isat_L1.RData"))
 #         climate = climate_subset,
 #         socioprojections = mueller_df_subset,
 #         coefsamples = 1,
+#         parallel = FALSE,
+#         max_GDP_restriction = TRUE,
+#         no_worse_off_restriction = TRUE,
+#         no_higher_baseline_restriction = TRUE)
+#
+#
+# project(stdmodel = m2,
+#         modelname = "m2",
+#         adaptation = FALSE,
+#         climate = climate_subset,
+#         socioprojections = mueller_df_subset,
+#         coefsamples = 1,
 #         parallel = FALSE)
+#
+#
+# load(here("data-raw","projections","projfiles", "Mueller_am2_1.RData"))
+# done %>%
+#   filter(year > 2089) %>%
+#
+#   mutate(diff = gdp_cap_hundred_climate / gdp_cap_hundred) %>%
+#   #drop_na %>%
+#
+#   group_by(iso,final_temp,realisation) %>%
+#
+#   summarise(diff = mean(diff),.groups =  "drop") %>%
+#   ungroup
+# load(here("data-raw","projections","projfiles", "Mueller_m2_1.RData"))
+#
+# done %>%
+#   filter(year > 2089) %>%
+#
+#   mutate(diff = gdp_cap_hundred_climate / gdp_cap_hundred) %>%
+#   #drop_na %>%
+#
+#   group_by(iso,final_temp,realisation) %>%
+#
+#   summarise(diff = mean(diff),.groups =  "drop") %>%
+#   ungroup
 
 
 # Projections

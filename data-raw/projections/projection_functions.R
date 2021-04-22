@@ -98,7 +98,6 @@ project <- function(stdmodel,
     gsub("_coef|_2","",.) %>%
     unique -> climate_vars_sq
 
-
   if(adaptation){
     # Prepare max restriction
     if(socioprojections_type == "Mueller"){
@@ -197,7 +196,6 @@ project <- function(stdmodel,
     }
 
     if(!adaptation){
-
       done <- socioprojections %>%
         select(-contains("fifty")) %>%
         filter(year==2017) %>%
@@ -208,7 +206,9 @@ project <- function(stdmodel,
         relocate(c(realisation,final_temp), .after = year)
 
     } else if(adaptation){
+
       effect_interaction <- climate_subset
+
       # Calculate the climate effect
       for(var in climate_vars){
         #print(var)
@@ -223,6 +223,19 @@ project <- function(stdmodel,
           bind_cols(effect_interaction,.) -> effect_interaction
       }
 
+      for(var in interaction_vars){
+        effect_interaction %>%
+          select(all_of(var)) %>%
+          pull %>% "*"(selection_coefs_adapt %>%
+                         slice(v) %>%
+                         select(all_of(paste0(var,"_int_coef"))) %>%
+                         pull) %>%
+          as_tibble %>%
+          rename_all(~paste0(var,"_int_effect"))  %>%
+          bind_cols(effect_interaction,.) -> effect_interaction
+      }
+
+
       effect_interaction %>%
         bind_cols(effect_standard %>% select(contains("stdeffect"))) -> effect_interaction
 
@@ -231,7 +244,7 @@ project <- function(stdmodel,
         filter(year==2017) %>%
         left_join(effect_interaction %>%
                     filter(year == 2017) %>%
-                    select(-model,-ensemble),by = c("iso","year")) %>%
+                    select(-model,-ensemble, -rcp),by = c("iso","year")) %>%
 
         #drop_na %>%
         mutate(realisation = v) %>%
@@ -241,6 +254,7 @@ project <- function(stdmodel,
 
     # Projection Loop
     for(i in 2018:2099){
+      #browser()
       if(verbose){print(paste0("Realisation ",v," Year: ",i))}
       done %>%
         filter(year == i-1) %>%
@@ -273,7 +287,7 @@ project <- function(stdmodel,
                  # Effect of pure Climate variables in interaction model
                  total_climlogeffect = rowSums(select(.,ends_with("logeffect"),-contains("_int_"))),
                  # Effect of Climate - GDP interaction variables in interaction model
-                 total_inteffect =  rowSums(select(.,ends_with("_int_logeffect")))
+                 total_inteffect =  rowSums(select(.,ends_with("_int_effect")))
           ) %>%
 
             # max GDP Restriction
@@ -297,7 +311,10 @@ project <- function(stdmodel,
                        test = total_stdeffect > interaction_effect_hundred,
                        yes = total_stdeffect,
                        no = interaction_effect_hundred))
-            }else{.}} %>%
+            } else{
+              mutate(.,
+                     total_effect_this_year_hundred = interaction_effect_hundred)
+            }} %>%
 
             # no higher than baseline restriction
             # checks: when interaction effect flips the sign of the growth effect
@@ -314,10 +331,12 @@ project <- function(stdmodel,
                            yes = hundred_mean, # yes: take baseline
                            no = (total_effect_this_year_hundred+1) # no: take adaptation effect
                          ),
-                         no = hundred_mean + total_effect_this_year_hundred # just take baseline + adaptation effect
+                         no = (hundred_mean + total_effect_this_year_hundred) # just take baseline + adaptation effect
                        )
               )
-            } else { . }}
+            } else { mutate(.,
+                            gdp_cap_hundred_climate = gdp_cap_hundred_climate * (hundred_mean + total_effect_this_year_hundred)) # just take baseline + adaptation effect
+            }}
         }} %>%
 
         # Finishing up
