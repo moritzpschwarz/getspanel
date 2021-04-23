@@ -43,7 +43,7 @@ lm(diff.ln_gdp_cap~.-1,data = m2_data) -> m2
 
 # save m2 ---------------------------------------------------------------
 
-#save(m2, file = here("data-raw/projections/m2.RData"))
+save(m2, file = here("data-raw/projections/m2.RData"))
 
 
 # Isat --------------------------------------------------------------------
