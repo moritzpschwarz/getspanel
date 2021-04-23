@@ -1,0 +1,38 @@
+---
+title: "Tables and Figures of the Estimation"
+output: html_notebook
+---
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE, echo = TRUE, comment = NA)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(modelsummary)  
+library(gets)
+
+
+rm(list=ls())
+select <- dplyr::select
+```
+
+
+```{r}
+lapply(list.files(here("data-raw/projections"),pattern = ".RData", full.names = TRUE), load, envir=.GlobalEnv)
+```
+
+```{r}
+m2.isat %>% as.lm -> m2.isat
+am2.isat%>% as.lm -> am2.isat
+am2.isat_L1%>% as.lm -> am2.isat_L1
+```
+
+
+
+```{r}
+source(here("data-raw/projections/modelsummary_files.R"))
+modelsummary(m2)
+```
+
