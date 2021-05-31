@@ -8,10 +8,15 @@ knitr::opts_chunk$set(warning = FALSE, echo = TRUE, comment = NA)
 ```
 
 ```{r}
+# library(remotes)
+# remotes::install_github('vincentarelbundock/modelsummary')
+
+
 library(tidyverse)
 library(here)
 library(modelsummary)  
 library(gets)
+
 
 
 rm(list=ls())
@@ -25,14 +30,36 @@ lapply(list.files(here("data-raw/projections"),pattern = ".RData", full.names = 
 
 ```{r}
 m2.isat %>% as.lm -> m2.isat
-am2.isat%>% as.lm -> am2.isat
-am2.isat_L1%>% as.lm -> am2.isat_L1
+am2.isat %>% as.lm -> am2.isat
+am2.isat_L1 %>% as.lm -> am2.isat_L1
 ```
 
 
 
 ```{r}
-source(here("data-raw/projections/modelsummary_files.R"))
-modelsummary(m2)
+list(
+  "Base"  = m2,
+  "Base IIS"  = m2.isat,
+  
+  "Adaptation" = am2, 
+  "Adaptation IIS" = am2.isat,
+  
+  "Adaptation Lag(GDP_pc)" = am2_L1, 
+  "Adaptation Lag(GDP_pc) IIS" = am2.isat_L1) -> modellist
+
+modelsummary(modellist, 
+             stars = TRUE, fmt = 5,
+             coef_omit = "time|year|iso|iis", 
+             output = here("data-raw/projections/out/models.jpg"))
 ```
+
+
+```{r}
+
+ggsave(modelplot(modellist,  coef_omit = "time|year|iso|iis"), filename = here("data-raw/projections/out/coefficientplot.jpg"))
+
+ggsave(modelplot(modellist,  coef_omit = "time|year|iso|iis", facet = TRUE), filename = here("data-raw/projections/out/coefficientplot_facet.jpg"))
+
+```
+
 

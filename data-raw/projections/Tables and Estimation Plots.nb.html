@@ -246,10 +246,16 @@ summary {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGhlcmUpXG5saWJyYXJ5KG1vZGVsc3VtbWFyeSkgIFxuXG5cbnJtKGxpc3Q9bHMoKSlcbnNlbGVjdCA8LSBkcGx5cjo6c2VsZWN0XG5gYGAifQ== -->
-<pre class="r"><code>library(tidyverse)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBsaWJyYXJ5KHJlbW90ZXMpXG4jIHJlbW90ZXM6Omluc3RhbGxfZ2l0aHViKCd2aW5jZW50YXJlbGJ1bmRvY2svbW9kZWxzdW1tYXJ5JylcblxuXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmxpYnJhcnkoaGVyZSlcbmxpYnJhcnkobW9kZWxzdW1tYXJ5KSAgXG5saWJyYXJ5KGdldHMpXG5cblxuXG5ybShsaXN0PWxzKCkpXG5zZWxlY3QgPC0gZHBseXI6OnNlbGVjdFxuYGBgIn0= -->
+<pre class="r"><code># library(remotes)
+# remotes::install_github(&#39;vincentarelbundock/modelsummary&#39;)
+
+
+library(tidyverse)
 library(here)
 library(modelsummary)  
+library(gets)
+
 
 
 rm(list=ls())
@@ -259,9 +265,8 @@ select &lt;- dplyr::select</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGFwcGx5KGxpc3QuZmlsZXMoaGVyZShcImRhdGEtcmF3L3Byb2plY3Rpb25zXCIpLHBhdHRlcm4gPSBcIi5SRGF0YVwiLCBmdWxsLm5hbWVzID0gVFJVRSksIGxvYWQsIGVudmlyPS5HbG9iYWxFbnYpXG5cbmBgYCJ9 -->
-<pre class="r"><code>lapply(list.files(here(&quot;data-raw/projections&quot;),pattern = &quot;.RData&quot;, full.names = TRUE), load, envir=.GlobalEnv)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGFwcGx5KGxpc3QuZmlsZXMoaGVyZShcImRhdGEtcmF3L3Byb2plY3Rpb25zXCIpLHBhdHRlcm4gPSBcIi5SRGF0YVwiLCBmdWxsLm5hbWVzID0gVFJVRSksIGxvYWQsIGVudmlyPS5HbG9iYWxFbnYpXG5gYGAifQ== -->
+<pre class="r"><code>lapply(list.files(here(&quot;data-raw/projections&quot;),pattern = &quot;.RData&quot;, full.names = TRUE), load, envir=.GlobalEnv)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSBcImFtMi5pc2F0XCJcblxuW1syXV1cblsxXSBcImFtMi5pc2F0X0wxXCJcblxuW1szXV1cblsxXSBcImFtMlwiXG5cbltbNF1dXG5bMV0gXCJhbTJfTDFcIlxuXG5bWzVdXVxuWzFdIFwibTIuaXNhdFwiXG5cbltbNl1dXG5bMV0gXCJtMlwiXG4ifQ== -->
 <pre><code>[[1]]
@@ -286,27 +291,58 @@ select &lt;- dplyr::select</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubTIuaXNhdCAlPiUgYXMubG0gLT4gbTIuaXNhdFxuYW0yLmlzYXQlPiUgYXMubG0gLT4gYW0yLmlzYXRcbmFtMi5pc2F0X0wxJT4lIGFzLmxtIC0+IGFtMi5pc2F0X0wxXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubTIuaXNhdCAlPiUgYXMubG0gLT4gbTIuaXNhdFxuYW0yLmlzYXQgJT4lIGFzLmxtIC0+IGFtMi5pc2F0XG5hbTIuaXNhdF9MMSAlPiUgYXMubG0gLT4gYW0yLmlzYXRfTDFcbmBgYCJ9 -->
 <pre class="r"><code>m2.isat %&gt;% as.lm -&gt; m2.isat
-am2.isat%&gt;% as.lm -&gt; am2.isat
-am2.isat_L1%&gt;% as.lm -&gt; am2.isat_L1</code></pre>
+am2.isat %&gt;% as.lm -&gt; am2.isat
+am2.isat_L1 %&gt;% as.lm -&gt; am2.isat_L1</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWxzdW1tYXJ5KG0yKVxuXG5gYGAifQ== -->
-<pre class="r"><code>modelsummary(m2)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlzdChcbiAgXCJCYXNlXCIgID0gbTIsXG4gIFwiQmFzZSBJSVNcIiAgPSBtMi5pc2F0LFxuICBcbiAgXCJBZGFwdGF0aW9uXCIgPSBhbTIsIFxuICBcIkFkYXB0YXRpb24gSUlTXCIgPSBhbTIuaXNhdCxcbiAgXG4gIFwiQWRhcHRhdGlvbiBMYWcoR0RQX3BjKVwiID0gYW0yX0wxLCBcbiAgXCJBZGFwdGF0aW9uIExhZyhHRFBfcGMpIElJU1wiID0gYW0yLmlzYXRfTDEpIC0+IG1vZGVsbGlzdFxuXG5tb2RlbHN1bW1hcnkobW9kZWxsaXN0LCBcbiAgICAgICAgICAgICBzdGFycyA9IFRSVUUsIGZtdCA9IDUsXG4gICAgICAgICAgICAgY29lZl9vbWl0ID0gXCJ0aW1lfHllYXJ8aXNvfGlpc1wiLCBcbiAgICAgICAgICAgICBvdXRwdXQgPSBoZXJlKFwiZGF0YS1yYXcvcHJvamVjdGlvbnMvb3V0L21vZGVscy5qcGdcIikpXG5gYGAifQ== -->
+<pre class="r"><code>list(
+  &quot;Base&quot;  = m2,
+  &quot;Base IIS&quot;  = m2.isat,
+  
+  &quot;Adaptation&quot; = am2, 
+  &quot;Adaptation IIS&quot; = am2.isat,
+  
+  &quot;Adaptation Lag(GDP_pc)&quot; = am2_L1, 
+  &quot;Adaptation Lag(GDP_pc) IIS&quot; = am2.isat_L1) -&gt; modellist
+
+modelsummary(modellist, 
+             stars = TRUE, fmt = 5,
+             coef_omit = &quot;time|year|iso|iis&quot;, 
+             output = here(&quot;data-raw/projections/out/models.jpg&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQzpcXFxcVXNlcnNcXFxcbW9yaXRcXFxcRG9jdW1lbnRzXFxcXEdpdEh1YlxcXFxnZXRzcGFuZWxcXFxcZGF0YS1yYXdcXFxccHJvamVjdGlvbnNcXFxcb3V0XFxcXG1vZGVscy5qcGdcIlxuYXR0cigsXCJpbmZvXCIpXG4ifQ== -->
+<pre><code>[1] &quot;C:\\Users\\morit\\Documents\\GitHub\\getspanel\\data-raw\\projections\\out\\models.jpg&quot;
+attr(,&quot;info&quot;)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6Nywic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyIxIHggNyJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJuVlFYV3ZDTUJSTnY4d01PSVQ5RHN2czlBZnNDMkZQNHBPdldadmFzSmlVSktMYjAzNjU3clkyRWdJTHBQZmpuSnVlZXpadjJ5ZXlKUWloQktVb1Ewa0dLUnE5cnVmRnNrQW9qYUdLQUJsMzhRU3NCMGd3M0trSHBCL3I5eFhFU2Q5RHlhT1hQNGRjczFtOVFDUlh2RDhUTC9lNWVMNVluT0FHT2pKSjk4d01YRHcwUjdYU2Uyb2Q1Y2dyMnppb1lYelhPSWlVU2lodFdsb3lSNFk1NjRxN21ndG0rSStyY2NXazRmWTcwRERXNnBnN0haMysrQmMrRnppaDJGSlFZNExGU0VVdHpXc044MUNkZ3hHc1dzdVZoS0c0Y3pzTGhpTWROS1lIMlNtcFptVnprRit6WXZtUHZaR1g0K3MvNDh2d1Z1YThZbkxINWMwWlFUK1pHSXA3V0xuZk9HODFsemM3b1d0eXF5d1Zuc0d1MHkrSHpuOVR3ZEdQWmdJQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["format"],"name":[1],"type":["chr"],"align":["left"]},{"label":["width"],"name":[2],"type":["int"],"align":["right"]},{"label":["height"],"name":[3],"type":["int"],"align":["right"]},{"label":["colorspace"],"name":[4],"type":["chr"],"align":["left"]},{"label":["matte"],"name":[5],"type":["lgl"],"align":["right"]},{"label":["filesize"],"name":[6],"type":["int"],"align":["right"]},{"label":["density"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"JPEG","2":"816","3":"833","4":"sRGB","5":"FALSE","6":"0","7":"144x144"}],"options":{"columns":{"min":{},"max":[10],"total":[7]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dzYXZlKG1vZGVscGxvdChtb2RlbGxpc3QsICBjb2VmX29taXQgPSBcInRpbWV8eWVhcnxpc298aWlzXCIsIGZhY2V0ID0gVFJVRSksIGZpbGVuYW1lID0gaGVyZShcImRhdGEtcmF3L3Byb2plY3Rpb25zL291dC9jb2VmZmljaWVudHBsb3RfZmFjZXQuanBnXCIpKVxuXG5gYGAifQ== -->
+<pre class="r"><code>ggsave(modelplot(modellist,  coef_omit = &quot;time|year|iso|iis&quot;, facet = TRUE), filename = here(&quot;data-raw/projections/out/coefficientplot_facet.jpg&quot;))
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcm91bmRpbmcoZXN0W1tuXV0sIGZtdCkgOiBjb3VsZCBub3QgZmluZCBmdW5jdGlvbiBcInJvdW5kaW5nXCJcbiJ9 -->
-<pre><code>Error in rounding(est[[n]], fmt) : could not find function &quot;rounding&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiU2F2aW5nIDcgeCA3IGluIGltYWdlXG4ifQ== -->
+<pre><code>Saving 7 x 7 in image</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlRhYmxlcyBhbmQgRmlndXJlcyBvZiB0aGUgRXN0aW1hdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KHdhcm5pbmcgPSBGQUxTRSwgZWNobyA9IFRSVUUsIGNvbW1lbnQgPSBOQSkNCmBgYA0KDQpgYGB7cn0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeShoZXJlKQ0KbGlicmFyeShtb2RlbHN1bW1hcnkpICANCmxpYnJhcnkoZ2V0cykNCg0KDQpybShsaXN0PWxzKCkpDQpzZWxlY3QgPC0gZHBseXI6OnNlbGVjdA0KYGBgDQoNCg0KYGBge3J9DQpsYXBwbHkobGlzdC5maWxlcyhoZXJlKCJkYXRhLXJhdy9wcm9qZWN0aW9ucyIpLHBhdHRlcm4gPSAiLlJEYXRhIiwgZnVsbC5uYW1lcyA9IFRSVUUpLCBsb2FkLCBlbnZpcj0uR2xvYmFsRW52KQ0KYGBgDQoNCmBgYHtyfQ0KbTIuaXNhdCAlPiUgYXMubG0gLT4gbTIuaXNhdA0KYW0yLmlzYXQlPiUgYXMubG0gLT4gYW0yLmlzYXQNCmFtMi5pc2F0X0wxJT4lIGFzLmxtIC0+IGFtMi5pc2F0X0wxDQpgYGANCg0KDQoNCmBgYHtyfQ0Kc291cmNlKGhlcmUoImRhdGEtcmF3L3Byb2plY3Rpb25zL21vZGVsc3VtbWFyeV9maWxlcy5SIikpDQptb2RlbHN1bW1hcnkobTIpDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlRhYmxlcyBhbmQgRmlndXJlcyBvZiB0aGUgRXN0aW1hdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KHdhcm5pbmcgPSBGQUxTRSwgZWNobyA9IFRSVUUsIGNvbW1lbnQgPSBOQSkNCmBgYA0KDQpgYGB7cn0NCiMgbGlicmFyeShyZW1vdGVzKQ0KIyByZW1vdGVzOjppbnN0YWxsX2dpdGh1YigndmluY2VudGFyZWxidW5kb2NrL21vZGVsc3VtbWFyeScpDQoNCg0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGhlcmUpDQpsaWJyYXJ5KG1vZGVsc3VtbWFyeSkgIA0KbGlicmFyeShnZXRzKQ0KDQoNCg0Kcm0obGlzdD1scygpKQ0Kc2VsZWN0IDwtIGRwbHlyOjpzZWxlY3QNCmBgYA0KDQoNCmBgYHtyfQ0KbGFwcGx5KGxpc3QuZmlsZXMoaGVyZSgiZGF0YS1yYXcvcHJvamVjdGlvbnMiKSxwYXR0ZXJuID0gIi5SRGF0YSIsIGZ1bGwubmFtZXMgPSBUUlVFKSwgbG9hZCwgZW52aXI9Lkdsb2JhbEVudikNCmBgYA0KDQpgYGB7cn0NCm0yLmlzYXQgJT4lIGFzLmxtIC0+IG0yLmlzYXQNCmFtMi5pc2F0ICU+JSBhcy5sbSAtPiBhbTIuaXNhdA0KYW0yLmlzYXRfTDEgJT4lIGFzLmxtIC0+IGFtMi5pc2F0X0wxDQpgYGANCg0KDQoNCmBgYHtyfQ0KbGlzdCgNCiAgIkJhc2UiICA9IG0yLA0KICAiQmFzZSBJSVMiICA9IG0yLmlzYXQsDQogIA0KICAiQWRhcHRhdGlvbiIgPSBhbTIsIA0KICAiQWRhcHRhdGlvbiBJSVMiID0gYW0yLmlzYXQsDQogIA0KICAiQWRhcHRhdGlvbiBMYWcoR0RQX3BjKSIgPSBhbTJfTDEsIA0KICAiQWRhcHRhdGlvbiBMYWcoR0RQX3BjKSBJSVMiID0gYW0yLmlzYXRfTDEpIC0+IG1vZGVsbGlzdA0KDQptb2RlbHN1bW1hcnkobW9kZWxsaXN0LCANCiAgICAgICAgICAgICBzdGFycyA9IFRSVUUsIGZtdCA9IDUsDQogICAgICAgICAgICAgY29lZl9vbWl0ID0gInRpbWV8eWVhcnxpc298aWlzIiwgDQogICAgICAgICAgICAgb3V0cHV0ID0gaGVyZSgiZGF0YS1yYXcvcHJvamVjdGlvbnMvb3V0L21vZGVscy5qcGciKSkNCmBgYA0KDQoNCmBgYHtyfQ0KDQpnZ3NhdmUobW9kZWxwbG90KG1vZGVsbGlzdCwgIGNvZWZfb21pdCA9ICJ0aW1lfHllYXJ8aXNvfGlpcyIpLCBmaWxlbmFtZSA9IGhlcmUoImRhdGEtcmF3L3Byb2plY3Rpb25zL291dC9jb2VmZmljaWVudHBsb3QuanBnIikpDQoNCmdnc2F2ZShtb2RlbHBsb3QobW9kZWxsaXN0LCAgY29lZl9vbWl0ID0gInRpbWV8eWVhcnxpc298aWlzIiwgZmFjZXQgPSBUUlVFKSwgZmlsZW5hbWUgPSBoZXJlKCJkYXRhLXJhdy9wcm9qZWN0aW9ucy9vdXQvY29lZmZpY2llbnRwbG90X2ZhY2V0LmpwZyIpKQ0KDQpgYGANCg0KDQo=</div>
 
 
 
