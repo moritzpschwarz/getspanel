@@ -1,6 +1,8 @@
 ---
 title: "Tables and Figures of the Estimation"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
@@ -10,6 +12,8 @@ knitr::opts_chunk$set(warning = FALSE, echo = TRUE, comment = NA)
 ```{r}
 # library(remotes)
 # remotes::install_github('vincentarelbundock/modelsummary')
+
+devtools::load_all()
 
 
 library(tidyverse)
@@ -25,36 +29,154 @@ select <- dplyr::select
 
 
 ```{r}
-lapply(list.files(here("data-raw/projections"),pattern = ".RData", full.names = TRUE), load, envir=.GlobalEnv)
-```
-
-```{r}
-m2.isat %>% as.lm -> m2.isat
-am2.isat %>% as.lm -> am2.isat
-am2.isat_L1 %>% as.lm -> am2.isat_L1
+lapply(list.files(here("data-raw/projections"),
+                  pattern = ".RData", full.names = TRUE), load, envir=.GlobalEnv)
 ```
 
 
 
+```{r, eval = TRUE}
+base_vars <- grep("temp|prcp",names(coef(m2.isat)), value = TRUE)
+diffs <- vector()
+stats <- vector()
+pvals <- vector()
+for(i in base_vars){
+  diffs <- append(diffs,distorttest(m2.isat, coef = i)$coef.diff)
+  stats <- append(stats,distorttest(m2.isat, coef = i)$statistic)
+  pvals <- append(pvals,distorttest(m2.isat, coef = i)$p.value)
+}
+
+ti1 <- tibble(
+  term = base_vars,
+  estimate = diffs,
+  std.error = stats,
+  p.value = pvals
+)
+
+adapt_vars <- grep("temp|prcp",names(coef(am2.isat)), value = TRUE)
+diffs <- vector()
+stats <- vector()
+pvals <- vector()
+for(i in adapt_vars){
+  diffs <- append(diffs,distorttest(am2.isat, coef = i)$coef.diff)
+  stats <- append(stats,distorttest(am2.isat, coef = i)$statistic)
+  pvals <- append(pvals,distorttest(am2.isat, coef = i)$p.value)
+}
+
+ti2 <- tibble(
+  term = grep("temp|prcp",names(coef(am2.isat)), value = TRUE),
+  estimate = coef(am2.isat)[grep("temp|prcp",names(coef(am2.isat)))],
+  std.error = stats,
+  p.value = pvals
+)
+```
+
+
 ```{r}
+# gl <- data.frame(
+#   stat1 = "blah",
+#   stat2 = "blah blah")
+
+matrix("",
+       ncol = length(c("r.squared", "adj.r.squared", 
+                       "sigma", "statistic", "p.value", "df", 
+                       "logLik", "AIC", "BIC", "deviance", 
+                       "df.residual", "nobs"))) %>% 
+  as_tibble(.name_repair = "minimal") %>% 
+  setNames(c("r.squared", "adj.r.squared", 
+             "sigma", "statistic", "p.value", "df", 
+             "logLik", "AIC", "BIC", "deviance", 
+             "df.residual", "nobs")) -> gl
+
+
+
+mod1 <- list(
+  tidy = ti1,
+  glance = gl)
+class(mod1) <- "modelsummary_list"
+
+mod2 <- list(
+  tidy = ti2,
+  glance = gl)
+class(mod2) <- "modelsummary_list"
+
+
+#modelsummary(list(mod1,mod2), coef_rename = name_vec, escape = FALSE, stars = TRUE)
+
+```
+
+
+
+
+```{r}
+m2.isat %>% as.lm -> m2.isat_lm
+am2.isat %>% as.lm -> am2.isat_lm
+am2.isat_L1 %>% as.lm -> am2.isat_L1_lm
+```
+
+
+
+
+
+
+```{r}
+library(kableExtra)
+
 list(
   "Base"  = m2,
-  "Base IIS"  = m2.isat,
+  "Base IIS"  = m2.isat_lm,
+  "Difference Base" = mod1,
+  
   
   "Adaptation" = am2, 
-  "Adaptation IIS" = am2.isat,
-  
-  "Adaptation Lag(GDP_pc)" = am2_L1, 
-  "Adaptation Lag(GDP_pc) IIS" = am2.isat_L1) -> modellist
+  "Adaptation IIS" = am2.isat_lm,
+  "Difference Adaptation" = mod2) -> modellist
 
-modelsummary(modellist, 
-             stars = TRUE, fmt = 5,
-             coef_omit = "time|year|iso|iis", 
-             output = here("data-raw/projections/out/models.jpg"))
+# The lag(GDP) goes into the appendix  
+#"Adaptation Lag(GDP_pc)" = am2_L1, 
+#"Adaptation Lag(GDP_pc) IIS" = am2.isat_L1
+
+
+names(coef(am2.isat)) %>% 
+  grep(x = .,pattern = "temp|prcp", value = TRUE) -> name_vec
+
+names(name_vec) <- name_vec
+name_vec <- gsub("temp","Temperature", name_vec)
+name_vec <- gsub("prcp","Precipitation", name_vec)
+name_vec <- gsub("_2","<sup>2</sup>", name_vec)
+name_vec <- gsub("_int"," x GDPpc", name_vec)
+
+name_vec_tex <- gsub("<sup>2</sup>","\\\\textsuperscript{2}",name_vec)
+name_vec_tex <- gsub("pc","\\\\textsubscript{pc}",name_vec_tex)
+
 ```
 
 
 ```{r}
+library(kableExtra)
+modelsummary(modellist,
+             coef_rename = name_vec_tex,
+             stars = TRUE, 
+             fmt = 5,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns.",
+             output = here("data-raw/projections/out/models.tex"))
+
+modelsummary(modellist,
+             coef_rename = name_vec,
+             stars = TRUE, 
+             fmt = 5,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns.",
+             output = "kableExtra") %>% 
+  kable_styling() %>% 
+  kable_paper() %>% 
+  save_kable(x = .,file = here("data-raw/projections/out/models.jpg"), zoom = 2) 
+```
+
+```{r, eval = FALSE}
 
 ggsave(modelplot(modellist,  coef_omit = "time|year|iso|iis"), filename = here("data-raw/projections/out/coefficientplot.jpg"))
 
