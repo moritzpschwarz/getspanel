@@ -66,7 +66,7 @@ for(i in adapt_vars){
 
 ti2 <- tibble(
   term = grep("temp|prcp",names(coef(am2.isat)), value = TRUE),
-  estimate = coef(am2.isat)[grep("temp|prcp",names(coef(am2.isat)))],
+  estimate = diffs,
   std.error = stats,
   p.value = pvals
 )
