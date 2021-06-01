@@ -280,27 +280,45 @@ ti2 &lt;- tibble(
 #   stat1 = &quot;blah&quot;,
 #   stat2 = &quot;blah blah&quot;)
 
+# a &lt;- distorttest(m2.isat)
+# b &lt;- distorttest(am2.isat)
+
 matrix(&quot;&quot;,
        ncol = length(c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;, 
                        &quot;sigma&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;df&quot;, 
                        &quot;logLik&quot;, &quot;AIC&quot;, &quot;BIC&quot;, &quot;deviance&quot;, 
-                       &quot;df.residual&quot;, &quot;nobs&quot;))) %&gt;% 
+                       &quot;df.residual&quot;, &quot;nobs&quot;, &quot;Outlier Distortion test-stat&quot;, &quot;Outlier Distortion p-value&quot;))) %&gt;% 
   as_tibble(.name_repair = &quot;minimal&quot;) %&gt;% 
   setNames(c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;, 
              &quot;sigma&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;df&quot;, 
              &quot;logLik&quot;, &quot;AIC&quot;, &quot;BIC&quot;, &quot;deviance&quot;, 
-             &quot;df.residual&quot;, &quot;nobs&quot;)) -&gt; gl
+             &quot;df.residual&quot;, &quot;nobs&quot;,&quot;Outlier Distortion test statistic&quot;, &quot;Outlier Distortion p-value&quot;)) %&gt;% 
+  mutate(`Outlier Distortion test statistic` = distorttest(m2.isat)$statistic,
+         `Outlier Distortion p-value` = distorttest(m2.isat)$p.value)-&gt; gl1
+
+matrix(&quot;&quot;,
+       ncol = length(c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;, 
+                       &quot;sigma&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;df&quot;, 
+                       &quot;logLik&quot;, &quot;AIC&quot;, &quot;BIC&quot;, &quot;deviance&quot;, 
+                       &quot;df.residual&quot;, &quot;nobs&quot;, &quot;Outlier Distortion test-stat&quot;, &quot;Outlier Distortion p-value&quot;))) %&gt;% 
+  as_tibble(.name_repair = &quot;minimal&quot;) %&gt;% 
+  setNames(c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;, 
+             &quot;sigma&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;df&quot;, 
+             &quot;logLik&quot;, &quot;AIC&quot;, &quot;BIC&quot;, &quot;deviance&quot;, 
+             &quot;df.residual&quot;, &quot;nobs&quot;,&quot;Outlier Distortion test statistic&quot;, &quot;Outlier Distortion p-value&quot;)) %&gt;% 
+  mutate(`Outlier Distortion test statistic` = distorttest(am2.isat)$statistic,
+         `Outlier Distortion p-value` = distorttest(am2.isat)$p.value)-&gt; gl2
 
 
 
 mod1 &lt;- list(
   tidy = ti1,
-  glance = gl)
+  glance = gl1)
 class(mod1) &lt;- &quot;modelsummary_list&quot;
 
 mod2 &lt;- list(
   tidy = ti2,
-  glance = gl)
+  glance = gl2)
 class(mod2) &lt;- &quot;modelsummary_list&quot;
 
 

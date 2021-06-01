@@ -34,6 +34,7 @@ lapply(list.files(here("data-raw/projections"),
 ```
 
 
+# Main Table
 
 ```{r, eval = TRUE}
 base_vars <- grep("temp|prcp",names(coef(m2.isat)), value = TRUE)
@@ -77,27 +78,45 @@ ti2 <- tibble(
 #   stat1 = "blah",
 #   stat2 = "blah blah")
 
+# a <- distorttest(m2.isat)
+# b <- distorttest(am2.isat)
+
 matrix("",
        ncol = length(c("r.squared", "adj.r.squared", 
                        "sigma", "statistic", "p.value", "df", 
                        "logLik", "AIC", "BIC", "deviance", 
-                       "df.residual", "nobs"))) %>% 
+                       "df.residual", "nobs", "Outlier Distortion test-stat", "Outlier Distortion p-value"))) %>% 
   as_tibble(.name_repair = "minimal") %>% 
   setNames(c("r.squared", "adj.r.squared", 
              "sigma", "statistic", "p.value", "df", 
              "logLik", "AIC", "BIC", "deviance", 
-             "df.residual", "nobs")) -> gl
+             "df.residual", "nobs","Outlier Distortion test statistic", "Outlier Distortion p-value")) %>% 
+  mutate(`Outlier Distortion test statistic` = distorttest(m2.isat)$statistic,
+         `Outlier Distortion p-value` = distorttest(m2.isat)$p.value)-> gl1
+
+matrix("",
+       ncol = length(c("r.squared", "adj.r.squared", 
+                       "sigma", "statistic", "p.value", "df", 
+                       "logLik", "AIC", "BIC", "deviance", 
+                       "df.residual", "nobs", "Outlier Distortion test-stat", "Outlier Distortion p-value"))) %>% 
+  as_tibble(.name_repair = "minimal") %>% 
+  setNames(c("r.squared", "adj.r.squared", 
+             "sigma", "statistic", "p.value", "df", 
+             "logLik", "AIC", "BIC", "deviance", 
+             "df.residual", "nobs","Outlier Distortion test statistic", "Outlier Distortion p-value")) %>% 
+  mutate(`Outlier Distortion test statistic` = distorttest(am2.isat)$statistic,
+         `Outlier Distortion p-value` = distorttest(am2.isat)$p.value)-> gl2
 
 
 
 mod1 <- list(
   tidy = ti1,
-  glance = gl)
+  glance = gl1)
 class(mod1) <- "modelsummary_list"
 
 mod2 <- list(
   tidy = ti2,
-  glance = gl)
+  glance = gl2)
 class(mod2) <- "modelsummary_list"
 
 
@@ -175,6 +194,21 @@ modelsummary(modellist,
   kable_paper() %>% 
   save_kable(x = .,file = here("data-raw/projections/out/models.jpg"), zoom = 2) 
 ```
+
+
+
+
+
+
+# Appendix Table (Lag(GDP))
+
+```{r}
+
+```
+
+
+
+
 
 ```{r, eval = FALSE}
 
