@@ -234,8 +234,8 @@ sum_tab %>%
   arrange(test.lev, sample) %>% 
   
   select(-test.lev) %>% 
-  kable(col.names = c("Sample", "# Regressors", "0.01", 
-                      "0.05","0.01", "0.05")) %>% 
+  kable(format = "latex", col.names = c("Sample", "# Regressors", "0.01", 
+                                        "0.05","0.01", "0.05")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   #pack_rows("Normal Distribution",1, 10) %>%
@@ -264,7 +264,7 @@ sum_tab %>%
               names_from = c(nreg), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(col.names = c("Sample", "Test Level","p-value", "1","5","10")) %>% 
+  kable(format = "latex", col.names = c("Sample", "Test Level","p-value", "1","5","10")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
@@ -315,6 +315,9 @@ plot_specs_overall %>%
 
 for(i in 1:nrow(plot_specs) ){
   
+  print(paste("AR:",plot_specs[i,"ar"], 
+              "NREG:", plot_specs[i,"nreg"], "Out Prop:",plot_specs[i,"out_prop"], sep = " "))
+  
   sum_tab %>% 
     filter(hypothesis == "alternative" & bootstrap == FALSE) %>% 
     filter(test.lev == 0.01 & p_alpha == 0.05) %>% 
@@ -322,28 +325,78 @@ for(i in 1:nrow(plot_specs) ){
              nreg == plot_specs[i,"nreg"] & 
              ar == plot_specs[i,"ar"]) -> datalt
   
+  #### against euclidian distance of coefficients
+  datalt$is.euclid.sc <- datalt$is.euclid/max(datalt$is.euclid)
+  
+  
+  
+  # overall %>% 
+  #   separate(base, sep = "_", into = c("variable","type")) %>% 
+  #   mutate(type = paste0(type,ifelse(sq == "lin","","^2"))) %>% 
+  #   select(-adj.p.value,-sq) %>% 
+  #   pivot_longer(-c(variable, type,Model)) %>% 
+  #   mutate(value = ifelse(name == "std.error",
+  #                         paste0("(",round(value,precision),")"),
+  #                         round(value,precision))) %>% 
+  #   pivot_wider(id_cols = c(variable,type, name), names_from = c(Model), values_from = value) %>% 
+  #   arrange(variable, type) -> df_to_table
+  # 
+  # 
+  # options(knitr.kable.NA = "")
+  # 
+  # df_to_table %>%  
+  #   rename(` ` = type) %>% 
+  #   select(-variable,-name) %>% 
+  #   kable(digits = 2) %>% 
+  #   kable_paper() %>% 
+  #   pack_rows(index = table(df_to_table$variable))
+  
+  
+  
+  
   
   datalt %>% 
-    select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda, dist) %>% 
+    select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda, dist, is.euclid.sc) %>% 
     pivot_wider(id_cols = c(sample, ar, out_prop, test.lev, p_alpha, nreg, dist),
-                names_from = c(lambda), values_from = rej) %>% 
+                names_from = c(lambda), values_from = c(rej,is.euclid.sc)) %>% 
     
-    select(-dist) %>% 
-    kable(col.names = c("Sample", "AR", "Out Prop.", "Test Level","p-value","# Regressors", "2","3","4","6")) %>% 
+    pivot_longer(c(contains(c("rej","euclid")))) %>% 
+    separate(col = name, sep ="_",into = c("type","lambda")) %>% 
+    pivot_wider(names_from = lambda, values_from = value) %>% 
+    mutate(type = ifelse(type == "rej", "Rejection Freq","Scaled Eucl. Dist."))-> df_to_table
+  
+  
+  group_by(df_to_table, sample,dist)  %>% group_indices() -> group_index
+  
+  
+  df_to_table %>% 
+    select(-sample, -dist) %>% 
+    rename(` ` = type) %>%  
+    kable(format = "latex",
+          col.names = c("AR", "Out Prop.", "Test Level","p-value","# Regressors","Type", "2","3","4","6")) %>% 
     kable_styling(full_width = FALSE) %>% 
     kable_paper() %>% 
+    pack_rows("Sample Size: 100", 1, 2) %>% 
+    pack_rows("Sample Size: 200", 3, 4) %>% 
+    pack_rows("Sample Size: 300", 5, 6) %>% 
+    pack_rows("Sample Size: 400", 7, 8) %>% 
+    pack_rows("Sample Size: 500", 9, 10) %>% 
+    pack_rows("Sample Size: 100", 11, 12) %>% 
+    pack_rows("Sample Size: 200", 13, 14) %>% 
+    pack_rows("Sample Size: 300", 15, 16) %>% 
+    pack_rows("Sample Size: 400", 17, 18) %>% 
+    pack_rows("Sample Size: 500", 19, 20) %>% 
     
-    add_header_above(c(" " = 6, "$\\lambda$" = 4), escape = FALSE) %>% 
+  
+  add_header_above(c(" " = 6, "$\\lambda$" = 4), escape = FALSE) %>% 
     
-    pack_rows("Normal Distribution",1, 5) %>%
-    pack_rows("Student's t-Distribution", 6, 10) %>% 
+    pack_rows("Normal Distribution",1, 10) %>%
+    pack_rows("Student's t-Distribution", 11, 20) %>% 
     save_kable(file = here("data-raw","tables",paste0("ALT",
                                                       "_AR",plot_specs[i,"ar"],
                                                       "_nreg",plot_specs[i,"nreg"],
                                                       "_outprop",plot_specs[i,"out_prop"],
                                                       ".tex")))
-  
-  
   
 }
 ```
