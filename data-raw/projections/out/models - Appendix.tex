@@ -1,0 +1,35 @@
+\begin{table}
+\centering
+\begin{tabular}[t]{lccc}
+\toprule
+  & Lagged Adaptation & Lagged Adaptation IIS & Lagged Adaptation Outlier Distortion Test\\
+\midrule
+Temperature & 0.14234*** & 0.09637*** & 186.25252\\
+ & (0.01003) & (0.00703) & [0.000]\\
+Temperature\textsuperscript{2} & -0.00335*** & -0.00226*** & 88.57293\\
+ & (0.00036) & (0.00025) & [0.000]\\
+Precipitation & -0.00212 & 0.01125** & 7.86435\\
+ & (0.00551) & (0.00382) & [0.00504]\\
+Precipitation\textsuperscript{2} & -0.00004 & -0.00032* & 17.55037\\
+ & (0.00019) & (0.00013) & [0.00003]\\
+Temperature x Lag(GDP\textsubscript{pc}) & -0.01339*** & -0.00927*** & 317.58792\\
+ & (0.00107) & (0.00075) & [0.000]\\
+Temperature\textsuperscript{2} x Lag(GDP\textsubscript{pc}) & 0.00030*** & 0.00021*** & 148.16829\\
+ & (0.00004) & (0.00003) & [0.000]\\
+Precipitation x Lag(GDP\textsubscript{pc}) & 0.00035 & -0.00124** & 6.86436\\
+ & (0.00065) & (0.00045) & [0.00879]\\
+Precipitation\textsuperscript{2} x Lag(GDP\textsubscript{pc}) & 0.00000 & 0.00003* & 17.52154\\
+ & (0.00002) & (0.00002) & [0.00003]\\
+\midrule
+Num. Outliers &  &  & 158\\
+Outlier Distortion test statistic for Temperature &  &  & 1022.68\\
+Outlier Distortion p-value for Temperature &  &  & 0.0000\\
+Num.Obs. & 7716 & 7716 & \\
+BIC & -19066.8 & -23825.7 & \\
+Log.Lik. & 12084.427 & 15171.040 & \\
+Two Way Fixed Effects & Yes & Yes & \\
+\bottomrule
+\multicolumn{4}{l}{\textsuperscript{} * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\multicolumn{4}{l}{\textsuperscript{} (Standard Errors) and [p-values]}\\
+\end{tabular}
+\end{table}

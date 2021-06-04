@@ -20,6 +20,7 @@ library(tidyverse)
 library(here)
 library(modelsummary)  
 library(gets)
+library(kableExtra)
 
 
 
@@ -42,16 +43,17 @@ diffs <- vector()
 stats <- vector()
 pvals <- vector()
 for(i in base_vars){
-  diffs <- append(diffs,distorttest(m2.isat, coef = i)$coef.diff)
-  stats <- append(stats,distorttest(m2.isat, coef = i)$statistic)
-  pvals <- append(pvals,distorttest(m2.isat, coef = i)$p.value)
+  #diffs <- append(diffs,distorttest(m2.isat, coef = i)$coef.diff)
+  running_test <- distorttest(m2.isat, coef = i)
+  stats <- append(stats,running_test$statistic)
+  pvals <- append(pvals,running_test$p.value)
 }
 
 ti1 <- tibble(
   term = base_vars,
-  estimate = diffs,
-  std.error = stats,
-  p.value = pvals
+  estimate = stats,
+  std.error = pvals,
+  p.value = rep(1,4)
 )
 
 adapt_vars <- grep("temp|prcp",names(coef(am2.isat)), value = TRUE)
@@ -59,16 +61,17 @@ diffs <- vector()
 stats <- vector()
 pvals <- vector()
 for(i in adapt_vars){
-  diffs <- append(diffs,distorttest(am2.isat, coef = i)$coef.diff)
-  stats <- append(stats,distorttest(am2.isat, coef = i)$statistic)
-  pvals <- append(pvals,distorttest(am2.isat, coef = i)$p.value)
+  running_test <- distorttest(am2.isat, coef = i)
+  #diffs <- append(diffs,distorttest(am2.isat, coef = i)$coef.diff)
+  stats <- append(stats,running_test$statistic)
+  pvals <- append(pvals,running_test$p.value)
 }
 
 ti2 <- tibble(
   term = grep("temp|prcp",names(coef(am2.isat)), value = TRUE),
-  estimate = diffs,
-  std.error = stats,
-  p.value = pvals
+  estimate = stats,
+  std.error = pvals,
+  p.value = rep(1,8)
 )
 ```
 
@@ -81,31 +84,31 @@ ti2 <- tibble(
 # a <- distorttest(m2.isat)
 # b <- distorttest(am2.isat)
 
-matrix("",
-       ncol = length(c("r.squared", "adj.r.squared", 
-                       "sigma", "statistic", "p.value", "df", 
-                       "logLik", "AIC", "BIC", "deviance", 
-                       "df.residual", "nobs", "Outlier Distortion test-stat", "Outlier Distortion p-value"))) %>% 
-  as_tibble(.name_repair = "minimal") %>% 
-  setNames(c("r.squared", "adj.r.squared", 
-             "sigma", "statistic", "p.value", "df", 
-             "logLik", "AIC", "BIC", "deviance", 
-             "df.residual", "nobs","Outlier Distortion test statistic", "Outlier Distortion p-value")) %>% 
-  mutate(`Outlier Distortion test statistic` = distorttest(m2.isat)$statistic,
-         `Outlier Distortion p-value` = distorttest(m2.isat)$p.value)-> gl1
 
-matrix("",
-       ncol = length(c("r.squared", "adj.r.squared", 
-                       "sigma", "statistic", "p.value", "df", 
-                       "logLik", "AIC", "BIC", "deviance", 
-                       "df.residual", "nobs", "Outlier Distortion test-stat", "Outlier Distortion p-value"))) %>% 
+overall_test_base <- distorttest(m2.isat, coef = c("temp","temp_2"))
+overall_test_adapt <- distorttest(am2.isat, coef = c("temp","temp_2", "temp_int","temp_2_int"))
+
+
+gof <- c("sigma", "statistic", "p.value", "df", 
+         "logLik", "BIC", "deviance", "df.residual", 
+         "nobs", "outlier_teststat", 
+         "outlier_pval", "outlier_no")
+
+matrix("",ncol = length(gof)) %>% 
   as_tibble(.name_repair = "minimal") %>% 
-  setNames(c("r.squared", "adj.r.squared", 
-             "sigma", "statistic", "p.value", "df", 
-             "logLik", "AIC", "BIC", "deviance", 
-             "df.residual", "nobs","Outlier Distortion test statistic", "Outlier Distortion p-value")) %>% 
-  mutate(`Outlier Distortion test statistic` = distorttest(am2.isat)$statistic,
-         `Outlier Distortion p-value` = distorttest(am2.isat)$p.value)-> gl2
+  setNames(gof) %>% 
+  mutate(outlier_teststat = overall_test_base$statistic,
+         outlier_pval = overall_test_base$p.value,
+         outlier_no = length(overall_test_base$iis$ISnames))-> gl1
+
+
+
+matrix("",ncol = length(gof)) %>% 
+  as_tibble(.name_repair = "minimal") %>% 
+  setNames(gof) %>% 
+  mutate(outlier_teststat = overall_test_adapt$statistic,
+         outlier_pval = overall_test_adapt$p.value,
+         outlier_no = length(overall_test_adapt$iis$ISnames))-> gl2
 
 
 
@@ -130,7 +133,6 @@ class(mod2) <- "modelsummary_list"
 ```{r}
 m2.isat %>% as.lm -> m2.isat_lm
 am2.isat %>% as.lm -> am2.isat_lm
-am2.isat_L1 %>% as.lm -> am2.isat_L1_lm
 ```
 
 
@@ -139,17 +141,15 @@ am2.isat_L1 %>% as.lm -> am2.isat_L1_lm
 
 
 ```{r}
-library(kableExtra)
-
 list(
   "Base"  = m2,
   "Base IIS"  = m2.isat_lm,
-  "Difference Base" = mod1,
+  "Base Outlier Distortion Test" = mod1,
   
   
   "Adaptation" = am2, 
   "Adaptation IIS" = am2.isat_lm,
-  "Difference Adaptation" = mod2) -> modellist
+  "Adaptation Outlier Distortion Test" = mod2) -> modellist
 
 # The lag(GDP) goes into the appendix  
 #"Adaptation Lag(GDP_pc)" = am2_L1, 
@@ -172,50 +172,218 @@ name_vec_tex <- gsub("pc","\\\\textsubscript{pc}",name_vec_tex)
 
 
 ```{r}
-library(kableExtra)
-modelsummary(modellist,
-             coef_rename = name_vec_tex,
-             stars = TRUE, 
-             fmt = 5,
-             coef_omit = "time|year|iso|iis", 
-             escape = FALSE, 
-             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns.",
-             output = here("data-raw/projections/out/models.tex"))
+gof_map_mod <- data.frame(raw = c("outlier_no", "outlier_teststat", "outlier_pval"),
+                          clean = c("Num. Outliers", 
+                                    "Outlier Distortion test statistic for Temperature",
+                                    "Outlier Distortion p-value for Temperature"), 
+                          fmt = c(0,2,4))
+
+gof_map_mod <- rbind(gof_map_mod, gof_map[grepl("nobs|BIC|logLik",gof_map$raw),1:3])
+
 
 modelsummary(modellist,
-             coef_rename = name_vec,
-             stars = TRUE, 
+             coef_rename = name_vec_tex,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
              fmt = 5,
+             gof_map = gof_map_mod,
              coef_omit = "time|year|iso|iis", 
+             gof_omit = "AIC|F|R",
              escape = FALSE, 
-             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns.",
-             output = "kableExtra") %>% 
-  kable_styling() %>% 
-  kable_paper() %>% 
-  save_kable(x = .,file = here("data-raw/projections/out/models.jpg"), zoom = 2) 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes","","Yes","Yes",""),
+             output = "modelsummary_list",
+             #output = here("data-raw/projections/out/models.tex"),
+             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns."
+) -> intermediate_list
 ```
 
 
+```{r}
+
+modify_brackets <- function(modelsummary_list){
+  for(i in 1:length(modelsummary_list)){
+    modelsummary_list[[i]]$tidy %>% 
+      {if(!i %in% c(3,6)){
+        mutate(.,std.error = paste0("(",round(std.error,5),")"))
+      } else{
+        rowwise(.) %>% 
+        mutate(.,std.error = paste0("[",format(round(std.error,5), nsmall = 3),"]"))
+      }} -> modelsummary_list[[i]]$tidy
+  }
+  return(modelsummary_list)
+}
+
+
+intermediate_list_modified <- modify_brackets(intermediate_list)
+
+
+modelsummary(intermediate_list_modified, 
+             statistic = "{std.error}",
+             coef_rename = name_vec_tex,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes","","Yes","Yes",""),
+             output = here("data-raw/projections/out/models.tex"),
+             notes = "(Standard Errors) and [p-values]")
+
+
+modelsummary(intermediate_list_modified, 
+             statistic = "{std.error}",
+             coef_rename = name_vec,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes","","Yes","Yes",""),
+             output = "kableExtra",
+             #output = here("data-raw/projections/out/models.tex"),
+             notes = "(Standard Errors) and [p-values]")  %>% 
+  kable_styling() %>% 
+  kable_paper() %>% 
+  save_kable(x = .,file = here("data-raw/projections/out/models.jpg"), zoom = 2) 
+
+
+```
 
 
 
 
 # Appendix Table (Lag(GDP))
 
-```{r}
 
+```{r, eval = TRUE}
+adapt_vars <- grep("temp|prcp",names(coef(am2.isat_L1)), value = TRUE)
+diffs <- vector()
+stats <- vector()
+pvals <- vector()
+for(i in adapt_vars){
+  running_test <- distorttest(am2.isat, coef = i)
+  #diffs <- append(diffs,distorttest(am2.isat, coef = i)$coef.diff)
+  stats <- append(stats,running_test$statistic)
+  pvals <- append(pvals,running_test$p.value)
+}
+
+ti3 <- tibble(
+  term = grep("temp|prcp",names(coef(am2.isat_L1)), value = TRUE),
+  estimate = stats,
+  std.error = pvals,
+  p.value = rep(1,8)
+)
+```
+
+
+```{r}
+overall_test_adapt_L1 <- distorttest(am2.isat_L1, coef = c("temp","temp_2", "temp_int","temp_2_int"))
+
+gof <- c("sigma", "statistic", "p.value", "df", 
+         "logLik", "BIC", "deviance", "df.residual", 
+         "nobs", "outlier_teststat", 
+         "outlier_pval", "outlier_no")
+
+matrix("",ncol = length(gof)) %>% 
+  as_tibble(.name_repair = "minimal") %>% 
+  setNames(gof) %>% 
+  mutate(outlier_teststat = overall_test_adapt_L1$statistic,
+         outlier_pval = overall_test_adapt_L1$p.value,
+         outlier_no = length(overall_test_adapt_L1$iis$ISnames))-> gl3
+
+
+mod3 <- list(
+  tidy = ti3,
+  glance = gl3)
+class(mod3) <- "modelsummary_list"
+```
+
+
+
+
+```{r}
+am2.isat_L1 %>% as.lm -> am2.isat_L1_lm
 ```
 
 
 
 
 
-```{r, eval = FALSE}
 
-ggsave(modelplot(modellist,  coef_omit = "time|year|iso|iis"), filename = here("data-raw/projections/out/coefficientplot.jpg"))
+```{r}
+list(
+  "Lagged Adaptation" = am2_L1, 
+  "Lagged Adaptation IIS" = am2.isat_L1_lm,
+  "Lagged Adaptation Outlier Distortion Test" = mod3) -> modellist
 
-ggsave(modelplot(modellist,  coef_omit = "time|year|iso|iis", facet = TRUE), filename = here("data-raw/projections/out/coefficientplot_facet.jpg"))
+# The lag(GDP) goes into the appendix  
+#"Adaptation Lag(GDP_pc)" = am2_L1, 
+#"Adaptation Lag(GDP_pc) IIS" = am2.isat_L1
 
+
+names(coef(am2.isat_L1)) %>% 
+  grep(x = .,pattern = "temp|prcp", value = TRUE) -> name_vec
+
+names(name_vec) <- name_vec
+name_vec <- gsub("temp","Temperature", name_vec)
+name_vec <- gsub("prcp","Precipitation", name_vec)
+name_vec <- gsub("_2","<sup>2</sup>", name_vec)
+name_vec <- gsub("_int"," x Lag(GDPpc)", name_vec)
+
+name_vec_tex <- gsub("<sup>2</sup>","\\\\textsuperscript{2}",name_vec)
+name_vec_tex <- gsub("pc","\\\\textsubscript{pc}",name_vec_tex)
+
+```
+
+
+```{r}
+modelsummary(modellist,
+             coef_rename = name_vec_tex,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             gof_omit = "AIC|F|R",
+             escape = FALSE, 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
+             output = "modelsummary_list",
+             #output = here("data-raw/projections/out/models_Appendix.tex"),
+             notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns."
+) -> intermediate_list
+```
+
+
+```{r}
+intermediate_list_modified <- modify_brackets(intermediate_list)
+
+
+modelsummary(intermediate_list_modified, 
+             statistic = "{std.error}",
+             coef_rename = name_vec_tex,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
+             output = here("data-raw/projections/out/models - Appendix.tex"),
+             notes = "(Standard Errors) and [p-values]")
+
+
+modelsummary(intermediate_list_modified, 
+             statistic = "{std.error}",
+             coef_rename = name_vec,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
+             output = "kableExtra",
+             #output = here("data-raw/projections/out/models.tex"),
+             notes = "(Standard Errors) and [p-values]")  %>% 
+  kable_styling() %>% 
+  kable_paper() %>% 
+  save_kable(x = .,file = here("data-raw/projections/out/models - Appendix.jpg"), zoom = 2) 
 ```
 
 
