@@ -1,6 +1,33 @@
+\documentclass[a3, landscape]{sciposter}
+%\usepackage[active,tightpage]{preview}
+\usepackage{booktabs}
+\usepackage{varwidth}
+\usepackage{amssymb, amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e}
+\usepackage{polyglossia}
+
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage[utf8]{inputenc}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{xltxtra,xunicode}
+\usepackage{xcolor}
+\begin{document}
 \begin{table}
 \centering
-\begin{tabular}[t]{lcccccc}
+\begin{tabular}[t]{lcc|>{}c|cc|>{}c|}
 \toprule
   & Base & Base IIS & Base Outlier Distortion Test & Adaptation & Adaptation IIS & Adaptation Outlier Distortion Test\\
 \midrule
@@ -22,14 +49,15 @@ Precipitation\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & 0.00002 & 0.
  &  &  &  & (0.00002) & (0.00002) & [0.00003]\\
 \midrule
 Num. Outliers &  &  & 165 &  &  & 170\\
-Outlier Distortion test statistic for Temperature &  &  & 111.27 &  &  & 770.69\\
-Outlier Distortion p-value for Temperature &  &  & 0.0000 &  &  & 0.0000\\
+Outlier Distortion test statistic for Temp. Variables &  &  & $\chi^2_{2}$ = 111.27 &  &  & $\chi^2_{4}$ = 770.69\\
+Outlier Distortion p-value for Temp. Variables &  &  & 0.0000 &  &  & 0.0000\\
 Num.Obs. & 7716 & 7716 &  & 7716 & 7716 & \\
 BIC & -18483.2 & -23533.1 &  & -18801.4 & -23776.0 & \\
 Log.Lik. & 11774.742 & 15038.149 &  & 11951.758 & 15199.897 & \\
-Two Way Fixed Effects & Yes & Yes &  & Yes & Yes & \\
+Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country \& Year & \\
 \bottomrule
 \multicolumn{7}{l}{\textsuperscript{} * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
 \multicolumn{7}{l}{\textsuperscript{} (Standard Errors) and [p-values]}\\
 \end{tabular}
 \end{table}
+\end{document}
