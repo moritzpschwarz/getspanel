@@ -174,8 +174,8 @@ name_vec_tex <- gsub("pc","\\\\textsubscript{pc}",name_vec_tex)
 ```{r}
 gof_map_mod <- data.frame(raw = c("outlier_no", "outlier_teststat", "outlier_pval"),
                           clean = c("Num. Outliers", 
-                                    "Outlier Distortion test statistic for Temperature",
-                                    "Outlier Distortion p-value for Temperature"), 
+                                    "Outlier Distortion test statistic for Temp. Variables",
+                                    "Outlier Distortion p-value for Temp. Variables"), 
                           fmt = c(0,2,4))
 
 gof_map_mod <- rbind(gof_map_mod, gof_map[grepl("nobs|BIC|logLik",gof_map$raw),1:3])
@@ -198,7 +198,7 @@ modelsummary(modellist,
 
 
 ```{r}
-
+options(scipen = 5)
 modify_brackets <- function(modelsummary_list){
   for(i in 1:length(modelsummary_list)){
     modelsummary_list[[i]]$tidy %>% 
@@ -206,7 +206,7 @@ modify_brackets <- function(modelsummary_list){
         mutate(.,std.error = paste0("(",round(std.error,5),")"))
       } else{
         rowwise(.) %>% 
-        mutate(.,std.error = paste0("[",format(round(std.error,5), nsmall = 3),"]"))
+          mutate(.,std.error = paste0("[",format(round(std.error,5), nsmall = 3),"]"))
       }} -> modelsummary_list[[i]]$tidy
   }
   return(modelsummary_list)
@@ -215,6 +215,32 @@ modify_brackets <- function(modelsummary_list){
 
 intermediate_list_modified <- modify_brackets(intermediate_list)
 
+teststat_base <- intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat
+teststat_adap <- intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat
+
+intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat <- paste0("$\\chi^2_{",overall_test_base$df,"}$ = ",round(teststat_base, 2))
+intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat <- paste0("$\\chi^2_{",overall_test_adapt$df,"}$ = ",round(teststat_adap, 2))
+```
+
+
+```{r}
+modelsummary(intermediate_list_modified, 
+             statistic = "{std.error}",
+             coef_rename = name_vec_tex,
+             stars = c('*' = .05, '**' = .01, '***' = 0.001), 
+             fmt = 5,
+             gof_map = gof_map_mod,
+             coef_omit = "time|year|iso|iis", 
+             escape = FALSE, 
+             output = "latex",
+             add_rows = data.frame("Fixed Effects", "Country \\& Year","Country \\& Year","",
+                                   "Country \\& Year","Country \\& Year",""),
+             #output = here("data-raw/projections/out/models.tex"),
+             notes = "(Standard Errors) and [p-values]") %>% 
+  
+  column_spec(column = c(4,7), border_left = TRUE, border_right = TRUE) -> tab
+
+cat(tab, file = here("data-raw/projections/out/models.tex"))
 
 modelsummary(intermediate_list_modified, 
              statistic = "{std.error}",
@@ -224,11 +250,21 @@ modelsummary(intermediate_list_modified,
              gof_map = gof_map_mod,
              coef_omit = "time|year|iso|iis", 
              escape = FALSE, 
-             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes","","Yes","Yes",""),
-             output = here("data-raw/projections/out/models.tex"),
-             notes = "(Standard Errors) and [p-values]")
+             output = "kableExtra",
+             add_rows = data.frame("Fixed Effects", "Country \\& Year","Country \\& Year","",
+                                   "Country \\& Year","Country \\& Year",""),
+             #output = here("data-raw/projections/out/models.tex"),
+             notes = "(Standard Errors) and [p-values]") %>% 
+  
+  column_spec(column = c(4,7), border_left = TRUE, border_right = TRUE) %>% 
+  save_kable(here("data-raw/projections/out/test.pdf"))
+
+```
 
 
+
+
+```{r}
 modelsummary(intermediate_list_modified, 
              statistic = "{std.error}",
              coef_rename = name_vec,
@@ -237,7 +273,7 @@ modelsummary(intermediate_list_modified,
              gof_map = gof_map_mod,
              coef_omit = "time|year|iso|iis", 
              escape = FALSE, 
-             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes","","Yes","Yes",""),
+             add_rows = data.frame("Fixed Effects", "Country & Year","Country & Year","","Country & Year","Country & Year",""),
              output = "kableExtra",
              #output = here("data-raw/projections/out/models.tex"),
              notes = "(Standard Errors) and [p-values]")  %>% 
@@ -246,6 +282,21 @@ modelsummary(intermediate_list_modified,
   save_kable(x = .,file = here("data-raw/projections/out/models.jpg"), zoom = 2) 
 
 
+```
+
+```{r}
+test <- "$\\chi^2 a^2$"
+test <- "$\\chi^2_{df = 2}$ = 111.27"
+#test <- kableExtra:::sim_double_escape(test)
+
+
+
+tab <- kable("$a^2$")
+tab
+save_kable(tab, file = "test.jpg")
+
+tab <- kable("$a^2$", escape = TRUE)
+tab <- kable("$a^2$", escape = FALSE)
 ```
 
 
@@ -344,7 +395,7 @@ modelsummary(modellist,
              coef_omit = "time|year|iso|iis", 
              gof_omit = "AIC|F|R",
              escape = FALSE, 
-             add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
+             add_rows = data.frame("Fixed Effects", "Country & Year","Country & Year",""),
              output = "modelsummary_list",
              #output = here("data-raw/projections/out/models_Appendix.tex"),
              notes = "For difference columns, test statistics are in brackets. Standard Errors in brackets of the other columns."
