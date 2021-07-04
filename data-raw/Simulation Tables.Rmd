@@ -234,18 +234,20 @@ sum_tab %>%
   arrange(test.lev, sample) %>% 
   
   select(-test.lev) %>% 
-  kable(format = "latex", col.names = c("Sample", "# Regressors", "0.01", 
+  kable(#format = "latex",
+        digits = 3,
+        col.names = c("n", "# Regressors", "0.01", 
                                         "0.05","0.01", "0.05")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   #pack_rows("Normal Distribution",1, 10) %>%
-  #pack_rows("Student's t-Distribution", 11, 20) %>% 
+  #pack_rows("$t_3$ Distribution", 11, 20) %>% 
   
-  add_header_above(c(" " = 2, "p-values" = 4)) %>% 
-  add_header_above(c(" " = 2, "Normal Distr." = 2, "Student's t-Distr." = 2)) %>% 
+  add_header_above(c(" " = 2, "$\\gamma$" = 4),escape = FALSE) %>% 
+  add_header_above(c(" " = 2, "Normal Distr." = 2, "$t_3$ Distr." = 2)) %>% 
   
-  pack_rows("Test Level 0.01",1, 5) %>%
-  pack_rows("Test Level 0.05", 6, 10) %>% 
+  pack_rows("Level 0.01",1, 5) %>%
+  pack_rows("Level 0.05", 6, 10) %>% 
   save_kable(file = here("data-raw","tables","NULL_levels.tex"))
 
 ```
@@ -264,14 +266,14 @@ sum_tab %>%
               names_from = c(nreg), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(format = "latex", col.names = c("Sample", "Test Level","p-value", "1","5","10")) %>% 
+  kable(format = "latex", col.names = c("n", "Level","p-value", "1","5","10")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
   add_header_above(c(" " = 3, "# Regressors" = 3)) %>% 
   
   pack_rows("Normal Distribution",1, 5) %>%
-  pack_rows("Student's t-Distribution", 6, 10)%>% 
+  pack_rows("$t_3$ Distribution", 6, 10)%>% 
   save_kable(file = here("data-raw","tables","NULL_nreg.tex"))
 ```
 
@@ -290,14 +292,14 @@ sum_tab %>%
               names_from = c(ar), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(format = "latex",col.names = c("Sample", "Test Level","p-value","# Regressors", "0","0.5","1")) %>% 
+  kable(format = "latex",col.names = c("n", "Level","p-value","# Regressors", "0","0.5","1")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
   add_header_above(c(" " = 4, "AR" = 3)) %>% 
   
   pack_rows("Normal Distribution",1, 5) %>%
-  pack_rows("Student's t-Distribution", 6, 10) %>% 
+  pack_rows("$t_3$ Distribution", 6, 10) %>% 
   save_kable(file = here("data-raw","tables","NULL_AR.tex"))
 ```
 
@@ -373,25 +375,25 @@ for(i in 1:nrow(plot_specs) ){
     select(-sample, -dist) %>% 
     rename(` ` = type) %>%  
     kable(format = "latex",
-          col.names = c("AR", "Out Prop.", "Test Level","p-value","# Regressors","Type", "2","3","4","6")) %>% 
+          col.names = c("AR", "Out Prop.", "Level","p-value","# Regressors","Type", "2","3","4","6")) %>% 
     kable_styling(full_width = FALSE) %>% 
     kable_paper() %>% 
-    pack_rows("Sample Size: 100", 1, 2) %>% 
-    pack_rows("Sample Size: 200", 3, 4) %>% 
-    pack_rows("Sample Size: 300", 5, 6) %>% 
-    pack_rows("Sample Size: 400", 7, 8) %>% 
-    pack_rows("Sample Size: 500", 9, 10) %>% 
-    pack_rows("Sample Size: 100", 11, 12) %>% 
-    pack_rows("Sample Size: 200", 13, 14) %>% 
-    pack_rows("Sample Size: 300", 15, 16) %>% 
-    pack_rows("Sample Size: 400", 17, 18) %>% 
-    pack_rows("Sample Size: 500", 19, 20) %>% 
+    pack_rows("n = 100", 1, 2) %>% 
+    pack_rows("n = 200", 3, 4) %>% 
+    pack_rows("n = 300", 5, 6) %>% 
+    pack_rows("n = 400", 7, 8) %>% 
+    pack_rows("n = 500", 9, 10) %>% 
+    pack_rows("n = 100", 11, 12) %>% 
+    pack_rows("n = 200", 13, 14) %>% 
+    pack_rows("n = 300", 15, 16) %>% 
+    pack_rows("n = 400", 17, 18) %>% 
+    pack_rows("n = 500", 19, 20) %>% 
     
   
   add_header_above(c(" " = 6, "$\\lambda$" = 4), escape = FALSE) %>% 
     
     pack_rows("Normal Distribution",1, 10) %>%
-    pack_rows("Student's t-Distribution", 11, 20) %>% 
+    pack_rows("$t_3$ Distribution", 11, 20) %>% 
     save_kable(file = here("data-raw","tables",paste0("ALT",
                                                       "_AR",plot_specs[i,"ar"],
                                                       "_nreg",plot_specs[i,"nreg"],
@@ -415,14 +417,14 @@ filter(test.lev == 0.05 & nreg==5 & ar %in% c(0,1,0.5)& p_alpha == 0.05) %>%
               names_from = c(ar), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(col.names = c("Sample", "Test Level","p-value","# Regressors", "0","0.5","1")) %>% 
+  kable(col.names = c("n", "Level","p-value","# Regressors", "0","0.5","1")) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
   add_header_above(c(" " = 4, "AR" = 3)) %>% 
   
   pack_rows("Normal Distribution",1, 5) %>%
-  pack_rows("Student's t-Distribution", 6, 10)
+  pack_rows("$t_3$ Distribution", 6, 10)
 
 
 
