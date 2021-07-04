@@ -1,0 +1,520 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  4 JUL 2021 18:26
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**outlier_distortion_v7.tex
+(./outlier_distortion_v7.tex
+LaTeX2e <2021-06-01>
+L3 programming layer <2021-06-01>
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2021/02/12 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count182
+\c@section=\count183
+\c@subsection=\count184
+\c@subsubsection=\count185
+\c@paragraph=\count186
+\c@subparagraph=\count187
+\c@figure=\count188
+\c@table=\count189
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.s
+ty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.
+sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks16
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.st
+y
+Package: amsmath 2021/04/20 v2.17j AMS math features
+\@mathmargin=\skip49
+
+For additional information on amsmath, use the `?' option.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.st
+y
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks17
+\ex@=\dimen139
+))
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen140
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count190
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count191
+\leftroot@=\count192
+LaTeX Info: Redefining \overline on input line 399.
+\classnum@=\count193
+\DOTSCASE@=\count194
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box50
+\strutbox@=\box51
+\big@size=\dimen141
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count195
+\c@MaxMatrixCols=\count196
+\dotsspace@=\muskip16
+\c@parentequation=\count197
+\dspbrk@lvl=\count198
+\tag@help=\toks18
+\row@=\count199
+\column@=\count266
+\maxfields@=\count267
+\andhelp@=\toks19
+\eqnshift@=\dimen142
+\alignsep@=\dimen143
+\tagshift@=\dimen144
+\tagwidth@=\dimen145
+\totwidth@=\dimen146
+\lineht@=\dimen147
+\@envbody=\toks20
+\multlinegap=\skip50
+\multlinetaggap=\skip51
+\mathdisplay@stack=\toks21
+LaTeX Info: Redefining \[ on input line 2923.
+LaTeX Info: Redefining \] on input line 2924.
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks22
+\thm@bodyfont=\toks23
+\thm@headfont=\toks24
+\thm@notefont=\toks25
+\thm@headpunct=\toks26
+\thm@preskip=\skip52
+\thm@postskip=\skip53
+\thm@headsep=\skip54
+\dth@everypar=\toks27
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/graphicx.
+sty
+Package: graphicx 2020/12/05 v1.2c Enhanced LaTeX Graphics (DPC,SPQR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/keyval.st
+y
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks28
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/graphics.
+sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/graph
+ics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-def/pdfte
+x.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen148
+\Gin@req@width=\dimen149
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/apacite/apacite.st
+y
+Package: apacite 2013/07/21 v6.03 APA citation
+\c@BibCnt=\count268
+\bibleftmargin=\skip55
+\bibindent=\skip56
+\bibparsep=\skip57
+\bibitemsep=\skip58
+\biblabelsep=\skip59
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip60
+\bibsep=\skip61
+LaTeX Info: Redefining \cite on input line 694.
+LaTeX Info: Redefining \citeauthor on input line 712.
+LaTeX Info: Redefining \citeyear on input line 735.
+\c@NAT@ctr=\count269
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption.st
+y
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption3.s
+ty
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen150
+\captionmargin@=\dimen151
+\captionwidth=\dimen152
+\caption@tempdima=\dimen153
+\caption@indent=\dimen154
+\caption@parindent=\dimen155
+\caption@hangindent=\dimen156
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count270
+\c@continuedfloat=\count271
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count272
+\float@exts=\toks29
+\float@box=\box52
+\@float@everytoks=\toks30
+\@floatcapt=\box53
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color
+.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+\c@algorithm=\count273
+\c@assumption=\count274
+\c@lemma=\count275
+\c@theorem=\count276
+\c@corollary=\count277
+\c@remark=\count278
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3backen
+d-pdftex.def
+File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count279
+\l__pdf_internal_box=\box54
+) (./outlier_distortion_v7.aux)
+\openout1 = `outlier_distortion_v7.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epsto
+pdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/latexconfig/epstop
+df-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\c@maskedRefs=\count280
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/apacite/english.ap
+c
+File: english.apc 2013/07/21 v6.03 apacite language file
+LaTeX Info: Redefining \BPBI on input line 129.
+LaTeX Info: Redefining \BHBI on input line 130.
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 66.
+
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 66.
+
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+[1
+
+{c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdfte
+x.map}] [2]
+<stylized_example_simple_paper_v2.pdf, id=20, 542.35925pt x 300.11826pt>
+File: stylized_example_simple_paper_v2.pdf Graphic file (type pdf)
+<use stylized_example_simple_paper_v2.pdf>
+Package pdftex.def Info: stylized_example_simple_paper_v2.pdf  used on input li
+ne 89.
+(pdftex.def)             Requested size: 379.64888pt x 210.08134pt.
+ [3] [4 <./stylized_example_simple_paper_v2.pdf>] [5] [6] [7]
+[8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19]
+<null_distnorm.pdf, id=141, 794.97pt x 397.485pt>
+File: null_distnorm.pdf Graphic file (type pdf)
+<use null_distnorm.pdf>
+Package pdftex.def Info: null_distnorm.pdf  used on input line 636.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 636--637
+ [][] 
+ []
+
+<boot_null.pdf, id=142, 939.51pt x 397.485pt>
+File: boot_null.pdf Graphic file (type pdf)
+<use boot_null.pdf>
+Package pdftex.def Info: boot_null.pdf  used on input line 650.
+(pdftex.def)             Requested size: 469.75385pt x 198.742pt.
+
+Overfull \hbox (52.84834pt too wide) in paragraph at lines 650--651
+ [][] 
+ []
+
+[20 <./null_distnorm.pdf>]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=152, 794.97pt x 397.485pt
+>
+File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 660.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 660--661
+ [][] 
+ []
+
+<alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=153, 794.97pt x 397.485pt
+>
+File: alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 667.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 667--668
+ [][] 
+ []
+
+[21 <./boot_null.pdf> <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>]
+<boot_alt_lambda4.pdf, id=169, 867.24pt x 505.89pt>
+File: boot_alt_lambda4.pdf Graphic file (type pdf)
+<use boot_alt_lambda4.pdf>
+Package pdftex.def Info: boot_alt_lambda4.pdf  used on input line 676.
+(pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
+
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 676--677
+ [][] 
+ []
+
+<boot_alt_lambda6.pdf, id=170, 867.24pt x 505.89pt>
+File: boot_alt_lambda6.pdf Graphic file (type pdf)
+<use boot_alt_lambda6.pdf>
+Package pdftex.def Info: boot_alt_lambda6.pdf  used on input line 683.
+(pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
+
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 683--684
+ [][] 
+ []
+
+
+Overfull \hbox (4.83565pt too wide) in paragraph at lines 694--694
+[]\OT1/cmr/bx/n/14.4 Application: Cli-mate Adap-ta-tion & the Macro-Economic
+ []
+
+[22 <./alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>] [23 <./boot_alt_lambd
+a4.pdf> <./boot_alt_lambda6.pdf>] [24] [25] [26] [27
+
+]
+<coef_v2_lag.pdf, id=211, 722.7pt x 361.35pt>
+File: coef_v2_lag.pdf Graphic file (type pdf)
+<use coef_v2_lag.pdf>
+Package pdftex.def Info: coef_v2_lag.pdf  used on input line 770.
+(pdftex.def)             Requested size: 469.74944pt x 234.87471pt.
+
+Overfull \hbox (52.84393pt too wide) in paragraph at lines 770--771
+ [][] 
+ []
+
+<eff_v1_lag.pdf, id=212, 867.24pt x 433.62pt>
+File: eff_v1_lag.pdf Graphic file (type pdf)
+<use eff_v1_lag.pdf>
+Package pdftex.def Info: eff_v1_lag.pdf  used on input line 777.
+(pdftex.def)             Requested size: 476.98349pt x 238.49173pt.
+
+Overfull \hbox (60.07799pt too wide) in paragraph at lines 777--778
+ [][] 
+ []
+
+<heat1_lag_v1_edited.pdf, id=213, 592.2125pt x 871.255pt>
+File: heat1_lag_v1_edited.pdf Graphic file (type pdf)
+<use heat1_lag_v1_edited.pdf>
+Package pdftex.def Info: heat1_lag_v1_edited.pdf  used on input line 786.
+(pdftex.def)             Requested size: 414.54591pt x 609.87436pt.
+<ctry_map_lag_edited.pdf, id=214, 705.35516pt x 411.5375pt>
+File: ctry_map_lag_edited.pdf Graphic file (type pdf)
+<use ctry_map_lag_edited.pdf>
+Package pdftex.def Info: ctry_map_lag_edited.pdf  used on input line 793.
+(pdftex.def)             Requested size: 423.21635pt x 246.92441pt.
+
+Overfull \hbox (6.31085pt too wide) in paragraph at lines 793--794
+ [][] 
+ []
+
+[28
+
+ <./coef_v2_lag.pdf> <./eff_v1_lag.pdf>] [29 <./heat1_lag_v1_edited.pdf>]
+[30 <./ctry_map_lag_edited.pdf>] [31
+
+] (./outlier_distortion_v7.bbl [32]
+[33] [34]) [35] [36] [37] [38] [39] [40] [41] [42] [43] [44]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=377, 794.97pt x 397.485p
+t>
+File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf Graphic file (type pdf)
+
+<use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>
+Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf  use
+d on input line 1260.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1260--1261
+ [][] 
+ []
+
+<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=378, 794.97pt x 397.485pt
+>
+File: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 1269.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1269--1270
+ [][] 
+ []
+
+<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=379, 794.97pt x 397.485
+pt>
+File: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf
+)
+<use alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf  us
+ed on input line 1278.
+(pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
+
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1278--1279
+ [][] 
+ []
+
+<boot_alt_lambda2.pdf, id=380, 867.24pt x 505.89pt>
+File: boot_alt_lambda2.pdf Graphic file (type pdf)
+<use boot_alt_lambda2.pdf>
+Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1287.
+(pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
+
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1287--1288
+ [][] 
+ []
+
+<boot_alt_lambda3.pdf, id=381, 867.24pt x 505.89pt>
+File: boot_alt_lambda3.pdf Graphic file (type pdf)
+<use boot_alt_lambda3.pdf>
+Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1294.
+(pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
+
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1294--1295
+ [][] 
+ []
+
+[45 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [46 <./alt_ar0_nreg1
+_palpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_out
+prop0.1.pdf>] [47 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>]
+(./outlier_distortion_v7.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 5122 strings out of 480403
+ 82007 string characters out of 5894552
+ 394092 words of memory out of 5000000
+ 22764 multiletter control sequences out of 15000+600000
+ 419345 words of font info for 86 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 57i,15n,66p,2800b,345s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/e
+c/tcrm0900.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/lj
+four/jknappen/ec/tcrm1095.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-
+var/fonts/pk/ljfour/jknappen/ec/tcrm0600.600pk> <c:/Users/morit/AppData/Roaming
+/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm0800.600pk><c:/Users/morit/A
+ppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:
+/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmbx12.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmbxti10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmex10.pfb><c:/Users/morit/AppData/Roaming/TinyTe
+X/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><c:/Users/morit/AppD
+ata/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><c
+:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmmi10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmmi6.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmmi7.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/Users/morit/AppData/Roam
+ing/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb><c:/Users/morit
+/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c
+:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr12.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmr5.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr6.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/Users/morit/AppData/Roaming/
+TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/Users/morit/AppD
+ata/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb><c:/User
+s/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmss1
+0.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmss8.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmss9.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/Users/morit/AppData/Roaming/T
+inyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb><c:/Users/morit/AppD
+ata/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/Use
+rs/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+8.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmsy9.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmti10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/Users/morit/AppData/Roaming/
+TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/Users/mor
+it/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm1
+0.pfb>
+Output written on outlier_distortion_v7.pdf (47 pages, 1502545 bytes).
+PDF statistics:
+ 564 PDF objects out of 1000 (max. 8388607)
+ 330 compressed objects within 4 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 81 words of extra memory for PDF output out of 10000 (max. 10000000)
+

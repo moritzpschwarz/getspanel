@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2021/W32TeX)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: outlier_distortion_v7.aux
+The style file: apacite.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: outlier_distortion_bib.bib
+apacite.bst [2013/07/21 v6.03 APA bibliography style]
+You've used 50 entries,
+            6951 wiz_defined-function locations,
+            1568 strings with 18934 characters,
+and the built_in function-call counts, 94981 in all, are:
+= -- 11762
+> -- 744
+< -- 4739
++ -- 4779
+- -- 101
+* -- 6206
+:= -- 17751
+add.period$ -- 204
+call.type$ -- 50
+change.case$ -- 868
+chr.to.int$ -- 0
+cite$ -- 100
+duplicate$ -- 2419
+empty$ -- 3657
+format.name$ -- 1227
+if$ -- 17964
+int.to.chr$ -- 0
+int.to.str$ -- 154
+missing$ -- 0
+newline$ -- 1240
+num.names$ -- 400
+pop$ -- 1319
+preamble$ -- 1
+purify$ -- 200
+quote$ -- 0
+skip$ -- 6297
+stack$ -- 0
+substring$ -- 5171
+swap$ -- 1445
+text.length$ -- 105
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 4128
+warning$ -- 0
+while$ -- 410
+width$ -- 0
+write$ -- 1539
