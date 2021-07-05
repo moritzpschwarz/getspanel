@@ -1,0 +1,246 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  5 JUL 2021 23:53
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**models_withpdflatex.tex
+(./models_withpdflatex.tex
+LaTeX2e <2021-06-01>
+L3 programming layer <2021-06-01>
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/sciposter/sciposte
+r.cls
+Document Class: sciposter 2006/05/30 v1.17 scientific poster class (MHFW, AMW)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2021/02/12 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count182
+\c@section=\count183
+\c@subsection=\count184
+\c@subsubsection=\count185
+\c@paragraph=\count186
+\c@subparagraph=\count187
+\c@figure=\count188
+\c@table=\count189
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lettrine/lettrine.
+sty
+File: lettrine.sty 2020-03-14 v2.23 (Daniel Flipo)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/keyval.st
+y
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/minifp/minifp.st
+y
+Package: minifp 2013/12/30 v0.96. Macros for real number operations and a stack
+-based programing language.
+\MFP@loopctr=\count190
+)
+\c@DefaultLines=\count191
+\c@DefaultDepth=\count192
+\DefaultFindent=\dimen139
+\DefaultNindent=\dimen140
+\DefaultSlope=\dimen141
+\DiscardVskip=\dimen142
+\L@lbox=\box50
+\L@tbox=\box51
+\c@L@lines=\count193
+\c@L@depth=\count194
+\L@Pindent=\dimen143
+\L@Findent=\dimen144
+\L@Nindent=\dimen145
+\L@lraise=\dimen146
+\L@first=\dimen147
+\L@next=\dimen148
+\L@slope=\dimen149
+\L@height=\dimen150
+\L@novskip=\dimen151
+\L@target@ht=\dimen152
+\L@target@dp=\dimen153
+\L@target@tht=\dimen154
+\LettrineWidth=\dimen155
+\LettrineHeight=\dimen156
+\LettrineDepth=\dimen157
+\Llist@everypar=\toks17
+
+Loading lettrine.cfg
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lettrine/lettrine.
+cfg))
+\papermargin=\skip49
+\tempsize=\skip50
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/graphics.
+sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/graph
+ics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-def/pdfte
+x.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2020/02/24 v1.2b Standard LaTeX Color (DPC)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color
+.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 149.
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/shadow/shadow.sty
+Package: shadow 2003/02/19 v1.3 shadow boxes (M.O.)
+\txtwdth=\dimen158
+\sht=\dimen159
+\shw=\dimen160
+\shbox=\box52
+\sboxsep=\dimen161
+\sboxrule=\dimen162
+\sdim=\dimen163
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/a0poster/a0size.st
+y
+File: a0size.sty 2004/01/31 v1.22b a0poster class (GK, MW)
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 229.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 229.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 229.
+\big@size=\dimen164
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/psnfss/times.sty
+Package: times 2020/03/25 PSNFSS-v9.3 (SPQR) 
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/boxedminipage/boxe
+dminipage.sty
+Package: boxedminipage 2020/04/19 v1.1 Boxed LaTeX2e minipages
+\bmp@box=\box53
+\bmp@width=\skip51
+\bmp@height=\skip52
+)
+\titlewidth=\skip53
+\logowidth=\skip54
+\parstartskip=\skip55
+\figtopskip=\skip56
+\figbotskip=\skip57
+\secskip=\skip58
+\titleskip=\skip59
+\secboxwidth=\skip60
+\c@subfig=\count195
+\c@algorithm=\count196
+\secrulewidth=\skip61
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.
+sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen165
+\lightrulewidth=\dimen166
+\cmidrulewidth=\dimen167
+\belowrulesep=\dimen168
+\belowbottomsep=\dimen169
+\aboverulesep=\dimen170
+\abovetopsep=\dimen171
+\cmidrulesep=\dimen172
+\cmidrulekern=\dimen173
+\defaultaddspace=\dimen174
+\@cmidla=\count197
+\@cmidlb=\count198
+\@aboverulesep=\dimen175
+\@belowrulesep=\dimen176
+\@thisruleclass=\count199
+\@lastruleclass=\count266
+\@thisrulewidth=\dimen177
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
+\col@sep=\dimen178
+\ar@mcellbox=\box54
+\extrarowheight=\dimen179
+\NC@list=\toks18
+\extratabsurround=\skip62
+\backup@length=\skip63
+\ar@cellbox=\box55
+)
+LaTeX Font Info:    Trying to load font information for OT1+phv on input line 2
+9.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3backen
+d-pdftex.def
+File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count267
+\l__pdf_internal_box=\box56
+) (./models_withpdflatex.aux)
+\openout1 = `models_withpdflatex.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epsto
+pdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/latexconfig/epstop
+df-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+-- Paper type set to a3.
+LaTeX Font Info:    External font `cmex7' loaded for size
+(Font)              <7> on input line 63.
+[1
+
+{c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdfte
+x.map}] (./models_withpdflatex.aux) ) 
+Here is how much of TeX's memory you used:
+ 1747 strings out of 480403
+ 29387 string characters out of 5894552
+ 335377 words of memory out of 5000000
+ 19453 multiletter control sequences out of 15000+600000
+ 408314 words of font info for 36 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 57i,13n,66p,294b,252s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/Users/morit/AppData/Roaming/TinyTeX/te
+xmf-dist/fonts/enc/dvips/base/8r.enc}<c:/Users/morit/AppData/Roaming/TinyTeX/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/Users/morit/AppData/Roam
+ing/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/Users/morit
+/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
+Output written on models_withpdflatex.pdf (1 page, 30378 bytes).
+PDF statistics:
+ 24 PDF objects out of 1000 (max. 8388607)
+ 14 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

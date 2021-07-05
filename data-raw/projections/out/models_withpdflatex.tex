@@ -1,0 +1,65 @@
+\documentclass[a3, landscape]{sciposter}
+%\usepackage[active,tightpage]{preview}
+\usepackage{booktabs}
+%\usepackage{varwidth}
+%\usepackage{amssymb, amsmath}
+%\usepackage{ifxetex,ifluatex}
+%\usepackage{fixltx2e}
+%\usepackage{polyglossia}
+
+%\usepackage{tabularx}
+
+%\usepackage{longtable}
+\usepackage{array}
+%\usepackage{multirow}
+%\usepackage{wrapfig}
+%\usepackage{float}
+%\usepackage{colortbl}
+%\usepackage{pdflscape}
+%\usepackage{tabu}
+%\usepackage{threeparttable}
+%\usepackage{threeparttablex}
+%\usepackage[normalem]{ulem}
+%\usepackage[utf8]{inputenc}
+%\usepackage{makecell}
+%\usepackage{xcolor}
+%\usepackage{graphicx}
+%\usepackage{xltxtra,xunicode}
+%\usepackage{xcolor}
+\begin{document}
+\begin{table}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lcc|>{}c|cc|>{}c|}
+\toprule
+  & Base & Base IIS & Base Outlier Distortion Test & Adaptation & Adaptation IIS & Adaptation Outlier Distortion Test\\
+\midrule
+Temperature & 0.01734*** & 0.01032*** & 108.95397 & -0.06224*** & -0.03384*** & 186.25252\\
+ & (0.00348) & (0.00233) & [0.000] & (0.01041) & (0.0072) & [0.000]\\
+Temperature\textsuperscript{2} & -0.00059*** & -0.00039*** & 99.04793 & 0.00070 & 0.00001 & 88.57293\\
+ & (0.0001) & (0.00007) & [0.000] & (0.00037) & (0.00026) & [0.000]\\
+Precipitation & 0.00043 & 0.00073 & 1.97683 & 0.01018 & 0.01328*** & 7.86435\\
+ & (0.00111) & (0.00074) & [0.15973] & (0.00563) & (0.00383) & [0.00504]\\
+Precipitation\textsuperscript{2} & -0.00004 & -0.00004 & 0.46262 & -0.00019 & -0.00035** & 17.55037\\
+ & (0.00003) & (0.00002) & [0.4964] & (0.00019) & (0.00013) & [0.00003]\\
+Temperature x GDP\textsubscript{pc} &  &  &  & 0.00811*** & 0.00416*** & 317.58792\\
+ &  &  &  & (0.00111) & (0.00077) & [0.000]\\
+Temperature\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & -0.00012** & -0.00002 & 148.16829\\
+ &  &  &  & (0.00004) & (0.00003) & [0.000]\\
+Precipitation x GDP\textsubscript{pc} &  &  &  & -0.00121 & -0.00155*** & 6.86436\\
+ &  &  &  & (0.00066) & (0.00045) & [0.00879]\\
+Precipitation\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & 0.00002 & 0.00004* & 17.52154\\
+ &  &  &  & (0.00002) & (0.00002) & [0.00003]\\
+\midrule
+Num. Outliers &  &  & 165 &  &  & 170\\
+Outlier Distortion test statistic for Temp. Variables &  &  & $\chi^2_{2}$ = 111.27 &  &  & $\chi^2_{4}$ = 770.69\\
+Outlier Distortion p-value for Temp. Variables &  &  & 0.0000 &  &  & 0.0000\\
+Num.Obs. & 7716 & 7716 &  & 7716 & 7716 & \\
+BIC & -18483.2 & -23533.1 &  & -18801.4 & -23776.0 & \\
+Log.Lik. & 11774.742 & 15038.149 &  & 11951.758 & 15199.897 & \\
+Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country \& Year & \\
+\bottomrule
+\multicolumn{7}{l}{\textsuperscript{} * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\multicolumn{7}{l}{\textsuperscript{} (Standard Errors) and [p-values]}\\
+\end{tabular}}
+\end{table}
+\end{document}
