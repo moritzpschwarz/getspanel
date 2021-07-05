@@ -86,6 +86,38 @@ Acemoglu, D.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Acevedo%
+, Mrkaic%
+, Novta%
+, Pugacheva%
+\BCBL {}\ \BBA {} Topalova%
+}{%
+Acevedo%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+acevedo2020effects}
+\APACinsertmetastar {%
+acevedo2020effects}%
+\begin{APACrefauthors}%
+Acevedo, S.%
+, Mrkaic, M.%
+, Novta, N.%
+, Pugacheva, E.%
+\BCBL {}\ \BBA {} Topalova, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The effects of weather shocks on economic activity: what
+  are the channels of impact?} {The effects of weather shocks on economic
+  activity: what are the channels of impact?}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Macroeconomics}{65}{}{103207}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Albouy%
 }{%
 Albouy%
@@ -292,6 +324,37 @@ Burke, M.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Carleton%
+\ \protect \BOthers {.}}{%
+Carleton%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+carleton2020valuing}
+\APACinsertmetastar {%
+carleton2020valuing}%
+\begin{APACrefauthors}%
+Carleton, T\BPBI A.%
+, Jina, A.%
+, Delgado, M\BPBI T.%
+, Greenstone, M.%
+, Houser, T.%
+, Hsiang, S\BPBI M.%
+\BDBL {}others%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+\APACrefbtitle {Valuing the global mortality consequences of climate change
+  accounting for adaptation costs and benefits} {Valuing the global mortality
+  consequences of climate change accounting for adaptation costs and benefits}\
+  \APACbVolEdTR{}{\BTR{}}.
+\newblock
+\APACaddressInstitution{}{National Bureau of Economic Research}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Castle%
 \ \BBA {} Hendry%
 }{%
@@ -315,6 +378,31 @@ Castle, J\BPBI L.%
   long-run determinants of uk wages, 1860--2004}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Journal of Macroeconomics}{31}{1}{5--28}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+CIESIN%
+}{%
+CIESIN%
+}{%
+{\protect \APACyear {2016}}%
+}]{%
+ciesin2016gridded}
+\APACinsertmetastar {%
+ciesin2016gridded}%
+\begin{APACrefauthors}%
+CIESIN, F.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Gridded population of the world, version 4 (GPWv4):
+  population count grid} {Gridded population of the world, version 4 (gpwv4):
+  population count grid}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Center for International Earth Science Information
+  Network (CIESIN), Columbia University}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -1000,6 +1088,34 @@ Martinez, A\BPBI B.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Matsuura%
+\ \BBA {} Willmott%
+}{%
+Matsuura%
+\ \BBA {} Willmott%
+}{%
+{\protect \APACyear {2018}}%
+}]{%
+matsuura2018terrestrial}
+\APACinsertmetastar {%
+matsuura2018terrestrial}%
+\begin{APACrefauthors}%
+Matsuura, K.%
+\BCBT {}\ \BBA {} Willmott, C\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Terrestrial precipitation: 1900--2017 gridded monthly
+  time series} {Terrestrial precipitation: 1900--2017 gridded monthly time
+  series}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Electronic. Department of Geography, University of
+  Delaware, Newark, DE}{19716}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Newell%
 , Prest%
 \BCBL {}\ \BBA {} Sexton%
@@ -1237,6 +1353,34 @@ Schneider, L.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Schwarz%
+\ \BBA {} Pretis%
+}{%
+Schwarz%
+\ \BBA {} Pretis%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+schwarz2020modelling}
+\APACinsertmetastar {%
+schwarz2020modelling}%
+\begin{APACrefauthors}%
+Schwarz, M.%
+\BCBT {}\ \BBA {} Pretis, F.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Modelling Historical Adaptation Rates to Inform Future
+  Adaptation Pathways} {Modelling historical adaptation rates to inform future
+  adaptation pathways}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {EGU General Assembly Conference Abstracts} {Egu general
+  assembly conference abstracts}\ (\BPG~21004).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Stillwagon%
 }{%
 Stillwagon%
@@ -1260,6 +1404,29 @@ Stillwagon, J\BPBI R.%
 \newblock
 \APACjournalVolNumPages{The North American Journal of Economics and
   Finance}{37}{}{84--109}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Tol%
+}{%
+Tol%
+}{%
+{\protect \APACyear {2017}}%
+}]{%
+tol2017population}
+\APACinsertmetastar {%
+tol2017population}%
+\begin{APACrefauthors}%
+Tol, R\BPBI S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Population and trends in the global mean temperature}
+  {Population and trends in the global mean temperature}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Atm{\'o}sfera}{30}{2}{121--135}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -1310,6 +1477,30 @@ Welsh, A\BPBI H.%
 \newblock
 \APACjournalVolNumPages{Journal of Statistical Planning and
   Inference}{103}{1-2}{287--310}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+World~Bank%
+}{%
+World~Bank%
+}{%
+{\protect \APACyear {2019}}%
+}]{%
+rld2019world}
+\APACinsertmetastar {%
+rld2019world}%
+\begin{APACrefauthors}%
+World~Bank, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {World development indicators} {World development
+  indicators}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Washington, DC. http://wdi. worldbank.
+  org/table/4.2}{10}{}{2001--2002}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%

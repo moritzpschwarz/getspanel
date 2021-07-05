@@ -13,6 +13,8 @@
 \usepackage{caption}
 \usepackage{float}
 \usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
 
 \newtheorem{algorithm}{Algorithm}
 \newtheorem{assumption}{Assumption}
@@ -42,16 +44,24 @@
 \renewcommand{\qedsymbol}{$\blacksquare$}
 \graphicspath{{figures/}{../figures/}}
 
+\newcommand{\ignore}[1]{}
+% left fixed width:
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+ % center fixed width:
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+ % flush right fixed width:
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{\textbf{Testing for Coefficient Distortion due to Outliers with an Application to the Economic Impacts of Climate Change}}
 
 \author{Xiyu Jiao$^{1, 4}$, Felix Pretis$^{2, 4}$\thanks{Corresponding author: fpretis@uvic.ca.}, and Moritz Schwarz$^{3, 4}$
-\vspace{0.5cm} \\  
-{\small $^1$Department of Economics, University of Oxford} \\ 
+\vspace{0.5cm} \\
+{\small $^1$Department of Economics, University of Oxford} \\
 {\small $^2$Department of Economics, University of Victoria} \\
 {\small $^3$School of Geography and the Environment, University of Oxford} \\
-{\small $^4$Nuffield College, University of Oxford} \\ 
+{\small $^4$Nuffield College, University of Oxford} \\
 \vspace{-1cm}
 }
 \vspace{1.5cm}
@@ -78,38 +88,38 @@ Outlying observations can bias regression estimates, requiring the use of robust
 \section{Introduction}
 A common concern in empirical modelling centres around whether estimated regression coefficients are affected by a small set of outlying observations. Comparing OLS estimates to those obtained using a robust estimator is a common robustness check in the applied literature. However, such comparisons are mostly done heuristically, due to a lack of formal tests. Here we propose a formal test for outlier distortion assessing whether robust estimates obtained using popular Huber-skip estimators are different to those derived using OLS. We apply our test to estimates of the macro-economic impacts of climate change under adaptation.
 
-Distorted estimates due to outlying observations are of particular concern in econometric research on the economic impacts of climate change. The standard approach in the empirical macro-economic climate-impact literature is to estimate country or region-level panel models, modelling GDP per capita growth as a function of population-weighted climate observations, see for example \cite{dell2012temperature}; \cite{burke2015global}; \cite{pretis2018uncertain}; \cite{kalkuhl2020impact}; \cite{newell2021gdp}. Control variables in these impact models are conventionally limited to unit and time fixed effects, together with unit-specific non-linear time trends. With such limited controls and the wide range of determinants of economic growth, there is the potential for many un-modelled idiosyncratic shocks to bias the estimated coefficients on climate variables. Existing estimates in the climate impact literature have relied on heuristic comparisons of OLS and outlier-robust estimates due to a lack of formal tests. For instance, comparing robust estimates to their main OLS specification, \cite{dell2012temperature} write in their seminal paper modelling GDP growth as a function of temperatures: ``\emph{When we use median regressions to reduce the impact of outliers, the estimated impact [of temperatures] for poor countries becomes slightly larger and substantially more statistically significant.}''. However, it is unclear whether `slightly larger' implies that the estimates are statistically different from those obtained using OLS. Similarly, \cite{pretis2018uncertain} estimate an empirical impact model robust to outliers using Impulse Indicator Saturation (IIS - see \citealt{hendry2008automatic}), finding that ``\emph{controlling for these outlying observations reduces the slope of the estimated temperature curve [...] (suggesting reduced impact of temperatures on countries with low average annual temperatures)}''. Nevertheless, this comparison also remains informal as no test was available to compare OLS to robust IIS estimates. Such potentially distorted coefficients may result in biases in the projections of the economic impacts of climate change and subsequently distort cost-benefit analyses of climate policy.
+Distorted estimates due to outlying observations are of particular concern in econometric research on the economic impacts of climate change. The standard approach in the empirical macro-economic climate-impact literature is to estimate country or region-level panel models, modelling GDP per capita growth as a function of population-weighted climate observations, see for example \cite{dell2012temperature}; \cite{burke2015global}; \cite{pretis2018uncertain}; \cite{kalkuhl2020impact}; \cite{newell2021gdp}. Control variables in these impact models are conventionally limited to unit and time fixed effects, together with unit-specific non-linear time trends. With such limited controls and the wide range of determinants of economic growth, there is the potential for many un-modelled idiosyncratic shocks to bias the estimated coefficients on climate variables. Existing estimates in the climate impact literature have relied on heuristic comparisons of OLS and outlier-robust estimates due to a lack of formal tests. For instance, comparing robust estimates to their main OLS specification, \cite{dell2012temperature} write in their seminal paper modelling GDP growth as a function of temperatures: ``\emph{When we use median regressions to reduce the impact of outliers, the estimated impact [of temperatures] for poor countries becomes slightly larger and substantially more statistically significant}''. However, it is unclear whether `slightly larger' implies that the estimates are statistically different from those obtained using OLS. Similarly, \cite{pretis2018uncertain} estimate an empirical impact model robust to outliers using Impulse Indicator Saturation (IIS - see \citealt{hendry2008automatic}), finding that ``\emph{controlling for these outlying observations reduces the slope of the estimated temperature curve [...] (suggesting reduced impact of temperatures on countries with low average annual temperatures)}''. Nevertheless, this comparison also remains informal as no test was available to compare OLS to robust IIS estimates. Such potentially distorted coefficients may result in biases in the projections of the economic impacts of climate change and subsequently distort cost-benefit analyses of climate policy.
 
-Robust estimators as in the above two cases pose a robustness-efficiency trade-off. When outliers are present, we should rely on robust estimators. When no outliers are present, OLS is more efficient. Unfortunately in practise the presence of outliers and any resulting distortion in coefficients is unknown. To assess whether the gain in robustness offsets the loss of efficiency when using robust estimators we propose an outlier distortion test. Specifically, we introduce a test for outlier distortion comparing the difference between OLS and robust estimates derived from  Huber-skip estimators. The robust procedure underlying Huber-skip estimators is to use least squares estimators on ``clean'' data obtained by removing observations with extreme residuals from an initial least squares regression fit. This two step procedure originates from the robust statistics literature, where it has been referred to as the Trimmed Least Squares (\citealt{ruppert1980trimmed}); the Data-analytic Strategy (\citealt{welsh2002journey}); and the 1-step Huber-skip M-estimator (\citealt{johansen2009analysis}). This procedure can start with any initial estimators, including the robust ones. Two special examples are Robustified Least Squares (RLS) and Impulse Indicator Saturation (IIS), which respectively use the full sample and split sample least squares as the initial estimators. Huber-skip type estimators have been widely applied in empirical studies so as to conduct the outlier robustness checks, with RLS being used to estimate the social returns to equipment investment (\citealt{de1991equipment, de1994equipment}, \citealt{auerbach1994reassessing}), the institutional impact on economic growth (\citealt{acemoglu2001colonial, acemoglu2012colonial}, \citealt{albouy2012colonial}, \citealt{acemoglu2019democracy}); with IIS being used to model wages (\citealt{castle2009long}), food expenditure and demand (\citealt{hendry2011econometric}), money demand (\citealt{dreger2014money}), housing markets (\citealt{anundsen2015econometric}), unemployment (\citealt{nymoen2015equilibrium}), exchange rates (\citealt{stillwagon2016non}), debt forecasts (\citealt{ericsson2017biased}); with climate applications ranging from assessing climate model performances (\citealt{pretis2015testing}) to detecting volcanic eruptions in temperature reconstructions (\citealt{schneider2017new}) to improving normalized hurricane damages (\citealt{martinez2020improving}). However, all of these studies have relied on heuristic comparisons of OLS and outlier robust estimators (RLS/IIS) and not been able to formally assess whether outliers distort the coefficients on the variables of interest, since no statistical test was available to compare OLS to RLS/IIS.
+Robust estimators as in the above two cases pose a robustness-efficiency trade-off. When outliers are present, we should rely on robust estimators. When no outliers are present, OLS is more efficient. Unfortunately in practise the presence of outliers and any resulting distortion in coefficients is unknown. To assess whether the gain in robustness offsets the loss of efficiency when using robust estimators, we propose an outlier distortion test. Specifically, we introduce a test for outlier distortion comparing the difference between OLS and robust estimates derived from Huber-skip estimators. The robust procedure underlying Huber-skip estimators is to use least squares estimators on ``clean'' data obtained by removing observations with extreme residuals from an initial least squares regression fit. This two step procedure originates from the robust statistics literature, where it has been referred to as the Trimmed Least Squares (\citealt{ruppert1980trimmed}); the Data-analytic Strategy (\citealt{welsh2002journey}); and the 1-step Huber-skip M-estimator (\citealt{johansen2009analysis}). This procedure can start with any initial estimators, including the robust ones. Two special examples are Robustified Least Squares (RLS) and Impulse Indicator Saturation (IIS), which respectively use the full sample and split sample least squares as the initial estimators. Huber-skip type estimators have been widely applied in empirical studies so as to conduct the outlier robustness checks, with RLS being used to estimate the social returns to equipment investment (\citealt{de1991equipment, de1994equipment}, \citealt{auerbach1994reassessing}), the institutional impact on economic growth (\citealt{acemoglu2001colonial, acemoglu2012colonial}, \citealt{albouy2012colonial}, \citealt{acemoglu2019democracy}); with IIS being used to model wages (\citealt{castle2009long}), food expenditure and demand (\citealt{hendry2011econometric}), money demand (\citealt{dreger2014money}), housing markets (\citealt{anundsen2015econometric}), unemployment (\citealt{nymoen2015equilibrium}), exchange rates (\citealt{stillwagon2016non}), debt forecasts (\citealt{ericsson2017biased}); with climate applications ranging from assessing climate model performances (\citealt{pretis2015testing}) to detecting volcanic eruptions in temperature reconstructions (\citealt{schneider2017new}) to improving normalized hurricane damages (\citealt{martinez2020improving}). However, all of these studies have relied on heuristic comparisons of OLS and outlier robust estimators (RLS/IIS) and have not been able to formally assess whether outliers distort the coefficients on the variables of interest, since no statistical test was available to compare OLS to RLS/IIS.
 
-The main contribution of this paper is to construct a formal test of conducting outlier robustness checks and analysing whether conclusions in empirical studies are driven by a tiny set of outliers. When no outliers are present, we expect the difference between OLS and robust estimators to be small. In turn, when outliers are present and distort regression estimates, the difference between the two estimators will be large (see stylized example in Figure \ref{fig_out_styl}\footnote{Also see the empirical study by \cite{hendry2011econometric} which showed extreme distortion of regression estimates from not modelling outliers when investigating the effect of relative prices on food expenditure, as the sign of the parameter changes from positive to negative after using the robust Huber-skip IIS estimator.}). We show that our test, based on the difference between OLS and RLS/IIS similar to the \cite{durbin1954errors}-\cite{hausman1978specification}-\cite{wu1973alternative} test statistics, has an asymptotic chi-squared distribution by analytically deriving the joint limiting distribution of the two estimators in cross-sectional and time series regressions, where regressors can be either stationary, deterministic trending, or unit root processes. It thus enables us to evaluate whether the gain in robustness is more valuable than the corresponding loss in efficiency when using RLS/IIS and to test whether the parameter of interest changes its value significantly before and after removing outliers, allowing formal outlier sensitivity analysis. Our simulations show that the test has a size close to nominal levels once sample sizes are moderately large ($n \geq 200$) and exhibits high power under a range of alternatives. 
+The main contribution of this paper is to construct such a formal test of conducting outlier robustness checks and analysing whether or not conclusions in empirical studies are driven by a tiny set of outliers. When no outliers are present, we expect the difference between OLS and robust estimators to be small. In turn, when outliers are present and distort regression estimates, the difference between the two estimators will be large (see stylized example in Figure \ref{fig_out_styl}\footnote{Also see the empirical study by \cite{hendry2011econometric} which showed extreme distortion of regression estimates from not modelling outliers when investigating the effect of relative prices on food expenditure, as the sign of the parameter changes from positive to negative after using the robust Huber-skip IIS estimator.}). We show that our test, based on the difference between OLS and RLS/IIS similar to the \cite{durbin1954errors}-\cite{hausman1978specification}-\cite{wu1973alternative} test statistics, has an asymptotic $\chi^2$ distribution by analytically deriving the joint limiting distribution of the two estimators in cross-sectional and time series regressions, where regressors can be either stationary, deterministic trending, or unit root processes. It thus enables us to evaluate whether the gain in robustness is more valuable than the corresponding loss in efficiency when using RLS/IIS and to test whether the parameter of interest changes its value significantly before and after removing outliers, allowing formal outlier sensitivity analysis. Our simulations show that the test has a size close to nominal levels once sample sizes are moderately large ($n \geq 200$) and exhibits high power under a range of alternatives.
 
-\begin{figure}[!htbp]  
+\begin{figure}[!htbp]
 \centering
 \includegraphics[scale=0.7]{stylized_example_simple_paper_v2.pdf}
 \caption{Stylized example of outlier distortion using artificial data. Left panel A shows OLS (red) and robust Huber-skip estimates (blue) when there are no distorting outliers. The DGP is shown as orange-dashed. Right panel B shows 8 outliers distorting the OLS estimates, where the difference between the OLS and robust coefficient estimates is used to construct our proposed distortion test. When no outliers are present, OLS is preferred. When outliers are present and distorting coefficient estimates, the robust estimator is preferred.}
 \label{fig_out_styl}
 \end{figure}
 
-To establish the proposed outlier distortion test, we need to study the asymptotic behaviour of the RLS/IIS and two step robust procedure in general. Using the empirical process CLT recently developed by \cite{berenguer2019analysis}, we build up an asymptotic theory of this class of robust estimators with an argument similar to \cite{johansen2009analysis, johansen2013outlier, johansen2019boundedness} which study M-estimators. The theory suggests two improvements to the naive two step procedure. First, the ordinary variance estimator needs to be bias corrected due to the fact that some observations have certain chances to be wrongly classified as outliers and removed under the null of no outliers. Second, to further gain robustness the two step procedure can be iterated until converging to a fixed point which is shown to have the same first order asymptotics as the Huber-skip M-estimator. This paper then establishes tightness, stochastic expansion, and weak convergence of the robust estimators produced by the improved iterated procedure in cross-sectional or time series regressions with stationary, deterministically or stochastically trending regressors. Implementation of RLS/IIS requires selecting a cut-off value, tuning parameter, to detect outlying observations based on their residuals. The cut-off value as robustification parameter determines the trade-off between robustness and efficiency for the robust estimator RLS/IIS. \cite{jiao2020testingoutlier} provides a guidance on choosing this robustification parameter based on an asymptotic study of the false outlier detection rate. The theory derived in this paper holds uniformly in the robustification parameter.
+To establish the proposed outlier distortion test, we need to study the asymptotic behaviour of the RLS/IIS and two step robust procedure in general. Using the empirical process CLT recently developed by \cite{berenguer2019analysis}, we build up an asymptotic theory of this class of robust estimators with an argument similar to \cite{johansen2009analysis, johansen2013outlier, johansen2019boundedness} which study M-estimators. The theory suggests two improvements to the naive two step procedure. First, the ordinary variance estimator needs to be bias-corrected due to the fact that some observations have certain chances to be wrongly classified as outliers and removed under the null of no outliers. Second, to further gain robustness the two step procedure can be iterated until converging to a fixed point which is shown to have the same first order asymptotics as the Huber-skip M-estimator. This paper then establishes tightness, stochastic expansion, and weak convergence of the robust estimators produced by the improved iterated procedure in cross-sectional or time series regressions with stationary, deterministically or stochastically trending regressors. Implementation of RLS/IIS requires selecting a cut-off value, the tuning parameter, to detect outlying observations based on their residuals. The cut-off value as robustification parameter determines the trade-off between robustness and efficiency for the robust estimator RLS/IIS. \cite{jiao2020testingoutlier} provides a guidance on choosing this robustification parameter based on an asymptotic study of the false outlier detection rate. The theory derived in this paper holds uniformly for the robustification parameter.
 
 To improve finite sample performance and to alleviate concerns on distributional assumptions on errors, we further introduce and explore three bootstrap testing schemes of our distortion test. First, we non-parametrically re-sample the raw data, which is conservative under the null hypothesis of no outliers and lacks power under alternatives. Second, we re-sample from the outlier-removed clean data. Here we face concerns about size as the cleaned data may appear rather different than the raw data. This is due to the fact that clean data was obtained by targeting a reference distribution. Therefore, we propose a third bootstrap scheme, in which we assess outlier distortion by re-sampling from the clean data but classify outliers at a looser cut-off threshold for bootstrapping samples. The idea being that outliers under a lower cut-off in the clean sample, mimic the relationship of the clean sample to the original raw data. This approach captures some of the characteristics of the data that are not forced to conform to the reference distribution. As expected, all schemes perform reasonably well under the null, however, re-sampling the raw data itself has close to zero power. The re-scaled clean data bootstrap performs best overall with good size and power properties in finite samples, even when the reference distribution is incorrect.
 
 The literature on outlier robustness has not commonly focused on testing presence of distortion. Two papers, however, are notable exceptions and closely related to our approach. First, \cite{kaji2018switching} also asymptotically studies the outlier removal estimator RLS as well as other robust estimators, such as the winsorized estimator, all of which can be represented as L-statistics (integrals of transformations of empirical quantile functions with respect to corresponding random sample selection measures). To establish their asymptotic theory, he then develops a new empirical process theory and a functional delta method for its quantile process tailored for these L-statistics, with an important innovation to the choice of $L_{1}$ norm (instead of the standard $L_{\infty}$ norm in the literature). His argument can be extended to instrumental variables regressions, but requires iid observations. Compared to \cite{kaji2018switching}, we characterise the RLS/IIS and other Huber-skip type estimators as a different type and new class of weighted and marked empirical processes, whose theory has been established by \cite{berenguer2019analysis} via martingale decompositions. Our argument is constructed specially for the RLS/IIS, thus it allows us to dig deeper for these two algorithms. For example, our theory can explore the asymptotics of the variance estimator, iteration of the algorithms, the varying robustification parameter, and the algorithms starting with other initial estimators like least trimmed squares. In addition, our analysis does not require iid data and is also valid for time series regressions with stationary, deterministically trending, and unit root regressors.
 
-To establish the outlier distortion test based on the difference between OLS and RLS estimators, \cite{kaji2018switching} applies the nonparametric bootstrap by randomly sampling the original data with replacement to draw the joint distribution of the outlier removal and the full sample estimators (RLS and OLS). The bootstrap scheme does not require a distributional assumption on the error term, however, it has the lower power under a range of alternatives where there are influential outliers distorting regression parameters. This is because when resampling from the original data, the bootstrapping scheme has a certain chance of picking up outliers. Those bootstrapping samples including outliers will then distort the distribution of the testing statistics and drive it away from what it should be under the null of no outliers.
+To establish the outlier distortion test based on the difference between OLS and RLS estimators, \cite{kaji2018switching} applies the nonparametric bootstrap by randomly sampling the original data with replacement to draw the joint distribution of the outlier removal and the full sample estimators (RLS and OLS). The bootstrap scheme does not require a distributional assumption on the error term, however, it has lower power under a range of alternatives where there are influential outliers distorting regression parameters. This is because when resampling from the original data, the bootstrapping scheme has a certain chance of picking up outliers. Those bootstrapping samples which inlucde outliers will then distort the distribution of the testing statistics and drive it away from what it should be under the null of no outliers.
 
-Second, \cite{dehon2012extending} propose a similar Hausman type test for comparing OLS to the robust S-estimators. Asymptotic theory of the S-estimators has been well established in the robust statistics literature, thus they don't need to derive the asymptotics when constructing the outlier distortion test for the S-estimators. While to study the difference between OLS and RLS/IIS, we need to fully establish the theory of RLS/IIS using the empirical process CLT recently developed by \cite{berenguer2019analysis}, although there have been some related work to research the M and L type estimators, see \cite{hendry2008automatic}, \cite{johansen2009analysis, johansen2013outlier, johansen2016analysis, johansen2016asymptotic, johansen2019boundedness}, \cite{jiao2015asymptotic}. In addition, \cite{dehon2012extending} restrict their study in the iid setup as well, whereas time series regressions are allowed in our framework.
+Second, \cite{dehon2012extending} propose a similar Hausman type test for comparing OLS to the robust S-estimators. Asymptotic theory of the S-estimators has been well established in the robust statistics literature, thus they do not need to derive the asymptotics when constructing the outlier distortion test for the S-estimators. To study the difference between OLS and RLS/IIS, we need to fully establish the theory of RLS/IIS using the empirical process CLT recently developed by \cite{berenguer2019analysis}, although there have been some related work to research M and L type estimators, see \cite{hendry2008automatic}, \cite{johansen2009analysis, johansen2013outlier, johansen2016analysis, johansen2016asymptotic, johansen2019boundedness}, \cite{jiao2015asymptotic}. In addition, \cite{dehon2012extending} restrict their study in the iid setup, whereas time series regressions are allowed in our framework.
 
-In the wider literature on Huber-skip estimators, there are some other closely related work. \cite{jiao2020testingoutlier} study whether the proportion (and number) of outliers is different to the expected proportion (and number) when no outliers are present. \cite{jiao2019robustIV} and \cite{jiao2021asymptoitcFODR2SLS} restrict the setup in iid data, and then extend asymptotic theory of the RLS/IIS algorithms and their false outlier detection rate to instrumental variables regressions. \cite{berenguer2018marked} and \cite{berenguer2021heteroscedasticity} considers diagnostic testing on residuals for normality and heteroskedasticity after outlier removal by robust Huber-skip regressions.
+In the wider literature on Huber-skip estimators, there is some other closely related work. \cite{jiao2020testingoutlier} study whether the proportion (and number) of outliers is different to the expected proportion (and number) when no outliers are present. \cite{jiao2019robustIV} and \cite{jiao2021asymptoitcFODR2SLS} restrict the setup in iid data, and then extend asymptotic theory of the RLS/IIS algorithms and their false outlier detection rate to instrumental variables regressions. \cite{berenguer2018marked} and \cite{berenguer2021heteroscedasticity} considers diagnostic testing on residuals for normality and heteroskedasticity after outlier removal by robust Huber-skip regressions.
 
-We apply our proposed test of outlier distortion to estimate the macro-economic impacts of climate change using the robust IIS estimator. Specifically, we estimate a macro-economic climate impact model in-line with the growing panel-econometric literature modelling GDP per capita growth as a function of (non-linear) climate variables. We make two contributions to the existing climate-econometric literature. First, beyond existing estimates, we consider income-based adaptation, allowing the impact of year-on-year changes in temperatures to vary by country-specific income levels. Second, to address un-modelled (and a-priori unknown) idiosyncratic shocks, we apply the robust IIS estimator. We then test for outlier distortion of the estimated coefficients. Our results show significant evidence of income-driven adaptation to temperatures, where climate effects are dampened as incomes increase. However, conventional OLS panel estimates are significantly different to those obtained using the robust estimator. Once we control for these outliers (some of which coincide with the first Gulf War and collapse of the Soviet Union), the estimated impacts of temperatures on economic growth are attenuated at all income levels compared to conventional OLS estimates.
+We apply our proposed test of outlier distortion to estimate the macro-economic impacts of climate change using the robust IIS estimator. Specifically, we estimate a macro-economic climate impact model in line with the growing panel-econometric literature modelling GDP per capita growth as a function of (non-linear) climate variables. We make two contributions to the existing climate-econometric literature. First, beyond existing estimates, we consider income-based adaptation, allowing the impact of year-on-year changes in temperatures to vary by country-specific income levels. Second, to address un-modelled (and a-priori unknown) idiosyncratic shocks, we apply the robust IIS estimator. We then test for outlier distortion of the estimated coefficients. Our results show significant evidence of income-driven adaptation to temperatures, where climate effects are dampened as incomes increase. However, conventional OLS panel estimates are significantly different to those obtained using the robust estimator. Once we control for these outliers (some of which coincide with the first Gulf War and collapse of the Soviet Union), the estimated impacts of temperatures on economic growth are attenuated at all income levels compared to conventional OLS estimates.
 
-\textbf{NOTE: One sentence here on what this means for the projections.}
+\textbf{NOTE for MORITZ: One sentence here on what this means for the projections.}
 
-\textbf{NOTE: Do we need to describe our application more so as to put more weight on climate side?}
+\textbf{NOTE for MORITZ: Do we need to describe our application more so as to put more weight on climate side?}
 
-The paper proceeds as follows: \S \ref{sec_theory and methods} presents our main results with all proofs shown in Appendix \S \ref{sec_proofs}. In particular, \S \ref{sec_algorithm} and \S \ref{sec_assumptions} introduces a regression model, a list of assumptions required for analysis, and a class of outlier-robust algorithms including RLS and IIS. \S \ref{sec_weak convergence} establishes asymptotic theory of RLS and IIS, whilst \S \ref{sec_outlier distortion test} proposes the outlier distortion test. Then, \S \ref{sec_simulations} conducts Monte Carlo studies with additional simulation results in Appendix \S \ref{sec_add_sim}. Lastly, \S \ref{sec_application} applies the outlier distortion test to the macro-economic impacts of climate change using the robust IIS estimator. 
+The paper proceeds as follows: \S \ref{sec_theory and methods} presents our main results with all proofs shown in Appendix \S \ref{sec_proofs}. In particular, \S \ref{sec_algorithm} and \S \ref{sec_assumptions} introduces a regression model, a list of assumptions required for analysis, and a class of outlier-robust algorithms including RLS and IIS. \S \ref{sec_weak convergence} establishes asymptotic theory of RLS and IIS, whilst \S \ref{sec_outlier distortion test} proposes the outlier distortion test. Then, \S \ref{sec_simulations} conducts Monte Carlo studies with additional simulation results in Appendix \S \ref{sec_add_sim}. Lastly, \S \ref{sec_application} applies the outlier distortion test to the macro-economic impacts of climate change using the robust IIS estimator.
 
 
 
@@ -252,7 +262,7 @@ Consider the iterated 1-step Huber-skip M-estimator in Algorithm \ref{iterated 1
 
 The proof involves empirical process theory recently developed by \cite{berenguer2019analysis}. Firstly, Assumption \ref{sufficient assumptions}$(iii)$ with $\eta = 1/4$ corresponds to a standard convergence rate for the initial estimator. With the 1-step relationship between the updated and the original estimator provided by Lemma \ref{one step expansion of iterated estimators}, also see Corollary \ref{expansion of the first step estimators}, the tightness can then be demonstrated by a geometric argument and mathematical induction.
 
-Firstly, the above tightness theorem implies the uniform consistency of the iterated estimators computed by Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c}, that is $\widehat{\beta}_{c}^{(m)} \overset{\mathsf{P}}{\to} \beta$ and $\widehat{\sigma}_{c}^{(m)} \overset{\mathsf{P}}{\to} \sigma$ uniformly in the cut-off value $c$ and iteration step $m$ as $n \to \infty$. Secondly, the tightness will also be used to establish fixed points $\widehat{\beta}_{c}^{(\ast)}$ and $\widehat{\sigma}_{c}^{(\ast)}$ of Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c} upon through infinite iterations when $m \to \infty$ and to demonstrate weak convergence theory of RLS and IIS. 
+Firstly, the above tightness theorem implies the uniform consistency of the iterated estimators computed by Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c}, that is $\widehat{\beta}_{c}^{(m)} \overset{\mathsf{P}}{\to} \beta$ and $\widehat{\sigma}_{c}^{(m)} \overset{\mathsf{P}}{\to} \sigma$ uniformly in the cut-off value $c$ and iteration step $m$ as $n \to \infty$. Secondly, the tightness will also be used to establish fixed points $\widehat{\beta}_{c}^{(\ast)}$ and $\widehat{\sigma}_{c}^{(\ast)}$ of Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c} upon through infinite iterations when $m \to \infty$ and to demonstrate weak convergence theory of RLS and IIS.
 
 The next theorem is to show stochastic expansions of any iterated step estimators of Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c} in terms of the initial estimators, kernels, and small remainder terms.
 
@@ -269,7 +279,7 @@ where coefficients have expressions
 \end{align*}
 \end{theorem}
 
-The above theorem generalises Lemma \ref{one step expansion of iterated estimators} in the sense that its proof is to recursively apply the one-step expansion of the updated estimator in terms of the original ones. Let $m = 0$ such that $\varrho_{\beta, c}^{(1)} = 2 c \mathsf{f}(c) / \psi_{c}$, $\varrho_{x \varepsilon, c}^{(1)}  = \psi_{c}^{-1}$, $\varrho_{\sigma, c}^{(1)} = c (c^{2} - \varsigma_{c}^{2}) \mathsf{f}(c) / \tau_{2}^{c}$, and $\varrho_{\varepsilon \varepsilon, c}^{(1)} = \sigma / (2 \tau_{2}^{c})$, then the expansion immediately reduces to the one-step case. Here, we provide the following corollary to re-express Lemma \ref{one step expansion of iterated estimators} as a stochastic expansion of the fist step estimators in terms of the initial ones and the kernel terms. 
+The above theorem generalises Lemma \ref{one step expansion of iterated estimators} in the sense that its proof is to recursively apply the one-step expansion of the updated estimator in terms of the original ones. Let $m = 0$ such that $\varrho_{\beta, c}^{(1)} = 2 c \mathsf{f}(c) / \psi_{c}$, $\varrho_{x \varepsilon, c}^{(1)}  = \psi_{c}^{-1}$, $\varrho_{\sigma, c}^{(1)} = c (c^{2} - \varsigma_{c}^{2}) \mathsf{f}(c) / \tau_{2}^{c}$, and $\varrho_{\varepsilon \varepsilon, c}^{(1)} = \sigma / (2 \tau_{2}^{c})$, then the expansion immediately reduces to the one-step case. Here, we provide the following corollary to re-express Lemma \ref{one step expansion of iterated estimators} as a stochastic expansion of the fist step estimators in terms of the initial ones and the kernel terms.
 
 \begin{corollary} \label{expansion of the first step estimators}
 Consider the iterated 1-step Huber-skip M-estimator in Algorithm \ref{iterated 1-step Huber-skip M-estimator with the same cut-off c}. Suppose Assumption \ref{sufficient assumptions} holds with $\eta = 1/4$. Then, as $n \to \infty$ and uniformly in $c \in [c_{+}, \infty)$, we have
@@ -372,9 +382,9 @@ In addition, for $m \to \infty$ a sequence of processes $\mathbb{G}_{n}^{(\ast)}
 \begin{equation*}
 y_{i} = \beta_{0} + \beta_{1} i + \varepsilon_{i}, \quad i = 1, 2, \ldots, n.
 \end{equation*}
-For the regressors $x_{i} = (1, i)^{\prime}$, we choose the normalisation matrix 
+For the regressors $x_{i} = (1, i)^{\prime}$, we choose the normalisation matrix
 $
-N = 
+N =
 \begin{pmatrix}
 n^{-1/2} & 0 \\
 0 & n^{-3/2}
@@ -394,9 +404,9 @@ n^{-2} i & n^{-3} i^{2}
 \end{pmatrix}
 = \Sigma.
 \end{equation*}
-Notice that we use $\sum_{i = 1}^{n} i = n (n + 1) / 2$ and $\sum_{i = 1}^{n} i^{2} = n (n + 1) (2n + 1) / 6$ to obtain the above deterministic limit. The kernel vector $\sum_{i = 1}^{n} (x_{in}^{\prime} \varepsilon_{i}, x_{in}^{\prime} \varepsilon_{i} 1_{(|\varepsilon_{i}| \le \sigma c)})^{\prime}$ has a limiting normal distribution with the same form of mean and variance as given in the stationary case where instead $d_{x} = 2$ and $\Sigma$ is derived immediately above. For any $m \in [0, \infty)$, denote a sequence of processes of the iterated estimators computed by RLS or IIS as 
+Notice that we use $\sum_{i = 1}^{n} i = n (n + 1) / 2$ and $\sum_{i = 1}^{n} i^{2} = n (n + 1) (2n + 1) / 6$ to obtain the above deterministic limit. The kernel vector $\sum_{i = 1}^{n} (x_{in}^{\prime} \varepsilon_{i}, x_{in}^{\prime} \varepsilon_{i} 1_{(|\varepsilon_{i}| \le \sigma c)})^{\prime}$ has a limiting normal distribution with the same form of mean and variance as given in the stationary case where instead $d_{x} = 2$ and $\Sigma$ is derived immediately above. For any $m \in [0, \infty)$, denote a sequence of processes of the iterated estimators computed by RLS or IIS as
 $
-\mathbb{G}_{n}^{(m + 1)}(c) = N^{-1} (\widehat{\beta}_{c}^{(m + 1)} - \beta) = 
+\mathbb{G}_{n}^{(m + 1)}(c) = N^{-1} (\widehat{\beta}_{c}^{(m + 1)} - \beta) =
 \begin{Bmatrix}
 n^{1/2} (\widehat{\beta}_{0, c}^{(m + 1)} - \beta_{0}) \\
 n^{3/2} (\widehat{\beta}_{1, c}^{(m + 1)} - \beta_{1})
@@ -410,7 +420,7 @@ Other cases of deterministic trends can be studied using a similar analysis to t
 \begin{equation*}
 y_{i} = \beta y_{i - 1} + \varepsilon_{i}, \quad i = 1, 2, \ldots, n,
 \end{equation*}
-where $\beta = 1$. Other cases of unit roots processes can be analysed similarly using the following argument. Firstly, we choose $N = n^{-1}$ for normalising the regressor $x_{i} = y_{i - 1}$ so that $x_{in} = N^{\prime} x_{i} = n^{-1} y_{i - 1} = n^{-1} y_{0} + n^{-1} \sum_{s = 1}^{i - 1} \varepsilon_{s}$. For any $c \in [c_{+}, \infty)$ and as $n \to \infty$, the functional CLT shows that a sequence of processes 
+where $\beta = 1$. Other cases of unit roots processes can be analysed similarly using the following argument. Firstly, we choose $N = n^{-1}$ for normalising the regressor $x_{i} = y_{i - 1}$ so that $x_{in} = N^{\prime} x_{i} = n^{-1} y_{i - 1} = n^{-1} y_{0} + n^{-1} \sum_{s = 1}^{i - 1} \varepsilon_{s}$. For any $c \in [c_{+}, \infty)$ and as $n \to \infty$, the functional CLT shows that a sequence of processes
 $
 n^{-1/2} \sum_{s = 1}^{\mathrm{int}(nu)}
 \begin{pmatrix}
@@ -424,7 +434,7 @@ $
 B_{1, u} \\
 B_{2, u}
 \end{pmatrix}
-$ with the argument $u \in [0, 1]$ having the mean zero and variance 
+$ with the argument $u \in [0, 1]$ having the mean zero and variance
 $
 \sigma^{2}
 \begin{pmatrix}
@@ -432,7 +442,7 @@ $
 \tau_{2}^{c} & \tau_{2}^{c}
 \end{pmatrix}
 $.
-Next, we find 
+Next, we find
 \begin{equation*}
 \Sigma_{n} = \sum_{i = 1}^{n} x_{in} x_{in}^{\prime} = n^{-2} \sum_{i = 1}^{n} y_{i - 1}^{2} = n^{-1} \sum_{i = 1}^{n} (n^{-1/2} \sum_{s = 1}^{i - 1} \varepsilon_{s} + n^{-1/2} y_{0})^{2} \overset{\mathsf{D}}{\to} \int_{0}^{1} B_{1, u}^{2} du = \Sigma.
 \end{equation*}
@@ -485,7 +495,7 @@ n (\widehat{\beta}_{c}^{(1)} - \beta) & \overset{\mathsf{D}}{\to} \frac{2 c \mat
 n (\widehat{\beta}_{c}^{(\ast)} - \beta) & \overset{\mathsf{D}}{\to} \frac{\int_{0}^{1} B_{1, u} dB_{2, u}}{\{ \psi_{c} - 2 c \mathsf{f}(c) \} \int_{0}^{1} B_{1, u}^{2} du}.
 \end{align*}
 
-When $c \to \infty$ then $\psi_{c} \to 1$, $\tau_{2}^{c} \to 1$, and $c \mathsf{f}(c) \to 0$ such that $\varrho_{\beta, c}^{(m + 1)} \to 0$ and $\varrho_{x \varepsilon, c}^{(m + 1)} \to 1$ for any $m \in [0, \infty)$ due to Assumption \ref{sufficient assumptions}$(i)$. Furthermore, two Brownian motions $B_{1}$ and $B_{2}$ become identical, since $1_{(|\varepsilon_{s}| \le \sigma c)} \to 1$ and their variances 
+When $c \to \infty$ then $\psi_{c} \to 1$, $\tau_{2}^{c} \to 1$, and $c \mathsf{f}(c) \to 0$ such that $\varrho_{\beta, c}^{(m + 1)} \to 0$ and $\varrho_{x \varepsilon, c}^{(m + 1)} \to 1$ for any $m \in [0, \infty)$ due to Assumption \ref{sufficient assumptions}$(i)$. Furthermore, two Brownian motions $B_{1}$ and $B_{2}$ become identical, since $1_{(|\varepsilon_{s}| \le \sigma c)} \to 1$ and their variances
 $
 \sigma^{2}
 \begin{pmatrix}
@@ -501,11 +511,11 @@ $
 $.
 Thus, the limiting distribution of the iterated estimators
 \begin{equation*}
-\frac{\varrho_{\beta, c}^{(m + 1)} \int_{0}^{1} B_{1, u} dB_{1, u} + \varrho_{x \varepsilon, c}^{(m + 1)} \int_{0}^{1} B_{1, u} dB_{2, u}}{\int_{0}^{1} B_{1, u}^{2} du} 
+\frac{\varrho_{\beta, c}^{(m + 1)} \int_{0}^{1} B_{1, u} dB_{1, u} + \varrho_{x \varepsilon, c}^{(m + 1)} \int_{0}^{1} B_{1, u} dB_{2, u}}{\int_{0}^{1} B_{1, u}^{2} du}
 \to
 \frac{\int_{0}^{1} B_{1, u} dB_{1, u}}{\int_{0}^{1} B_{1, u}^{2} du},
 \end{equation*}
-which is the usual Dicky-Fuller distribution. This is not surprising, since for any $m \in [0, \infty)$ and as $c \to \infty$ the iterated estimator $n (\widehat{\beta}_{c}^{(m + 1)} - \beta)$ computed by RLS or IIS becomes the ordinary least squares $n (\widetilde{\beta} - \beta)$ which then converges to the Dicky-Fuller distribution as $n \to \infty$. 
+which is the usual Dicky-Fuller distribution. This is not surprising, since for any $m \in [0, \infty)$ and as $c \to \infty$ the iterated estimator $n (\widehat{\beta}_{c}^{(m + 1)} - \beta)$ computed by RLS or IIS becomes the ordinary least squares $n (\widetilde{\beta} - \beta)$ which then converges to the Dicky-Fuller distribution as $n \to \infty$.
 
 With the above weak convergence results of RLS and IIS, the next step is to construct tests for coefficients distortion due to outliers. The proposed tests formalise the common practice for outlier robustness checks by looking into the difference between RLS (or IIS) and OLS.
 
@@ -553,7 +563,7 @@ Thus, our suggested estimator of $\mathsf{avar}(\widehat{\beta}_{c}^{(m + 1)} - 
 & \quad \,\, \widehat{\mathsf{avar}}(\widehat{\beta}_{c}^{(m + 1)} - \widetilde{\beta}) \nonumber \\
 & = \{ (\varrho_{\beta, c}^{(m + 1)} - 1)^{2} + 2 \tau_{2}^{c} (\varrho_{\beta, c}^{(m + 1)} - 1) \varrho_{x \varepsilon, c}^{(m + 1)} + \tau_{2}^{c} (\varrho_{x \varepsilon, c}^{(m + 1)})^{2} \} (\widehat{\sigma}_{c}^{(m + 1)})^{2} (\widehat{\Sigma}_{c}^{(m + 1)})^{-1}. \label{estimated asymptotic variance}
 \end{align}
-Otherwise if we use $\mathsf{avar}(\widehat{\beta}_{c}^{(m + 1)}) - \mathsf{avar}(\widetilde{\beta})$ to construct the testing statistics and estimate $\sigma^{2}$ and $\Sigma$ in $\mathsf{avar}(\widetilde{\beta})$ using the full sample, then under alternatives the test would lose power and lead to incorrect results. More seriously, it is very likely under alternatives to have $\widehat{\mathsf{avar}}(\widehat{\beta}_{c}^{(m + 1)})  \le \widehat{\mathsf{avar}}(\widetilde{\beta})$ such that $\widehat{\mathsf{avar}}(\widehat{\beta}_{c}^{(m + 1)}) -\widehat{\mathsf{avar}}(\widetilde{\beta}) \le 0$, thus the Hausman type testing statistics is negative so that the test is meaningless in this case. 
+Otherwise if we use $\mathsf{avar}(\widehat{\beta}_{c}^{(m + 1)}) - \mathsf{avar}(\widetilde{\beta})$ to construct the testing statistics and estimate $\sigma^{2}$ and $\Sigma$ in $\mathsf{avar}(\widetilde{\beta})$ using the full sample, then under alternatives the test would lose power and lead to incorrect results. More seriously, it is very likely under alternatives to have $\widehat{\mathsf{avar}}(\widehat{\beta}_{c}^{(m + 1)})  \le \widehat{\mathsf{avar}}(\widetilde{\beta})$ such that $\widehat{\mathsf{avar}}(\widehat{\beta}_{c}^{(m + 1)}) -\widehat{\mathsf{avar}}(\widetilde{\beta}) \le 0$, thus the Hausman type testing statistics is negative so that the test is meaningless in this case.
 
 We can now fully establish the outlier distortion test for formalising the robustness checks. For any chosen $m \in [0, \infty)$ and $c \in [c_{+}, \infty)$, we have the testing statistics and its limiting distribution
 \begin{equation*}
@@ -623,7 +633,7 @@ We study the performance of the three bootstrap schemes together with the propos
 
 %\vspace{0.5cm}
 \section{Finite Sample Performance using Simulations} \label{sec_simulations}
-Here we study the performance of the proposed outlier distortion test in a series of simulation experiments under the null hypothesis of no distortion, as well as under a range of alternatives. We simulate (\ref{regression model}) varying the sample size $n$, the number of regressors tested $d_x$, the degree of persistence in the dependent variable (ranging from iid to stochastically-trending), as well as the underlying reference distribution, and the degree of outlier contamination under a range of alternatives (the proportion of outliers as well as outlier magnitude). Simulations are implemented using the R-package \texttt{gets} with $m=10,000$ replications for asymptotic tests and $m=1,000$ replications and bootstrap draws for the bootstrap versions of the test.
+Here we study the performance of the proposed outlier distortion test in a series of simulation experiments under the null hypothesis of no distortion, as well as under a range of alternatives. We simulate (\ref{regression model}) varying the sample size $n$, the number of regressors tested $d_x$, the degree of persistence in the dependent variable (ranging from iid to stochastically-trending), as well as the underlying reference distribution, and the degree of outlier contamination under a range of alternatives (the proportion of outliers as well as outlier magnitude). Simulations are implemented using the R-package \texttt{getspanel}, which is based on the R-package \texttt{gets}, with $m=10,000$ replications for asymptotic tests and $m=1,000$ replications and bootstrap draws for the bootstrap versions of the test.
 
 \subsection{Simulation Performance under the Null of No Distortion}
 
@@ -638,11 +648,11 @@ Simulation results under the null of no outliers are shown in Figure \ref{fig_ou
 \label{fig_out_sim_null}
 \end{figure}
 
-%We investigate the performance of the asymptotic and bootstrap tests 
+%We investigate the performance of the asymptotic and bootstrap tests
 
 Bootstrap results are shown in Figure \ref{fig_boot_sim_null} using both the $L_{1}$ and $L_{2}$ norm of the difference between robust and OLS coefficient estimates. Here we also consider the performance of the bootstrap and asymptotic tests when the assumed reference distribution is incorrect. Specifically, we consider the case where we assume $\mathsf{f}$ to be a normal reference distribution, when the actual error distribution is fatter-tailed (a $t$-distribution with 3 degrees of freedom).
 
-As expected, the bootstrap on the raw data is under-sized regardless of the reference distribution. In turn, the asymptotic test is over-sized when reference distribution is incorrect. Bootstrapping the clean (outlier-removed) data yields a size close to nominal levels for small samples (under a correct reference distribution), and also partly reduces the over-rejection when the reference distribution is incorrect. Our proposed bootstrap scaling approach improves the performance relative to the asymptotic test when the assumed reference distribution is to the true error distribution. 
+As expected, the bootstrap on the raw data is under-sized regardless of the reference distribution. In turn, the asymptotic test is over-sized when reference distribution is incorrect. Bootstrapping the clean (outlier-removed) data yields a size close to nominal levels for small samples (under a correct reference distribution), and also partly reduces the over-rejection when the reference distribution is incorrect. Our proposed bootstrap scaling approach improves the performance relative to the asymptotic test when the assumed reference distribution is to the true error distribution.
 
 
 \begin{figure}[!htbp]  %\vspace{-.35in}
@@ -686,82 +696,83 @@ Bootstrap results are shown in Figures \ref{fig_out_sim_alt_boot4} and \ref{fig_
 \end{figure}
 
 \subsection{Summary of Simulation Results}
-The simulation results show well-controlled size and high power of our asymptotic test in large samples (n $>$ 200), with the tests being slightly oversized in small samples (n $<$ 200). In-line with our theory results, the performance of the test is unaffected by the presence of stochastic trends. Bootstrapping the cleaned (outlier-removed) data, or bootstrapping with scaled significance levels on the cleaned data performs well under the null of no outliers, and reduces size-distortions of the asymptotic test in small samples and when the reference distribution is different to the assumed distribution. These bootstrap approaches also exhibit good power under a range of alternatives. We do not recommend bootstrapping the raw data, as expected, re-sampling the raw data has close to no power to detect distortion.
+The simulation results show well-controlled size and high power of our asymptotic test in large samples (n $>$ 200), with the tests being slightly oversized in small samples (n $<$ 200). In line with our theory results, the performance of the test is unaffected by the presence of stochastic trends. Bootstrapping the cleaned (outlier-removed) data, or bootstrapping with scaled significance levels on the cleaned data performs well under the null of no outliers, and reduces size-distortions of the asymptotic test in small samples and when the reference distribution is different to the assumed distribution. These bootstrap approaches also exhibit good power under a range of alternatives. We do not recommend bootstrapping the raw data, as expected, re-sampling the raw data has close to no power to detect distortion.
 
 
 %\clearpage
 
 \section{Application: Climate Adaptation \& the Macro-Economic Impacts of Temperatures} \label{sec_application}
-We apply the outlier distortion test to estimates of the economic impacts of climate change allowing for income-driven adaptation. Specifically, we use the robust IIS estimator to estimate a panel model of the effects of temperature on GDP per capita growth using a global panel dataset in line with the existing climate-econometric impacts literature (e.g. Burke, Hsiang, and Miguel, 2015; Dell Jones and Olken 2012; Pretis et al. 2018). While existing estimates strongly support a non-linear relationship between GDP per capita growth and temperatures, adaptation to climate change has been notably absent in empirical macro-economic cross-country analyses. Higher incomes might mitigate the impacts of climate change (see e.g. Acevedo et al. 2020, Schwarz and Pretis, 2020), and such adaptation might bias existing historical estimates and subsequent future projections of macro-economic climate impacts. We therefore estimate a panel model of climate impacts while allowing for adaptation driven by incomes, specified through interaction terms of temperatures and (lagged) log GDP per capita. 
+We apply the outlier distortion test to estimates of the economic impacts of climate change allowing for income-driven adaptation. Specifically, we use the robust IIS estimator to estimate a panel model of the effects of temperature on GDP per capita growth using a global panel dataset in line with the existing climate-econometric impacts literature \cite[e.g.][]{burke2015global, dell2012temperature, pretis2018uncertain}. While existing estimates strongly support a non-linear relationship between GDP per capita growth and temperatures, adaptation to climate change has been notably absent in empirical macro-economic cross-country analyses. Higher incomes might mitigate the impacts of climate change \citep[see e.g. ][]{acevedo2020effects, schwarz2020modelling}, and such adaptation might bias existing historical estimates and subsequent future projections of macro-economic climate impacts. We therefore estimate a panel model of climate impacts while allowing for adaptation driven by incomes, specified through interaction terms of temperatures and (lagged) log GDP per capita.
 
-A concern with global panel-econometric  models of climate impacts is the inability to account for all observed variation in economic growth. Even though conventional panel climate impact models control for time fixed effects, country fixed effects, and country-specific non-linear trends, there are potentially numerous un-modelled idiosyncratic shocks. Such shocks -- taking the form of outliers in the model -- can erroneously be attributed to climate variation and thus distort the estimated coefficients on climate variables. To account for the presence of such un-modelled shocks, we estimate our panel climate impacts model with adaptation using both OLS and the robust IIS estimator, and subsequently test whether there is evidence of coefficient distortion using our proposed outlier distortion test.
+A concern with global panel-econometric  models of climate impacts is the inability to account for all observed variation in economic growth. Even though conventional panel climate impact models control for time fixed effects, country fixed effects, and country-specific (non-linear) time trends, there are potentially numerous un-modelled idiosyncratic shocks. Such shocks -- taking the form of outliers in the model -- can erroneously be attributed to climate variation and thus distort the estimated coefficients on climate variables. To account for the presence of such un-modelled shocks, we estimate our panel climate impacts model with adaptation using both OLS and the robust IIS estimator and subsequently test whether there is evidence of coefficient distortion using our proposed outlier distortion test.
 
 \subsection{Data \& Model}
-Following the macro-econometric literature studying the temperature effects on economic growth, we model the change in the log of real GDP per capita (World Development Indicators, World Bank, 2017) from 1960-2012 for 166 countries as a function of population-weighted climate variation. We obtain historical climate observations on temperatures and precipitation from Matsuura and Willmott (2015 version 4) covering global land areas at a 0.5$^\circ$ spatial resolution. To map gridded climate observations to individual countries in each year, we weight climate observations by gridded population data (CIESIN, 2005) at the same spatial resolution. Population-weighting (rather than area-weighting) is more likely to capture the effects of climate onto socio-economic activity (see Tol, 2017 REF). Modelling GDP per capita growth in fixed effects panels as a non-linear (quadratic) function of annual-average temperatures has become common practise in the climate econometric literature. We expand on these existing models by allowing for climate adaptation at different income levels. Specifically, our model allows for adaptation by potentially attenuating (or amplifying) the coefficients on temperatures through interaction terms with (lagged) log of GDP per capita. Dell, Jones, and Olken (2012) estimate a simplified version of such a specification by interacting a linear temperature variable with a dummy variable for poor countries, and BHM (2015) explore the interaction of a linear temperature variable with country-level incomes. Here we generalise this to non-linear temperature impacts interacted with the continuum of per capita incomes. A similar approach of estimating income-based adaptation has also been applied for heat-related mortality in Carleton et al (REF) and Schwarz and Pretis (2020 REF) for climate impacts of extremes. Our base model is given in equation (\ref{pan_m1}):
+Following the macro-econometric literature studying the temperature effects on economic growth, we model the change in the log of real GDP per capita \cite[World Development Indicators, ][]{rld2019world} from 1961-2017 for 169 countries as a function of population-weighted climate variation. We obtain historical climate observations on temperatures and precipitation from \citep[][ version 5]{matsuura2018terrestrial} covering global land areas at a 0.5$^\circ$ spatial resolution. To map gridded climate observations to individual countries in each year, we weight climate observations by gridded population data \citep{ciesin2016gridded} at the same spatial resolution. Population-weighting (rather than area-weighting) is more likely to capture the effects of climate onto socio-economic activity \citep[see ][]{tol2017population}. Modelling GDP per capita growth in fixed effects panels as a non-linear (quadratic) function of annual-average temperatures has become common practise in the climate econometric literature. We expand on these existing models by allowing for climate adaptation at different income levels. Specifically, our model allows for adaptation by potentially attenuating (or amplifying) the coefficients on temperatures through interaction terms with (lagged) log of GDP per capita. \citet{dell2012temperature} estimate a simplified version of such a specification by interacting a linear temperature variable with a dummy variable for poor countries, and \citet{burke2015global} explore the interaction of a linear temperature variable with country-level incomes. Here we generalise this to non-linear temperature impacts interacted with the continuum of per capita incomes. A similar approach of estimating income-based adaptation has also been applied for heat-related mortality in \citet{carleton2020valuing} and \citet{schwarz2020modelling} for climate impacts of extremes. Our base model is given in equation (\ref{pan_m1}):
 \begin{small}
 \begin{equation}
 \label{pan_m1}
 \Delta log(y)_{i,t} = \alpha_i + \lambda_t + \beta_1 T_{i,t} + \beta_2 T^2_{i,t} + \beta_3 \left[ T_{i,t} \times  log(y)_{i, t-1} \right] + \beta_4 \left[  T^2_{i,t} \times  log(y)_{i, t-1} \right] + x_{i,t}'\gamma + u_{i,t}
 \end{equation}
 \end{small}
-where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends (as in Burke et al. and Pretis et al). To assess the impact of unknown idiosyncratic shocks, we estimate (\ref{pan_m1}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating (\ref{pan_m1}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates.
+where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate (\ref{pan_m1}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating (\ref{pan_m1}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates.
 
 \subsection{Results}
-The estimation results (Figures \ref{fig_dist_coef_app1}, \ref{fig_dist_app1}, and Table \ref{tab_app1_estimates}) show significant evidence of income-driven adaptation to temperatures, however, the estimates are  distorted by the presence of outlying observations. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. Figure \ref{fig_dist_coef_app1} shows the difference in estimated coefficients between the robust IIS approach and OLS. Specifically, the robust coefficient estimates are attenuated relative to the OLS estimates.  The difference between the OLS and robust IIS estimates is statistically different from zero when applying our proposed test for outlier distortion. Formally, we construct our test statistic for outlier distortion in the four coefficients of interest as:
+The estimation results (Figures \ref{fig_dist_coef_app1}, \ref{fig_dist_app1}, and Table \ref{tab_app1_estimates}) show significant evidence of income-driven adaptation to temperatures, however, the estimates are  distorted by the presence of outlying observations. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. Figure \ref{fig_dist_coef_app1} shows the difference in estimated coefficients between the robust IIS approach and OLS. Specifically, the robust coefficient estimates are attenuated relative to the OLS estimates. The difference between the OLS and robust IIS estimates is statistically different from zero when applying our proposed test for outlier distortion. Formally, we construct our test statistic for outlier distortion in the four coefficients of interest as:
 \begin{eqnarray}
 H^{1}_{(n,c)} = n \left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)'\widehat{\mbox{avar}}\left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)^{-1}\left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)
 \end{eqnarray}
-where $c=1.96$ for a normal reference distribution and a sample size of $n=7007$. The difference in coefficients between the OLS and robust estimator shown in Table \ref{tab_app1_estimates} (right column). We compare the resulting test statistic $H^{1}_{(n,c)} = 554.98$ against the critical values of the $\chi^{2}$ distribution with $df=4$, as we are testing for the distortion of four coefficients. The null hypothesis of no distortion is rejected at any conventional significance level, with $p<0.0001$.
+where $c=1.96$\ignore{Check these numbers} for a normal reference distribution and a sample size of $n=7007$. The difference in coefficients between the OLS and robust estimator shown in Table \ref{tab_app1_estimates} (right column). We compare the resulting test statistic $H^{1}_{(n,c)} = 554.98$ against the critical values of the $\chi^{2}$ distribution with $df=4$, as we are testing for the distortion of four coefficients. The null hypothesis of no distortion is rejected at any conventional significance level, with $p<0.0001$.
 
+We show the estimated non-linear relationship between temperatures and growth for three different income levels (25\textsuperscript{th}, 50\textsuperscript{th}, and 75\textsuperscript{th} income percentiles) in Figure \ref{fig_dist_app1}. Results across income levels show that controlling for outlying observations dampens the impacts of temperatures onto economic growth. Using robust estimates, the projected negative temperature impacts are less steep (but still negative) for low income countries, and dampened for middle income countries. For rich countries, the positive effects of higher temperatures are drastically weakened, suggesting attenuated positive effects.
 
+Beyond distortion in coefficients, we show the distribution of the detected outlying observations in the panel model over time, countries, and both (Figures \ref{fig_out_app1} and \ref{fig_map_app1}). The number of detected outliers greatly exceeds the number expected by chance. In total, 150 country-year observations identified as outlying compared to 70.7 expected under the null when there are no outliers. The observed proportion of outliers $\hat{\gamma}_{c=2.57}=$ 150/7007=0.021 is statistically different from the expected proportion of $\gamma_{c=2.57}=0.01$ ($p<0.001$ using the \citet{jiao2020testingoutlier}\ignore{Check this reference} proportion test comparing 0.021 to 0.01). Further, the distribution of outliers does not appear to be random over time and space -- outliers are concentrated in developing countries and there is a temporal cluster coinciding with the collapse of the Soviet Union and the onset of the Gulf War, which may well capture an idiosyncratic shock not modelled in the base panel model.
 
-We show the estimated non-linear relationship between temperatures and growth for three different income levels (25th, 50th, and 75th income percentiles) in Figure \ref{fig_dist_app1}.  Results across income levels show that controlling for outlying observations dampens the impacts of temperatures onto economic growth. Using robust estimates, the projected negative temperature impacts are less steep (but still negative) for low income countries, and dampened for middle income countries. For rich countries, the positive effects of higher temperatures are drastically weakened, suggesting attenuated positive effects.
+Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income, where poor countries face negative impacts of warmer temperatures while rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship. Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates.
 
-Beyond distortion in coefficients, we show the distribution of the detected outlying observations in the panel model over time, countries, and both (Figures \ref{fig_out_app1} and \ref{fig_map_app1}).  The number of detected outliers greatly exceeds the number expected by chance. In total, 150 country-year observations identified as outlying compared to 70.7 expected under the null when there are no outliers. The observed proportion of outliers $\hat{\gamma}_{c=2.57}=$ 150/7007=0.021 is statistically different from the expected proportion of $\gamma_{c=2.57}=0.01$ ($p<0.001$ using the Jiao and Pretis REF proportion test comparing 0.021 to 0.01). Further, the distribution of outliers does not appear to be random over time and space -- outliers are concentrated in developing countries and there is a temporal cluster coinciding with the collapse of the Soviet Union, which may well capture an idiosyncratic shock not modelled in the base panel model.
-
-Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income, where poor countries face negative impacts of warmer temperatures while rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship. Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates. 
-
+\ignore{CHECK}
 \textbf{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
 
-\clearpage
 
-\begin{table}[ht]  \centering 
-\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.} 
-  \label{tab_app1_estimates} 
-\begin{tabular}{@{\extracolsep{5pt}}lccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
- & \multicolumn{3}{c}{\textit{Dependent variable:}} \\ 
-\cline{2-4} 
-\\[-1.8ex] & \multicolumn{3}{c}{$\Delta$log(GDPpc)$_{i,t}$} \\ 
-\\
- & OLS & IIS & Diff \\ 
-   \hline
-temp & 0.1467** & 0.10515** & -0.04155 \\ 
-   & (0.00993) & (0.00698) &  \\ 
-   &  &  &  \\ 
-  temp2 & -0.00392** & -0.00265** & 0.00128 \\ 
-   & (0.00036) & (0.00025) &  \\ 
-   &  &  &  \\ 
-  temp\_loggdp & -0.01458** & -0.01053** & 0.00405 \\ 
-   & (0.00107) & (0.00075) &  \\ 
-   &  &  &  \\ 
-  temp2\_loggdp & 0.00039** & 0.00026** & -0.00013 \\ 
-   & (4e-05) & (3e-05) &  \\ 
-   &  &  &  \\ 
-  n & 7108 & 7108 &  \\ 
-  logLik & 11077.39 & 13904.357 &  \\ 
-  nOutl &  & 150 &  \\ 
-   &  &  &  \\ 
-  Distortion Test, $\chi^2_{4}$ &  &  & 554.982 (df=4) \\ 
-   &  &  & [$p<0.001$] \\ 
-   \hline 
-\hline \\[-1.8ex] 
-\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.05; $^{**}$p$<$0.01} \\ 
-\end{tabular}
+\begin{table}
+\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.}
+\label{tab_app1_estimates}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{L{5cm}cc|>{}C{2.5cm}|cc|>{}C{2.5cm}|}
+\toprule
+  & Base & Base IIS & Base Outlier Distortion Test & Adaptation & Adaptation IIS & Adaptation Outlier Distortion Test\\
+\midrule
+Temperature & 0.01734*** & 0.01032*** & 108.95397 & -0.06224*** & -0.03384*** & 186.25252\\
+ & (0.00348) & (0.00233) & [$>$0.001] & (0.01041) & (0.0072) & [$>$0.001]\\
+Temperature\textsuperscript{2} & -0.00059*** & -0.00039*** & 99.04793 & 0.00070 & 0.00001 & 88.57293\\
+ & (0.0001) & (0.00007) & [$>$0.001] & (0.00037) & (0.00026) & [$>$0.001]\\
+Precipitation & 0.00043 & 0.00073 & 1.97683 & 0.01018 & 0.01328*** & 7.86435\\
+ & (0.00111) & (0.00074) & [0.15973] & (0.00563) & (0.00383) & [0.00504]\\
+Precipitation\textsuperscript{2} & -0.00004 & -0.00004 & 0.46262 & -0.00019 & -0.00035** & 17.55037\\
+ & (0.00003) & (0.00002) & [0.4964] & (0.00019) & (0.00013) & [0.00003]\\
+Temperature x GDP\textsubscript{pc} &  &  &  & 0.00811*** & 0.00416*** & 317.58792\\
+ &  &  &  & (0.00111) & (0.00077) & [$>$0.001]\\
+Temperature\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & -0.00012** & -0.00002 & 148.16829\\
+ &  &  &  & (0.00004) & (0.00003) & [$>$0.001]\\
+Precipitation x GDP\textsubscript{pc} &  &  &  & -0.00121 & -0.00155*** & 6.86436\\
+ &  &  &  & (0.00066) & (0.00045) & [0.00879]\\
+Precipitation\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & 0.00002 & 0.00004* & 17.52154\\
+ &  &  &  & (0.00002) & (0.00002) & [0.00003]\\
+\midrule
+Num. Outliers &  &  & 165 &  &  & 170\\
+Outlier Distortion test statistic for Temp. Variables &  &  & $\chi^2_{2}$ = 111.27 &  &  & $\chi^2_{4}$ = 770.69\\
+Outlier Distortion p-value for Temp. Variables &  &  & $>$0.001 &  &  & $>$0.001\\
+Num.Obs. & 7716 & 7716 &  & 7716 & 7716 & \\
+BIC & -18483.2 & -23533.1 &  & -18801.4 & -23776.0 & \\
+Log.Lik. & 11774.742 & 15038.149 &  & 11951.758 & 15199.897 & \\
+Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country \& Year & \\
+\bottomrule
+\multicolumn{7}{l}{\textsuperscript{} * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\multicolumn{7}{l}{\textsuperscript{} (Standard Errors) and [p-values]}\\
+\end{tabular}}
 \end{table}
 
-\clearpage
+
+
 
 
 
@@ -770,14 +781,14 @@ temp & 0.1467** & 0.10515** & -0.04155 \\
 \includegraphics[scale=0.65]{coef_v2_lag.pdf}
 \caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. Coefficients on temperatures and the income interaction terms are shown using OLS and the robust IIS estimator. Note that scale of the y-axis differs across plots.}
 \label{fig_dist_coef_app1}
-\end{figure} 
+\end{figure}
 
 \begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
 \includegraphics[scale=0.55]{eff_v1_lag.pdf}
 \caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for different three different income levels (middle panels) and the observed country level temperatures (bottom panels): countries in at the 25th income percentile, countries with median income, and countries at the 75th income percentile. Observed temperatures across income ranges are shown in the lower panel. }
 \label{fig_dist_app1}
-\end{figure} 
+\end{figure}
 
 
 
@@ -786,14 +797,14 @@ temp & 0.1467** & 0.10515** & -0.04155 \\
 \includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
 \caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1962-2013. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
 \label{fig_out_app1}
-\end{figure} 
+\end{figure}
 
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
 \includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
 \caption{Detected outliers aggregated over the full sample by contry in the panel. Gray denotes no outliers detected. }
 \label{fig_map_app1}
-\end{figure} 
+\end{figure}
 
 
 
@@ -807,7 +818,7 @@ When using a robust estimator, the estimated impacts of temperatures onto GDP pe
 \textbf{[Note: some results here]}.
 
 More generally, our proposed test allows for the assessment of outlier-driven distortion in a wide set of regression models and can be readily implemented using the R-package `gets' (\citealt{pretis2018automated}).
- 
+
 \newpage
 \linespread{1} \selectfont
 \bibliographystyle{apacite}
@@ -995,7 +1006,7 @@ Further with tightness $\sup_{0 \le m < \infty} \sup_{c_{+} \le c < \infty} |\wi
 \begin{equation} \label{finite sum of geometric matrix sequence}
 \sum_{l = 0}^{m} \Gamma_{c}^{l} = (I_{d_{x} + 1} - \Gamma_{c})^{-1} (I_{d_{x} + 1} - \Gamma_{c}^{m+1}) = (I_{d_{x} + 1} - \Gamma_{c}^{m+1}) (I_{d_{x} + 1} - \Gamma_{c})^{-1},
 \end{equation}
-we then rearrange the recursive representation to attain 
+we then rearrange the recursive representation to attain
 \begin{equation} \label{m+1 step stochastic expansion in terms of initial estimators, kernels, and small remainder terms}
 \widehat{u}_{c}^{(m + 1)} = \Gamma_{c}^{m + 1} \widehat{u}_{c}^{(0)} + (I_{d_{x} + 1} - \Gamma_{c}^{m + 1}) (I_{d_{x} + 1} - \Gamma_{c})^{-1} K_{c} + \mathrm{o}_{\mathsf{P}}(1),
 \end{equation}
@@ -1119,7 +1130,7 @@ Then, we find that RLS and IIS have the identical expansion of $N^{-1} (\widehat
 Drifting the cut-off value $c \in [c_{+}, \infty)$, we derive the weak convergence theory of the processes $\mathbb{G}_{n}^{(m + 1)}(c) = N^{-1} (\widehat{\beta}_{c}^{(m + 1)} - \beta)$ computed by RLS and IIS for any $m \in [0, \infty)$ in the stationary case, where $N = n^{-1/2} I_{d_{x}}$ such that $x_{in} = n^{-1/2} x_{i}$ and $\Sigma = \mathsf{E} x_{i} x_{i}^{\prime}$.
 
 \begin{proof}[\textnormal{\textbf{Proof of Theorem \ref{weak convergence for RLS and IIS}}}]
-By Assumption \ref{sufficient assumptions}$(i, ii)$, Theorem \ref{general expansion for RLS and IIS} 
+By Assumption \ref{sufficient assumptions}$(i, ii)$, Theorem \ref{general expansion for RLS and IIS}
 shows that for any $m \in [0, \infty)$ and uniformly in $c \in [c_{+}, \infty)$
 \begin{equation*}
 \mathbb{G}_{n}^{(m + 1)}(c) =
