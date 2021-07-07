@@ -252,21 +252,21 @@ am2_L1_data <- vroom::vroom(file = here("data-raw/projections/am2_L1_data.csv"))
 
 # Start of Felix' code ----------------------------------------------------
 
-rel.coef<- c("temp", "temp_2")
+rel.coef <- c("temp", "temp_2")
 rel.coef.adapt <- c("temp", "temp_2", "temp_int","temp_2_int")
-
+rel.coef.adapt.L1 <- rel.coef.adapt
 #rel.coef <- c("temp", "temp2", "temp_loggdp", "temp2_loggdp")
 #rel.coef.lag <- c("temp", "temp2", "temp_L1.loggdp", "temp2_L1.loggdp")
 
 
 dist1 <- getspanel::distorttest(m2.isat,  coef=rel.coef)
 dist1.adapt <- getspanel::distorttest(am2.isat,  coef=rel.coef.adapt)
-dist1.adapt.lag <- getspanel::distorttest(am2.isat_L1,  coef=rel.coef.adapt)
+dist1.adapt.L1 <- getspanel::distorttest(am2.isat_L1,  coef=rel.coef.adapt)
 
-coefficients(dist1.adapt.lag$ols)[1:10]
+coefficients(dist1.adapt.L1$ols)[1:10]
 coefficients(am2_L1)[1:10]
 
-coefficients(dist1.adapt.lag$ols)[rel.coef.adapt]
+coefficients(dist1.adapt.L1$ols)[rel.coef.adapt]
 
 outliertest(m2.isat)
 outliertest(am2.isat_L1)
@@ -847,162 +847,223 @@ coef_am2.isat.adapt <- coefficients(am2.isat)
 coef_am2.isat.adapt.L1 <- coefficients(am2.isat_L1)
 
 #coef_m2.lag <- coefficients(m1.arx.lag)
-
-
-coef_m2.lag <- coefficients(dist1.lag$ols)[rel.coef.lag]
+#coef_m2.lag <- coefficients(dist1.lag$ols)[rel.coef.lag]
 
 qlow <- 0.25
 qmed <- 0.5
 qup <- 0.75
 
-gdp_pc <- am2_data$ln
+temp <- am2_data$temp
+ln_gdp_pc <- am2_data$ln_gdp_cap
 
-loginc_lower <- quantile(log(gdp_pc), probs=qlow, na.rm=TRUE)
-loginc_med <- quantile(log(gdp_pc), probs=qmed, na.rm=TRUE)
-loginc_upper <- quantile(log(gdp_pc), probs=qup, na.rm=TRUE)
+loginc_lower <- quantile(ln_gdp_pc, probs=qlow, na.rm=TRUE)
+loginc_med <- quantile(ln_gdp_pc, probs=qmed, na.rm=TRUE)
+loginc_upper <- quantile(ln_gdp_pc, probs=qup, na.rm=TRUE)
 
 
 #quantile(log(L1.gdp_pc), probs=qlow, na.rm=TRUE)
 
 
-temp_lower <- temp[log(gdp_pc) < loginc_lower]
+temp_lower <- temp[ln_gdp_pc < loginc_lower]
 
-temp_mid <- temp[ loginc_lower < log(gdp_pc) & log(gdp_pc) < loginc_upper]
+temp_mid <- temp[ loginc_lower < ln_gdp_pc & ln_gdp_pc < loginc_upper]
 
-temp_upper <- temp[  log(gdp_pc) > loginc_upper]
+temp_upper <- temp[ ln_gdp_pc > loginc_upper]
 
 
 
 temp_seq <- seq(-5, 30, 1)
 
-imp_lower <- (coef_m2['temp']+coef_m2['temp_loggdp']*loginc_lower)*temp_seq + (coef_m2['temp2']+coef_m2['temp2_loggdp']*loginc_lower)*temp_seq^2
-imp_med <- (coef_m2['temp']+coef_m2['temp_loggdp']*loginc_med)*temp_seq + (coef_m2['temp2']+coef_m2['temp2_loggdp']*loginc_med)*temp_seq^2
-imp_upper <- (coef_m2['temp']+coef_m2['temp_loggdp']*loginc_upper)*temp_seq + (coef_m2['temp2']+coef_m2['temp2_loggdp']*loginc_upper)*temp_seq^2
+# imp_lower <- (coef_m2['temp']+coef_m2['temp_int']*loginc_lower)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_lower)*temp_seq^2
+# imp_med <- (coef_m2['temp']+coef_m2['temp_int']*loginc_med)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_med)*temp_seq^2
+# imp_upper <- (coef_m2['temp']+coef_m2['temp_int']*loginc_upper)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_upper)*temp_seq^2
 
-imp_lower.lag <- (coef_m2.lag['temp']+coef_m2.lag['temp_L1.loggdp']*loginc_lower)*temp_seq + (coef_m2.lag['temp2']+coef_m2.lag['temp2_L1.loggdp']*loginc_lower)*temp_seq^2
-imp_med.lag <- (coef_m2.lag['temp']+coef_m2.lag['temp_L1.loggdp']*loginc_med)*temp_seq + (coef_m2.lag['temp2']+coef_m2.lag['temp2_L1.loggdp']*loginc_med)*temp_seq^2
-imp_upper.lag <- (coef_m2.lag['temp']+coef_m2.lag['temp_L1.loggdp']*loginc_upper)*temp_seq + (coef_m2.lag['temp2']+coef_m2.lag['temp2_L1.loggdp']*loginc_upper)*temp_seq^2
+imp_lower.adapt <- (coef_am2.adapt['temp']+coef_am2.adapt['temp_int']*loginc_lower)*temp_seq + (coef_am2.adapt['temp_2']+coef_am2.adapt['temp_2_int']*loginc_lower)*temp_seq^2
+imp_med.adapt <- (coef_am2.adapt['temp']+coef_am2.adapt['temp_int']*loginc_med)*temp_seq + (coef_am2.adapt['temp_2']+coef_am2.adapt['temp_2_int']*loginc_med)*temp_seq^2
+imp_upper.adapt <- (coef_am2.adapt['temp']+coef_am2.adapt['temp_int']*loginc_upper)*temp_seq + (coef_am2.adapt['temp_2']+coef_am2.adapt['temp_2_int']*loginc_upper)*temp_seq^2
 
-
-
-imp_lower_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_loggdp']*loginc_lower)*temp_seq + (coef_m2.isat['temp2']+coef_m2.isat['temp2_loggdp']*loginc_lower)*temp_seq^2
-imp_med_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_loggdp']*loginc_med)*temp_seq + (coef_m2.isat['temp2']+coef_m2.isat['temp2_loggdp']*loginc_med)*temp_seq^2
-imp_upper_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_loggdp']*loginc_upper)*temp_seq + (coef_m2.isat['temp2']+coef_m2.isat['temp2_loggdp']*loginc_upper)*temp_seq^2
-
-imp_lower_isat.lag <- (coef_m2.isat.lag['temp']+coef_m2.isat.lag['temp_L1.loggdp']*loginc_lower)*temp_seq + (coef_m2.isat.lag['temp2']+coef_m2.isat.lag['temp2_L1.loggdp']*loginc_lower)*temp_seq^2
-imp_med_isat.lag <- (coef_m2.isat.lag['temp']+coef_m2.isat.lag['temp_L1.loggdp']*loginc_med)*temp_seq + (coef_m2.isat.lag['temp2']+coef_m2.isat.lag['temp2_L1.loggdp']*loginc_med)*temp_seq^2
-imp_upper_isat.lag <- (coef_m2.isat.lag['temp']+coef_m2.isat.lag['temp_L1.loggdp']*loginc_upper)*temp_seq + (coef_m2.isat.lag['temp2']+coef_m2.isat.lag['temp2_L1.loggdp']*loginc_upper)*temp_seq^2
+imp_lower.adapt.L1 <- (coef_am2.adapt.L1['temp']+coef_am2.adapt.L1['temp_int']*loginc_lower)*temp_seq + (coef_am2.adapt.L1['temp_2']+coef_am2.adapt.L1['temp_2_int']*loginc_lower)*temp_seq^2
+imp_med.adapt.L1 <- (coef_am2.adapt.L1['temp']+coef_am2.adapt.L1['temp_int']*loginc_med)*temp_seq + (coef_am2.adapt.L1['temp_2']+coef_am2.adapt.L1['temp_2_int']*loginc_med)*temp_seq^2
+imp_upper.adapt.L1 <- (coef_am2.adapt.L1['temp']+coef_am2.adapt.L1['temp_int']*loginc_upper)*temp_seq + (coef_am2.adapt.L1['temp_2']+coef_am2.adapt.L1['temp_2_int']*loginc_upper)*temp_seq^2
 
 
 
-imp_lower_sc <- imp_lower - max(imp_lower)
-imp_med_sc <- imp_med - max(imp_med)
-imp_upper_sc <- imp_upper - max(imp_upper)
+# imp_lower_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_lower)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_lower)*temp_seq^2
+# imp_med_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_med)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_med)*temp_seq^2
+# imp_upper_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_upper)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_upper)*temp_seq^2
 
-imp_lower_sc.lag <- imp_lower.lag - max(imp_lower.lag)
-imp_med_sc.lag <- imp_med.lag - max(imp_med.lag)
-imp_upper_sc.lag <- imp_upper.lag - max(imp_upper.lag)
-
-
-imp_lower_sc_isat <- imp_lower_isat - max(imp_lower_isat)
-imp_med_sc_isat <- imp_med_isat - max(imp_med_isat)
-imp_upper_sc_isat <- imp_upper_isat - max(imp_upper_isat)
+imp_lower_isat.adapt <- (coef_am2.isat.adapt['temp']+coef_am2.isat.adapt['temp_int']*loginc_lower)*temp_seq + (coef_am2.isat.adapt['temp_2']+coef_am2.isat.adapt['temp_2_int']*loginc_lower)*temp_seq^2
+imp_med_isat.adapt <- (coef_am2.isat.adapt['temp']+coef_am2.isat.adapt['temp_int']*loginc_med)*temp_seq + (coef_am2.isat.adapt['temp_2']+coef_am2.isat.adapt['temp_2_int']*loginc_med)*temp_seq^2
+imp_upper_isat.adapt <- (coef_am2.isat.adapt['temp']+coef_am2.isat.adapt['temp_int']*loginc_upper)*temp_seq + (coef_am2.isat.adapt['temp_2']+coef_am2.isat.adapt['temp_2_int']*loginc_upper)*temp_seq^2
 
 
-imp_lower_sc_isat.lag <- imp_lower_isat.lag - max(imp_lower_isat.lag)
-imp_med_sc_isat.lag <- imp_med_isat.lag - max(imp_med_isat.lag)
-imp_upper_sc_isat.lag <- imp_upper_isat.lag - max(imp_upper_isat.lag)
+imp_lower_isat.adapt.L1 <- (coef_am2.isat.adapt.L1['temp']+coef_am2.isat.adapt.L1['temp_int']*loginc_lower)*temp_seq + (coef_am2.isat.adapt.L1['temp_2']+coef_am2.isat.adapt.L1['temp_2_int']*loginc_lower)*temp_seq^2
+imp_med_isat.adapt.L1 <- (coef_am2.isat.adapt.L1['temp']+coef_am2.isat.adapt.L1['temp_int']*loginc_med)*temp_seq + (coef_am2.isat.adapt.L1['temp_2']+coef_am2.isat.adapt.L1['temp_2_int']*loginc_med)*temp_seq^2
+imp_upper_isat.adapt.L1 <- (coef_am2.isat.adapt.L1['temp']+coef_am2.isat.adapt.L1['temp_int']*loginc_upper)*temp_seq + (coef_am2.isat.adapt.L1['temp_2']+coef_am2.isat.adapt.L1['temp_2_int']*loginc_upper)*temp_seq^2
 
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/isat_adapt_impacts.pdf", height=8, width=12)
+
+# imp_lower_sc <- imp_lower - max(imp_lower)
+# imp_med_sc <- imp_med - max(imp_med)
+# imp_upper_sc <- imp_upper - max(imp_upper)
+
+imp_lower_sc.adapt <- imp_lower.adapt - max(imp_lower.adapt)
+imp_med_sc.adapt <- imp_med.adapt - max(imp_med.adapt)
+imp_upper_sc.adapt <- imp_upper.adapt - max(imp_upper.adapt)
+
+imp_lower_sc.adapt.L1 <- imp_lower.adapt.L1 - max(imp_lower.adapt.L1)
+imp_med_sc.adapt.L1 <- imp_med.adapt.L1 - max(imp_med.adapt.L1)
+imp_upper_sc.adapt.L1 <- imp_upper.adapt.L1 - max(imp_upper.adapt.L1)
+
+
+# imp_lower_sc_isat <- imp_lower_isat - max(imp_lower_isat)
+# imp_med_sc_isat <- imp_med_isat - max(imp_med_isat)
+# imp_upper_sc_isat <- imp_upper_isat - max(imp_upper_isat)
+
+imp_lower_sc_isat.adapt <- imp_lower_isat.adapt - max(imp_lower_isat.adapt)
+imp_med_sc_isat.adapt <- imp_med_isat.adapt - max(imp_med_isat.adapt)
+imp_upper_sc_isat.adapt <- imp_upper_isat.adapt - max(imp_upper_isat.adapt)
+
+
+imp_lower_sc_isat.adapt.L1 <- imp_lower_isat.adapt.L1 - max(imp_lower_isat.adapt.L1)
+imp_med_sc_isat.adapt.L1 <- imp_med_isat.adapt.L1 - max(imp_med_isat.adapt.L1)
+imp_upper_sc_isat.adapt.L1 <- imp_upper_isat.adapt.L1 - max(imp_upper_isat.adapt.L1)
+
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/isat_adapt_impacts.pdf", height=8, width=12)
+# pdf(here("data-raw/projections/out/isat_adapt_impacts.pdf"), height=8, width=12)
+# par(mfrow=c(1,3))
+#
+# plot(temp_seq, imp_lower_sc, type="l", ylim=c(-0.3, 0.01), col="blue", main="Income-Based Adaptation (Lower)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+# lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
+# lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+#
+# text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+# text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+# text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+#
+# lines(temp_seq, imp_lower_sc_isat, col="blue", lwd=5, lty=4)
+# lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
+# lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+#
+#
+# plot(temp_seq, imp_med_sc, type="l", ylim=c(-0.3, 0.01), col="#238b45", main="Income-Based Adaptation (Middle)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+# lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
+# lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
+#
+# text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+# text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+# text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+#
+# lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
+# lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
+# lines(temp_seq, imp_med_sc_isat, col="#238b45", lwd=5, lty=4)
+#
+# plot(temp_seq, imp_upper_sc, type="l", ylim=c(-0.3, 0.01), col="red", main="Income-Based Adaptation (Upper)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+# lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
+# lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+#
+# text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+# text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+# text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+#
+# lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
+# lines(temp_seq, imp_upper_sc_isat, col="red", lwd=5, lty=4)
+# lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+#
+# dev.off()
+
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/isat_adapt_impacts_lag.pdf", height=8, width=12)
+pdf(here("data-raw/projections/out/isat_adapt_impacts_adapt.pdf"), height=8, width=12)
 
 par(mfrow=c(1,3))
 
-plot(temp_seq, imp_lower_sc, type="l", ylim=c(-0.3, 0.01), col="blue", main="Income-Based Adaptation (Lower)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
-lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+plot(temp_seq, imp_lower_sc.adapt, type="l", ylim=c(-0.3, 0.01), col="blue", main="Income-Based Adaptation (Lower)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_upper_sc.adapt, col="gray75", lwd=1)
+lines(temp_seq, imp_med_sc.adapt, col="gray75", lwd=1)
 
 text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
 text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
-lines(temp_seq, imp_lower_sc_isat, col="blue", lwd=5, lty=4)
-lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_lower_sc_isat.adapt, col="blue", lwd=5, lty=4)
+lines(temp_seq, imp_upper_sc_isat.adapt, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_med_sc_isat.adapt, col="gray75", lwd=1, lty=2)
 
 
-plot(temp_seq, imp_med_sc, type="l", ylim=c(-0.3, 0.01), col="#238b45", main="Income-Based Adaptation (Middle)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
-lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
-
-text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
-text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
-text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
-
-lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat, col="#238b45", lwd=5, lty=4)
-
-plot(temp_seq, imp_upper_sc, type="l", ylim=c(-0.3, 0.01), col="red", main="Income-Based Adaptation (Upper)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
-lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+plot(temp_seq, imp_med_sc.adapt, type="l", ylim=c(-0.3, 0.01), col="#238b45", main="Income-Based Adaptation (Middle)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_upper_sc.adapt, col="gray75", lwd=1)
+lines(temp_seq, imp_lower_sc.adapt, col="gray75", lwd=1)
 
 text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
 text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
-lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat, col="red", lwd=5, lty=4)
-lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_lower_sc_isat.adapt, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_upper_sc_isat.adapt, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_med_sc_isat.adapt, col="#238b45", lwd=5, lty=4)
+
+plot(temp_seq, imp_upper_sc.adapt, type="l", ylim=c(-0.3, 0.01), col="red", main="Income-Based Adaptation (Upper)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_lower_sc.adapt, col="gray75", lwd=1)
+lines(temp_seq, imp_med_sc.adapt, col="gray75", lwd=1)
+
+text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+
+lines(temp_seq, imp_lower_sc_isat.adapt, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_upper_sc_isat.adapt, col="red", lwd=5, lty=4)
+lines(temp_seq, imp_med_sc_isat.adapt, col="gray75", lwd=1, lty=2)
+
 
 dev.off()
 
 
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/isat_adapt_impacts_lag.pdf", height=8, width=12)
+pdf(here("data-raw/projections/out/isat_adapt_impacts_adapt.L1.pdf"), height=8, width=12)
 
 par(mfrow=c(1,3))
 
-plot(temp_seq, imp_lower_sc.lag, type="l", ylim=c(-0.3, 0.01), col="blue", main="Income-Based Adaptation (Lower)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_upper_sc.lag, col="gray75", lwd=1)
-lines(temp_seq, imp_med_sc.lag, col="gray75", lwd=1)
+plot(temp_seq, imp_lower_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), col="blue", main="Income-Based Adaptation (Lower)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_upper_sc.adapt.L1, col="gray75", lwd=1)
+lines(temp_seq, imp_med_sc.adapt.L1, col="gray75", lwd=1)
 
 text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
 text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
-lines(temp_seq, imp_lower_sc_isat.lag, col="blue", lwd=5, lty=4)
-lines(temp_seq, imp_upper_sc_isat.lag, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat.lag, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_lower_sc_isat.adapt.L1, col="blue", lwd=5, lty=4)
+lines(temp_seq, imp_upper_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_med_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
 
 
-plot(temp_seq, imp_med_sc.lag, type="l", ylim=c(-0.3, 0.01), col="#238b45", main="Income-Based Adaptation (Middle)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_upper_sc.lag, col="gray75", lwd=1)
-lines(temp_seq, imp_lower_sc.lag, col="gray75", lwd=1)
-
-text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
-text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
-text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
-
-lines(temp_seq, imp_lower_sc_isat.lag, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat.lag, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat.lag, col="#238b45", lwd=5, lty=4)
-
-plot(temp_seq, imp_upper_sc.lag, type="l", ylim=c(-0.3, 0.01), col="red", main="Income-Based Adaptation (Upper)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
-lines(temp_seq, imp_lower_sc.lag, col="gray75", lwd=1)
-lines(temp_seq, imp_med_sc.lag, col="gray75", lwd=1)
+plot(temp_seq, imp_med_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), col="#238b45", main="Income-Based Adaptation (Middle)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_upper_sc.adapt.L1, col="gray75", lwd=1)
+lines(temp_seq, imp_lower_sc.adapt.L1, col="gray75", lwd=1)
 
 text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
 text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
-lines(temp_seq, imp_lower_sc_isat.lag, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat.lag, col="red", lwd=5, lty=4)
-lines(temp_seq, imp_med_sc_isat.lag, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_lower_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_upper_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_med_sc_isat.adapt.L1, col="#238b45", lwd=5, lty=4)
+
+plot(temp_seq, imp_upper_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), col="red", main="Income-Based Adaptation (Upper)", xlab="Temp", ylab="GDP Per Capita Growth", lwd=5)
+lines(temp_seq, imp_lower_sc.adapt.L1, col="gray75", lwd=1)
+lines(temp_seq, imp_med_sc.adapt.L1, col="gray75", lwd=1)
+
+text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+
+lines(temp_seq, imp_lower_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_upper_sc_isat.adapt.L1, col="red", lwd=5, lty=4)
+lines(temp_seq, imp_med_sc_isat.adapt.L1, col="gray75", lwd=1, lty=2)
 
 
 dev.off()
-
 
 
 ##########################################
@@ -1013,54 +1074,80 @@ dev.off()
 iis.coef <- dist1$iis$mean.results[rel.coef,"coef"]
 iis.se <- dist1$iis$mean.results[rel.coef,"std.error"]
 
-iis.coef.lag <- dist1.lag$iis$mean.results[rel.coef.lag,"coef"]
-iis.se.lag <- dist1.lag$iis$mean.results[rel.coef.lag,"std.error"]
+iis.coef.adapt <- dist1.adapt$iis$mean.results[rel.coef.adapt,"coef"]
+iis.se.adapt <- dist1.adapt$iis$mean.results[rel.coef.adapt,"std.error"]
+
+iis.coef.adapt.L1 <- dist1.adapt.L1$iis$mean.results[rel.coef.adapt.L1,"coef"]
+iis.se.adapt.L1 <- dist1.adapt.L1$iis$mean.results[rel.coef.adapt.L1,"std.error"]
+
 
 ols.coef <- dist1$ols$mean.results[rel.coef,"coef"]
 ols.se <- dist1$ols$mean.results[rel.coef,"std.error"]
 
-ols.coef.lag <- dist1.lag$ols$mean.results[rel.coef.lag,"coef"]
-ols.se.lag <- dist1.lag$ols$mean.results[rel.coef.lag,"std.error"]
+ols.coef.adapt <- dist1.adapt$ols$mean.results[rel.coef.adapt,"coef"]
+ols.se.adapt <- dist1.adapt$ols$mean.results[rel.coef.adapt,"std.error"]
 
-coef.plot <- data.frame(matrix(NA, nrow=NROW(rel.coef)), ncol=2)
+ols.coef.adapt.L1 <- dist1.adapt.L1$ols$mean.results[rel.coef.adapt.L1,"coef"]
+ols.se.adapt.L1 <- dist1.adapt.L1$ols$mean.results[rel.coef.adapt.L1,"std.error"]
+
+coef.plot <- data.frame(matrix(NA, nrow=NROW(rel.coef.adapt)), ncol=2)
 names(coef.plot) <- c("coef", "iis.coef")
 
-coef.plot$coef <- rel.coef
-coef.plot$ols.coef <- ols.coef
-coef.plot$ols.se <- ols.se
-coef.plot$iis.coef <- iis.coef
-coef.plot$iis.se <- iis.se
-coef.plot$iis.coef.lag <- iis.coef.lag
-coef.plot$iis.se.lag <- iis.se.lag
-coef.plot$ols.coef.lag <- ols.coef.lag
-coef.plot$ols.se.lag <- ols.se.lag
+coef.plot$coef <- rel.coef.adapt
 
-coef.plot$iis.ci.p025 <- coef.plot$iis.coef - 1.96*coef.plot$iis.se
-coef.plot$iis.ci.p975 <- coef.plot$iis.coef + 1.96*coef.plot$iis.se
+# coef.plot$ols.coef <- ols.coef
+# coef.plot$ols.se <- ols.se
+# coef.plot$iis.coef <- iis.coef
+# coef.plot$iis.se <- iis.se
 
-coef.plot$iis.ci.p025.lag <- coef.plot$iis.coef.lag - 1.96*coef.plot$iis.se.lag
-coef.plot$iis.ci.p975.lag <- coef.plot$iis.coef.lag + 1.96*coef.plot$iis.se.lag
+coef.plot$iis.coef.adapt <- iis.coef.adapt
+coef.plot$iis.se.adapt <- iis.se.adapt
+coef.plot$ols.coef.adapt <- ols.coef.adapt
+coef.plot$ols.se.adapt <- ols.se.adapt
 
-coef.plot$ols.ci.p025 <- coef.plot$ols.coef - 1.96*coef.plot$ols.se
-coef.plot$ols.ci.p975 <- coef.plot$ols.coef + 1.96*coef.plot$ols.se
-
-coef.plot$ols.ci.p025.lag <- coef.plot$ols.coef.lag - 1.96*coef.plot$ols.se.lag
-coef.plot$ols.ci.p975.lag <- coef.plot$ols.coef.lag + 1.96*coef.plot$ols.se.lag
+coef.plot$iis.coef.adapt.L1 <- iis.coef.adapt.L1
+coef.plot$iis.se.adapt.L1 <- iis.se.adapt.L1
+coef.plot$ols.coef.adapt.L1 <- ols.coef.adapt.L1
+coef.plot$ols.se.adapt.L1 <- ols.se.adapt.L1
 
 
+# coef.plot$iis.ci.p025 <- coef.plot$iis.coef - 1.96*coef.plot$iis.se
+# coef.plot$iis.ci.p975 <- coef.plot$iis.coef + 1.96*coef.plot$iis.se
 
-coef.plot$iis.ci.p005 <- coef.plot$iis.coef - 2.57*coef.plot$iis.se
-coef.plot$iis.ci.p995 <- coef.plot$iis.coef + 2.57*coef.plot$iis.se
+coef.plot$iis.ci.p025.adapt <- coef.plot$iis.coef.adapt - 1.96*coef.plot$iis.se.adapt
+coef.plot$iis.ci.p975.adapt <- coef.plot$iis.coef.adapt + 1.96*coef.plot$iis.se.adapt
 
-coef.plot$iis.ci.p005.lag <- coef.plot$iis.coef.lag - 2.57*coef.plot$iis.se.lag
-coef.plot$iis.ci.p995.lag <- coef.plot$iis.coef.lag + 2.57*coef.plot$iis.se.lag
+coef.plot$iis.ci.p025.adapt.L1 <- coef.plot$iis.coef.adapt.L1 - 1.96*coef.plot$iis.se.adapt.L1
+coef.plot$iis.ci.p975.adapt.L1 <- coef.plot$iis.coef.adapt.L1 + 1.96*coef.plot$iis.se.adapt.L1
 
-coef.plot$ols.ci.p005 <- coef.plot$ols.coef - 2.57*coef.plot$ols.se
-coef.plot$ols.ci.p995 <- coef.plot$ols.coef + 2.57*coef.plot$ols.se
+# coef.plot$ols.ci.p025 <- coef.plot$ols.coef - 1.96*coef.plot$ols.se
+# coef.plot$ols.ci.p975 <- coef.plot$ols.coef + 1.96*coef.plot$ols.se
 
-coef.plot$ols.ci.p005.lag <- coef.plot$ols.coef.lag - 2.57*coef.plot$ols.se.lag
-coef.plot$ols.ci.p995.lag <- coef.plot$ols.coef.lag + 2.57*coef.plot$ols.se.lag
+coef.plot$ols.ci.p025.adapt <- coef.plot$ols.coef.adapt - 1.96*coef.plot$ols.se.adapt
+coef.plot$ols.ci.p975.adapt <- coef.plot$ols.coef.adapt + 1.96*coef.plot$ols.se.adapt
 
+coef.plot$ols.ci.p025.adapt.L1 <- coef.plot$ols.coef.adapt.L1 - 1.96*coef.plot$ols.se.adapt.L1
+coef.plot$ols.ci.p975.adapt.L1 <- coef.plot$ols.coef.adapt.L1 + 1.96*coef.plot$ols.se.adapt.L1
+
+
+# coef.plot$iis.ci.p005 <- coef.plot$iis.coef - 2.57*coef.plot$iis.se
+# coef.plot$iis.ci.p995 <- coef.plot$iis.coef + 2.57*coef.plot$iis.se
+
+coef.plot$iis.ci.p005.adapt <- coef.plot$iis.coef.adapt - 2.57*coef.plot$iis.se.adapt
+coef.plot$iis.ci.p995.adapt <- coef.plot$iis.coef.adapt + 2.57*coef.plot$iis.se.adapt
+
+coef.plot$iis.ci.p005.adapt.L1 <- coef.plot$iis.coef.adapt.L1 - 2.57*coef.plot$iis.se.adapt.L1
+coef.plot$iis.ci.p995.adapt.L1 <- coef.plot$iis.coef.adapt.L1 + 2.57*coef.plot$iis.se.adapt.L1
+
+
+# coef.plot$ols.ci.p005 <- coef.plot$ols.coef - 2.57*coef.plot$ols.se
+# coef.plot$ols.ci.p995 <- coef.plot$ols.coef + 2.57*coef.plot$ols.se
+
+coef.plot$ols.ci.p005.adapt <- coef.plot$ols.coef.adapt - 2.57*coef.plot$ols.se.adapt
+coef.plot$ols.ci.p995.adapt <- coef.plot$ols.coef.adapt + 2.57*coef.plot$ols.se.adapt
+
+coef.plot$ols.ci.p005.adapt.L1 <- coef.plot$ols.coef.adapt.L1 - 2.57*coef.plot$ols.se.adapt.L1
+coef.plot$ols.ci.p995.adapt.L1 <- coef.plot$ols.coef.adapt.L1 + 2.57*coef.plot$ols.se.adapt.L1
 
 coef.plot$plot.index <- 0.5 #seq(1:NROW(rel.coef))
 
@@ -1085,7 +1172,8 @@ xlim_temp <- c(min(temp_seq), max(temp_seq))
 ols.col <- col.ci.proc
 iis.col <-  col.ci.trader
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_dist_eff_v1.pdf", height=9, width=12)
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_dist_eff_v1.pdf", height=9, width=12)
+pdf(here("data-raw/projections/out/coef_dist_eff.adapt.pdf"), height=9, width=12)
 
 #layout.matrix <- matrix(c(1, 1, 1, 2,2,2 ,3, 3, 4), nrow = 9, ncol = 1)
 layout.matrix <- matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7), nrow = 2, ncol = 12, byrow = T)
@@ -1106,21 +1194,21 @@ par(mar = c(2,0.3,3,0))
 layout(mat = layout.matrix) # Widths of the two columns
 
 
-plot(temp_seq, imp_lower_sc, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
-#lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
-#lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+plot(temp_seq, imp_lower_sc.adapt, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+#lines(temp_seq, imp_upper_sc.adapt, col="gray75", lwd=1)
+#lines(temp_seq, imp_med_sc.adapt, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
 #text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
 #text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("Income Quantile: ", qlow, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 
-lines(temp_seq, imp_lower_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_lower_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
 
-plot(temp_seq, imp_med_sc, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_med_sc.adapt, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1134,12 +1222,12 @@ legend(x=-4, y=-0.15, legend=c("OLS", "Robust IIS"),
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_med_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 
 
 
 
-plot(temp_seq, imp_upper_sc, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_upper_sc.adapt, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1148,7 +1236,7 @@ text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, 
 # text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_upper_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
@@ -1161,11 +1249,11 @@ hist(temp_upper, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
 #par(mar = c(4,4,2,0), oma = c(3,3.5,1.5,1.5), las =1, mfrow=c(1, NROW(rel.coef)))
 
 
-for (i in 1: NROW(rel.coef)){
+for (i in 1: NROW(rel.coef.adapt)){
   #i <- 1
   par(mar = c(2,4,3,0))
 
-  yint <- max(max(abs(coef.plot$iis.ci.p975[i]),  abs(coef.plot$iis.ci.p025[i]) ), max(abs(coef.plot$ols.ci.p975[i]),  abs(coef.plot$ols.ci.p025[i]) ))
+  yint <- max(max(abs(coef.plot$iis.ci.p975.adapt[i]),  abs(coef.plot$iis.ci.p025.adapt[i]) ), max(abs(coef.plot$ols.ci.p975.adapt[i]),  abs(coef.plot$ols.ci.p025.adapt[i]) ))
   yscale <- 1.15
   barwidth <- 0.003
 
@@ -1176,10 +1264,10 @@ for (i in 1: NROW(rel.coef)){
     ylab="Estimated Coefficient"
   }
 
-  plot(coef.plot$plot.index[i], coef.plot$ols.coef[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
-  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef[i], pch=19, cex=3,  col=iis.col)
-  rect(ybottom=coef.plot$ols.ci.p025[i], ytop=coef.plot$ols.ci.p975[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
-  rect(ybottom=coef.plot$iis.ci.p025[i], ytop=coef.plot$iis.ci.p975[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
+  plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
+  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt[i], pch=19, cex=3,  col=iis.col)
+  rect(ybottom=coef.plot$ols.ci.p025.adapt[i], ytop=coef.plot$ols.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt[i], ytop=coef.plot$iis.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
   axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
   if (i==1){
     legend(x=0.45, y=0.065, legend=c("OLS", "Robust IIS"),
@@ -1193,22 +1281,88 @@ for (i in 1: NROW(rel.coef)){
 dev.off()
 
 
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_dist_eff_v1.pdf", height=9, width=12)
+pdf(here("data-raw/projections/out/coef_dist_eff.adapt.L1.pdf"), height=9, width=12)
 
-############# Split into two
+#layout.matrix <- matrix(c(1, 1, 1, 2,2,2 ,3, 3, 4), nrow = 9, ncol = 1)
+layout.matrix <- matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7), nrow = 2, ncol = 12, byrow = T)
+
+layout.matrix.r1 <- matrix(c(7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10), nrow = 1, ncol = 12, byrow = T)
+layout.matrix.r2 <- matrix(c(7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10), nrow = 1, ncol = 12, byrow = T)
+layout.matrix.r3 <- matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3), nrow = 1, ncol = 12, byrow = T)
+layout.matrix.r4 <- matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3), nrow = 1, ncol = 12, byrow = T)
+layout.matrix.r5 <- matrix(c(4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6), nrow = 1, ncol = 12, byrow = T)
 
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_v2.pdf", height=5, width=10)
 
+layout.matrix <- rbind(layout.matrix.r1, layout.matrix.r2, layout.matrix.r3, layout.matrix.r4, layout.matrix.r5)
 
-par(mfrow=c(1,4))
 par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
 
+par(mar = c(2,0.3,3,0))
+layout(mat = layout.matrix) # Widths of the two columns
 
-for (i in 1: NROW(rel.coef)){
+
+plot(temp_seq, imp_lower_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+#lines(temp_seq, imp_upper_sc.adapt.L1, col="gray75", lwd=1)
+#lines(temp_seq, imp_med_sc.adapt.L1, col="gray75", lwd=1)
+abline(h=0, col="gray35", lty=2)
+#text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+#text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+text(label=paste("Income Quantile: ", qlow, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
+
+lines(temp_seq, imp_lower_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
+#lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
+#lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+
+
+
+plot(temp_seq, imp_med_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+#lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
+#lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
+abline(h=0, col="gray35", lty=2)
+#text(label=paste("q", qup, sep=""), col="red", x=10, y=-0.25)
+text(label=paste("Income Quantile: ", qmed, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
+#text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+
+legend(x=-4, y=-0.15, legend=c("OLS", "Robust IIS"),
+       col=c(ols.col, iis.col), lty=c(1, 5), lwd=c(3,3), cex=1.4, bg="transparent", bty = "n", y.intersp=0.7)
+
+
+#lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
+#lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_med_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
+
+
+
+
+plot(temp_seq, imp_upper_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+#lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
+#lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
+abline(h=0, col="gray35", lty=2)
+text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
+# text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
+# text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
+
+#lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
+lines(temp_seq, imp_upper_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
+#lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
+
+
+
+
+hist(temp_mid, xlim=xlim_temp, breaks=15,  col="gray85", main="Temp. Distribution in Income Range")
+hist(temp_lower, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
+hist(temp_upper, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
+
+#par(mar = c(4,4,2,0), oma = c(3,3.5,1.5,1.5), las =1, mfrow=c(1, NROW(rel.coef)))
+
+
+for (i in 1: NROW(rel.coef.adapt.L1)){
   #i <- 1
   par(mar = c(2,4,3,0))
 
-  yint <- max(max(abs(coef.plot$iis.ci.p975[i]),  abs(coef.plot$iis.ci.p025[i]) ), max(abs(coef.plot$ols.ci.p975[i]),  abs(coef.plot$ols.ci.p025[i]) ))
+  yint <- max(max(abs(coef.plot$iis.ci.p975.adapt.L1[i]),  abs(coef.plot$iis.ci.p025.adapt.L1[i]) ), max(abs(coef.plot$ols.ci.p975.adapt.L1[i]),  abs(coef.plot$ols.ci.p025.adapt.L1[i]) ))
   yscale <- 1.15
   barwidth <- 0.003
 
@@ -1219,10 +1373,10 @@ for (i in 1: NROW(rel.coef)){
     ylab="Estimated Coefficient"
   }
 
-  plot(coef.plot$plot.index[i], coef.plot$ols.coef[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
-  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef[i], pch=19, cex=3,  col=iis.col)
-  rect(ybottom=coef.plot$ols.ci.p025[i], ytop=coef.plot$ols.ci.p975[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
-  rect(ybottom=coef.plot$iis.ci.p025[i], ytop=coef.plot$iis.ci.p975[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
+  plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt.L1[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
+  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt.L1[i], pch=19, cex=3,  col=iis.col)
+  rect(ybottom=coef.plot$ols.ci.p025.adapt.L1[i], ytop=coef.plot$ols.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt.L1[i], ytop=coef.plot$iis.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
   axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
   if (i==1){
     legend(x=0.45, y=0.065, legend=c("OLS", "Robust IIS"),
@@ -1236,23 +1390,23 @@ for (i in 1: NROW(rel.coef)){
 dev.off()
 
 
-
-
 ############# Split into two
 
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_v2_lag.pdf", height=5, width=10)
 
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_v2.pdf", height=5, width=10)
+pdf(here("data-raw/projections/out/coef.adapt.pdf"), height=5, width=10)
 
 par(mfrow=c(1,4))
 par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
 
 
-for (i in 1: NROW(rel.coef)){
+for (i in 1: NROW(rel.coef.adapt)){
   #i <- 1
   par(mar = c(2,4,3,0))
 
-  yint <- max(max(abs(coef.plot$iis.ci.p975.lag[i]),  abs(coef.plot$iis.ci.p025.lag[i]) ), max(abs(coef.plot$ols.ci.p975.lag[i]),  abs(coef.plot$ols.ci.p025.lag[i]) ))
+  yint <- max(max(abs(coef.plot$iis.ci.p975.adapt[i]),  abs(coef.plot$iis.ci.p025.adapt[i]) ), max(abs(coef.plot$ols.ci.p975.adapt[i]),  abs(coef.plot$ols.ci.p025.adapt[i]) ))
   yscale <- 1.15
   barwidth <- 0.003
 
@@ -1263,10 +1417,49 @@ for (i in 1: NROW(rel.coef)){
     ylab="Estimated Coefficient"
   }
 
-  plot(coef.plot$plot.index[i], coef.plot$ols.coef.lag[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
-  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.lag[i], pch=19, cex=2,  col=iis.col)
-  rect(ybottom=coef.plot$ols.ci.p025.lag[i], ytop=coef.plot$ols.ci.p975.lag[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
-  rect(ybottom=coef.plot$iis.ci.p025.lag[i], ytop=coef.plot$iis.ci.p975.lag[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
+  plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
+  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt[i], pch=19, cex=3,  col=iis.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt[i], ytop=coef.plot$ols.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt[i], ytop=coef.plot$iis.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
+  axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
+  if (i==1){
+    legend(x=0.45, y=0.065, legend=c("OLS", "Robust IIS"),
+           col=c(ols.col, iis.col), lty=c(1, 1), lwd=c(4,4), cex=1.1, bg="transparent", bty = "n", y.intersp=0.7)
+
+  }
+  abline(h=0, lty=2, col="gray25", lwd=1.5)
+
+}
+
+dev.off()
+
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/coef_v2.pdf", height=5, width=10)
+pdf(here("data-raw/projections/out/coef.adapt.L1.pdf"), height=5, width=10)
+
+par(mfrow=c(1,4))
+par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
+
+
+for (i in 1: NROW(rel.coef.adapt.L1)){
+  #i <- 1
+  par(mar = c(2,4,3,0))
+
+  yint <- max(max(abs(coef.plot$iis.ci.p975.adapt.L1[i]),  abs(coef.plot$iis.ci.p025.adapt.L1[i]) ), max(abs(coef.plot$ols.ci.p975.adapt.L1[i]),  abs(coef.plot$ols.ci.p025.adapt.L1[i]) ))
+  yscale <- 1.15
+  barwidth <- 0.003
+
+  ylim <- c(-yint*yscale, yint*yscale)
+
+  ylab <- ""
+  if (i==1){
+    ylab="Estimated Coefficient"
+  }
+
+  plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt.L1[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
+  points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt.L1[i], pch=19, cex=3,  col=iis.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt.L1[i], ytop=coef.plot$ols.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$iis.ci.p025.adapt.L1[i], ytop=coef.plot$iis.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
   axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
   if (i==1){
     legend(x=0.45, y=0.065, legend=c("OLS", "Robust IIS"),
@@ -1283,11 +1476,8 @@ dev.off()
 
 ########### Impact function
 
-
-
-
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1.pdf", height=8, width=12)
-
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1.pdf", height=8, width=12)
+pdf(here("data-raw/projections/out/eff.adapt.pdf"), height=8, width=12)
 
 
 layout.matrix.r1 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
@@ -1307,7 +1497,7 @@ layout(mat = layout.matrix) # Widths of the two columns
 
 #par(mfrow=c(1,1))
 
-plot(temp_seq, imp_lower_sc, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+plot(temp_seq, imp_lower_sc.adapt, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1315,13 +1505,13 @@ abline(h=0, col="gray35", lty=2)
 #text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("Income Quantile: ", qlow, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 
-lines(temp_seq, imp_lower_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_lower_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
 
-plot(temp_seq, imp_med_sc, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_med_sc.adapt, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1335,12 +1525,12 @@ legend(x=-4, y=-0.15, legend=c("OLS", "Robust IIS"),
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_med_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 
 
 
 
-plot(temp_seq, imp_upper_sc, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_upper_sc.adapt, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1349,7 +1539,7 @@ text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, 
 # text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_upper_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
@@ -1365,14 +1555,8 @@ dev.off()
 
 
 
-
-
-
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1_lag.pdf", height=6, width=12)
-
-#layout.matrix <- matrix(c(1, 1, 1, 2,2,2 ,3, 3, 4), nrow = 9, ncol = 1)
-
-#layout.matrix <- matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7), nrow = 2, ncol = 12, byrow = T)
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1.pdf", height=8, width=12)
+pdf(here("data-raw/projections/out/eff.adapt.L1.pdf"), height=8, width=12)
 
 
 layout.matrix.r1 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
@@ -1392,7 +1576,7 @@ layout(mat = layout.matrix) # Widths of the two columns
 
 #par(mfrow=c(1,1))
 
-plot(temp_seq, imp_lower_sc.lag, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+plot(temp_seq, imp_lower_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1400,13 +1584,13 @@ abline(h=0, col="gray35", lty=2)
 #text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 text(label=paste("Income Quantile: ", qlow, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 
-lines(temp_seq, imp_lower_sc_isat.lag, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_lower_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
 
-plot(temp_seq, imp_med_sc.lag, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_med_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), col=ols.col, xlim=xlim_temp, main="Income-Based Adaptation (Middle)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1414,18 +1598,18 @@ abline(h=0, col="gray35", lty=2)
 text(label=paste("Income Quantile: ", qmed, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 #text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
-legend(x=-7, y=-0.02, legend=c("OLS", "Robust IIS"),
+legend(x=-4, y=-0.15, legend=c("OLS", "Robust IIS"),
        col=c(ols.col, iis.col), lty=c(1, 5), lwd=c(3,3), cex=1.6, bg="transparent", bty = "n", y.intersp=0.7)
 
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
 #lines(temp_seq, imp_upper_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_med_sc_isat.lag, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_med_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
 
 
 
 
-plot(temp_seq, imp_upper_sc.lag, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
+plot(temp_seq, imp_upper_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Upper)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1434,7 +1618,7 @@ text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, 
 # text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
 #lines(temp_seq, imp_lower_sc_isat, col="gray75", lwd=1, lty=2)
-lines(temp_seq, imp_upper_sc_isat.lag, col=iis.col, lwd=5, lty=5)
+lines(temp_seq, imp_upper_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
