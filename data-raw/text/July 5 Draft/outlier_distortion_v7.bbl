@@ -1116,6 +1116,34 @@ Matsuura, K.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+M{\"u}ller%
+, Stock%
+\BCBL {}\ \BBA {} Watson%
+}{%
+M{\"u}ller%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2019}}%
+}]{%
+muller2019econometric}
+\APACinsertmetastar {%
+muller2019econometric}%
+\begin{APACrefauthors}%
+M{\"u}ller, U\BPBI K.%
+, Stock, J\BPBI H.%
+\BCBL {}\ \BBA {} Watson, M\BPBI W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock
+\APACrefbtitle {An econometric model of international long-run growth dynamics}
+  {An econometric model of international long-run growth dynamics}\
+  \APACbVolEdTR{}{\BTR{}}.
+\newblock
+\APACaddressInstitution{}{National Bureau of Economic Research}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Newell%
 , Prest%
 \BCBL {}\ \BBA {} Sexton%
@@ -1404,6 +1432,34 @@ Stillwagon, J\BPBI R.%
 \newblock
 \APACjournalVolNumPages{The North American Journal of Economics and
   Finance}{37}{}{84--109}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Taylor%
+, Stouffer%
+\BCBL {}\ \BBA {} Meehl%
+}{%
+Taylor%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2012}}%
+}]{%
+taylor2012overview}
+\APACinsertmetastar {%
+taylor2012overview}%
+\begin{APACrefauthors}%
+Taylor, K\BPBI E.%
+, Stouffer, R\BPBI J.%
+\BCBL {}\ \BBA {} Meehl, G\BPBI A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {An overview of CMIP5 and the experiment design} {An
+  overview of cmip5 and the experiment design}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Bulletin of the American meteorological
+  Society}{93}{4}{485--498}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
