@@ -196,173 +196,178 @@ library(broom)
 rm(list=ls())
 load(here("data-raw/projections/m2.RData"))
 load(here("data-raw/projections/m2.isat.RData"))
-load(here("data-raw/projections/m2_L1.RData"))
-load(here("data-raw/projections/m2.isat_L1.RData"))
-
-
+load(here("data-raw/projections/am2.RData"))
+load(here("data-raw/projections/am2.isat.RData"))
+load(here("data-raw/projections/am2_L1.RData"))
+load(here("data-raw/projections/am2.isat_L1.RData"))
 
 
 
 dat <- vroom::vroom(file = here("data-raw/projections/damage_curve_country_dataset_timetrends_updated02-19.csv"))
+m2_data <- vroom::vroom(file = here("data-raw/projections/m2_data.csv"))
+am2_data <- vroom::vroom(file = here("data-raw/projections/am2_data.csv"))
+am2_L1_data <- vroom::vroom(file = here("data-raw/projections/am2_L1_data.csv"))
 
-
-# Estimate M1 -------------------------------------------------------------
-
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
-  select(-iso,-year) %>%
-  lm(diff.ln_gdp_cap~.-1,data = .) -> m1
-
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-  select(-iso,-year) %>%
-  lm(diff.ln_gdp_cap~.-1,data = .) -> m1_L1
-
-
-# Process M1 --------------------------------------------------------------
-
-
-m1 %>%
-  tidy %>%
-  filter(is.na(estimate)) %>%
-  pull(term) -> m1_drop
-
-m1_L1 %>%
-  tidy %>%
-  filter(is.na(estimate)) %>%
-  pull(term) -> m1_L1_drop
-
-
-
-# Estimate M2 -------------------------------------------------------------
-
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
-  select(-all_of(m1_drop)) %>%
-  drop_na -> m2_data
-
-dat %>%
-  select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
-  select(-all_of(m1_L1_drop)) %>%
-  drop_na -> m2_L1_data
+# # Estimate M1 -------------------------------------------------------------
+#
+# dat %>%
+#   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
+#   select(-iso,-year) %>%
+#   lm(diff.ln_gdp_cap~.-1,data = .) -> m1
+#
+# dat %>%
+#   select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
+#   select(-iso,-year) %>%
+#   lm(diff.ln_gdp_cap~.-1,data = .) -> m1_L1
+#
+#
+# # Process M1 --------------------------------------------------------------
+#
+#
+# m1 %>%
+#   tidy %>%
+#   filter(is.na(estimate)) %>%
+#   pull(term) -> m1_drop
+#
+# m1_L1 %>%
+#   tidy %>%
+#   filter(is.na(estimate)) %>%
+#   pull(term) -> m1_L1_drop
+#
+#
+#
+# # Estimate M2 -------------------------------------------------------------
+#
+# dat %>%
+#   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
+#   select(-all_of(m1_drop)) %>%
+#   drop_na -> m2_data
+#
+# dat %>%
+#   select(iso, year, diff.ln_gdp_cap, contains(c("temp","prcp"), ignore.case = FALSE), -contains("diff"),diff.ln_gdp_cap, starts_with(c("year_","time_", "iso_"))) %>%
+#   select(-all_of(m1_L1_drop)) %>%
+#   drop_na -> m2_L1_data
 
 
 
 # Start of Felix' code ----------------------------------------------------
 
 rel.coef<- c("temp", "temp_2")
-rel.coef.lag <- c("temp", "temp_2", "L1.temp","L1.temp_2")
+rel.coef.adapt <- c("temp", "temp_2", "temp_int","temp_2_int")
 
 #rel.coef <- c("temp", "temp2", "temp_loggdp", "temp2_loggdp")
 #rel.coef.lag <- c("temp", "temp2", "temp_L1.loggdp", "temp2_L1.loggdp")
 
 
-dist1 <- distorttest(m2.isat,  coef=rel.coef)
-dist1.lag <- distorttest(m2.isat_L1,  coef=rel.coef.lag)
+dist1 <- getspanel::distorttest(m2.isat,  coef=rel.coef)
+dist1.adapt <- getspanel::distorttest(am2.isat,  coef=rel.coef.adapt)
+dist1.adapt.lag <- getspanel::distorttest(am2.isat_L1,  coef=rel.coef.adapt)
 
-coefficients(dist1.lag$ols)[1:10]
-coefficients(m2_L1)[1:10]
+coefficients(dist1.adapt.lag$ols)[1:10]
+coefficients(am2_L1)[1:10]
 
-coefficients(dist1.lag$ols)[rel.coef.lag]
+coefficients(dist1.adapt.lag$ols)[rel.coef.adapt]
 
-outliertest(m2.isat_L1)
 outliertest(m2.isat)
+outliertest(am2.isat_L1)
+outliertest(am2.isat)
 
 ########## Manually Create a results table
-
-m1.ols <- dist1$ols
-m1.iis <- dist1$iis
-
-coef.index <- c(1, 4, 7, 10)
-se.index <- coef.index+1
-nround <- 5
-
-sum.index <- c(13, 14, 15, 17)
-
-
-stars.ols <-rep("", length(rel.coef))
-stars.ols[ m1.ols$mean.results[rel.coef, "p-value"] < 0.05] <- "*"
-stars.ols[ m1.ols$mean.results[rel.coef, "p-value"] < 0.01] <- "**"
-
-stars.iis <-rep("", length(rel.coef))
-stars.iis[ m1.iis$mean.results[rel.coef, "p-value"] < 0.05] <- "*"
-stars.iis[ m1.iis$mean.results[rel.coef, "p-value"] < 0.01] <- "**"
-
-
-res.tab <- data.frame(matrix(NA, nrow=18, ncol=4))
-names(res.tab) <- c("Var", "OLS", "IIS", "Diff")
-res.tab$Var[coef.index] <- rel.coef
-res.tab$OLS[coef.index] <- paste(round(coefficients(m1.ols)[rel.coef], nround), stars.ols, sep="")
-res.tab$IIS[coef.index] <- paste(round(coefficients(m1.iis)[rel.coef], nround), stars.iis, sep="")
-res.tab$Diff[coef.index] <- round(coefficients(m1.iis)[rel.coef]-coefficients(m1.ols)[rel.coef], nround)
-
-res.tab$OLS[se.index] <- paste("(", round(m1.ols$mean.results[rel.coef, "std.error"], nround), ")", sep="")
-res.tab$IIS[se.index] <- paste("(", round(m1.iis$mean.results[rel.coef, "std.error"], nround) , ")", sep="")
-
-res.tab$Var[sum.index] <- c("n", "L", "nOutl", "Dist")
-res.tab$OLS[sum.index[1:3]] <- c(length(m1.ols$aux$y), round(logLik(m1.ols), 3), "")
-res.tab$IIS[sum.index[1:3]] <- c(length(m1.iis$aux$y), round(logLik(m1.iis), 3), length(m1.iis$ISnames))
-res.tab$Diff[sum.index[4]] <- paste( round(dist1$statistic, 3), " (df=", NROW(dist1$coef.diff) , ")", sep="")
-res.tab$Diff[sum.index[4]+1] <- paste("[p=", round(dist1$p.value, 4), "]", sep="")
-
-res.tab[is.na(res.tab)] <- ""
-names(res.tab) <- c("", "OLS", "IIS", "Diff")
-
-str(res.tab)
-
-print(xtable(res.tab, type = "latex"),
-      file = here("data-raw","projections","out","results1.tex"), include.rownames=FALSE)
+# Commented out my Moritz because done in a different way
+#
+# m1.ols <- dist1$ols
+# m1.iis <- dist1$iis
+#
+# coef.index <- c(1, 4, 7, 10)
+# se.index <- coef.index+1
+# nround <- 5
+#
+# sum.index <- c(13, 14, 15, 17)
+#
+#
+# stars.ols <-rep("", length(rel.coef))
+# stars.ols[ m1.ols$mean.results[rel.coef, "p-value"] < 0.05] <- "*"
+# stars.ols[ m1.ols$mean.results[rel.coef, "p-value"] < 0.01] <- "**"
+#
+# stars.iis <-rep("", length(rel.coef))
+# stars.iis[ m1.iis$mean.results[rel.coef, "p-value"] < 0.05] <- "*"
+# stars.iis[ m1.iis$mean.results[rel.coef, "p-value"] < 0.01] <- "**"
+#
+#
+# res.tab <- data.frame(matrix(NA, nrow=18, ncol=4))
+# names(res.tab) <- c("Var", "OLS", "IIS", "Diff")
+# res.tab$Var[coef.index] <- rel.coef
+# res.tab$OLS[coef.index] <- paste(round(coefficients(m1.ols)[rel.coef], nround), stars.ols, sep="")
+# res.tab$IIS[coef.index] <- paste(round(coefficients(m1.iis)[rel.coef], nround), stars.iis, sep="")
+# res.tab$Diff[coef.index] <- round(coefficients(m1.iis)[rel.coef]-coefficients(m1.ols)[rel.coef], nround)
+#
+# res.tab$OLS[se.index] <- paste("(", round(m1.ols$mean.results[rel.coef, "std.error"], nround), ")", sep="")
+# res.tab$IIS[se.index] <- paste("(", round(m1.iis$mean.results[rel.coef, "std.error"], nround) , ")", sep="")
+#
+# res.tab$Var[sum.index] <- c("n", "L", "nOutl", "Dist")
+# res.tab$OLS[sum.index[1:3]] <- c(length(m1.ols$aux$y), round(logLik(m1.ols), 3), "")
+# res.tab$IIS[sum.index[1:3]] <- c(length(m1.iis$aux$y), round(logLik(m1.iis), 3), length(m1.iis$ISnames))
+# res.tab$Diff[sum.index[4]] <- paste( round(dist1$statistic, 3), " (df=", NROW(dist1$coef.diff) , ")", sep="")
+# res.tab$Diff[sum.index[4]+1] <- paste("[p=", round(dist1$p.value, 4), "]", sep="")
+#
+# res.tab[is.na(res.tab)] <- ""
+# names(res.tab) <- c("", "OLS", "IIS", "Diff")
+#
+# str(res.tab)
+#
+# print(xtable(res.tab, type = "latex"),
+#       file = here("data-raw","projections","out","results1.tex"), include.rownames=FALSE)
 
 
 ########## Manually Create a results table for lag model
-
-m1.ols.lag <- dist1.lag$ols
-m1.iis.lag <- dist1.lag$iis
-
-coef.index <- c(1, 4, 7, 10)
-se.index <- coef.index+1
-nround <- 5
-
-sum.index <- c(13, 14, 15, 17)
-
-
-stars.ols <-rep("", length(rel.coef.lag))
-stars.ols[ m1.ols.lag$mean.results[rel.coef.lag, "p-value"] < 0.05] <- "*"
-stars.ols[ m1.ols.lag$mean.results[rel.coef.lag, "p-value"] < 0.01] <- "**"
-
-stars.iis <-rep("", length(rel.coef.lag))
-stars.iis[ m1.iis.lag$mean.results[rel.coef.lag, "p-value"] < 0.05] <- "*"
-stars.iis[ m1.iis.lag$mean.results[rel.coef.lag, "p-value"] < 0.01] <- "**"
-
-
-res.tab.lag <- data.frame(matrix(NA, nrow=18, ncol=4))
-names(res.tab.lag) <- c("Var", "OLS", "IIS", "Diff")
-res.tab.lag$Var[coef.index] <- rel.coef
-res.tab.lag$OLS[coef.index] <- paste(round(coefficients(m1.ols.lag)[rel.coef.lag], nround), stars.ols, sep="")
-res.tab.lag$IIS[coef.index] <- paste(round(coefficients(m1.iis.lag)[rel.coef.lag], nround), stars.iis, sep="")
-res.tab.lag$Diff[coef.index] <- round(coefficients(m1.iis.lag)[rel.coef.lag]-coefficients(m1.ols.lag)[rel.coef.lag], nround)
-
-#temp_L1
-#temp2_L1.loggdp
-
-res.tab.lag$OLS[se.index] <- paste("(", round(m1.ols.lag$mean.results[rel.coef.lag, "std.error"], nround), ")", sep="")
-res.tab.lag$IIS[se.index] <- paste("(", round(m1.iis.lag$mean.results[rel.coef.lag, "std.error"], nround) , ")", sep="")
-
-res.tab.lag$Var[sum.index] <- c("n", "L", "nOutl", "Dist")
-res.tab.lag$OLS[sum.index[1:3]] <- c(length(m1.ols.lag$aux$y), round(logLik(m1.ols.lag), 3), "")
-res.tab.lag$IIS[sum.index[1:3]] <- c(length(m1.iis.lag$aux$y), round(logLik(m1.iis.lag), 3), length(m1.iis.lag$ISnames))
-res.tab.lag$Diff[sum.index[4]] <- paste( round(dist1.lag$statistic, 3), " (df=", NROW(dist1.lag$coef.diff) , ")", sep="")
-res.tab.lag$Diff[sum.index[4]+1] <- paste("[p=", round(dist1.lag$p.value, 4), "]", sep="")
-
-res.tab.lag[is.na(res.tab.lag)] <- ""
-names(res.tab.lag) <- c("", "OLS", "IIS", "Diff")
-
-str(res.tab.lag)
-
-
-print(xtable(res.tab.lag, type = "latex"),
-      file = here("data-raw","projections","out","results1_lag.tex"), include.rownames=FALSE)
-
+# Commented out my Moritz because done in a different way
+# m1.ols.lag <- dist1.lag$ols
+# m1.iis.lag <- dist1.lag$iis
+#
+# coef.index <- c(1, 4, 7, 10)
+# se.index <- coef.index+1
+# nround <- 5
+#
+# sum.index <- c(13, 14, 15, 17)
+#
+#
+# stars.ols <-rep("", length(rel.coef.lag))
+# stars.ols[ m1.ols.lag$mean.results[rel.coef.lag, "p-value"] < 0.05] <- "*"
+# stars.ols[ m1.ols.lag$mean.results[rel.coef.lag, "p-value"] < 0.01] <- "**"
+#
+# stars.iis <-rep("", length(rel.coef.lag))
+# stars.iis[ m1.iis.lag$mean.results[rel.coef.lag, "p-value"] < 0.05] <- "*"
+# stars.iis[ m1.iis.lag$mean.results[rel.coef.lag, "p-value"] < 0.01] <- "**"
+#
+#
+# res.tab.lag <- data.frame(matrix(NA, nrow=18, ncol=4))
+# names(res.tab.lag) <- c("Var", "OLS", "IIS", "Diff")
+# res.tab.lag$Var[coef.index] <- rel.coef
+# res.tab.lag$OLS[coef.index] <- paste(round(coefficients(m1.ols.lag)[rel.coef.lag], nround), stars.ols, sep="")
+# res.tab.lag$IIS[coef.index] <- paste(round(coefficients(m1.iis.lag)[rel.coef.lag], nround), stars.iis, sep="")
+# res.tab.lag$Diff[coef.index] <- round(coefficients(m1.iis.lag)[rel.coef.lag]-coefficients(m1.ols.lag)[rel.coef.lag], nround)
+#
+# #temp_L1
+# #temp2_L1.loggdp
+#
+# res.tab.lag$OLS[se.index] <- paste("(", round(m1.ols.lag$mean.results[rel.coef.lag, "std.error"], nround), ")", sep="")
+# res.tab.lag$IIS[se.index] <- paste("(", round(m1.iis.lag$mean.results[rel.coef.lag, "std.error"], nround) , ")", sep="")
+#
+# res.tab.lag$Var[sum.index] <- c("n", "L", "nOutl", "Dist")
+# res.tab.lag$OLS[sum.index[1:3]] <- c(length(m1.ols.lag$aux$y), round(logLik(m1.ols.lag), 3), "")
+# res.tab.lag$IIS[sum.index[1:3]] <- c(length(m1.iis.lag$aux$y), round(logLik(m1.iis.lag), 3), length(m1.iis.lag$ISnames))
+# res.tab.lag$Diff[sum.index[4]] <- paste( round(dist1.lag$statistic, 3), " (df=", NROW(dist1.lag$coef.diff) , ")", sep="")
+# res.tab.lag$Diff[sum.index[4]+1] <- paste("[p=", round(dist1.lag$p.value, 4), "]", sep="")
+#
+# res.tab.lag[is.na(res.tab.lag)] <- ""
+# names(res.tab.lag) <- c("", "OLS", "IIS", "Diff")
+#
+# str(res.tab.lag)
+#
+#
+# print(xtable(res.tab.lag, type = "latex"),
+#       file = here("data-raw","projections","out","results1_lag.tex"), include.rownames=FALSE)
+#
 
 
 
@@ -375,11 +380,16 @@ ctry_index.com$is.index <- seq(1:nrow(m2.isat$aux$mX))
 ctry_index.com$iis <- 0
 ctry_index.com$iis_sign <- 0
 
-ctry_index.com.lag <- m2_L1_data
+ctry_index.com.adapt <- am2_data
+ctry_index.com.adapt$is.index <- seq(1:NROW(ctry_index.com.adapt))
+ctry_index.com.adapt$iis <- 0
+ctry_index.com.adapt$iis_sign <- 0
 
-ctry_index.com.lag$is.index <- seq(1:NROW(ctry_index.com.lag))
-ctry_index.com.lag$iis <- 0
-ctry_index.com.lag$iis_sign <- 0
+ctry_index.com.adapt.L1 <- am2_L1_data
+ctry_index.com.adapt.L1$is.index <- seq(1:NROW(ctry_index.com.adapt.L1))
+ctry_index.com.adapt.L1$iis <- 0
+ctry_index.com.adapt.L1$iis_sign <- 0
+
 
 isdat1 <- isatdates(m2.isat)
 ctry_index.com$iis[ctry_index.com$is.index %in% isdat1$iis$index] <- 1
@@ -392,28 +402,45 @@ ctry_index.com$iis_lev[ctry_index.com$is.index %in% isdat1$iis$index] <- 1
 ctry_index.com$iis_lev[isdat1$iis$index] <- isdat1$iis$coef
 
 
-isdat1.lag <- isatdates(m2.isat_L1)
-ctry_index.com.lag$iis[ctry_index.com.lag$is.index %in% isdat1.lag$iis$index] <- 1
+isdat1.adapt <- isatdates(am2.isat)
+ctry_index.com.adapt$iis[ctry_index.com.adapt$is.index %in% isdat1.adapt$iis$index] <- 1
 
-ctry_index.com.lag$iis_sign[ctry_index.com.lag$is.index %in% isdat1$iis$index] <- 1
-ctry_index.com.lag$iis_sign[isdat1.lag$iis$index] <- isdat1.lag$iis$coef/abs(isdat1.lag$iis$coef)
+ctry_index.com.adapt$iis_sign[ctry_index.com.adapt$is.index %in% isdat1$iis$index] <- 1
+ctry_index.com.adapt$iis_sign[isdat1.adapt$iis$index] <- isdat1.adapt$iis$coef/abs(isdat1.adapt$iis$coef)
 
-ctry_index.com.lag$iis_lev <- 0
-ctry_index.com.lag$iis_lev[ctry_index.com.lag$is.index %in% isdat1.lag$iis$index] <- 1
-ctry_index.com.lag$iis_lev[isdat1.lag$iis$index] <- isdat1.lag$iis$coef
+ctry_index.com.adapt$iis_lev <- 0
+ctry_index.com.adapt$iis_lev[ctry_index.com.adapt$is.index %in% isdat1.adapt$iis$index] <- 1
+ctry_index.com.adapt$iis_lev[isdat1.adapt$iis$index] <- isdat1.adapt$iis$coef
 
+
+isdat1.adapt.L1 <- isatdates(am2.isat_L1)
+ctry_index.com.adapt.L1$iis[ctry_index.com.adapt.L1$is.index %in% isdat1.adapt.L1$iis$index] <- 1
+
+ctry_index.com.adapt.L1$iis_sign[ctry_index.com.adapt.L1$is.index %in% isdat1$iis$index] <- 1
+ctry_index.com.adapt.L1$iis_sign[isdat1.adapt.L1$iis$index] <- isdat1.adapt.L1$iis$coef/abs(isdat1.adapt.L1$iis$coef)
+
+ctry_index.com.adapt.L1$iis_lev <- 0
+ctry_index.com.adapt.L1$iis_lev[ctry_index.com.adapt.L1$is.index %in% isdat1.adapt.L1$iis$index] <- 1
+ctry_index.com.adapt.L1$iis_lev[isdat1.adapt.L1$iis$index] <- isdat1.adapt.L1$iis$coef
+
+
+######
 
 ctry_outl <- aggregate(ctry_index.com$iis, by=list(ctry_index.com$iso), FUN=sum)
 names(ctry_outl) <- c("iso", "outl")
-
 year_outl <- aggregate(ctry_index.com$iis, by=list(ctry_index.com$year), FUN=sum)
 names(year_outl) <- c("year", "outl")
 
-ctry_outl.lag <- aggregate(ctry_index.com.lag$iis, by=list(ctry_index.com.lag$iso), FUN=sum)
-names(ctry_outl.lag) <- c("iso", "outl")
+ctry_outl.adapt <- aggregate(ctry_index.com.adapt$iis, by=list(ctry_index.com.adapt$iso), FUN=sum)
+names(ctry_outl.adapt) <- c("iso", "outl")
+year_outl.adapt <- aggregate(ctry_index.com.adapt$iis, by=list(ctry_index.com.adapt$year), FUN=sum)
+names(year_outl.adapt) <- c("year", "outl")
 
-year_outl.lag <- aggregate(ctry_index.com.lag$iis, by=list(ctry_index.com.lag$year), FUN=sum)
-names(year_outl.lag) <- c("year", "outl")
+
+ctry_outl.adapt.L1 <- aggregate(ctry_index.com.adapt.L1$iis, by=list(ctry_index.com.adapt.L1$iso), FUN=sum)
+names(ctry_outl.adapt.L1) <- c("iso", "outl")
+year_outl.adapt.L1 <- aggregate(ctry_index.com.adapt.L1$iis, by=list(ctry_index.com.adapt.L1$year), FUN=sum)
+names(year_outl.adapt.L1) <- c("year", "outl")
 
 ###compute by year but negative and positve
 ctry_index.com$iis_pos <- 0
@@ -427,22 +454,29 @@ names(year_outl_pos) <- c("year", "outl_pos")
 year_outl_neg <- aggregate(ctry_index.com$iis_neg, by=list(ctry_index.com$year), FUN=sum)
 names(year_outl_neg) <- c("year", "outl_neg")
 
-ctry_outl$iso[ctry_outl$iso=="ROM"] <- "ROU"
-ctry_outl$iso[ctry_outl$iso=="ZAR"] <- "COD"
+##
+ctry_index.com.adapt$iis_pos <- 0
+ctry_index.com.adapt$iis_neg <- 0
+ctry_index.com.adapt$iis_pos[ctry_index.com.adapt$iis_sign>0] <- 1
+ctry_index.com.adapt$iis_neg[ctry_index.com.adapt$iis_sign<0] <- 1
 
-ctry_index.com.lag$iis_pos <- 0
-ctry_index.com.lag$iis_neg <- 0
-ctry_index.com.lag$iis_pos[ctry_index.com.lag$iis_sign>0] <- 1
-ctry_index.com.lag$iis_neg[ctry_index.com.lag$iis_sign<0] <- 1
+year_outl_pos.adapt <- aggregate(ctry_index.com.adapt$iis_pos, by=list(ctry_index.com.adapt$year), FUN=sum)
+names(year_outl_pos.adapt) <- c("year", "outl_pos")
 
-year_outl_pos.lag <- aggregate(ctry_index.com.lag$iis_pos, by=list(ctry_index.com.lag$year), FUN=sum)
-names(year_outl_pos.lag) <- c("year", "outl_pos")
+year_outl_neg.adapt <- aggregate(ctry_index.com.adapt$iis_neg, by=list(ctry_index.com.adapt$year), FUN=sum)
+names(year_outl_neg.adapt) <- c("year", "outl_neg")
 
-year_outl_neg.lag <- aggregate(ctry_index.com.lag$iis_neg, by=list(ctry_index.com.lag$year), FUN=sum)
-names(year_outl_neg.lag) <- c("year", "outl_neg")
+##
+ctry_index.com.adapt.L1$iis_pos <- 0
+ctry_index.com.adapt.L1$iis_neg <- 0
+ctry_index.com.adapt.L1$iis_pos[ctry_index.com.adapt.L1$iis_sign>0] <- 1
+ctry_index.com.adapt.L1$iis_neg[ctry_index.com.adapt.L1$iis_sign<0] <- 1
 
-ctry_outl.lag$iso[ctry_outl$iso=="ROM"] <- "ROU"
-ctry_outl.lag$iso[ctry_outl$iso=="ZAR"] <- "COD"
+year_outl_pos.adapt.L1 <- aggregate(ctry_index.com.adapt.L1$iis_pos, by=list(ctry_index.com.adapt.L1$year), FUN=sum)
+names(year_outl_pos.adapt.L1) <- c("year", "outl_pos")
+
+year_outl_neg.adapt.L1 <- aggregate(ctry_index.com.adapt.L1$iis_neg, by=list(ctry_index.com.adapt.L1$year), FUN=sum)
+names(year_outl_neg.adapt.L1) <- c("year", "outl_neg")
 
 
 
@@ -456,9 +490,16 @@ dev.off()
 
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/year_hist_lag.pdf", height=7, width=8)
-pdf(here("data-raw/projections/out/year_hist_lag.pdf"), height=7, width=8)
+pdf(here("data-raw/projections/out/year_hist_adapt.pdf"), height=7, width=8)
 par(mfrow=c(1,1))
-plot(year_outl.lag$year,year_outl.lag$outl, type="h", lwd=3, col="gray75", ylab="#Outlying Countries", xlab="Year")
+plot(year_outl.adapt$year,year_outl.adapt$outl, type="h", lwd=3, col="gray75", ylab="#Outlying Countries", xlab="Year")
+
+dev.off()
+
+
+pdf(here("data-raw/projections/out/year_hist_adapt.L1.pdf"), height=7, width=8)
+par(mfrow=c(1,1))
+plot(year_outl.adapt.L1$year,year_outl.adapt.L1$outl, type="h", lwd=3, col="gray75", ylab="#Outlying Countries", xlab="Year")
 
 dev.off()
 
@@ -476,11 +517,23 @@ dev.off()
 
 
 
-pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/year_hist_sign_lag.pdf", height=5, width=11)
-pdf(here("data-raw/projections/out/year_hist_sign_lag.pdf"), height=5, width=11)
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/year_hist_sign_lag.pdf", height=5, width=11)
+pdf(here("data-raw/projections/out/year_hist_sign.adapt.pdf"), height=5, width=11)
 par(mfrow=c(1,1))
-plot(year_outl.lag$year, year_outl_neg.lag$outl_neg*(-1), type="h", ylim=c(-12, 12), xlim=c(1963, 2012), lwd=3, col="blue", yaxt="n", ylab="#Outlying Countries", xlab="Year")
-lines(year_outl.lag$year, year_outl_pos.lag$outl_pos, type="h", lwd=3, col="red")
+plot(year_outl.adapt$year, year_outl_neg.adapt$outl_neg*(-1), type="h", ylim=c(-12, 12), xlim=c(1963, 2012), lwd=3, col="blue", yaxt="n", ylab="#Outlying Countries", xlab="Year")
+lines(year_outl.adapt$year, year_outl_pos.adapt$outl_pos, type="h", lwd=3, col="red")
+axis(2, at=c(-10, -5, 0, 5), labels=c("10 (Neg.)", "5 (Neg.)", "0", "5 (Pos.)"))
+abline(h=0, lty=2, col="gray35")
+abline(h=c(-10, -5, 5), lty=3, col="gray75")
+
+dev.off()
+
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/year_hist_sign.adapt.L1.pdf", height=5, width=11)
+pdf(here("data-raw/projections/out/year_hist_sign.adapt.L1.pdf"), height=5, width=11)
+par(mfrow=c(1,1))
+plot(year_outl.adapt.L1$year, year_outl_neg.adapt.L1$outl_neg*(-1), type="h", ylim=c(-12, 12), xlim=c(1963, 2012), lwd=3, col="blue", yaxt="n", ylab="#Outlying Countries", xlab="Year")
+lines(year_outl.adapt.L1$year, year_outl_pos.adapt.L1$outl_pos, type="h", lwd=3, col="red")
 axis(2, at=c(-10, -5, 0, 5), labels=c("10 (Neg.)", "5 (Neg.)", "0", "5 (Pos.)"))
 abline(h=0, lty=2, col="gray35")
 abline(h=c(-10, -5, 5), lty=3, col="gray75")
@@ -491,7 +544,8 @@ dev.off()
 library(rworldmap)
 
 max(ctry_outl$outl)
-max(ctry_outl.lag$outl)
+max(ctry_outl.adapt$outl)
+max(ctry_outl.adapt.L1$outl)
 
 #join to a coarse resolution map
 cols <- c("gray85", "#fdd49e", "#fdbb84",
@@ -502,8 +556,8 @@ cols <- c("gray85", "#fdd49e", "#fdbb84",
           "#7f0000")
 
 spdf <- joinCountryData2Map(ctry_outl, joinCode="ISO3", nameJoinColumn="iso")
-
-spdf.lag <- joinCountryData2Map(ctry_outl.lag, joinCode="ISO3", nameJoinColumn="iso")
+spdf.adapt <- joinCountryData2Map(ctry_outl.adapt, joinCode="ISO3", nameJoinColumn="iso")
+spdf.adapt.L1 <- joinCountryData2Map(ctry_outl.adapt.L1, joinCode="ISO3", nameJoinColumn="iso")
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/ctry_map.pdf", height=10, width=11)
 pdf(here("data-raw/projections/out/ctry_map.pdf"), height=10, width=11)
@@ -526,9 +580,25 @@ dev.off()
 
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/ctry_map_lag.pdf", height=10, width=11)
-pdf(here("data-raw/projections/out/ctry_map_lag.pdf"), height=10, width=11)
+pdf(here("data-raw/projections/out/ctry_map_adapt.pdf"), height=10, width=11)
 
-map1 <- mapCountryData(spdf.lag, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
+map1 <- mapCountryData(spdf.adapt, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
+
+do.call(addMapLegend
+        ,c(map1
+           ,legendLabels="all"
+           ,horizontal=TRUE
+           ,legendWidth=0.5
+           ,legendIntervals="data"
+           , legendMar = 7))
+
+
+dev.off()
+
+
+pdf(here("data-raw/projections/out/ctry_map_adapt.L1.pdf"), height=10, width=11)
+
+map1 <- mapCountryData(spdf.adapt.L1, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
 
 do.call(addMapLegend
         ,c(map1
@@ -544,26 +614,27 @@ dev.off()
 #install.packages("countrycode")
 library(countrycode)
 
-ctry_index.com$iso[ctry_index.com$iso=="ROM"] <- "ROU"
-ctry_index.com$iso[ctry_index.com$iso=="ZAR"] <- "COD"
-
 ctry_index.com$continent <- countrycode(sourcevar = ctry_index.com$iso,
                             origin = "iso3c",
                             destination = "continent")
 
-ctry_index.com$continent[ctry_index.com$iso=="ZAR"] <- "Africa"
-ctry_index.com$continent[ctry_index.com$iso=="ROM"] <- "Europe"
+# ctry_index.com$continent[ctry_index.com$iso=="ZAR"] <- "Africa"
+# ctry_index.com$continent[ctry_index.com$iso=="ROM"] <- "Europe"
 
-ctry_index.com.lag$iso[ctry_index.com.lag$iso=="ROM"] <- "ROU"
-ctry_index.com.lag$iso[ctry_index.com.lag$iso=="ZAR"] <- "COD"
-
-ctry_index.com.lag$continent <- countrycode(sourcevar = ctry_index.com.lag$iso,
+ctry_index.com.adapt$continent <- countrycode(sourcevar = ctry_index.com.adapt$iso,
                                         origin = "iso3c",
                                         destination = "continent")
 
-ctry_index.com.lag$continent[ctry_index.com.lag$iso=="ZAR"] <- "Africa"
-ctry_index.com.lag$continent[ctry_index.com.lag$iso=="ROM"] <- "Europe"
+# ctry_index.com.adapt$continent[ctry_index.com.adapt$iso=="ZAR"] <- "Africa"
+# ctry_index.com.adapt$continent[ctry_index.com.adapt$iso=="ROM"] <- "Europe"
 
+
+ctry_index.com.adapt.L1$continent <- countrycode(sourcevar = ctry_index.com.adapt.L1$iso,
+                                              origin = "iso3c",
+                                              destination = "continent")
+
+# ctry_index.com.adapt.L1$continent[ctry_index.com.adapt.L1$iso=="ZAR"] <- "Africa"
+# ctry_index.com.adapt.L1$continent[ctry_index.com.adapt.L1$iso=="ROM"] <- "Europe"
 
 ##################### Heatmap no lag ################
 
@@ -648,34 +719,34 @@ Heatmap(ctry_index_wide.mat_lev,
 
 
 
-##################### Heatmap with lag ################
+##################### Heatmap Adapt ################
 
 #install.packages("reshape2")
 library(reshape2)
 
 #heatmap(data, Colv = NA, Rowv = NA, scale="column")
-ctry_index_wide.lag <- dcast(ctry_index.com.lag, iso + continent ~ year, value.var="iis_sign")
-ctry_index_wide.lag
+ctry_index_wide.adapt <- dcast(ctry_index.com.adapt, iso + continent ~ year, value.var="iis_sign")
+ctry_index_wide.adapt
 
-ctry_index_wide_lev.lag <- dcast(ctry_index.com.lag, iso + continent ~ year, value.var="iis_lev")
-ctry_index_wide_lev.lag
+ctry_index_wide_lev.adapt <- dcast(ctry_index.com.adapt, iso + continent ~ year, value.var="iis_lev")
+ctry_index_wide_lev.adapt
 
-ctry_index_wide.ord.lag <- ctry_index_wide.lag[order(ctry_index_wide.lag$continent),]
-ctry_index_wide.ord_lev.lag <- ctry_index_wide_lev.lag[order(ctry_index_wide_lev.lag$continent),]
+ctry_index_wide.ord.adapt <- ctry_index_wide.adapt[order(ctry_index_wide.adapt$continent),]
+ctry_index_wide.ord_lev.adapt <- ctry_index_wide_lev.adapt[order(ctry_index_wide_lev.adapt$continent),]
 #ctry_index_wide$`2007`
 
-ctry_index_wide.ord.lag$index <- seq(1:NROW(ctry_index_wide.ord.lag))
-ctry_index_wide.ord_lev.lag$index <- seq(1:NROW(ctry_index_wide.ord_lev.lag))
+ctry_index_wide.ord.adapt$index <- seq(1:NROW(ctry_index_wide.ord.adapt))
+ctry_index_wide.ord_lev.adapt$index <- seq(1:NROW(ctry_index_wide.ord_lev.adapt))
 
 
-ctry_index_wide.mat.lag <- as.matrix(ctry_index_wide.ord.lag[,3:NCOL(ctry_index_wide.lag)])
-row.names(ctry_index_wide.mat.lag) <- ctry_index_wide.ord.lag$iso
+ctry_index_wide.mat.adapt <- as.matrix(ctry_index_wide.ord.adapt[,3:NCOL(ctry_index_wide.adapt)])
+row.names(ctry_index_wide.mat.adapt) <- ctry_index_wide.ord.adapt$iso
 
-ctry_index_wide.mat_lev.lag <- as.matrix(ctry_index_wide.ord_lev.lag[,3:NCOL(ctry_index_wide_lev.lag)])
-row.names(ctry_index_wide.mat_lev.lag) <- ctry_index_wide.ord_lev.lag$iso
+ctry_index_wide.mat_lev.adapt <- as.matrix(ctry_index_wide.ord_lev.adapt[,3:NCOL(ctry_index_wide_lev.adapt)])
+row.names(ctry_index_wide.mat_lev.adapt) <- ctry_index_wide.ord_lev.adapt$iso
 
 
-heatmap(ctry_index_wide.mat.lag, scale="none", Rowv=NA, Colv = NA, col=c("blue", "gray85",  "red"))
+heatmap(ctry_index_wide.mat.adapt, scale="none", Rowv=NA, Colv = NA, col=c("blue", "gray85",  "red"))
 
 
 
@@ -685,15 +756,15 @@ heatmap(ctry_index_wide.mat.lag, scale="none", Rowv=NA, Colv = NA, col=c("blue",
 colors_lev = c("blue", "gray78", "red")
 colors = structure(c("blue", "gray78", "red"), names = c("-1", "0", "1"))
 
-mode(ctry_index_wide.mat.lag) = "character"
+mode(ctry_index_wide.mat.adapt) = "character"
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/heat1_lag.pdf", height=10, width=8)
-pdf(here("data-raw/projections/out/heat1_lag.pdf"), height=10, width=8)
+pdf(here("data-raw/projections/out/heat1_adapt.pdf"), height=10, width=8)
 
 
-Heatmap(ctry_index_wide.mat.lag,
-        row_split = ctry_index_wide.ord.lag$continent,
-        column_order =  sort(colnames(ctry_index_wide.mat.lag)),
+Heatmap(ctry_index_wide.mat.adapt,
+        row_split = ctry_index_wide.ord.adapt$continent,
+        column_order =  sort(colnames(ctry_index_wide.mat.adapt)),
         cluster_rows = FALSE,
         col=colors, na_col="white",
         row_names_gp = gpar(fontsize = 4),
@@ -707,12 +778,73 @@ Heatmap(ctry_index_wide.mat.lag,
 dev.off()
 
 
+##################### Heatmap Adapt Lag ################
+
+#install.packages("reshape2")
+library(reshape2)
+
+#heatmap(data, Colv = NA, Rowv = NA, scale="column")
+ctry_index_wide.adapt.L1 <- dcast(ctry_index.com.adapt.L1, iso + continent ~ year, value.var="iis_sign")
+ctry_index_wide.adapt.L1
+
+ctry_index_wide_lev.adapt.L1 <- dcast(ctry_index.com.adapt.L1, iso + continent ~ year, value.var="iis_lev")
+ctry_index_wide_lev.adapt.L1
+
+ctry_index_wide.ord.adapt.L1 <- ctry_index_wide.adapt.L1[order(ctry_index_wide.adapt.L1$continent),]
+ctry_index_wide.ord_lev.adapt.L1 <- ctry_index_wide_lev.adapt.L1[order(ctry_index_wide_lev.adapt.L1$continent),]
+#ctry_index_wide$`2007`
+
+ctry_index_wide.ord.adapt.L1$index <- seq(1:NROW(ctry_index_wide.ord.adapt.L1))
+ctry_index_wide.ord_lev.adapt.L1$index <- seq(1:NROW(ctry_index_wide.ord_lev.adapt.L1))
+
+
+ctry_index_wide.mat.adapt.L1 <- as.matrix(ctry_index_wide.ord.adapt.L1[,3:NCOL(ctry_index_wide.adapt.L1)])
+row.names(ctry_index_wide.mat.adapt.L1) <- ctry_index_wide.ord.adapt.L1$iso
+
+ctry_index_wide.mat_lev.adapt.L1 <- as.matrix(ctry_index_wide.ord_lev.adapt.L1[,3:NCOL(ctry_index_wide_lev.adapt.L1)])
+row.names(ctry_index_wide.mat_lev.adapt.L1) <- ctry_index_wide.ord_lev.adapt.L1$iso
+
+
+heatmap(ctry_index_wide.mat.adapt.L1, scale="none", Rowv=NA, Colv = NA, col=c("blue", "gray85",  "red"))
+
+
+
+
+
+
+colors_lev = c("blue", "gray78", "red")
+colors = structure(c("blue", "gray78", "red"), names = c("-1", "0", "1"))
+
+mode(ctry_index_wide.mat.adapt.L1) = "character"
+
+#pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/heat1_lag.pdf", height=10, width=8)
+pdf(here("data-raw/projections/out/heat1_adapt.L1.pdf"), height=10, width=8)
+
+
+Heatmap(ctry_index_wide.mat.adapt.L1,
+        row_split = ctry_index_wide.ord.adapt.L1$continent,
+        column_order =  sort(colnames(ctry_index_wide.mat.adapt.L1)),
+        cluster_rows = FALSE,
+        col=colors, na_col="white",
+        row_names_gp = gpar(fontsize = 4),
+        row_gap = unit(3, "mm"),
+        border = TRUE,
+        rect_gp = gpar(col = "white", lwd = 1.3),
+        column_names_gp = gpar(fontsize = 7),
+        name = "Outliers",
+        column_title = "Detected Outliers (IIS, p=0.01)")
+
+dev.off()
+
 
 ##### Compare Projected Impacts
 
 coef_m2 <- coefficients(m2)
 coef_m2.isat <- coefficients(m2.isat)
-coef_m2.isat.lag <- coefficients(m2.isat_L1)
+coef_am2.adapt <- coefficients(am2)
+coef_am2.adapt.L1 <- coefficients(am2_L1)
+coef_am2.isat.adapt <- coefficients(am2.isat)
+coef_am2.isat.adapt.L1 <- coefficients(am2.isat_L1)
 
 #coef_m2.lag <- coefficients(m1.arx.lag)
 
@@ -722,6 +854,8 @@ coef_m2.lag <- coefficients(dist1.lag$ols)[rel.coef.lag]
 qlow <- 0.25
 qmed <- 0.5
 qup <- 0.75
+
+gdp_pc <- am2_data$ln
 
 loginc_lower <- quantile(log(gdp_pc), probs=qlow, na.rm=TRUE)
 loginc_med <- quantile(log(gdp_pc), probs=qmed, na.rm=TRUE)

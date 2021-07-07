@@ -36,9 +36,12 @@ m1 %>%
 
 dat %>%
   select(iso, year, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
-  select(-iso,-year,-all_of(m1_drop)) %>%
+  select(-all_of(m1_drop)) %>%
   drop_na -> m2_data
-lm(diff.ln_gdp_cap~.-1,data = m2_data) -> m2
+
+write_csv(m2_data, here("data-raw/projections/m2_data.csv"))
+
+lm(diff.ln_gdp_cap~.-1,data = m2_data %>% select(-c(iso,year))) -> m2
 
 
 # save m2 ---------------------------------------------------------------
@@ -108,17 +111,23 @@ am1_L1 %>%
 dat %>%
   select(iso, year, ln_gdp_cap, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2 , starts_with(c("year_","time_", "iso_"))) %>%
   mutate(across(.cols = c(temp,temp_2, prcp, prcp_2), .fns = ~ . * cur_data() %>% pull(ln_gdp_cap), .names = "{.col}_int")) %>%
-  select(-iso,-year,-all_of(am1_drop),-ln_gdp_cap) %>%
+  select(-all_of(am1_drop)) %>%
   drop_na -> am2_data
-lm(diff.ln_gdp_cap~.-1,data = am2_data) -> am2
+
+write_csv(am2_data, here("data-raw/projections/am2_data.csv"))
+
+lm(diff.ln_gdp_cap~.-1,data = am2_data %>% select(-c(iso,year,ln_gdp_cap))) -> am2
 
 
 dat %>%
   select(iso, year, L1.ln_gdp_cap, diff.ln_gdp_cap, temp, temp_2, prcp, prcp_2, starts_with(c("year_","time_", "iso_"))) %>%
   mutate(across(.cols = c(temp,temp_2, prcp, prcp_2), .fns = ~ . * cur_data() %>% pull(L1.ln_gdp_cap), .names = "{.col}_int")) %>%
-  select(-iso,-year,-all_of(am1_L1_drop),-L1.ln_gdp_cap) %>%
+  select(-all_of(am1_L1_drop)) %>%
   drop_na -> am2_L1_data
-lm(diff.ln_gdp_cap~.-1,data = am2_L1_data) -> am2_L1
+
+write_csv(am2_L1_data, here("data-raw/projections/am2_L1_data.csv"))
+
+lm(diff.ln_gdp_cap~.-1,data = am2_L1_data %>% select(-c(iso,year,L1.ln_gdp_cap))) -> am2_L1
 
 # save am2 ---------------------------------------------------------------
 
