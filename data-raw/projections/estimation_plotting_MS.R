@@ -548,21 +548,34 @@ max(ctry_outl.adapt$outl)
 max(ctry_outl.adapt.L1$outl)
 
 #join to a coarse resolution map
-cols <- c("gray85", "#fdd49e", "#fdbb84",
+cols <- c("gray85",
+          "#fdd49e",
+          "#fdbb84",
           "#fc8d59",
           "#ef6548",
           "#d7301f",
           "#b30000",
           "#7f0000")
 
+col_fun <- colorRampPalette(cols)
+
 spdf <- joinCountryData2Map(ctry_outl, joinCode="ISO3", nameJoinColumn="iso")
 spdf.adapt <- joinCountryData2Map(ctry_outl.adapt, joinCode="ISO3", nameJoinColumn="iso")
 spdf.adapt.L1 <- joinCountryData2Map(ctry_outl.adapt.L1, joinCode="ISO3", nameJoinColumn="iso")
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/ctry_map.pdf", height=10, width=11)
-pdf(here("data-raw/projections/out/ctry_map.pdf"), height=10, width=11)
+pdf(here("data-raw/projections/out/ctry_map.pdf"), height=4, width=7)
 
-map1 <- mapCountryData(spdf, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
+scale <- 0:max(unique(spdf$outl)[!is.na(unique(spdf$outl))])
+cur_cols <- col_fun(length(0:max(unique(spdf$outl)[!is.na(unique(spdf$outl))]))-1)
+
+map1 <- mapCountryData(spdf[spdf$SOV_A3 != "ATA",],
+                       nameColumnToPlot="outl",
+                       addLegend=FALSE,
+                       #catMethod=c(0,  2, 4, 6, 8, 10, 12),
+                       catMethod=scale,
+                       colourPalette=cur_cols,
+                       mapTitle = "")
 
 do.call(addMapLegend
         ,c(map1
@@ -570,7 +583,7 @@ do.call(addMapLegend
            ,horizontal=TRUE
            ,legendWidth=0.5
            ,legendIntervals="data"
-           , legendMar = 7))
+           , legendMar = 4))
 
 
 dev.off()
@@ -580,33 +593,49 @@ dev.off()
 
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/ctry_map_lag.pdf", height=10, width=11)
-pdf(here("data-raw/projections/out/ctry_map_adapt.pdf"), height=10, width=11)
+pdf(here("data-raw/projections/out/ctry_map_adapt.pdf"), height=4, width=7)
 
-map1 <- mapCountryData(spdf.adapt, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
+scale <- 0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))])
+cur_cols <- col_fun(length(0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))]))-1)
 
+map1 <- mapCountryData(spdf.adapt[spdf.adapt$SOV_A3 != "ATA",],
+                       nameColumnToPlot="outl",
+                       addLegend=FALSE,
+                       #catMethod=c(0,  2, 4, 6, 8, 10, 12),
+                       catMethod=scale,
+                       colourPalette=cur_cols,
+                       mapTitle = "")
 do.call(addMapLegend
         ,c(map1
            ,legendLabels="all"
            ,horizontal=TRUE
            ,legendWidth=0.5
            ,legendIntervals="data"
-           , legendMar = 7))
+           , legendMar = 4))
 
 
 dev.off()
 
 
-pdf(here("data-raw/projections/out/ctry_map_adapt.L1.pdf"), height=10, width=11)
+pdf(here("data-raw/projections/out/ctry_map_adapt.L1.pdf"), height=4, width=7)
 
-map1 <- mapCountryData(spdf.adapt.L1, nameColumnToPlot="outl",  addLegend=FALSE, catMethod=c(0, 1, 2, 3, 4, 5, 8, 10, 12), colourPalette=cols)
+scale <- 0:max(unique(spdf.adapt.L1$outl)[!is.na(unique(spdf.adapt.L1$outl))])
+cur_cols <- col_fun(length(0:max(unique(spdf.adapt.L1$outl)[!is.na(unique(spdf.adapt.L1$outl))]))-1)
 
+map1 <- mapCountryData(spdf.adapt.L1[spdf.adapt.L1$SOV_A3 != "ATA",],
+                       nameColumnToPlot="outl",
+                       addLegend=FALSE,
+                       #catMethod=c(0,  2, 4, 6, 8, 10, 12),
+                       catMethod=scale,
+                       colourPalette=cur_cols,
+                       mapTitle = "")
 do.call(addMapLegend
         ,c(map1
            ,legendLabels="all"
            ,horizontal=TRUE
            ,legendWidth=0.5
            ,legendIntervals="data"
-           , legendMar = 7))
+           , legendMar = 4))
 
 
 dev.off()
@@ -1419,7 +1448,7 @@ for (i in 1: NROW(rel.coef.adapt)){
 
   plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
   points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt[i], pch=19, cex=3,  col=iis.col)
-  rect(ybottom=coef.plot$iis.ci.p025.adapt[i], ytop=coef.plot$ols.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$ols.ci.p025.adapt[i], ytop=coef.plot$ols.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
   rect(ybottom=coef.plot$iis.ci.p025.adapt[i], ytop=coef.plot$iis.ci.p975.adapt[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
   axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
   if (i==1){
@@ -1458,7 +1487,7 @@ for (i in 1: NROW(rel.coef.adapt.L1)){
 
   plot(coef.plot$plot.index[i], coef.plot$ols.coef.adapt.L1[i], ylim=ylim,  xlim=c(0.45,0.7),  main=coef.plot$coef[i], pch=19, cex=3,   ylab=ylab, xlab="", xaxt="n", col=ols.col)
   points(coef.plot$plot.index[i]+coef.offset, coef.plot$iis.coef.adapt.L1[i], pch=19, cex=3,  col=iis.col)
-  rect(ybottom=coef.plot$iis.ci.p025.adapt.L1[i], ytop=coef.plot$ols.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
+  rect(ybottom=coef.plot$ols.ci.p025.adapt.L1[i], ytop=coef.plot$ols.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth, xright=coef.plot$plot.index[i]+barwidth,  density = NULL, border = ols.col, col=ols.col)
   rect(ybottom=coef.plot$iis.ci.p025.adapt.L1[i], ytop=coef.plot$iis.ci.p975.adapt.L1[i], xleft=coef.plot$plot.index[i]-barwidth+coef.offset, xright=coef.plot$plot.index[i]+barwidth+coef.offset,  density = NULL, border = iis.col, col=iis.col)
   axis(1, at=c(coef.plot$plot.index[i], coef.plot$plot.index[i]+coef.offset), labels=c("OLS", "Robust IIS"), cex.axis=1.3)
   if (i==1){

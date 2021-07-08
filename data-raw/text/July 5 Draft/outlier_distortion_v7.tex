@@ -733,10 +733,10 @@ We show the estimated non-linear relationship between temperatures and growth fo
 
 Beyond distortion in coefficients, we show the distribution of the detected outlying observations in the panel model over time, countries, and both (Figures \ref{fig_out_app1} and \ref{fig_map_app1}). The number of detected outliers greatly exceeds the number expected by chance. In total, 150 country-year observations identified as outlying compared to 70.7 expected under the null when there are no outliers. The observed proportion of outliers $\hat{\gamma}_{c=2.57}=$ 150/7007=0.021 is statistically different from the expected proportion of $\gamma_{c=2.57}=0.01$ ($p<0.001$ using the \citet{jiao2020testingoutlier}\ignore{Check this reference} proportion test comparing 0.021 to 0.01). Further, the distribution of outliers does not appear to be random over time and space -- outliers are concentrated in developing countries and there is a temporal cluster coinciding with the collapse of the Soviet Union and the onset of the Gulf War, which may well capture an idiosyncratic shock not modelled in the base panel model.
 
-Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income, where poor countries face negative impacts of warmer temperatures while rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship. Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates.
+Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income, where poor countries face negative impacts of warmer temperatures while rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship. Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates (see Figure \ref{fig_projection}).
 
 \ignore{CHECK}
-\textbf{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
+\ignore{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
 
 
 \ignore{I have a comment in my notes that reads: Bottom line for the test statistic, only do this for temp, temp_2 and all. Question: does that mean I should exclude the test stat for all other lines? and the ones that we keep, do we do it on the individual coef or both/all?}
@@ -784,16 +784,18 @@ Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country
 
 
 
-\begin{figure}[!htbp]  \vspace{-.35in}
+\begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
-\includegraphics[scale=0.65]{coef_v2_lag.pdf}
+%\includegraphics[scale=0.65]{coef_v2_lag.pdf}
+\includegraphics[width = \textwidth]{coef.adapt.pdf}
 \caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. Coefficients on temperatures and the income interaction terms are shown using OLS and the robust IIS estimator. Note that scale of the y-axis differs across plots.}
 \label{fig_dist_coef_app1}
 \end{figure}
 
 \begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
-\includegraphics[scale=0.55]{eff_v1_lag.pdf}
+%\includegraphics[scale=0.55]{eff_v1_lag.pdf}
+\includegraphics[width = \textwidth]{eff.adapt.pdf}
 \caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for different three different income levels (middle panels) and the observed country level temperatures (bottom panels): countries in at the 25th income percentile, countries with median income, and countries at the 75th income percentile. Observed temperatures across income ranges are shown in the lower panel. }
 \label{fig_dist_app1}
 \end{figure}
@@ -802,18 +804,28 @@ Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country
 
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
-\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
-\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1962-2013. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
+%\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
+\includegraphics[width = \textwidth]{heat1_adapt.pdf}
+\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
 \label{fig_out_app1}
 \end{figure}
 
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
-\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
-\caption{Detected outliers aggregated over the full sample by contry in the panel. Gray denotes no outliers detected. }
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{ctry_map_adapt.pdf}
+\caption{Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel. Gray denotes no outliers detected. }
 \label{fig_map_app1}
 \end{figure}
 
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{projections.pdf}
+\caption{Projected Damage Curve for the period 2090 - 2099.}
+\label{fig_projection}
+\end{figure}
 
 
 \clearpage
@@ -1314,6 +1326,47 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \caption{Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test (for outlier magnitude of 3SD of the error term).}
 \label{fig_out_sim_alt_boot3}
 \end{figure}
+
+
+
+\section{Additional Projection Results} \label{sec_add_proj}
+
+
+\begin{figure}[!htbp]  %\vspace{-.35in}
+\centering
+%\includegraphics[scale=0.65]{coef_v2_lag.pdf}
+\includegraphics[width = \textwidth]{coef.adapt.L1.pdf}
+\caption{Projection with Lagged GDP per capita. Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. Coefficients on temperatures and the income interaction terms are shown using OLS and the robust IIS estimator. Note that scale of the y-axis differs across plots.}
+\label{fig_dist_coef_app1}
+\end{figure}
+
+\begin{figure}[!htbp]  %\vspace{-.35in}
+\centering
+%\includegraphics[scale=0.55]{eff_v1_lag.pdf}
+\includegraphics[width = \textwidth]{eff.adapt.L1.pdf}
+\caption{Projection with Lagged GDP per capita. Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for different three different income levels (middle panels) and the observed country level temperatures (bottom panels): countries in at the 25\textsuperscript{th} income percentile, countries with median income, and countries at the 75\textsuperscript{th} income percentile. Observed temperatures across income ranges are shown in the lower panel. }
+\label{fig_dist_app1}
+\end{figure}
+
+
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
+\includegraphics[width = \textwidth]{heat1_adapt.L1.pdf}
+\caption{Projection with Lagged GDP per capita. Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
+\label{fig_out_app1}
+\end{figure}
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{ctry_map_adapt.L1.pdf}
+\caption{Projection with Lagged GDP per capita. Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel. Gray denotes no outliers detected. }
+\label{fig_map_app1}
+\end{figure}
+
+
 
 \end{document}
 

@@ -36,6 +36,7 @@ project <- function(stdmodel,
                     modelname = "m2",
                     coefsamples = 100,
                     seed = 123,
+                    exclude_vars_from_projection = "prcp",
 
                     adaptation = FALSE,
                     adaptmodel = NULL,
@@ -45,7 +46,7 @@ project <- function(stdmodel,
 
                     parallel = TRUE,
                     verbose = TRUE,
-                    save_dir_here = "data-raw/projections/projfiles"){
+                    save_dir_here = "data-raw/projections/projfiles_noprcp"){
 
   # ISAT Variance correction ----
   if(class(stdmodel)=="isat"){
@@ -98,6 +99,17 @@ project <- function(stdmodel,
     gsub("_coef|_2","",.) %>%
     unique -> climate_vars_sq
 
+  if(!is.null(exclude_vars_from_projection)){
+    # Exclude variables from projection, if wanted
+    climate_vars <- climate_vars[!grepl(exclude_vars_from_projection,climate_vars)]
+    climate_vars_lin <- climate_vars_lin[!grepl(exclude_vars_from_projection,climate_vars_lin)]
+    climate_vars_sq <- climate_vars_sq[!grepl(exclude_vars_from_projection,climate_vars_sq)]
+  }
+
+
+
+
+
   if(adaptation){
     # Prepare max restriction
     if(socioprojections_type == "Mueller"){
@@ -142,6 +154,11 @@ project <- function(stdmodel,
       grep("_int",.,value = TRUE) %>%
       gsub("_int","",.) %>%
       unique -> interaction_vars
+
+    if(!is.null(exclude_vars_from_projection)){
+      # Exclude variables from projection, if wanted
+      interaction_vars <- interaction_vars[!grepl(exclude_vars_from_projection,interaction_vars)]
+    }
   }
 
 
