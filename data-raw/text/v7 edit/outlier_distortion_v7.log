@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  12 JUL 2021 21:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  12 JUL 2021 22:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -401,10 +401,10 @@ File: coef.adapt.pdf Graphic file (type pdf)
 <use coef.adapt.pdf>
 Package pdftex.def Info: coef.adapt.pdf  used on input line 757.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
-<eff.adapt.pdf, id=206, 867.24pt x 578.16pt>
-File: eff.adapt.pdf Graphic file (type pdf)
-<use eff.adapt.pdf>
-Package pdftex.def Info: eff.adapt.pdf  used on input line 765.
+<eff.adapt.v2.pdf, id=206, 867.24pt x 578.16pt>
+File: eff.adapt.v2.pdf Graphic file (type pdf)
+<use eff.adapt.v2.pdf>
+Package pdftex.def Info: eff.adapt.v2.pdf  used on input line 765.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
 <heat1_adapt.pdf, id=207, 578.16pt x 722.7pt>
 File: heat1_adapt.pdf Graphic file (type pdf)
@@ -422,7 +422,7 @@ File: projections_noprcp_main.pdf Graphic file (type pdf)
 Package pdftex.def Info: projections_noprcp_main.pdf  used on input line 792.
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
 
-[26] [27 <./coef.adapt.pdf>] [28 <./eff.adapt.pdf>] [29 <./heat1_adapt.pdf>]
+[26] [27 <./coef.adapt.pdf>] [28 <./eff.adapt.v2.pdf>] [29 <./heat1_adapt.pdf>]
 [30 <./ctry_map_adapt.pdf> <./projections_noprcp_main.pdf>] [31
 
 ]
@@ -491,45 +491,56 @@ File: coef.adapt.L1.pdf Graphic file (type pdf)
 <use coef.adapt.L1.pdf>
 Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1313.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
-<eff.adapt.L1.pdf, id=315, 867.24pt x 578.16pt>
-File: eff.adapt.L1.pdf Graphic file (type pdf)
-<use eff.adapt.L1.pdf>
-Package pdftex.def Info: eff.adapt.L1.pdf  used on input line 1321.
+<eff.adapt.L1.v2.pdf, id=315, 867.24pt x 578.16pt>
+File: eff.adapt.L1.v2.pdf Graphic file (type pdf)
+<use eff.adapt.L1.v2.pdf>
+Package pdftex.def Info: eff.adapt.L1.v2.pdf  used on input line 1321.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
-<heat1_adapt.L1.pdf, id=316, 578.16pt x 722.7pt>
+<heat1.pdf, id=316, 578.16pt x 722.7pt>
+File: heat1.pdf Graphic file (type pdf)
+<use heat1.pdf>
+Package pdftex.def Info: heat1.pdf  used on input line 1331.
+(pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
+<ctry_map.pdf, id=317, 505.89pt x 289.08pt>
+File: ctry_map.pdf Graphic file (type pdf)
+<use ctry_map.pdf>
+Package pdftex.def Info: ctry_map.pdf  used on input line 1339.
+(pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+<heat1_adapt.L1.pdf, id=318, 578.16pt x 722.7pt>
 File: heat1_adapt.L1.pdf Graphic file (type pdf)
 <use heat1_adapt.L1.pdf>
-Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1331.
+Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1348.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map_adapt.L1.pdf, id=317, 505.89pt x 289.08pt>
+<ctry_map_adapt.L1.pdf, id=319, 505.89pt x 289.08pt>
 File: ctry_map_adapt.L1.pdf Graphic file (type pdf)
 <use ctry_map_adapt.L1.pdf>
-Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1339.
+Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1356.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
-<projections_noprcp_appendix.pdf, id=318, 433.62pt x 289.08pt>
+<projections_noprcp_appendix.pdf, id=320, 433.62pt x 289.08pt>
 File: projections_noprcp_appendix.pdf Graphic file (type pdf)
 <use projections_noprcp_appendix.pdf>
 Package pdftex.def Info: projections_noprcp_appendix.pdf  used on input line 13
-48.
+64.
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<projections_withprcp_main.pdf, id=319, 433.62pt x 289.08pt>
+<projections_withprcp_main.pdf, id=321, 433.62pt x 289.08pt>
 File: projections_withprcp_main.pdf Graphic file (type pdf)
 <use projections_withprcp_main.pdf>
-Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1356
+Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1372
 .
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<projections_withprcp_appendix.pdf, id=320, 433.62pt x 289.08pt>
+<projections_withprcp_appendix.pdf, id=322, 433.62pt x 289.08pt>
 File: projections_withprcp_appendix.pdf Graphic file (type pdf)
 <use projections_withprcp_appendix.pdf>
 Package pdftex.def Info: projections_withprcp_appendix.pdf  used on input line 
-1365.
+1381.
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
 [45 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [46 <./alt_ar0_nreg1
 _palpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_out
 prop0.1.pdf>] [47 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>] [48 <./coe
-f.adapt.L1.pdf> <./eff.adapt.L1.pdf>] [49 <./heat1_adapt.L1.pdf>] [50 <./ctry_m
-ap_adapt.L1.pdf> <./projections_noprcp_appendix.pdf>] [51 <./projections_withpr
-cp_main.pdf> <./projections_withprcp_appendix.pdf
+f.adapt.L1.pdf> <./eff.adapt.L1.v2.pdf>] [49 <./heat1.pdf>] [50 <./ctry_map.pdf
+>] [51 <./heat1_adapt.L1.pdf>] [52 <./ctry_map_adapt.L1.pdf> <./projections_nop
+rcp_appendix.pdf>] [53 <./projections_withprcp_main.pdf> <./projections_withprc
+p_appendix.pdf
 
 pdfTeX warning: pdflatex.exe (file ./projections_withprcp_appendix.pdf): PDF in
 clusion: multiple pdfs with page group included in a single page
@@ -539,10 +550,10 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5348 strings out of 480403
- 86535 string characters out of 5894552
- 406505 words of memory out of 5000000
- 22972 multiletter control sequences out of 15000+600000
+ 5364 strings out of 480403
+ 86862 string characters out of 5894552
+ 405527 words of memory out of 5000000
+ 22986 multiletter control sequences out of 15000+600000
  419345 words of font info for 86 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  57i,15n,66p,2805b,372s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -587,10 +598,10 @@ dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/Users/morit/AppData/Roaming/
 TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/Users/mor
 it/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm1
 0.pfb>
-Output written on outlier_distortion_v7.pdf (51 pages, 1116655 bytes).
+Output written on outlier_distortion_v7.pdf (53 pages, 1219431 bytes).
 PDF statistics:
- 569 PDF objects out of 1000 (max. 8388607)
- 377 compressed objects within 4 object streams
+ 588 PDF objects out of 1000 (max. 8388607)
+ 390 compressed objects within 4 object streams
  0 named destinations out of 1000 (max. 500000)
- 121 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 131 words of extra memory for PDF output out of 10000 (max. 10000000)
 

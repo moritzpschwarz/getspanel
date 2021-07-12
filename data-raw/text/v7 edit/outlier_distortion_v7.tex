@@ -759,11 +759,11 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \label{fig_dist_coef_app1}
 \end{figure}
 
-\begin{figure}[!htbp]  %\vspace{-.35in}
+\begin{figure}[!htbp]  \vspace{-.35in}
 \centering
 %\includegraphics[scale=0.55]{eff_v1_lag.pdf}
-\includegraphics[width = \textwidth]{eff.adapt.pdf}
-\caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for different three different income levels (middle panels) and the observed country level temperatures (bottom panels): countries in at the 25th income percentile, countries with median income, and countries at the 75th income percentile. Observed temperatures across income ranges are shown in the lower panel. }
+\includegraphics[width = \textwidth]{eff.adapt.v2.pdf}
+\caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for the overall base model (top left) and at three different income levels (other top panels). Observed temperatures for the entire sample and across income ranges are shown in the bottom panel. }
 \label{fig_dist_app1}
 \end{figure}
 
@@ -773,7 +773,7 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \centering
 %\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
 \includegraphics[width = \textwidth]{heat1_adapt.pdf}
-\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
+\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017 in the adaptation model. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
 \label{fig_out_app1}
 \end{figure}
 
@@ -781,7 +781,7 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \centering
 %\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
 \includegraphics[width = \textwidth]{ctry_map_adapt.pdf}
-\caption{Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel. Gray denotes no outliers detected. }
+\caption{Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel in the adaptation model. Gray denotes no outliers detected.}
 \label{fig_map_app1}
 \end{figure}
 
@@ -1318,7 +1318,7 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
 %\includegraphics[scale=0.55]{eff_v1_lag.pdf}
-\includegraphics[width = \textwidth]{eff.adapt.L1.pdf}
+\includegraphics[width = \textwidth]{eff.adapt.L1.v2.pdf}
 \caption{Projection with Lagged GDP per capita. Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. OLS-estimated relationship shown in blue, robust IIS estimated relationship shown in red. Estimated non-linear impact function for different three different income levels (middle panels) and the observed country level temperatures (bottom panels): countries in at the 25\textsuperscript{th} income percentile, countries with median income, and countries at the 75\textsuperscript{th} income percentile. Observed temperatures across income ranges are shown in the lower panel. }
 \label{fig_dist_app1}
 \end{figure}
@@ -1328,19 +1328,35 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
 %\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
-\includegraphics[width = \textwidth]{heat1_adapt.L1.pdf}
-\caption{Projection with Lagged GDP per capita. Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
+\includegraphics[width = \textwidth]{heat1.pdf}
+\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017 in the base model. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
 \label{fig_out_app1}
 \end{figure}
 
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
 %\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
-\includegraphics[width = \textwidth]{ctry_map_adapt.L1.pdf}
-\caption{Projection with Lagged GDP per capita. Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel. Gray denotes no outliers detected. }
+\includegraphics[width = \textwidth]{ctry_map.pdf}
+\caption{Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel in the base model. Gray denotes no outliers detected. }
 \label{fig_map_app1}
 \end{figure}
 
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.7]{heat1_lag_v1_edited.pdf}
+\includegraphics[width = \textwidth]{heat1_adapt.L1.pdf}
+\caption{Detected Outliers using the robust IIS estimator across countries and time in the global cross-country panel from 1961-2017 in the adaptation model with lagged GDP per capita. Top Figure panel shows the number of positive (red) and negative (blue) outliers aggregated over countries in each year. Bottom panel shows country-year observations as gray when not outlying, blue when there is a negative outliers, and red for positive outliers.}
+\label{fig_out_app2}
+\end{figure}
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{ctry_map_adapt.L1.pdf}
+\caption{Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel in the adaptation model with lagged GDP per capita. Gray denotes no outliers detected.}
+\label{fig_map_app2}
+\end{figure}
 
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
