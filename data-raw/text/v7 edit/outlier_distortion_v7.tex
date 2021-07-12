@@ -730,7 +730,7 @@ Modelling GDP per capita growth in fixed effects panels as a non-linear (quadrat
 \end{equation}
 \end{small}
 
-where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate equations (\ref{pan_base}) and (\ref{pan_adapt}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating equations (\ref{pan_base}) and (\ref{pan_adapt}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates. To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ in the Appendix (see equation \ref{pan_adapt.L1}).
+where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate equations (\ref{pan_base}) and (\ref{pan_adapt}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating equations (\ref{pan_base}) and (\ref{pan_adapt}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates. To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ in the Appendix (see equation (\ref{pan_adapt.L1})).
 
 \subsection{Results}
 The estimation results (Figures \ref{fig_dist_coef_app1}, \ref{fig_dist_app1}, and Table \ref{tab_app1_estimates}) show significant evidence of income-driven adaptation to temperatures, however, the estimates are  distorted by the presence of outlying observations. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. Figure \ref{fig_dist_coef_app1} shows the difference in estimated coefficients between the robust IIS approach and OLS. Specifically, the robust coefficient estimates are attenuated relative to the OLS estimates. The difference between the OLS and robust IIS estimates is statistically different from zero when applying our proposed test for outlier distortion. Formally, we construct our test statistic for outlier distortion in the four coefficients of interest as:
@@ -792,6 +792,14 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \includegraphics[width = \textwidth]{projections_noprcp_main.pdf}
 \caption{Projected Damage Curve for the period 2090 - 2099. Projection excludes Precipitation Effect. Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
 \label{fig_projection}
+\end{figure}
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{Map_IISBase_noprcp_diff.pdf}
+\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4.5\textdegree C. Projection excludes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
+\label{fig_projection_map}
 \end{figure}
 
 
@@ -1246,7 +1254,7 @@ Set $m = 0$ and $m \to \infty$ such that $\varrho_{\beta, c}^{(1)} = 2 c \mathsf
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\clearpage
 \section{Additional Simulation Results} \label{sec_add_sim}
 
 Here we report additional simulation results in the presence of outliers. Figure \ref{fig_out_sim_alt15} shows the simulation results under a range of alternatives for 15\% outlier contamination. Figure \ref{fig_out_sim_alt1_1reg} shows the simulation results when testing for distortion of a single coefficient under a range of alternatives. Figure \ref{fig_out_sim_alt1_5reg05} shows the simulation results when testing for distortion when the dependent variable shows some persistence (autoregressive coefficient of 0.5) under a range of alternatives.
@@ -1295,8 +1303,10 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \end{figure}
 
 
-
+\clearpage
 \section{Additional Projection Results} \label{sec_add_proj}
+
+To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ (see equation (\ref{pan_adapt.L1}) below).
 
 \begin{small}
 \begin{equation}
@@ -1381,6 +1391,15 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \includegraphics[width = \textwidth]{projections_withprcp_appendix.pdf}
 \caption{Projected Damage Curve for the period 2090 - 2099. Projection includes Precipitation Effect.  Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
 \label{fig_projection_lagged_withprcp}
+\end{figure}
+
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{Map_IISBase_noprcp_diff.pdf}
+\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4.5\textdegree C. Projection includes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
+\label{fig_projection_map}
 \end{figure}
 
 

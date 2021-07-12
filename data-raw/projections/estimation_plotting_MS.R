@@ -892,7 +892,6 @@ loginc_upper <- quantile(ln_gdp_pc, probs=qup, na.rm=TRUE)
 
 #quantile(log(L1.gdp_pc), probs=qlow, na.rm=TRUE)
 
-
 temp_lower <- temp[ln_gdp_pc < loginc_lower]
 
 temp_mid <- temp[ loginc_lower < ln_gdp_pc & ln_gdp_pc < loginc_upper]
@@ -904,7 +903,7 @@ temp_upper <- temp[ ln_gdp_pc > loginc_upper]
 temp_seq <- seq(-5, 30, 1)
 
 # imp_lower <- (coef_m2['temp']+coef_m2['temp_int']*loginc_lower)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_lower)*temp_seq^2
-# imp_med <- (coef_m2['temp']+coef_m2['temp_int']*loginc_med)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_med)*temp_seq^2
+imp_med <- coef_m2['temp']*temp_seq + coef_m2['temp_2']*temp_seq^2
 # imp_upper <- (coef_m2['temp']+coef_m2['temp_int']*loginc_upper)*temp_seq + (coef_m2['temp_2']+coef_m2['temp_2_int']*loginc_upper)*temp_seq^2
 
 imp_lower.adapt <- (coef_am2.adapt['temp']+coef_am2.adapt['temp_int']*loginc_lower)*temp_seq + (coef_am2.adapt['temp_2']+coef_am2.adapt['temp_2_int']*loginc_lower)*temp_seq^2
@@ -918,7 +917,7 @@ imp_upper.adapt.L1 <- (coef_am2.adapt.L1['temp']+coef_am2.adapt.L1['temp_int']*l
 
 
 # imp_lower_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_lower)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_lower)*temp_seq^2
-# imp_med_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_med)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_med)*temp_seq^2
+imp_med_isat <- coef_m2.isat['temp']*temp_seq + coef_m2.isat['temp_2']*temp_seq^2
 # imp_upper_isat <- (coef_m2.isat['temp']+coef_m2.isat['temp_int']*loginc_upper)*temp_seq + (coef_m2.isat['temp_2']+coef_m2.isat['temp_2_int']*loginc_upper)*temp_seq^2
 
 imp_lower_isat.adapt <- (coef_am2.isat.adapt['temp']+coef_am2.isat.adapt['temp_int']*loginc_lower)*temp_seq + (coef_am2.isat.adapt['temp_2']+coef_am2.isat.adapt['temp_2_int']*loginc_lower)*temp_seq^2
@@ -933,7 +932,7 @@ imp_upper_isat.adapt.L1 <- (coef_am2.isat.adapt.L1['temp']+coef_am2.isat.adapt.L
 
 
 # imp_lower_sc <- imp_lower - max(imp_lower)
-# imp_med_sc <- imp_med - max(imp_med)
+imp_med_sc <- imp_med - max(imp_med)
 # imp_upper_sc <- imp_upper - max(imp_upper)
 
 imp_lower_sc.adapt <- imp_lower.adapt - max(imp_lower.adapt)
@@ -946,7 +945,7 @@ imp_upper_sc.adapt.L1 <- imp_upper.adapt.L1 - max(imp_upper.adapt.L1)
 
 
 # imp_lower_sc_isat <- imp_lower_isat - max(imp_lower_isat)
-# imp_med_sc_isat <- imp_med_isat - max(imp_med_isat)
+imp_med_sc_isat <- imp_med_isat - max(imp_med_isat)
 # imp_upper_sc_isat <- imp_upper_isat - max(imp_upper_isat)
 
 imp_lower_sc_isat.adapt <- imp_lower_isat.adapt - max(imp_lower_isat.adapt)
@@ -1506,27 +1505,32 @@ dev.off()
 ########### Impact function
 
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1.pdf", height=8, width=12)
-pdf(here("data-raw/projections/out/eff.adapt.pdf"), height=8, width=12)
+pdf(here("data-raw/projections/out/eff.adapt.v2.pdf"), height=8, width=12)
 
-
-layout.matrix.r1 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
-layout.matrix.r2 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
-layout.matrix.r3 <- matrix(c(4, 4, 4, 5, 5, 5, 6, 6,6), nrow = 1, ncol = 9, byrow = T)
+layout.matrix.r1 <- matrix(c(1, 2, 3, 4), nrow = 1, ncol = 4, byrow = T)
+layout.matrix.r2 <- matrix(c(1, 2, 3, 4), nrow = 1, ncol = 4, byrow = T)
+layout.matrix.r3 <- matrix(c(5, 6, 7, 8), nrow = 1, ncol = 4, byrow = T)
 
 layout.matrix <- rbind(layout.matrix.r1, layout.matrix.r2, layout.matrix.r3)
 
+#par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
+par(mar = c(3,4.5,3,0), oma = c(2,2,0.5,0.5), las =1)
 
-
-par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
-
-par(mar = c(2,0.3,3,0))
+par(mar = c(2,4.5,3,0))
+#par(mar = c(2,0.3,3,0))
 layout(mat = layout.matrix) # Widths of the two columns
+
+
+plot(temp_seq, imp_med_sc, type = "l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Base Model without Adaptation", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+abline(h=0, col="gray35", lty=2)
+text(label="Across Incomes", cex=1.6, col="Gray35", x=10, y=-0.27)
+lines(temp_seq, imp_med_sc_isat, col=iis.col, lwd=5, lty=5)
 
 
 
 #par(mfrow=c(1,1))
 
-plot(temp_seq, imp_lower_sc.adapt, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+plot(temp_seq, imp_lower_sc.adapt, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1563,7 +1567,7 @@ plot(temp_seq, imp_upper_sc.adapt, type="l", ylim=c(-0.3, 0.01), xlim=xlim_temp,
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
-text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
+text(label=paste("Income Quantile: ", qup, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 # text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 # text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
@@ -1572,11 +1576,11 @@ lines(temp_seq, imp_upper_sc_isat.adapt, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
-
-
-hist(temp_mid, xlim=xlim_temp, breaks=15,  col="gray85", main="Temp. Distribution in Income Range")
-hist(temp_lower, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
-hist(temp_upper, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
+ylim_temp <- c(0,max(table(cut(temp, breaks = 15, labels = FALSE))))
+hist(temp, xlim=xlim_temp, ylim =ylim_temp,   breaks=15,  col="gray85", main="Overall Temperature")
+hist(temp_mid, xlim=xlim_temp, ylim =ylim_temp, breaks=15,  main = "Temperature (Lower Income)",ylab = "",  yaxt = "n", col="gray85")#, main="Temp. Distribution in Income Range")
+hist(temp_lower, xlim=xlim_temp, ylim =ylim_temp, breaks=15, main="Temperature (Middle Income)", ylab = "", yaxt="n", col="gray85")
+hist(temp_upper, xlim=xlim_temp, ylim =ylim_temp, breaks=15, main="Temperature (Upper Income)", ylab = "", yaxt="n", col="gray85")
 
 #par(mar = c(4,4,2,0), oma = c(3,3.5,1.5,1.5), las =1, mfrow=c(1, NROW(rel.coef)))
 
@@ -1584,28 +1588,34 @@ dev.off()
 
 
 
+
 #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/eff_v1.pdf", height=8, width=12)
-pdf(here("data-raw/projections/out/eff.adapt.L1.pdf"), height=8, width=12)
+pdf(here("data-raw/projections/out/eff.adapt.L1.v2.pdf"), height=8, width=12)
 
-
-layout.matrix.r1 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
-layout.matrix.r2 <- matrix(c(1, 1, 1, 2, 2, 2, 3, 3, 3), nrow = 1, ncol = 9, byrow = T)
-layout.matrix.r3 <- matrix(c(4, 4, 4, 5, 5, 5, 6, 6,6), nrow = 1, ncol = 9, byrow = T)
+layout.matrix.r1 <- matrix(c(1, 2, 3, 4), nrow = 1, ncol = 4, byrow = T)
+layout.matrix.r2 <- matrix(c(1, 2, 3, 4), nrow = 1, ncol = 4, byrow = T)
+layout.matrix.r3 <- matrix(c(5, 6, 7, 8), nrow = 1, ncol = 4, byrow = T)
 
 layout.matrix <- rbind(layout.matrix.r1, layout.matrix.r2, layout.matrix.r3)
 
+#par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
+par(mar = c(3,4.5,3,0), oma = c(2,2,0.5,0.5), las =1)
 
-
-par(mar = c(3,4.5,3,0), oma = c(5,4,0.5,0.5), las =1)
-
-par(mar = c(2,0.3,3,0))
+par(mar = c(2,4.5,3,0))
+#par(mar = c(2,0.3,3,0))
 layout(mat = layout.matrix) # Widths of the two columns
+
+
+plot(temp_seq, imp_med_sc, type = "l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Base Model without Adaptation", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+abline(h=0, col="gray35", lty=2)
+text(label="Across Incomes", cex=1.6, col="Gray35", x=10, y=-0.27)
+lines(temp_seq, imp_med_sc_isat, col=iis.col, lwd=5, lty=5)
 
 
 
 #par(mfrow=c(1,1))
 
-plot(temp_seq, imp_lower_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="Delta log(GDPpc)", lwd=5)
+plot(temp_seq, imp_lower_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01) , xlim=xlim_temp, col=ols.col, main="Income-Based Adaptation (Lower)", xlab="Deg. C", ylab="", yaxt="n", lwd=5)
 #lines(temp_seq, imp_upper_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
@@ -1642,7 +1652,7 @@ plot(temp_seq, imp_upper_sc.adapt.L1, type="l", ylim=c(-0.3, 0.01), xlim=xlim_te
 #lines(temp_seq, imp_lower_sc, col="gray75", lwd=1)
 #lines(temp_seq, imp_med_sc, col="gray75", lwd=1)
 abline(h=0, col="gray35", lty=2)
-text(label=paste("Income Quantile:", qup, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
+text(label=paste("Income Quantile: ", qup, sep=""), cex=1.6, col="Gray35", x=10, y=-0.27)
 # text(label=paste("q", qmed, sep=""), col="#238b45", x=10, y=-0.27)
 # text(label=paste("q", qlow, sep=""), col="blue", x=10, y=-0.29)
 
@@ -1651,11 +1661,11 @@ lines(temp_seq, imp_upper_sc_isat.adapt.L1, col=iis.col, lwd=5, lty=5)
 #lines(temp_seq, imp_med_sc_isat, col="gray75", lwd=1, lty=2)
 
 
-
-
-hist(temp_mid, xlim=xlim_temp, breaks=15,  col="gray85", main="Temp. Distribution in Income Range")
-hist(temp_lower, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
-hist(temp_upper, xlim=xlim_temp, breaks=15, main="", yaxt="n", col="gray85")
+ylim_temp <- c(0,max(table(cut(temp, breaks = 15, labels = FALSE))))
+hist(temp, xlim=xlim_temp, ylim =ylim_temp,   breaks=15,  col="gray85", main="Overall Temperature")
+hist(temp_mid, xlim=xlim_temp, ylim =ylim_temp, breaks=15,  main = "Temperature (Lower Income)",ylab = "",  yaxt = "n", col="gray85")#, main="Temp. Distribution in Income Range")
+hist(temp_lower, xlim=xlim_temp, ylim =ylim_temp, breaks=15, main="Temperature (Middle Income)", ylab = "", yaxt="n", col="gray85")
+hist(temp_upper, xlim=xlim_temp, ylim =ylim_temp, breaks=15, main="Temperature (Upper Income)", ylab = "", yaxt="n", col="gray85")
 
 #par(mar = c(4,4,2,0), oma = c(3,3.5,1.5,1.5), las =1, mfrow=c(1, NROW(rel.coef)))
 
