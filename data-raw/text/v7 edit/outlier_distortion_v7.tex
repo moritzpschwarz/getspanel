@@ -637,7 +637,7 @@ We study the performance of the three bootstrap schemes together with the propos
 
 %\vspace{0.5cm}
 \section{Finite Sample Performance using Simulations} \label{sec_simulations}
-Here we study the performance of the proposed outlier distortion test in a series of simulation experiments under the null hypothesis of no distortion, as well as under a range of alternatives. We simulate (\ref{regression model}) varying the sample size $n$, the number of regressors tested $d_x$, the degree of persistence in the dependent variable (ranging from iid to stochastically-trending), as well as the underlying reference distribution, and the degree of outlier contamination under a range of alternatives (the proportion of outliers as well as outlier magnitude). Simulations are implemented using the R-package \texttt{getspanel}, which is based on the R-package \texttt{gets}, with $m=10,000$ replications for asymptotic tests and $m=1,000$ replications and bootstrap draws for the bootstrap versions of the test.
+Here we study the performance of the proposed outlier distortion test in a series of simulation experiments under the null hypothesis of no distortion, as well as under a range of alternatives. We simulate (\ref{regression model}) varying the sample size $n$, the number of regressors tested $d_x$, the degree of persistence in the dependent variable (ranging from iid to stochastically-trending), as well as the underlying reference distribution, and the degree of outlier contamination under a range of alternatives (the proportion of outliers as well as outlier magnitude). Simulations are implemented using the R-package  \texttt{gets}, with $m=10,000$ replications for asymptotic tests and $m=1,000$ replications and bootstrap draws for the bootstrap versions of the test.
 
 \subsection{Simulation Performance under the Null of No Distortion}
 
@@ -713,21 +713,31 @@ A concern with global panel-econometric  models of climate impacts is the inabil
 \subsection{Data \& Model}
 Following the macro-econometric literature studying the temperature effects on economic growth, we model the change in the log of real GDP per capita \cite[World Development Indicators, ][]{rld2019world} from 1961-2017 for 169 countries as a function of population-weighted climate variation. We obtain historical climate observations on temperatures and precipitation from \citep[][ version 5]{matsuura2018terrestrial} covering global land areas at a 0.5$^\circ$ spatial resolution. To map gridded climate observations to individual countries in each year, we weight climate observations by gridded population data \citep{ciesin2016gridded} at the same spatial resolution. Population-weighting (rather than area-weighting) is more likely to capture the effects of climate onto socio-economic activity \citep[see ][]{tol2017population}. To project climate impacts to the end of the century, we construct a dataset of country-level changes in temperature \ignore{and precipitation} based on CMIP5 climate models \citep{taylor2012overview} and use long-term country-level forecasts of GDP per capita for our baseline \citep{muller2019econometric}.
 
-Modelling GDP per capita growth in fixed effects panels as a non-linear (quadratic) function of annual-average temperatures has become common practise in the climate econometric literature. We expand on these existing models by allowing for climate adaptation at different income levels. Specifically, our model allows for adaptation by potentially attenuating (or amplifying) the coefficients on temperatures through interaction terms with (lagged) log of GDP per capita. \citet{dell2012temperature} estimate a simplified version of such a specification by interacting a linear temperature variable with a dummy variable for poor countries, and \citet{burke2015global} explore the interaction of a linear temperature variable with country-level incomes. Here we generalise this to non-linear temperature impacts interacted with the continuum of per capita incomes. A similar approach of estimating income-based adaptation has also been applied for heat-related mortality in \citet{carleton2020valuing} and \citet{schwarz2020modelling} for climate impacts of extremes. Our base model is given in equation (\ref{pan_m1}):
+Modelling GDP per capita growth in fixed effects panels as a non-linear (quadratic) function of annual-average temperatures has become common practise in the climate econometric literature. We expand on these existing models by allowing for climate adaptation at different income levels. Specifically, our model allows for adaptation by potentially attenuating (or amplifying) the coefficients on temperatures through interaction terms with (lagged) log of GDP per capita. \citet{dell2012temperature} estimate a simplified version of such a specification by interacting a linear temperature variable with a dummy variable for poor countries, and \citet{burke2015global} explore the interaction of a linear temperature variable with country-level incomes. Here we generalise this to non-linear temperature impacts interacted with the continuum of per capita incomes. A similar approach of estimating income-based adaptation has also been applied for heat-related mortality in \citet{carleton2020valuing} and \citet{schwarz2020modelling} for climate impacts of extremes. Our base model is given in equation (\ref{pan_base}) and our adaptation model is given in equation (\ref{pan_adapt}):
+
 \begin{small}
 \begin{equation}
-\label{pan_m1}
-\Delta log(y)_{i,t} = \alpha_i + \lambda_t + \beta_1 T_{i,t} + \beta_2 T^2_{i,t} + \beta_3 \left[ T_{i,t} \times  log(y)_{i, t-1} \right] + \beta_4 \left[  T^2_{i,t} \times  log(y)_{i, t-1} \right] + x_{i,t}'\gamma + u_{i,t}
+\label{pan_base}
+\Delta log(y)_{i,t} = \alpha_i + \lambda_t + \beta_1 T_{i,t} + \beta_2 T^2_{i,t} + x_{i,t}'\gamma + u_{i,t}
 \end{equation}
 \end{small}
-where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate (\ref{pan_m1}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating (\ref{pan_m1}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates.
+
+
+\begin{small}
+\begin{equation}
+\label{pan_adapt}
+\Delta log(y)_{i,t} = \alpha_i + \lambda_t + \beta_1 T_{i,t} + \beta_2 T^2_{i,t} + \beta_3 \left[ T_{i,t} \times  log(y)_{i, t} \right] + \beta_4 \left[  T^2_{i,t} \times  log(y)_{i, t} \right] + x_{i,t}'\gamma + u_{i,t}
+\end{equation}
+\end{small}
+
+where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate equations (\ref{pan_base}) and (\ref{pan_adapt}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating equations (\ref{pan_base}) and (\ref{pan_adapt}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates. To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ in the Appendix (see equation \ref{pan_adapt.L1}).
 
 \subsection{Results}
 The estimation results (Figures \ref{fig_dist_coef_app1}, \ref{fig_dist_app1}, and Table \ref{tab_app1_estimates}) show significant evidence of income-driven adaptation to temperatures, however, the estimates are  distorted by the presence of outlying observations. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. Figure \ref{fig_dist_coef_app1} shows the difference in estimated coefficients between the robust IIS approach and OLS. Specifically, the robust coefficient estimates are attenuated relative to the OLS estimates. The difference between the OLS and robust IIS estimates is statistically different from zero when applying our proposed test for outlier distortion. Formally, we construct our test statistic for outlier distortion in the four coefficients of interest as:
 \begin{eqnarray}
 H^{1}_{(n,c)} = n \left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)'\widehat{\mbox{avar}}\left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)^{-1}\left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)
 \end{eqnarray}
-where $c=1.96$\ignore{Check these numbers} for a normal reference distribution and a sample size of $n=7007$. The difference in coefficients between the OLS and robust estimator shown in Table \ref{tab_app1_estimates} (right column). We compare the resulting test statistic $H^{1}_{(n,c)} = 554.98$ against the critical values of the $\chi^{2}$ distribution with $df=4$, as we are testing for the distortion of four coefficients. The null hypothesis of no distortion is rejected at any conventional significance level, with $p<0.0001$.
+where $c=1.96$ for a normal reference distribution and a sample size of $n=7716$. The outlier test statistic for each coefficient and all temperature coefficients of interest are shown in Table \ref{tab_app1_estimates} (third and sixth column). We compare the resulting test statistic $H^{1}_{(n,c)} = 111.27$ for our base model against the critical values of the $\chi^{2}$ distribution with $df=2$ and for our adaptation model with $H^{1}_{(n,c)} = 770.69$ against the critical values of the $\chi^{2}$ distribution with $df=4$, as we are testing for the distortion of four coefficients. The null hypothesis of no distortion is rejected at any conventional significance level for both models, with $p<0.0001$.
 
 We show the estimated non-linear relationship between temperatures and growth for three different income levels (25\textsuperscript{th}, 50\textsuperscript{th}, and 75\textsuperscript{th} income percentiles) in Figure \ref{fig_dist_app1}. Results across income levels show that controlling for outlying observations dampens the impacts of temperatures onto economic growth. Using robust estimates, the projected negative temperature impacts are less steep (but still negative) for low income countries, and dampened for middle income countries. For rich countries, the positive effects of higher temperatures are drastically weakened, suggesting attenuated positive effects.
 
@@ -738,8 +748,6 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \ignore{CHECK}
 \ignore{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
 
-
-\ignore{I have a comment in my notes that reads: Bottom line for the test statistic, only do this for temp, temp_2 and all. Question: does that mean I should exclude the test stat for all other lines? and the ones that we keep, do we do it on the individual coef or both/all?}
 
 \input{application_main_table.tex}
 
@@ -781,8 +789,8 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \begin{figure}[!htbp]  \vspace{-.35in}
 \centering
 %\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
-\includegraphics[width = \textwidth]{projections.pdf}
-\caption{Projected Damage Curve for the period 2090 - 2099.}
+\includegraphics[width = \textwidth]{projections_noprcp_main.pdf}
+\caption{Projected Damage Curve for the period 2090 - 2099. Projection excludes Precipitation Effect. Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
 \label{fig_projection}
 \end{figure}
 
@@ -1290,6 +1298,14 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 
 \section{Additional Projection Results} \label{sec_add_proj}
 
+\begin{small}
+\begin{equation}
+\label{pan_adapt.L1}
+\Delta log(y)_{i,t} = \alpha_i + \lambda_t + \beta_1 T_{i,t} + \beta_2 T^2_{i,t} + \beta_3 \left[ T_{i,t} \times  log(y)_{i, t-1} \right] + \beta_4 \left[  T^2_{i,t} \times  log(y)_{i, t-1} \right] + x_{i,t}'\gamma + u_{i,t}
+\end{equation}
+\end{small}
+
+
 
 \begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
@@ -1324,6 +1340,33 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \caption{Projection with Lagged GDP per capita. Detected outliers aggregated over the full sample of 1961 - 2017 by country in the panel. Gray denotes no outliers detected. }
 \label{fig_map_app1}
 \end{figure}
+
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{projections_noprcp_appendix.pdf}
+\caption{Projected Damage Curve for the period 2090 - 2099. Projection excludes Precipitation Effect. Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
+\label{fig_projection_lagged_noprcp}
+\end{figure}
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{projections_withprcp_main.pdf}
+\caption{Projected Damage Curve for the period 2090 - 2099. Projection includes Precipitation Effect.  Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
+\label{fig_projection_base_withprcp}
+\end{figure}
+
+
+\begin{figure}[!htbp]  \vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{projections_withprcp_appendix.pdf}
+\caption{Projected Damage Curve for the period 2090 - 2099. Projection includes Precipitation Effect.  Central line is the median. Shadings represent the interquartile range and a 90\% confidence interval.}
+\label{fig_projection_lagged_withprcp}
+\end{figure}
+
 
 
 

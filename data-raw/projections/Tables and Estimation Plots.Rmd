@@ -175,7 +175,7 @@ name_vec_tex <- gsub("pc","\\\\textsubscript{pc}",name_vec_tex)
 gof_map_mod <- data.frame(raw = c("outlier_no", "outlier_teststat", "outlier_pval"),
                           clean = c("Num. Outliers", 
                                     "Outlier Distortion test statistic for Temp. Variables",
-                                    "Outlier Distortion p-value for Temp. Variables"), 
+                                    ""), 
                           fmt = c(0,2,4))
 
 gof_map_mod <- rbind(gof_map_mod, gof_map[grepl("nobs|BIC|logLik",gof_map$raw),1:3])
@@ -206,7 +206,10 @@ modify_brackets <- function(modelsummary_list){
         mutate(.,std.error = paste0("(",round(std.error,5),")"))
       } else{
         rowwise(.) %>% 
-          mutate(.,std.error = paste0("[",format(round(std.error,5), nsmall = 3),"]"))
+          mutate(.,
+                 estimate = as.character(round(estimate,2)),
+                 std.error = paste0("[",format(round(std.error,3), nsmall = 3),"]"),
+                 std.error = ifelse(std.error == "[0.000]","[$<$0.001]",std.error))
       }} -> modelsummary_list[[i]]$tidy
   }
   return(modelsummary_list)
@@ -214,12 +217,48 @@ modify_brackets <- function(modelsummary_list){
 
 
 intermediate_list_modified <- modify_brackets(intermediate_list)
+```
 
+
+```{r}
 teststat_base <- intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat
 teststat_adap <- intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat
 
+testpval_base <- intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_pval
+testpval_adap <- intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_pval
+
+## Add Chi-sq sign to the line
+
 intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat <- paste0("$\\chi^2_{",overall_test_base$df,"}$ = ",round(teststat_base, 2))
 intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat <- paste0("$\\chi^2_{",overall_test_adapt$df,"}$ = ",round(teststat_adap, 2))
+
+
+# Format outlier test stat p value
+intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_pval <- paste0("[", ifelse(
+  format(round(testpval_base, 3), nsmall = 3) == "0.000",
+  "$<$0.001",
+  format(round(testpval_base, 3), nsmall = 3)), "]")
+
+intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_pval <- paste0("[", ifelse(
+  format(round(testpval_adap, 3), nsmall = 3) == "0.000",
+  "$<$0.001",
+  format(round(testpval_adap, 3), nsmall = 3)), "]")
+```
+
+
+
+
+```{r}
+#Put both outlier test stat and p-value in the same cell
+intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat <- 
+  paste0(intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_teststat,"\n",intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_pval)
+
+intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat <- 
+  paste0(intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_teststat,"\n",intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_pval)
+
+# Delete the pvalue information
+intermediate_list_modified$`Base Outlier Distortion Test`$glance$outlier_pval <- NULL
+intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_pval <- NULL
 ```
 
 
@@ -240,8 +279,25 @@ modelsummary(intermediate_list_modified,
   
   column_spec(column = c(4,7), border_left = TRUE, border_right = TRUE) -> tab
 
-cat(tab, file = here("data-raw/projections/out/models.tex"))
+# insert caption
+tab <- gsub("\\begin{table}",
+     "\\begin{table}
+\\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.}
+\\label{tab_app1_estimates}", tab, fixed = TRUE)
 
+# fixing the header
+tab <- gsub("\\begin{tabular}[t]{lcc|>{}c|cc|>{}c|}",
+            "\\resizebox{\\textwidth}{!}{\\begin{tabular}[t]{|L{5cm}cc|>{}C{2.5cm}|cc|>{}C{2.5cm}|}",tab, fixed = TRUE)
+# fixiing the footer
+tab <- gsub("\\end{tabular}",
+            "\\end{tabular}}",tab, fixed = TRUE)
+
+cat(tab, file = here("data-raw/projections/out/application_main_table.tex"))
+cat(tab, file = here("data-raw/text/v7 edit/application_main_table.tex"))
+```
+
+
+```{r}
 modelsummary(intermediate_list_modified, 
              statistic = "{std.error}",
              coef_rename = name_vec_tex,

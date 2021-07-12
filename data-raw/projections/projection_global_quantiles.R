@@ -8,6 +8,7 @@ library(vroom)
 # library(MASS)
 library(quantreg)
 
+library(extrafont)
 rm(list = ls())
 select <- dplyr::select
 here <- here::here
@@ -98,43 +99,96 @@ write_csv(overall_df,here("data-raw","projections",paste0("all_models_quantiles_
 
 
 
-# Plotting ----------------------------------------------------------------
+# Plotting no PRCP ----------------------------------------------------------------
 
 
-overall_df <- read_csv(here("data-raw","projections",paste0("all_models_quantiles_sq.csv")))
+overall_df <- read_csv(here("data-raw","projections",paste0("noprcp_all_models_quantiles_sq.csv")))
 
+## Main Text
 
 overall_df %>%
+  filter(model != "AdaptationL1") %>%
   mutate(model = factor(model,
                         levels =  c("Standard","Adaptation","AdaptationL1"),
                         labels = c("Standard","Adaptation","Adaptation \nwith Lagged GDP"))) %>%
   mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
   ggplot(aes(x = final_temp, color = specification, fill = specification, group = paste0(specification, model))) +
 
-  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3) +
-  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3) +
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
   geom_line(aes(y  = med), size = 1) +
-  geom_hline(aes(yintercept = 0), size = 1)+
+  geom_hline(aes(yintercept = 0), linetype = 2)+
   scale_color_viridis_d(name = "Specification") +
   scale_fill_viridis_d(name = "Specification") +
   scale_y_continuous(labels = scales::percent)+
-  scale_x_continuous(labels = function(x){paste0(x,"°C")})+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")}, name = "Model")+
   theme_minimal() +
   facet_wrap(~model, nrow = 1)+
   coord_cartesian(ylim = c(-1,1))+
   labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
-  ggsave(here("data-raw/projections/out/projections.pdf"), height = 6, width = 8)
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_noprcp_main.pdf"), height = 4, width = 6, device = cairo_pdf)
+
 
 
 
 overall_df %>%
+  filter(model != "AdaptationL1") %>%
   mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
   ggplot(aes(x = final_temp, color = model, fill = model, group = paste0(specification, model))) +
 
-  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3) +
-  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3) +
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA)+
   geom_line(aes(y  = med), size = 1) +
-  geom_hline(aes(yintercept = 0), size = 1)+
+  geom_hline(aes(yintercept = 0), linetype = 2)+
+  scale_color_viridis_d(name = "Model") +
+  scale_fill_viridis_d(name = "Model") +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")})+
+  theme_minimal() +
+  facet_wrap(~specification, nrow = 1)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_byspec_noprcp_main.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+
+## Appendix
+
+overall_df %>%
+  filter(model == "AdaptationL1") %>%
+  mutate(model = factor(model,
+                        levels =  c("Standard","Adaptation","AdaptationL1"),
+                        labels = c("Standard","Adaptation","Adaptation \nwith Lagged GDP"))) %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = specification, fill = specification, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
+  geom_line(aes(y  = med), size = 1) +
+  geom_hline(aes(yintercept = 0), linetype = 2)+
+  scale_color_viridis_d(name = "Specification") +
+  scale_fill_viridis_d(name = "Specification") +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")}, name = "Model")+
+  theme_minimal() +
+  facet_wrap(~model, nrow = 1)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_noprcp_appendix.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+
+
+overall_df %>%
+  filter(model == "AdaptationL1") %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = model, fill = model, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
+  geom_line(aes(y  = med), size = 1) +
+  geom_hline(aes(yintercept = 0), linetype = 2)+
   scale_color_viridis_d() +
   scale_fill_viridis_d() +
   scale_y_continuous(labels = scales::percent)+
@@ -143,25 +197,129 @@ overall_df %>%
   facet_wrap(~specification, nrow = 1)+
   coord_cartesian(ylim = c(-1,1))+
   labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
-  ggsave(here("data-raw/projections/out/projections_byspec.pdf"), height = 6, width = 8)
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_byspec_noprcp_appendix.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+#
+#
+#
+# overall_df %>%
+#   mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+#   ggplot(aes(x = final_temp, color = paste0(specification, model), fill = paste0(specification, model), group = paste0(specification, model))) +
+#
+#   #geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.1) +
+#   #geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.1) +
+#   geom_line(aes(y  = med), size = 1) +
+#   geom_hline(aes(yintercept = 0), size = 1)+
+#   scale_color_viridis_d() +
+#   scale_fill_viridis_d() +
+#   scale_y_continuous(labels = scales::percent)+
+#   scale_x_continuous(labels = function(x){paste0(x,"°C")})+
+#   theme_minimal() +
+#   #facet_wrap(~specification, nrow = 1)+
+#   coord_cartesian(ylim = c(-1,1))+
+#   labs(x = "Temperature Anomaly", y = "% Change to Baseline")
+#
+
+
+
+# Plotting with PRCP ----------------------------------------------------------------
+
+
+overall_df <- read_csv(here("data-raw","projections",paste0("all_models_quantiles_sq.csv")))
+
+
+
+overall_df %>%
+  filter(model != "AdaptationL1") %>%
+  mutate(model = factor(model,
+                        levels =  c("Standard","Adaptation","AdaptationL1"),
+                        labels = c("Standard","Adaptation","Adaptation \nwith Lagged GDP"))) %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = specification, fill = specification, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
+  geom_line(aes(y  = med), size = 1) +
+  geom_hline(aes(yintercept = 0), linetype = 2)+
+  scale_color_viridis_d(name = "Specification") +
+  scale_fill_viridis_d(name = "Specification") +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")}, name = "Model")+
+  theme_minimal() +
+  facet_wrap(~model, nrow = 1)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_withprcp_main.pdf"), height = 4, width = 6, device = cairo_pdf)
 
 
 
 
 overall_df %>%
+  filter(model != "AdaptationL1") %>%
   mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
-  ggplot(aes(x = final_temp, color = paste0(specification, model), fill = paste0(specification, model), group = paste0(specification, model))) +
+  ggplot(aes(x = final_temp, color = model, fill = model, group = paste0(specification, model))) +
 
-  #geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.1) +
-  #geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.1) +
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA)+
   geom_line(aes(y  = med), size = 1) +
-  geom_hline(aes(yintercept = 0), size = 1)+
+  geom_hline(aes(yintercept = 0), linetype = 2)+
+  scale_color_viridis_d(name = "Model") +
+  scale_fill_viridis_d(name = "Model") +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")})+
+  theme_minimal() +
+  facet_wrap(~specification, nrow = 1)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_byspec_withprcp_main.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+
+## Appendix
+
+overall_df %>%
+  filter(model == "AdaptationL1") %>%
+  mutate(model = factor(model,
+                        levels =  c("Standard","Adaptation","AdaptationL1"),
+                        labels = c("Standard","Adaptation","Adaptation \nwith Lagged GDP"))) %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = specification, fill = specification, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
+  geom_line(aes(y  = med), size = 1)+
+  geom_hline(aes(yintercept = 0), linetype = 2)+
+  scale_color_viridis_d(name = "Specification") +
+  scale_fill_viridis_d(name = "Specification") +
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_continuous(labels = function(x){paste0(x,"°C")}, name = "Model")+
+  theme_minimal() +
+  facet_wrap(~model, nrow = 1)+
+  coord_cartesian(ylim = c(-1,1))+
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_withprcp_appendix.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+
+
+overall_df %>%
+  filter(model == "AdaptationL1") %>%
+  mutate(across(c(vlow, low, midl, med, midh, high, vhigh),~.-1)) %>%
+  ggplot(aes(x = final_temp, color = model, fill = model, group = paste0(specification, model))) +
+
+  geom_ribbon(aes(ymin = midl, ymax = midh),alpha = 0.3, color = NA) +
+  geom_ribbon(aes(ymin = low, ymax = high),alpha = 0.3, color = NA) +
+  geom_line(aes(y  = med), size = 1) +
+  geom_hline(aes(yintercept = 0), linetype = 2)+
   scale_color_viridis_d() +
   scale_fill_viridis_d() +
   scale_y_continuous(labels = scales::percent)+
   scale_x_continuous(labels = function(x){paste0(x,"°C")})+
   theme_minimal() +
-  #facet_wrap(~specification, nrow = 1)+
+  facet_wrap(~specification, nrow = 1)+
   coord_cartesian(ylim = c(-1,1))+
-  labs(x = "Temperature Anomaly", y = "% Change to Baseline")
-
+  labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
+  theme(text = element_text(family = "Myriad Pro"))+
+  ggsave(here("data-raw/projections/out/projections_byspec_withprcp_appendix.pdf"), height = 4, width = 6, device = cairo_pdf)
