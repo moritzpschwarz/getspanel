@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  8 JUL 2021 03:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  12 JUL 2021 17:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -395,130 +395,129 @@ Overfull \hbox (4.83565pt too wide) in paragraph at lines 708--708
 []\OT1/cmr/bx/n/14.4 Application: Cli-mate Adap-ta-tion & the Macro-Economic
  []
 
-[24] [25]
+[24] [25] (./application_main_table.tex)
 <coef.adapt.pdf, id=205, 722.7pt x 361.35pt>
 File: coef.adapt.pdf Graphic file (type pdf)
 <use coef.adapt.pdf>
-Package pdftex.def Info: coef.adapt.pdf  used on input line 790.
+Package pdftex.def Info: coef.adapt.pdf  used on input line 749.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
 <eff.adapt.pdf, id=206, 867.24pt x 578.16pt>
 File: eff.adapt.pdf Graphic file (type pdf)
 <use eff.adapt.pdf>
-Package pdftex.def Info: eff.adapt.pdf  used on input line 798.
+Package pdftex.def Info: eff.adapt.pdf  used on input line 757.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
 <heat1_adapt.pdf, id=207, 578.16pt x 722.7pt>
 File: heat1_adapt.pdf Graphic file (type pdf)
 <use heat1_adapt.pdf>
-Package pdftex.def Info: heat1_adapt.pdf  used on input line 808.
+Package pdftex.def Info: heat1_adapt.pdf  used on input line 767.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
 <ctry_map_adapt.pdf, id=208, 505.89pt x 289.08pt>
 File: ctry_map_adapt.pdf Graphic file (type pdf)
 <use ctry_map_adapt.pdf>
-Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 816.
+Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 775.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
 <projections.pdf, id=209, 578.16pt x 433.62pt>
 File: projections.pdf Graphic file (type pdf)
 <use projections.pdf>
-Package pdftex.def Info: projections.pdf  used on input line 825.
+Package pdftex.def Info: projections.pdf  used on input line 784.
 (pdftex.def)             Requested size: 416.9055pt x 312.67593pt.
  [26 <./coef.adapt.pdf>] [27 <./eff.adapt.pdf>] [28 <./heat1_adapt.pdf>] [29 <.
-/ctry_map_adapt.pdf>] [30 <./projections.pdf>] [31
+/ctry_map_adapt.pdf> <./projections.pdf>] [30
 
-]
-(./outlier_distortion_v7.bbl [32] [33] [34]) [35] [36] [37] [38] [39] [40]
-[41] [42] [43] [44]
-<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=309, 794.97pt x 397.485p
+] (./outlier_distortion_v7.bbl [31] [32] [33]) [34] [35] [36] [37]
+[38] [39] [40] [41] [42] [43]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=306, 794.97pt x 397.485p
 t>
 File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf Graphic file (type pdf)
 
 <use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>
 Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf  use
-d on input line 1291.
+d on input line 1250.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1291--1292
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1250--1251
  [][] 
  []
 
-<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=310, 794.97pt x 397.485pt
+<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=307, 794.97pt x 397.485pt
 >
 File: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
 <use alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf  used
- on input line 1300.
+ on input line 1259.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1300--1301
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1259--1260
  [][] 
  []
 
-<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=311, 794.97pt x 397.485
+<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=308, 794.97pt x 397.485
 pt>
 File: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf
 )
 <use alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf  us
-ed on input line 1309.
+ed on input line 1268.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1309--1310
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1268--1269
  [][] 
  []
 
-<boot_alt_lambda2.pdf, id=312, 867.24pt x 505.89pt>
+<boot_alt_lambda2.pdf, id=309, 867.24pt x 505.89pt>
 File: boot_alt_lambda2.pdf Graphic file (type pdf)
 <use boot_alt_lambda2.pdf>
-Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1318.
+Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1277.
 (pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
 
-Overfull \hbox (16.71344pt too wide) in paragraph at lines 1318--1319
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1277--1278
  [][] 
  []
 
-<boot_alt_lambda3.pdf, id=313, 867.24pt x 505.89pt>
+<boot_alt_lambda3.pdf, id=310, 867.24pt x 505.89pt>
 File: boot_alt_lambda3.pdf Graphic file (type pdf)
 <use boot_alt_lambda3.pdf>
-Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1325.
+Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1284.
 (pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
 
-Overfull \hbox (16.71344pt too wide) in paragraph at lines 1325--1326
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1284--1285
  [][] 
  []
 
-<coef.adapt.L1.pdf, id=314, 722.7pt x 361.35pt>
+<coef.adapt.L1.pdf, id=311, 722.7pt x 361.35pt>
 File: coef.adapt.L1.pdf Graphic file (type pdf)
 <use coef.adapt.L1.pdf>
-Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1338.
+Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1297.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
-<eff.adapt.L1.pdf, id=315, 867.24pt x 578.16pt>
+<eff.adapt.L1.pdf, id=312, 867.24pt x 578.16pt>
 File: eff.adapt.L1.pdf Graphic file (type pdf)
 <use eff.adapt.L1.pdf>
-Package pdftex.def Info: eff.adapt.L1.pdf  used on input line 1346.
+Package pdftex.def Info: eff.adapt.L1.pdf  used on input line 1305.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
-<heat1_adapt.L1.pdf, id=316, 578.16pt x 722.7pt>
+<heat1_adapt.L1.pdf, id=313, 578.16pt x 722.7pt>
 File: heat1_adapt.L1.pdf Graphic file (type pdf)
 <use heat1_adapt.L1.pdf>
-Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1356.
+Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1315.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map_adapt.L1.pdf, id=317, 505.89pt x 289.08pt>
+<ctry_map_adapt.L1.pdf, id=314, 505.89pt x 289.08pt>
 File: ctry_map_adapt.L1.pdf Graphic file (type pdf)
 <use ctry_map_adapt.L1.pdf>
-Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1364.
+Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1323.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
-[45 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [46 <./alt_ar0_nreg1
+[44 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [45 <./alt_ar0_nreg1
 _palpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_out
-prop0.1.pdf>] [47 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>] [48 <./coe
-f.adapt.L1.pdf> <./eff.adapt.L1.pdf>] [49 <./heat1_adapt.L1.pdf>] [50 <./ctry_m
+prop0.1.pdf>] [46 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>] [47 <./coe
+f.adapt.L1.pdf> <./eff.adapt.L1.pdf>] [48 <./heat1_adapt.L1.pdf>] [49 <./ctry_m
 ap_adapt.L1.pdf>] (./outlier_distortion_v7.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5317 strings out of 480403
- 85376 string characters out of 5894552
- 404450 words of memory out of 5000000
- 22947 multiletter control sequences out of 15000+600000
+ 5322 strings out of 480403
+ 85516 string characters out of 5894552
+ 405450 words of memory out of 5000000
+ 22949 multiletter control sequences out of 15000+600000
  419345 words of font info for 86 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  57i,15n,66p,2805b,374s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -563,10 +562,10 @@ dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/Users/morit/AppData/Roaming/
 TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/Users/mor
 it/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm1
 0.pfb>
-Output written on outlier_distortion_v7.pdf (50 pages, 1072495 bytes).
+Output written on outlier_distortion_v7.pdf (49 pages, 1072179 bytes).
 PDF statistics:
- 540 PDF objects out of 1000 (max. 8388607)
- 359 compressed objects within 4 object streams
+ 537 PDF objects out of 1000 (max. 8388607)
+ 357 compressed objects within 4 object streams
  0 named destinations out of 1000 (max. 500000)
  106 words of extra memory for PDF output out of 10000 (max. 10000000)
 
