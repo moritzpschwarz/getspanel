@@ -156,7 +156,8 @@ create_maps <- function(data, prcp = FALSE){
            model = ifelse(model == "Standard","Base",model),
            model = factor(model, levels = c("Base","Adaptation")),
            row = ifelse(row == "Base","OLS",row),
-           row = factor(row, levels = c("OLS","IIS","Difference"))) %>%
+           row = ifelse(row == "Difference","Difference between\nOLS and IIS",row),
+           row = factor(row, levels = c("OLS","IIS","Difference between\nOLS and IIS"))) %>%
 
     #mutate(map_position = factor(map_position,levels = c("Below 2°C","3.5°C",">4.5°C"))) %>%
     ggplot() +

@@ -323,3 +323,79 @@ overall_df %>%
   labs(x = "Temperature Anomaly", y = "% Change to Baseline") +
   theme(text = element_text(family = "Myriad Pro"))+
   ggsave(here("data-raw/projections/out/projections_byspec_withprcp_appendix.pdf"), height = 4, width = 6, device = cairo_pdf)
+
+
+
+
+
+# Headline Figure ---------------------------------------------------------
+
+
+# Just to make sure, we load the noprcp file again:
+overall_df <- read_csv(here("data-raw","projections",paste0("noprcp_all_models_quantiles_sq.csv")))
+
+overall_df %>%
+  select(final_temp, specification, model,  med) %>%
+
+  ggplot(aes(x = final_temp, y = med, color = model, linetype = specification)) +
+  geom_line()
+
+
+library(kableExtra)
+
+overall_df %>%
+  select(final_temp, specification, model,  med) %>%
+  mutate(med = med-1) %>%
+  pivot_wider(id_cols = c(final_temp, model), names_from = specification, values_from = med) %>%
+  mutate(diff = IIS - Base) %>%
+  mutate(closest_integer = round(final_temp,1)) %>%
+  filter(closest_integer %in% c(2,3, 4)) %>%
+
+  group_by(closest_integer, model) %>%
+  summarise(IIS = mean(IIS),
+            Base = mean(Base),
+            diff = mean(diff),.groups = "drop") %>%
+  mutate(closest_integer = paste0(closest_integer,"\\textdegree C"),
+         across(c(IIS, Base, diff), ~paste0(round(.*100, 0), "\\%")),
+         index = case_when(model == "AdaptationL1"~3,
+                           model == "Standard"~1,
+                           model == "Adaptation"~2),
+
+         model = case_when(model == "AdaptationL1"~"Adadptation with Lagged GDP per capita",
+                           model == "Standard"~"Base",
+                           TRUE ~ model)) %>%
+  arrange(closest_integer, index) %>%
+  select(-index) %>%
+
+  rename(Model = model,
+         OLS = Base,
+         `Difference between OLS and IIS` = diff,
+         `Global Temperature Anomaly` = closest_integer) %>%
+
+  kable(format = "latex", digits = 3, escape = FALSE, booktabs = TRUE) %>%
+  #kable( digits = 3, escape = FALSE) %>%
+  kable_styling(full_width = FALSE) %>%  # -> tab
+  group_rows(start_row = 1, end_row = 3) %>%
+  group_rows(start_row = 4, end_row = 6) %>%
+  group_rows(start_row = 7, end_row = 9) %>%
+  kable_paper() -> tab
+
+
+# insert caption
+tab <- gsub("\\begin{table}",
+            "\\begin{table}
+\\caption{Damage Curve Projection results for all considered models for different levels of Global Mean Temperature Anomaly.}
+\\label{tab_app2_project}", tab, fixed = TRUE)
+
+# fixing the header
+tab <- gsub("\\begin{tabular}{lllll}",
+            #"\\resizebox{\\textwidth}{!}{\\begin{tabular}{lllll}",tab, fixed = TRUE)
+            "\\resizebox{\\textwidth}{!}{\\begin{tabular}[t]{C{3cm}L{5cm}C{2cm}C{2cm}C{3cm}}",tab, fixed = TRUE)
+# fixiing the footer
+tab <- gsub("\\end{tabular}",
+            "\\end{tabular}}",tab, fixed = TRUE)
+
+
+cat(tab, file = here("data-raw/text/v7 edit/application_secondary_table.tex"))
+
+

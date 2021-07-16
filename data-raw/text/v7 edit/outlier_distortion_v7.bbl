@@ -857,23 +857,23 @@ Jiao%
 Jiao%
 \ \BBA {} Pretis%
 }{%
-{\protect \APACyear {2020}}%
+{\protect \APACyear {2018}}%
 }]{%
-jiao2020testingoutlier}
+jiao2018testing}
 \APACinsertmetastar {%
-jiao2020testingoutlier}%
+jiao2018testing}%
 \begin{APACrefauthors}%
 Jiao, X.%
 \BCBT {}\ \BBA {} Pretis, F.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2020}{}{}.
+\APACrefYearMonthDay{2018}{}{}.
 \newblock
 {\BBOQ}\APACrefatitle {Testing the presence of outliers in regression models}
   {Testing the presence of outliers in regression models}.{\BBCQ}
 \newblock
-\APACjournalVolNumPages{Working Paper}{}{}{}.
+\APACjournalVolNumPages{Available at SSRN 3217213}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
