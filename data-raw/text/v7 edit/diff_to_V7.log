@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  8 JUL 2021 03:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  13 JUL 2021 17:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -292,6 +292,9 @@ LaTeX Warning: Label `fig_out_app1' multiply defined.
 
 LaTeX Warning: Label `fig_map_app1' multiply defined.
 
+
+LaTeX Warning: Label `fig_projection_map' multiply defined.
+
 )
 \openout1 = `diff_to_V7.aux'.
 
@@ -401,7 +404,8 @@ Overfull \hbox (60.08018pt too wide) in paragraph at lines 750--751
  [][] 
  []
 
-<boot_alt_lambda4.pdf, id=155, 867.24pt x 505.89pt>
+[21 <./boot_null.pdf> <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>]
+<boot_alt_lambda4.pdf, id=170, 867.24pt x 505.89pt>
 File: boot_alt_lambda4.pdf Graphic file (type pdf)
 <use boot_alt_lambda4.pdf>
 Package pdftex.def Info: boot_alt_lambda4.pdf  used on input line 759.
@@ -411,7 +415,7 @@ Overfull \hbox (16.71344pt too wide) in paragraph at lines 759--760
  [][] 
  []
 
-<boot_alt_lambda6.pdf, id=156, 867.24pt x 505.89pt>
+<boot_alt_lambda6.pdf, id=171, 867.24pt x 505.89pt>
 File: boot_alt_lambda6.pdf Graphic file (type pdf)
 <use boot_alt_lambda6.pdf>
 Package pdftex.def Info: boot_alt_lambda6.pdf  used on input line 766.
@@ -421,9 +425,7 @@ Overfull \hbox (16.71344pt too wide) in paragraph at lines 766--767
  [][] 
  []
 
-[21 <./boot_null.pdf>] [22 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
- <./alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>] [23 <./boot_alt_lambda4.
-pdf> <./boot_alt_lambda6.pdf>]
+
 Overfull \hbox (4.83565pt too wide) in paragraph at lines 777--777
 []\OT1/cmr/bx/n/14.4 Application: Cli-mate Adap-ta-tion & the Macro-Economic
  []
@@ -431,8 +433,8 @@ Overfull \hbox (4.83565pt too wide) in paragraph at lines 777--777
 ! Extra }, or forgotten \endgroup.
 \UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
                                                   \egroup \UL@putbox \fi \if...
-l.778 ...ature, pretis2018uncertain}}\hspace{0pt}}
-                                                  \DIFaddend While existing ...
+l.780 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
 you forgot something else, as in `\hbox{$x}'. In such cases
@@ -442,8 +444,8 @@ deleted material, e.g., by typing `I$}'.
 ! Extra }, or forgotten \endgroup.
 \UL@stop ... \UL@putbox \fi \else \egroup \egroup 
                                                   \UL@putbox \fi \ifnum \UL@...
-l.778 ...ature, pretis2018uncertain}}\hspace{0pt}}
-                                                  \DIFaddend While existing ...
+l.780 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
 you forgot something else, as in `\hbox{$x}'. In such cases
@@ -453,8 +455,8 @@ deleted material, e.g., by typing `I$}'.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.778 ...ature, pretis2018uncertain}}\hspace{0pt}}
-                                                  \DIFaddend While existing ...
+l.780 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
 With luck, this will get me unwedged. But if you
@@ -464,19 +466,21 @@ my insertion and my current dilemma will both disappear.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.778 ...ature, pretis2018uncertain}}\hspace{0pt}}
-                                                  \DIFaddend While existing ...
+l.780 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
 With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
+[22 <./alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>] [23 <./boot_alt_lambd
+a4.pdf> <./boot_alt_lambda6.pdf>]
 ! Extra }, or forgotten \endgroup.
 \UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
                                                   \egroup \UL@putbox \fi \if...
-l.783 ...ld} }\hspace{0pt}from 1961-2017 for 169 }
-                                                  \DIFaddend countries as a ...
+l.787 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
 you forgot something else, as in `\hbox{$x}'. In such cases
@@ -486,8 +490,8 @@ deleted material, e.g., by typing `I$}'.
 ! Extra }, or forgotten \endgroup.
 \UL@stop ... \UL@putbox \fi \else \egroup \egroup 
                                                   \UL@putbox \fi \ifnum \UL@...
-l.783 ...ld} }\hspace{0pt}from 1961-2017 for 169 }
-                                                  \DIFaddend countries as a ...
+l.787 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
 you forgot something else, as in `\hbox{$x}'. In such cases
@@ -497,8 +501,8 @@ deleted material, e.g., by typing `I$}'.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.783 ...ld} }\hspace{0pt}from 1961-2017 for 169 }
-                                                  \DIFaddend countries as a ...
+l.787 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
 With luck, this will get me unwedged. But if you
@@ -508,8 +512,8 @@ my insertion and my current dilemma will both disappear.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.783 ...ld} }\hspace{0pt}from 1961-2017 for 169 }
-                                                  \DIFaddend countries as a ...
+l.787 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
 With luck, this will get me unwedged. But if you
@@ -517,168 +521,244 @@ really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
 
-Overfull \hbox (3.43687pt too wide) in paragraph at lines 783--786
+Overfull \hbox (3.43687pt too wide) in paragraph at lines 785--790
 \OT1/cmr/m/n/10.95 nomic growth, we model the change in the log of real GDP per
  capita []|   []   |   []
  []
 
 
-Overfull \hbox (114.5655pt too wide) in paragraph at lines 783--786
+Overfull \hbox (114.5655pt too wide) in paragraph at lines 785--790
 |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   [][]|  
  []
  []
 
-[24] [25]
-<coef.adapt.pdf, id=206, 722.7pt x 361.35pt>
+
+LaTeX Warning: Reference `pan_m1' on page 24 undefined on input line 792.
+
+[24]
+
+LaTeX Warning: Reference `pan_m1' on page 25 undefined on input line 817.
+
+
+LaTeX Warning: Reference `pan_m1' on page 25 undefined on input line 817.
+
+[25] [26] (./application_main_table.tex)
+Overfull \hbox (47.03229pt too wide) in paragraph at lines 849--927
+[][]|   []   [][]|   []   [][]|   []   [][]|   []   [][]|   []   [][]|   []   [
+][]|   []   [][]|   []   [][]|   []   |   []   |   []   [][]|   []   |   [][][]
+|   [][][]|   [][]
+ []
+
+<coef.adapt.pdf, id=209, 722.7pt x 361.35pt>
 File: coef.adapt.pdf Graphic file (type pdf)
 <use coef.adapt.pdf>
-Package pdftex.def Info: coef.adapt.pdf  used on input line 949.
+Package pdftex.def Info: coef.adapt.pdf  used on input line 939.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 949--950
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 939--940
  [][][] 
  []
 
-<eff.adapt.pdf, id=207, 867.24pt x 578.16pt>
-File: eff.adapt.pdf Graphic file (type pdf)
-<use eff.adapt.pdf>
-Package pdftex.def Info: eff.adapt.pdf  used on input line 959.
+<eff.adapt.v2.pdf, id=210, 867.24pt x 578.16pt>
+File: eff.adapt.v2.pdf Graphic file (type pdf)
+<use eff.adapt.v2.pdf>
+Package pdftex.def Info: eff.adapt.v2.pdf  used on input line 950.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 959--960
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 950--951
  [][][] 
  []
 
-<heat1_adapt.pdf, id=208, 578.16pt x 722.7pt>
+<heat1_adapt.pdf, id=211, 578.16pt x 722.7pt>
 File: heat1_adapt.pdf Graphic file (type pdf)
 <use heat1_adapt.pdf>
-Package pdftex.def Info: heat1_adapt.pdf  used on input line 971.
+Package pdftex.def Info: heat1_adapt.pdf  used on input line 962.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 971--972
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 962--963
  [][][] 
  []
 
-<ctry_map_adapt.pdf, id=209, 505.89pt x 289.08pt>
+<ctry_map_adapt.pdf, id=212, 505.89pt x 289.08pt>
 File: ctry_map_adapt.pdf Graphic file (type pdf)
 <use ctry_map_adapt.pdf>
-Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 981.
+Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 972.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 972--973
+ [][][] 
+ []
+
+<projections_noprcp_main.pdf, id=213, 433.62pt x 289.08pt>
+File: projections_noprcp_main.pdf Graphic file (type pdf)
+<use projections_noprcp_main.pdf>
+Package pdftex.def Info: projections_noprcp_main.pdf  used on input line 981.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
 
 Overfull \hbox (6.79999pt too wide) in paragraph at lines 981--982
  [][][] 
  []
 
-<projections.pdf, id=210, 578.16pt x 433.62pt>
-File: projections.pdf Graphic file (type pdf)
-<use projections.pdf>
-Package pdftex.def Info: projections.pdf  used on input line 990.
-(pdftex.def)             Requested size: 416.9055pt x 312.67593pt.
+<Map_IISBase_noprcp_diff.pdf, id=214, 433.62pt x 361.35pt>
+File: Map_IISBase_noprcp_diff.pdf Graphic file (type pdf)
+<use Map_IISBase_noprcp_diff.pdf>
+Package pdftex.def Info: Map_IISBase_noprcp_diff.pdf  used on input line 989.
+(pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 990--991
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 989--990
  [][][] 
  []
 
-[26] [27 <./coef.adapt.pdf>] [28 <./eff.adapt.pdf>] [29 <./heat1_adapt.pdf>]
-[30 <./ctry_map_adapt.pdf> <./projections.pdf>] [31
+(./application_secondary_table.tex) [27] [28 <./coef.adapt.pdf> <./eff.adapt.v2
+.pdf>] [29 <./heat1_adapt.pdf>] [30 <./ctry_map_adapt.pdf> <./projections_noprc
+p_main.pdf>] [31 <./Map_IISBase_noprcp_diff.pdf>] [32
 
-] (./diff_to_V7.bbl [32]
-[33] [34]) [35] [36] [37] [38] [39] [40] [41] [42] [43] [44]
-<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=310, 794.97pt x 397.485p
+] (./diff_to_V7.bbl
+[33] [34] [35]) [36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=327, 794.97pt x 397.485p
 t>
 File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf Graphic file (type pdf)
 
 <use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>
 Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf  use
-d on input line 1456.
+d on input line 1467.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1456--1457
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1467--1468
  [][] 
  []
 
-<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=311, 794.97pt x 397.485pt
+<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=328, 794.97pt x 397.485pt
 >
 File: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
 <use alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf  used
- on input line 1465.
+ on input line 1476.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1465--1466
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1476--1477
  [][] 
  []
 
-<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=312, 794.97pt x 397.485
+<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=329, 794.97pt x 397.485
 pt>
 File: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf
 )
 <use alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf  us
-ed on input line 1474.
+ed on input line 1485.
 (pdftex.def)             Requested size: 476.98569pt x 238.49283pt.
 
-Overfull \hbox (60.08018pt too wide) in paragraph at lines 1474--1475
+Overfull \hbox (60.08018pt too wide) in paragraph at lines 1485--1486
  [][] 
  []
 
-<boot_alt_lambda2.pdf, id=313, 867.24pt x 505.89pt>
+<boot_alt_lambda2.pdf, id=330, 867.24pt x 505.89pt>
 File: boot_alt_lambda2.pdf Graphic file (type pdf)
 <use boot_alt_lambda2.pdf>
-Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1483.
+Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1494.
 (pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
 
-Overfull \hbox (16.71344pt too wide) in paragraph at lines 1483--1484
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1494--1495
  [][] 
  []
 
-<boot_alt_lambda3.pdf, id=314, 867.24pt x 505.89pt>
+<boot_alt_lambda3.pdf, id=331, 867.24pt x 505.89pt>
 File: boot_alt_lambda3.pdf Graphic file (type pdf)
 <use boot_alt_lambda3.pdf>
-Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1490.
+Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1501.
 (pdftex.def)             Requested size: 433.61894pt x 252.94437pt.
 
-Overfull \hbox (16.71344pt too wide) in paragraph at lines 1490--1491
+Overfull \hbox (16.71344pt too wide) in paragraph at lines 1501--1502
  [][] 
  []
 
-<coef.adapt.L1.pdf, id=315, 722.7pt x 361.35pt>
+[47
+
+ <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [48 <./alt_ar0_nreg1_pa
+lpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_outpro
+p0.1.pdf>] [49 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>]
+Overfull \hbox (9.76567pt too wide) detected at line 1517
+[][]
+ []
+
+<coef.adapt.L1.pdf, id=373, 722.7pt x 361.35pt>
 File: coef.adapt.L1.pdf Graphic file (type pdf)
 <use coef.adapt.L1.pdf>
-Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1503.
+Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1525.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
-<eff.adapt.L1.pdf, id=316, 867.24pt x 578.16pt>
-File: eff.adapt.L1.pdf Graphic file (type pdf)
-<use eff.adapt.L1.pdf>
-Package pdftex.def Info: eff.adapt.L1.pdf  used on input line 1511.
+<eff.adapt.L1.v2.pdf, id=374, 867.24pt x 578.16pt>
+File: eff.adapt.L1.v2.pdf Graphic file (type pdf)
+<use eff.adapt.L1.v2.pdf>
+Package pdftex.def Info: eff.adapt.L1.v2.pdf  used on input line 1533.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
-<heat1_adapt.L1.pdf, id=317, 578.16pt x 722.7pt>
+<heat1.pdf, id=375, 578.16pt x 722.7pt>
+File: heat1.pdf Graphic file (type pdf)
+<use heat1.pdf>
+Package pdftex.def Info: heat1.pdf  used on input line 1543.
+(pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
+<ctry_map.pdf, id=376, 505.89pt x 289.08pt>
+File: ctry_map.pdf Graphic file (type pdf)
+<use ctry_map.pdf>
+Package pdftex.def Info: ctry_map.pdf  used on input line 1551.
+(pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+<heat1_adapt.L1.pdf, id=377, 578.16pt x 722.7pt>
 File: heat1_adapt.L1.pdf Graphic file (type pdf)
 <use heat1_adapt.L1.pdf>
-Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1521.
+Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1560.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map_adapt.L1.pdf, id=318, 505.89pt x 289.08pt>
+<ctry_map_adapt.L1.pdf, id=378, 505.89pt x 289.08pt>
 File: ctry_map_adapt.L1.pdf Graphic file (type pdf)
 <use ctry_map_adapt.L1.pdf>
-Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1529.
+Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1568.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
-[45 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [46 <./alt_ar0_nreg1
-_palpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_out
-prop0.1.pdf>] [47 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>] [48 <./coe
-f.adapt.L1.pdf> <./eff.adapt.L1.pdf>] [49 <./heat1_adapt.L1.pdf>] [50 <./ctry_m
-ap_adapt.L1.pdf>] (./diff_to_V7.aux)
+<projections_noprcp_appendix.pdf, id=379, 433.62pt x 289.08pt>
+File: projections_noprcp_appendix.pdf Graphic file (type pdf)
+<use projections_noprcp_appendix.pdf>
+Package pdftex.def Info: projections_noprcp_appendix.pdf  used on input line 15
+76.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+<projections_withprcp_main.pdf, id=380, 433.62pt x 289.08pt>
+File: projections_withprcp_main.pdf Graphic file (type pdf)
+<use projections_withprcp_main.pdf>
+Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1584
+.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+<projections_withprcp_appendix.pdf, id=381, 433.62pt x 289.08pt>
+File: projections_withprcp_appendix.pdf Graphic file (type pdf)
+<use projections_withprcp_appendix.pdf>
+Package pdftex.def Info: projections_withprcp_appendix.pdf  used on input line 
+1593.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+File: Map_IISBase_noprcp_diff.pdf Graphic file (type pdf)
+<use Map_IISBase_noprcp_diff.pdf>
+Package pdftex.def Info: Map_IISBase_noprcp_diff.pdf  used on input line 1602.
+(pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
+[50
+
+ <./coef.adapt.L1.pdf>] [51 <./eff.adapt.L1.v2.pdf>] [52 <./heat1.pdf>]
+[53 <./ctry_map.pdf>] [54 <./heat1_adapt.L1.pdf>] [55 <./ctry_map_adapt.L1.pdf>
+ <./projections_noprcp_appendix.pdf>] [56 <./projections_withprcp_main.pdf> <./
+projections_withprcp_appendix.pdf
+
+pdfTeX warning: pdflatex.exe (file ./projections_withprcp_appendix.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+>] [57] (./diff_to_V7.aux)
+
+LaTeX Warning: There were undefined references.
+
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5498 strings out of 480403
- 87960 string characters out of 5894552
- 425985 words of memory out of 5000000
- 23115 multiletter control sequences out of 15000+600000
+ 5561 strings out of 480403
+ 89915 string characters out of 5894552
+ 450085 words of memory out of 5000000
+ 23166 multiletter control sequences out of 15000+600000
  419451 words of font info for 87 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 57i,15n,66p,2860b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 57i,16n,66p,2860b,444s stack positions out of 5000i,500n,10000p,200000b,80000s
  <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/e
 c/tcrm0900.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/lj
 four/jknappen/ec/tcrm1095.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-
@@ -721,10 +801,10 @@ TinyTeX/texmf-dist/fonts/type1/public/amsfonts/latxfont/lasy6.pfb><c:/Users/mor
 it/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msam1
 0.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/ams
 fonts/symbols/msbm10.pfb>
-Output written on diff_to_V7.pdf (50 pages, 1088438 bytes).
+Output written on diff_to_V7.pdf (57 pages, 6615433 bytes).
 PDF statistics:
- 545 PDF objects out of 1000 (max. 8388607)
- 362 compressed objects within 4 object streams
+ 620 PDF objects out of 1000 (max. 8388607)
+ 409 compressed objects within 5 object streams
  0 named destinations out of 1000 (max. 500000)
- 106 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 136 words of extra memory for PDF output out of 10000 (max. 10000000)
 

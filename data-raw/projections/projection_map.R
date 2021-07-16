@@ -72,7 +72,7 @@ create_maps <- function(data, prcp = FALSE){
     mutate(map_position = NA,
            map_position = case_when(final_temp < 2~"Below 2°C",
                                     final_temp>=3&final_temp<4~"3.5°C",
-                                    final_temp>=4.5~">4.5°C")) %>%
+                                    final_temp>=4~">4°C")) %>%
 
     # average over the map position
     group_by(baseline,model,specification,scenario,map_position,iso) %>%
@@ -150,7 +150,7 @@ create_maps <- function(data, prcp = FALSE){
 
     # new change to ensure all the information is on one graph
     #filter(!is.na(map_position)) %>%
-    filter(map_position == ">4.5°C") %>%
+    filter(map_position == ">4°C") %>%
     filter(model != "Adaptation\nwith Lagged GDP") %>%
     mutate(model = as.character(model),
            model = ifelse(model == "Standard","Base",model),

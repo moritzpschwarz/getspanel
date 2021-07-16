@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  16 JUL 2021 23:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  17 JUL 2021 00:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -348,152 +348,153 @@ Package pdftex.def Info: boot_alt_lambda6.pdf  used on input line 700.
  [21 <./boot_null.pdf>] [22 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf
 > <./alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>] [23 <./boot_alt_lambda4
 .pdf> <./boot_alt_lambda6.pdf>] [24] [25] (./application_main_table.tex)
-[26]
-<heat1_adapt.pdf, id=209, 578.16pt x 722.7pt>
+<heat1_adapt.pdf, id=206, 578.16pt x 722.7pt>
 File: heat1_adapt.pdf Graphic file (type pdf)
 <use heat1_adapt.pdf>
-Package pdftex.def Info: heat1_adapt.pdf  used on input line 754.
+Package pdftex.def Info: heat1_adapt.pdf  used on input line 758.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map_adapt.pdf, id=210, 505.89pt x 289.08pt>
+<ctry_map_adapt.pdf, id=207, 505.89pt x 289.08pt>
 File: ctry_map_adapt.pdf Graphic file (type pdf)
 <use ctry_map_adapt.pdf>
-Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 762.
+Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 766.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
- [27 <./heat1_adapt.pdf>]
-<coef.adapt.pdf, id=220, 722.7pt x 361.35pt>
-File: coef.adapt.pdf Graphic file (type pdf)
-<use coef.adapt.pdf>
-Package pdftex.def Info: coef.adapt.pdf  used on input line 772.
-(pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
- [28 <./ctry_map_adapt.pdf> <./coef.adapt.pdf>]
-<eff.adapt.v2.pdf, id=239, 867.24pt x 578.16pt>
+
+[26] [27 <./heat1_adapt.pdf>] [28 <./ctry_map_adapt.pdf>]
+<eff.adapt.v2.pdf, id=228, 867.24pt x 578.16pt>
 File: eff.adapt.v2.pdf Graphic file (type pdf)
 <use eff.adapt.v2.pdf>
-Package pdftex.def Info: eff.adapt.v2.pdf  used on input line 795.
+Package pdftex.def Info: eff.adapt.v2.pdf  used on input line 782.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
-<projections_noprcp_main.pdf, id=240, 433.62pt x 289.08pt>
-File: projections_noprcp_main.pdf Graphic file (type pdf)
-<use projections_noprcp_main.pdf>
-Package pdftex.def Info: projections_noprcp_main.pdf  used on input line 808.
-(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<Map_IISBase_noprcp_diff.pdf, id=241, 433.62pt x 361.35pt>
+<coef.adapt.pdf, id=229, 722.7pt x 361.35pt>
+File: coef.adapt.pdf Graphic file (type pdf)
+<use coef.adapt.pdf>
+Package pdftex.def Info: coef.adapt.pdf  used on input line 793.
+(pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
+<Map_IISBase_noprcp_diff.pdf, id=230, 433.62pt x 361.35pt>
 File: Map_IISBase_noprcp_diff.pdf Graphic file (type pdf)
 <use Map_IISBase_noprcp_diff.pdf>
-Package pdftex.def Info: Map_IISBase_noprcp_diff.pdf  used on input line 816.
+Package pdftex.def Info: Map_IISBase_noprcp_diff.pdf  used on input line 803.
 (pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
+ [29
 
-(./application_secondary_table.tex) [29] [30 <./eff.adapt.v2.pdf> <./projection
-s_noprcp_main.pdf>] [31 <./Map_IISBase_noprcp_diff.pdf>] [32
+ <./eff.adapt.v2.pdf>] [30 <./coef.adapt.pdf> <./Map_IISBase_noprcp_diff.pdf>]
+<projections_noprcp_main.pdf, id=266, 433.62pt x 289.08pt>
+File: projections_noprcp_main.pdf Graphic file (type pdf)
+<use projections_noprcp_main.pdf>
+Package pdftex.def Info: projections_noprcp_main.pdf  used on input line 826.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
 
-]
-(./outlier_distortion_v7.bbl [33] [34] [35]) [36] [37] [38] [39] [40] [41]
-[42] [43] [44] [45] [46]
-<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=327, 794.97pt x 397.485p
+(./application_secondary_table.tex) [31] [32 <./projections_noprcp_main.pdf>]
+[33
+
+] (./outlier_distortion_v7.bbl [34] [35] [36]) [37] [38] [39] [40] [41]
+[42] [43] [44] [45] [46] [47]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=330, 794.97pt x 397.485p
 t>
 File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf Graphic file (type pdf)
 
 <use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>
 Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf  use
-d on input line 1287.
+d on input line 1298.
 (pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
-<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=328, 794.97pt x 397.485pt
+<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=331, 794.97pt x 397.485pt
 >
 File: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
 <use alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf  used
- on input line 1297.
+ on input line 1308.
 (pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
-<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=329, 794.97pt x 397.485
+<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=332, 794.97pt x 397.485
 pt>
 File: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf
 )
 <use alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
 Package pdftex.def Info: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf  us
-ed on input line 1307.
+ed on input line 1318.
 (pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
-<boot_alt_lambda2.pdf, id=330, 867.24pt x 505.89pt>
+<boot_alt_lambda2.pdf, id=333, 867.24pt x 505.89pt>
 File: boot_alt_lambda2.pdf Graphic file (type pdf)
 <use boot_alt_lambda2.pdf>
-Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1317.
+Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1328.
 (pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
-<boot_alt_lambda3.pdf, id=331, 867.24pt x 505.89pt>
+<boot_alt_lambda3.pdf, id=334, 867.24pt x 505.89pt>
 File: boot_alt_lambda3.pdf Graphic file (type pdf)
 <use boot_alt_lambda3.pdf>
-Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1325.
+Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1336.
 (pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
- [47
+ [48
 
- <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [48 <./alt_ar0_nreg1_pa
+ <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [49 <./alt_ar0_nreg1_pa
 lpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_outpro
-p0.1.pdf>] [49 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>]
-<coef.adapt.L1.pdf, id=373, 722.7pt x 361.35pt>
+p0.1.pdf>] [50 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>]
+<coef.adapt.L1.pdf, id=376, 722.7pt x 361.35pt>
 File: coef.adapt.L1.pdf Graphic file (type pdf)
 <use coef.adapt.L1.pdf>
-Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1348.
+Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1359.
 (pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
-<eff.adapt.L1.v2.pdf, id=374, 867.24pt x 578.16pt>
+<eff.adapt.L1.v2.pdf, id=377, 867.24pt x 578.16pt>
 File: eff.adapt.L1.v2.pdf Graphic file (type pdf)
 <use eff.adapt.L1.v2.pdf>
-Package pdftex.def Info: eff.adapt.L1.v2.pdf  used on input line 1356.
+Package pdftex.def Info: eff.adapt.L1.v2.pdf  used on input line 1367.
 (pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
-<heat1.pdf, id=375, 578.16pt x 722.7pt>
+<heat1.pdf, id=378, 578.16pt x 722.7pt>
 File: heat1.pdf Graphic file (type pdf)
 <use heat1.pdf>
-Package pdftex.def Info: heat1.pdf  used on input line 1366.
+Package pdftex.def Info: heat1.pdf  used on input line 1377.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map.pdf, id=376, 505.89pt x 289.08pt>
+<ctry_map.pdf, id=379, 505.89pt x 289.08pt>
 File: ctry_map.pdf Graphic file (type pdf)
 <use ctry_map.pdf>
-Package pdftex.def Info: ctry_map.pdf  used on input line 1374.
+Package pdftex.def Info: ctry_map.pdf  used on input line 1385.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
-<heat1_adapt.L1.pdf, id=377, 578.16pt x 722.7pt>
+<heat1_adapt.L1.pdf, id=380, 578.16pt x 722.7pt>
 File: heat1_adapt.L1.pdf Graphic file (type pdf)
 <use heat1_adapt.L1.pdf>
-Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1383.
+Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1394.
 (pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
-<ctry_map_adapt.L1.pdf, id=378, 505.89pt x 289.08pt>
+<ctry_map_adapt.L1.pdf, id=381, 505.89pt x 289.08pt>
 File: ctry_map_adapt.L1.pdf Graphic file (type pdf)
 <use ctry_map_adapt.L1.pdf>
-Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1391.
+Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1402.
 (pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
-<projections_noprcp_appendix.pdf, id=379, 433.62pt x 289.08pt>
+<projections_noprcp_appendix.pdf, id=382, 433.62pt x 289.08pt>
 File: projections_noprcp_appendix.pdf Graphic file (type pdf)
 <use projections_noprcp_appendix.pdf>
-Package pdftex.def Info: projections_noprcp_appendix.pdf  used on input line 13
-99.
+Package pdftex.def Info: projections_noprcp_appendix.pdf  used on input line 14
+10.
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<projections_withprcp_main.pdf, id=380, 433.62pt x 289.08pt>
+<projections_withprcp_main.pdf, id=383, 433.62pt x 289.08pt>
 File: projections_withprcp_main.pdf Graphic file (type pdf)
 <use projections_withprcp_main.pdf>
-Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1407
+Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1418
 .
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<projections_withprcp_appendix.pdf, id=381, 433.62pt x 289.08pt>
+<projections_withprcp_appendix.pdf, id=384, 433.62pt x 289.08pt>
 File: projections_withprcp_appendix.pdf Graphic file (type pdf)
 <use projections_withprcp_appendix.pdf>
 Package pdftex.def Info: projections_withprcp_appendix.pdf  used on input line 
-1416.
+1427.
 (pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
-<Map_IISBase_withprcp_diff.pdf, id=382, 433.62pt x 361.35pt>
+<Map_IISBase_withprcp_diff.pdf, id=385, 433.62pt x 361.35pt>
 File: Map_IISBase_withprcp_diff.pdf Graphic file (type pdf)
 <use Map_IISBase_withprcp_diff.pdf>
-Package pdftex.def Info: Map_IISBase_withprcp_diff.pdf  used on input line 1425
+Package pdftex.def Info: Map_IISBase_withprcp_diff.pdf  used on input line 1436
 .
 (pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
- [50
+ [51
 
- <./coef.adapt.L1.pdf>] [51 <./eff.adapt.L1.v2.pdf>] [52 <./heat1.pdf>] [53 <./
-ctry_map.pdf>] [54 <./heat1_adapt.L1.pdf>] [55 <./ctry_map_adapt.L1.pdf> <./pro
-jections_noprcp_appendix.pdf>] [56 <./projections_withprcp_main.pdf> <./project
-ions_withprcp_appendix.pdf
+ <./coef.adapt.L1.pdf>] [52 <./eff.adapt.L1.v2.pdf>]
+[53 <./heat1.pdf>] [54 <./ctry_map.pdf>] [55 <./heat1_adapt.L1.pdf>] [56 <./ctr
+y_map_adapt.L1.pdf> <./projections_noprcp_appendix.pdf>] [57 <./projections_wit
+hprcp_main.pdf> <./projections_withprcp_appendix.pdf
 
 pdfTeX warning: pdflatex.exe (file ./projections_withprcp_appendix.pdf): PDF in
 clusion: multiple pdfs with page group included in a single page
->] [57 <./Map_IISBase_withprcp_diff.pdf>] (./outlier_distortion_v7.aux) ) 
+>] [58 <./Map_IISBase_withprcp_diff.pdf>] (./outlier_distortion_v7.aux) ) 
 Here is how much of TeX's memory you used:
  5390 strings out of 480403
  87541 string characters out of 5894552
- 408567 words of memory out of 5000000
+ 404567 words of memory out of 5000000
  23006 multiletter control sequences out of 15000+600000
  419680 words of font info for 87 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
@@ -541,10 +542,10 @@ nts/type1/public/amsfonts/cm/cmti10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX
 oaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/Us
 ers/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbol
 s/msbm10.pfb>
-Output written on outlier_distortion_v7.pdf (57 pages, 11960145 bytes).
+Output written on outlier_distortion_v7.pdf (58 pages, 11963079 bytes).
 PDF statistics:
- 631 PDF objects out of 1000 (max. 8388607)
- 417 compressed objects within 5 object streams
+ 634 PDF objects out of 1000 (max. 8388607)
+ 419 compressed objects within 5 object streams
  0 named destinations out of 1000 (max. 500000)
  141 words of extra memory for PDF output out of 10000 (max. 10000000)
 

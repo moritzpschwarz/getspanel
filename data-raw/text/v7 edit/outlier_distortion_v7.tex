@@ -117,7 +117,7 @@ We apply our proposed test of outlier distortion to estimate the macro-economic 
 
 Our results firstly show that conventional OLS panel estimates of this relationship are significantly different to those obtained using the robust estimator. Once we control for these outliers (some of which coincide with the first Gulf War and collapse of the Soviet Union), the estimated impacts of temperatures on economic growth are attenuated both for our base model and our adaptation model at all income levels compared to conventional OLS estimates. We secondly find significant evidence of income-driven adaptation to temperatures, where climate effects are dampened as incomes increase, suggesting that richer countries will have a greater capacity to deal with the consequences of continued climate change, in turn exacerbating existing cross-country inequality. Using these estimates and insights, we then compare the effect of the robust estimation and income adaptation in projections of climate impacts to the end of the century under various temperature scenarios.
 
-Projection results consistently indicate that higher levels of warming could lead to higher impacts on GDP per capita with our base model indicating a near two third reduction of median country-level GDP per capita when compared to a baseline and warming beyond 4\textdegree C. Both robust estimation and allowing for income-based adaptation lower these negative impacts, with robust estimation attenuating impacts by up to 8\% and income adaptation by up to 12\% points for high warming scenarios. Robust estimation in this context affects projected impacts mainly at the high and low end of the climate impcat projection distribution.
+Projection results consistently indicate that higher levels of warming could lead to higher impacts on GDP per capita with our base model indicating a near two third reduction of median country-level GDP per capita when compared to a baseline and warming beyond 4\textdegree C. Both robust estimation and allowing for income-based adaptation lower these negative impacts, with robust estimation attenuating impacts by up to 10\% and income adaptation by up to 12\% points for high warming scenarios. Robust estimation in this context affects projected impacts mainly at the high and low end of the climate impcat projection distribution.
 
 The paper proceeds as follows: \S \ref{sec_theory and methods} presents our main results with all proofs shown in Appendix \S \ref{sec_proofs}. In particular, \S \ref{sec_algorithm} and \S \ref{sec_assumptions} introduces a regression model, a list of assumptions required for analysis, and a class of outlier-robust algorithms including RLS and IIS. \S \ref{sec_weak convergence} establishes asymptotic theory of RLS and IIS, whilst \S \ref{sec_outlier distortion test} proposes the outlier distortion test. Then, \S \ref{sec_simulations} conducts Monte Carlo studies with additional simulation results in Appendix \S \ref{sec_add_sim}. Lastly, \S \ref{sec_application} applies the outlier distortion test to the macro-economic impacts of climate change using the robust IIS estimator.
 
@@ -733,7 +733,10 @@ Modelling GDP per capita growth in fixed effects panels as a non-linear (quadrat
 \end{equation}
 \end{small}
 
-where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}. To assess the impact of unknown idiosyncratic shocks, we estimate equations (\ref{pan_base}) and (\ref{pan_adapt}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating equations (\ref{pan_base}) and (\ref{pan_adapt}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates. To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ in the Appendix (see equation (\ref{pan_adapt.L1})).
+where $\Delta log(y)_{i,t}$ is the year-on-year change in per capita income in country $i$ in year $t$. The coefficients of interest are $\beta_1$ through $\beta_4$. specifically $\beta_1$ and $\beta_2$ capture the (potentially non-linear) impacts on GDP per capita growth and coefficients $\beta_3$, $\beta_4$ on interactions terms allow for the temperature-growth relationship to vary by country incomes. The vector $x_{i,t}$ denotes a set of control variables including population-weighted annual average precipitation (and its square), and country-specific linear and quadratic trends as in \citet{burke2015global} and \citet{pretis2018uncertain}.
+
+To assess the impact of unknown idiosyncratic shocks, we estimate equations (\ref{pan_base}) and (\ref{pan_adapt}) using OLS (as is convention in the literature) and then compare the OLS estimates to those obtained when estimating equations (\ref{pan_base}) and (\ref{pan_adapt}) using the robust IIS estimator. Let $\tilde{\beta}$ denote the vector of coefficients estimated by OLS $\tilde{\beta}=(\tilde{\beta}_1, \tilde{\beta}_2, \tilde{\beta}_3, \tilde{\beta}_4)$, and $\hat{\beta}^{( 1)}_{c}$ denote the vector of coefficients estimated using the robust IIS estimator at $\gamma_{c=2.57}=0.01$ relative to a normal reference distribution ${\sf f}$. The hypothesis of interest is $H_0: \tilde{\beta} = \hat{\beta}^{( 1)}_{c}$. In other words, we assess possible outlier distortion in the coefficient estimates. To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{i, t}$, we also present a model using $log(y)_{i, t-1}$ in the Appendix (see equation (\ref{pan_adapt.L1})).
+For all IIS estimates, we apply a variance correction, which is contained in the \texttt{isatvar} function of the \texttt{gets} package.\ignore{@Felix can you provide more information here please?}
 
 \subsection{Results}
 
@@ -748,10 +751,6 @@ H^{1}_{(n,c)} = n \left( \hat{\beta}^{( 1)}_{c} - \tilde{\beta} \right)'\widehat
 where $c=1.96$ for a normal reference distribution and a sample size of $n=7716$. The outlier test statistic for each coefficient and all temperature coefficients of interest are shown in Table \ref{tab_app1_estimates} (third and sixth column). We compare the resulting test statistic $H^{1}_{(n,c)} = 111.27$ for our base model against the critical values of the $\chi^{2}$ distribution with $df=2$ and for our adaptation model with $H^{1}_{(n,c)} = 770.69$ against the critical values of the $\chi^{2}$ distribution with $df=4$, as we are testing for the distortion of four coefficients. The null hypothesis of no distortion is rejected at any conventional significance level for both models, with $p<0.0001$.
 
 \input{application_main_table.tex}
-
-%Beyond distortion in coefficients, we show the distribution of the detected outlying observations in the panel model over time, countries, and both (Figures \ref{fig_out_app1} and \ref{fig_map_app1}). The number of detected outliers greatly exceeds the number expected by chance. In total, 165 and 170 country-year observations were identified as outlying compared to 77.16 expected under the null when there are no outliers. The observed proportion of outliers $\hat{\gamma}_{c=2.57}= 165/7716=0.021$ and $\hat{\gamma}_{c=2.57}= 170/7716=0.022$ is statistically different from the expected proportion of $\gamma_{c=2.57}=0.01$ ($p<0.001$ using the \citet{jiao2018testing} proportion test comparing 0.021 and 0.022 to 0.01). Further, the distribution of outliers does not appear to be random over time and space -- outliers are concentrated in developing countries and there is a temporal cluster coinciding with the collapse of the Soviet Union and the onset of the Gulf War, which may well capture an idiosyncratic shock not modelled in the base panel model.
-
-We further show significant evidence of income-driven adaptation to temperatures (Figures \ref{fig_dist_coef_app1} and \ref{fig_dist_app1}), however, the estimates are similarly distorted by the presence of outlying observations as in our base model. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. This suggests that richer countries will be significantly more able to deal with the consequences of climate change. Such a dynamic could exacerbate existin cross-country inequality with continued climate change.
 
 \begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
@@ -769,26 +768,11 @@ We further show significant evidence of income-driven adaptation to temperatures
 \label{fig_map_app1}
 \end{figure}
 
-We show the estimated non-linear relationship between temperatures and growth for three different income levels (25\textsuperscript{th}, 50\textsuperscript{th}, and 75\textsuperscript{th} income percentiles) in Figure \ref{fig_dist_app1}. Results across income levels show that controlling for outlying observations dampens the impacts of temperatures onto economic growth. Using robust estimates, the projected negative temperature impacts are less steep (but still negative) for low income countries, and dampened for middle income countries. For rich countries, the positive effects of higher temperatures are drastically weakened, suggesting attenuated positive effects.
+\clearpage
 
-\begin{figure}[!htbp]  %\vspace{-.35in}
-\centering
-%\includegraphics[scale=0.65]{coef_v2_lag.pdf}
-\includegraphics[width = \textwidth]{coef.adapt.pdf}
-\caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. Coefficients on temperatures and the income interaction terms are shown using OLS and the robust IIS estimator. Note that scale of the y-axis differs across plots.}
-\label{fig_dist_coef_app1}
-\end{figure}
+We further show significant evidence of income-driven adaptation to temperatures (Figures \ref{fig_dist_coef_app1} and \ref{fig_dist_app1}), however, the estimates are similarly distorted by the presence of outlying observations as in our base model. Richer countries exhibit a different response function to temperatures compared to poor and middle-income countries, but the shape of the estimated effects overall shows a dampened temperature impact for the robust estimator compared to OLS. This suggests that richer countries will be significantly more able to deal with the consequences of climate change. Such a dynamic could exacerbate existin cross-country inequality with continued climate change.
 
-Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income. Where poor countries face negative impacts of warmer temperatures, rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship (see Figure (\ref{fig_dist_coef_app1}). Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates (see red line in Figure \ref{fig_dist_coef_app1}).
-
-%Using these estimates and insights, we then compare the effect of the robust estimation and income adaptation in projections of climate impacts to the end of the century under various temperature scenarios.
-
-When we project the estimated relationships to the end of the century, our results indicate high global reductions in median GDP per capita when compared to the baseline (see Figure \ref{fig_projection} and Table \ref{tab_app2_project}).
-
-\ignore{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
-
-
-
+We show the estimated non-linear relationship between temperatures and growth for three different income levels (25\textsuperscript{th}, 50\textsuperscript{th}, and 75\textsuperscript{th} income percentiles) in Figure \ref{fig_dist_app1}. Results across income levels show that controlling for outlying observations dampens the impacts of temperatures onto economic growth.
 
 
 
@@ -803,6 +787,37 @@ When we project the estimated relationships to the end of the century, our resul
 
 
 
+\begin{figure}[!htbp]  %\vspace{-.35in}
+\centering
+%\includegraphics[scale=0.65]{coef_v2_lag.pdf}
+\includegraphics[width = \textwidth]{coef.adapt.pdf}
+\caption{Estimated Impact of Temperatures on GDP Per Capita Growth Allowing for Adaptation and Controlling for Outliers. Coefficients on temperatures and the income interaction terms are shown using OLS and the robust IIS estimator. Note that scale of the y-axis differs across plots.}
+\label{fig_dist_coef_app1}
+\end{figure}
+
+Using these estimates and insights, we project these climate impact estimates to the end of the century by combining gridded temperature estimates from individual CMIP5 model ensemble runs and econometric long-term GDP per capita forecasts from \citet{muller2019econometric}. All our estimates indicate substantial reductions in GDP per capita levels for high levels of warming when compared to our baseline (see Figure \ref{fig_projection} and Table \ref{tab_app2_project}). Base model projections indicate that the median country-level GDP per capita levels could be 63\% lower than the baseline when we aggregate all model estimates beyond 4\textdegree C global mean temperature anomaly to pre-industrial levels (see Table \ref{tab_app2_project}). We find that countries in lower latitudes are most significantly hit.
+
+\begin{figure}[!htbp]  %\vspace{-.35in}
+\centering
+%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
+\includegraphics[width = \textwidth]{Map_IISBase_noprcp_diff.pdf}
+\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4\textdegree C. Projection excludes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
+\label{fig_projection_map}
+\end{figure}
+
+Additionally, we consider the influence of income-based adaptation and robust estimation on projections of future climate impacts. Using robust estimates, the projected negative temperature impacts are less steep (but still negative) for low income countries, and dampened for middle income countries. For rich countries, the positive effects of higher temperatures are drastically weakened, suggesting attenuated positive effects -- nonetheless the estimated functional still suggests substantial positive growth effects for countries such as Russia or Mongolia (see bottom panel of Figure \ref{fig_projection_map}). Using robust estimates reduces median country-level GDP per capita impacts by up to 8\% points in our base and adapation model and even up to 13\% points in the adaptation model with lagged adaptation (see Table \ref{tab_app2_project}).
+
+To project estimates of income-based adaptation, we need to project adaptation effects as well. To avoid extrapolation of adaptation out-of-sample we constrain the projected adaptation to the highest in-sample income levels across countries. We further restrict growth impacts under adaptation to not exceed the baseline growth rate where non-adaptation impacts in a particular year would  be negative in our base projections. Further, to reflect that adaptation is a choice, we restrict countries not to be worse-off under adaptation compared to the no-adaptation projection. While these restrictions are theory-motivated and calibrated to the data at hand, such assumptions should be further scrutinised in the future \citet[see ][]{schwarz2020modelling}. When projecting these adaptation results, we find that adapation could plausibly reduce GDP per capita impacts by up to 12\% points under a high warming scenario, highlighting that substantial impacts are to be expected under high warming levels in any case.
+
+Wehn combining both income-adaptation and robust estimation, we additionally identify a change in the marginal rate of impacts with further warming. For a one \textdegree C increase in global mean temperature anomaly from 3\textdegree C to 4\textdegree C, we would expect a 13\% point additional reduction for our OLS base model and a similar reduction for the OLS adaptation model. Using robust estimation and estimates of income-adaptation, however, our results suggest that these additional impacts might be halved to about 5\% per \textdegree C.
+
+Overall, our results provide macro-econometric evidence of income-driven adaptation -- temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income. Where poor countries face negative impacts of warmer temperatures, rich countries face predominantly positive impacts, with middle-income countries seeing the familiar quadratic relationship (see Figure (\ref{fig_dist_coef_app1}). Moreover, our estimation results highlight the importance of controlling for outlying observations and testing for subsequent distortion. Idiosyncratic shocks in the model distort coefficient estimates, with robust results showing dampened climate impacts onto GDP per capita growth compared to conventional OLS estimates. When considering projections of future climate impacts, our results suggest that both income-adaptation and robust esimation reduces the level of projected climate impacts. When considering both income-adaptation and robust estimation, we further identify a decrease in the marginal rate of impacts with further warming in the adaptation model by about half.
+
+\ignore{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
+
+
+
+
 
 
 \begin{figure}[!htbp]  \vspace{-.35in}
@@ -813,13 +828,6 @@ When we project the estimated relationships to the end of the century, our resul
 \label{fig_projection}
 \end{figure}
 
-\begin{figure}[!htbp]  \vspace{-.35in}
-\centering
-%\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
-\includegraphics[width = \textwidth]{Map_IISBase_noprcp_diff.pdf}
-\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4.5\textdegree C. Projection excludes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
-\label{fig_projection_map}
-\end{figure}
 
 
 \input{application_secondary_table.tex}
@@ -1426,7 +1434,7 @@ To alleviate concerns of endogeneity between $\Delta log(y)_{i,t}$ and $log(y)_{
 \centering
 %\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
 \includegraphics[width = \textwidth]{Map_IISBase_withprcp_diff.pdf}
-\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4.5\textdegree C. Projection includes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
+\caption{Projected Climate Impacts for the period 2090 - 2099 and for all CMIP5 models with a mean warming above 4\textdegree C. Projection includes Precipitation Effect. Estimate shown is the median, grey indicates that the 90\% confidence interval spans 0.}
 \label{fig_projection_map_withprcp}
 \end{figure}
 
