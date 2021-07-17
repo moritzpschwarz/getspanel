@@ -213,6 +213,27 @@ plot_specs_overall <- dplyr::distinct(specs,hypothesis,out_prop, bootstrap, dist
 ```
 
 
+```{r}
+table_change <- function(input_table, caption, label){
+  # insert caption
+tab <- gsub("\\begin{table}",
+            paste0("\\begin{table}
+                   \\caption{",caption,"}
+                   \\label{",label,"}"), input_table, fixed = TRUE)
+
+# fixing the header
+# tab <- gsub("\\begin{tabular}",
+#             "\\resizebox{\\textwidth}{!}{\\begin{tabular}",tab, fixed = TRUE)
+# 
+# # fixiing the footer
+# tab <- gsub("\\end{tabular}",
+#             "\\end{tabular}}",tab, fixed = TRUE)
+
+return(tab)
+}
+```
+
+
 # No Bootstrap
 
 ## Null Hypothesis
@@ -236,52 +257,25 @@ sum_tab %>%
   select(-test.lev) %>% 
   kable(format = "latex",
         digits = 3,
-        col.names = c("n", "# Regressors", "0.01", "0.05","0.01", "0.05"), booktabs = TRUE) %>% 
+        col.names = c("n", "# Regressors", "0.01", "0.05","0.01", "0.05"), 
+        booktabs = TRUE) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   #pack_rows("Normal Distribution",1, 10) %>%
   #pack_rows("$t_3$ Distribution", 11, 20) %>% 
   
-  add_header_above(c(" " = 2, "$\\gamma$" = 4),escape = FALSE) %>% 
-  add_header_above(c(" " = 2, "Normal Distr." = 2, "$t_3$ Distr." = 2)) %>% 
+  add_header_above(c(" " = 2, "$\\\\gamma$" = 4),escape = FALSE) %>% 
+  add_header_above(c(" " = 2, "Normal Distr." = 2, "$t_3$ Distr." = 2), escape = FALSE) %>% 
   
   pack_rows("Level 0.01",1, 5) %>%
   pack_rows("Level 0.05", 6, 10) -> tab
 
-# Add caption
-
-
-table_change <- function(input_table, caption, label){
-  # insert caption
-tab <- gsub("\\begin{table}",
-            paste0("\\begin{table}
-                   \\caption{",caption,"}
-                   \\label{",label,"}"), input_table, fixed = TRUE)
-
-# fixing the header
-# tab <- gsub("\\begin{tabular}",
-#             "\\resizebox{\\textwidth}{!}{\\begin{tabular}",tab, fixed = TRUE)
-# 
-# # fixiing the footer
-# tab <- gsub("\\end{tabular}",
-#             "\\end{tabular}}",tab, fixed = TRUE)
-
-return(tab)
-}
 
 
 
-table_change(tab, caption = "Simulation performance under the alternative for varying sample sizes and outlier magnitudes when the dependent variable exhibits no autocorrelation and 15% of the sample is outlier-contaminated.", label = "simulation_table_appendix_1") %>% 
-  cat(file = here("data-raw","tables","NULL_levels.tex"))
 
-# remove lines using booktabs = TRUE
-# add resizebox
-# save with cat
-
-
-
-  save_kable(file = here("data-raw","tables","NULL_levels.tex"))
-
+table_change(tab, caption = "Simulation performance under the alternative for varying sample sizes and outlier magnitudes when the dependent variable exhibits no autocorrelation and 15\\% of the sample is outlier-contaminated.", label = "simulation_table_appendix_1") %>% 
+  cat(file = here("data-raw/text/v7 edit/simulation_tables","NULL_levels.tex"))
 ```
 
 ### Sample Size against number of observations for different number of coefficients
@@ -299,14 +293,15 @@ sum_tab %>%
   
   select(-dist) %>% 
   kable(format = "latex", col.names = c("n", "Level","p-value", "1","5","10")) %>% 
-  kable_styling(full_width = FALSE) %>% 
+  kable_styling(full_width = FALSE, booktabs = TRUE) %>% 
   kable_paper() %>% 
   
   add_header_above(c(" " = 3, "# Regressors" = 3)) %>% 
   
   pack_rows("Normal Distribution",1, 5) %>%
-  pack_rows("$t_3$ Distribution", 6, 10)%>% 
-  save_kable(file = here("data-raw","tables","NULL_nreg.tex"))
+  pack_rows("$t_3$ Distribution", 6, 10, escape = FALSE) -> tab
+
+
 ```
 
 

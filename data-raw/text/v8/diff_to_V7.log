@@ -1,0 +1,1709 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.8)  18 JUL 2021 00:48
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**diff_to_V7.tex
+(./diff_to_V7.tex
+LaTeX2e <2021-06-01>
+L3 programming layer <2021-06-01>
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2021/02/12 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count182
+\c@section=\count183
+\c@subsection=\count184
+\c@subsubsection=\count185
+\c@paragraph=\count186
+\c@subparagraph=\count187
+\c@figure=\count188
+\c@table=\count189
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.s
+ty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.
+sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks16
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.st
+y
+Package: amsmath 2021/04/20 v2.17j AMS math features
+\@mathmargin=\skip49
+
+For additional information on amsmath, use the `?' option.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.st
+y
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks17
+\ex@=\dimen139
+))
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen140
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count190
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count191
+\leftroot@=\count192
+LaTeX Info: Redefining \overline on input line 399.
+\classnum@=\count193
+\DOTSCASE@=\count194
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box50
+\strutbox@=\box51
+\big@size=\dimen141
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count195
+\c@MaxMatrixCols=\count196
+\dotsspace@=\muskip16
+\c@parentequation=\count197
+\dspbrk@lvl=\count198
+\tag@help=\toks18
+\row@=\count199
+\column@=\count266
+\maxfields@=\count267
+\andhelp@=\toks19
+\eqnshift@=\dimen142
+\alignsep@=\dimen143
+\tagshift@=\dimen144
+\tagwidth@=\dimen145
+\totwidth@=\dimen146
+\lineht@=\dimen147
+\@envbody=\toks20
+\multlinegap=\skip50
+\multlinetaggap=\skip51
+\mathdisplay@stack=\toks21
+LaTeX Info: Redefining \[ on input line 2923.
+LaTeX Info: Redefining \] on input line 2924.
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks22
+\thm@bodyfont=\toks23
+\thm@headfont=\toks24
+\thm@notefont=\toks25
+\thm@headpunct=\toks26
+\thm@preskip=\skip52
+\thm@postskip=\skip53
+\thm@headsep=\skip54
+\dth@everypar=\toks27
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/graphicx.
+sty
+Package: graphicx 2020/12/05 v1.2c Enhanced LaTeX Graphics (DPC,SPQR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/keyval.st
+y
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks28
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/graphics.
+sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/graph
+ics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-def/pdfte
+x.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen148
+\Gin@req@width=\dimen149
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/apacite/apacite.st
+y
+Package: apacite 2013/07/21 v6.03 APA citation
+\c@BibCnt=\count268
+\bibleftmargin=\skip55
+\bibindent=\skip56
+\bibparsep=\skip57
+\bibitemsep=\skip58
+\biblabelsep=\skip59
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip60
+\bibsep=\skip61
+LaTeX Info: Redefining \cite on input line 694.
+LaTeX Info: Redefining \citeauthor on input line 712.
+LaTeX Info: Redefining \citeyear on input line 735.
+\c@NAT@ctr=\count269
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption.st
+y
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption3.s
+ty
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen150
+\captionmargin@=\dimen151
+\captionwidth=\dimen152
+\caption@tempdima=\dimen153
+\caption@indent=\dimen154
+\caption@parindent=\dimen155
+\caption@hangindent=\dimen156
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count270
+\c@continuedfloat=\count271
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count272
+\float@exts=\toks29
+\float@box=\box52
+\@float@everytoks=\toks30
+\@floatcapt=\box53
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color
+.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
+\col@sep=\dimen157
+\ar@mcellbox=\box54
+\extrarowheight=\dimen158
+\NC@list=\toks31
+\extratabsurround=\skip62
+\backup@length=\skip63
+\ar@cellbox=\box55
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.
+sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen159
+\lightrulewidth=\dimen160
+\cmidrulewidth=\dimen161
+\belowrulesep=\dimen162
+\belowbottomsep=\dimen163
+\aboverulesep=\dimen164
+\abovetopsep=\dimen165
+\cmidrulesep=\dimen166
+\cmidrulekern=\dimen167
+\defaultaddspace=\dimen168
+\@cmidla=\count273
+\@cmidlb=\count274
+\@aboverulesep=\dimen169
+\@belowrulesep=\dimen170
+\@thisruleclass=\count275
+\@lastruleclass=\count276
+\@thisrulewidth=\dimen171
+)
+\c@algorithm=\count277
+\c@assumption=\count278
+\c@lemma=\count279
+\c@theorem=\count280
+\c@corollary=\count281
+\c@remark=\count282
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box56
+\UL@hyphenbox=\box57
+\UL@skip=\skip64
+\UL@hook=\toks32
+\UL@height=\dimen172
+\UL@pe=\count283
+\UL@pixel=\dimen173
+\ULC@box=\box58
+Package: ulem 2019/11/18
+\ULdepth=\dimen174
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/oberdiek/settobox.
+sty
+Package: settobox 2016/05/16 v1.5 Assign box dimensions to length registers (HO
+)
+)
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/letltxmacro/letltx
+macro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+\DIFdelgraphicsbox=\box59
+\DIFdelgraphicswidth=\skip65
+\DIFdelgraphicsheight=\skip66
+LaTeX Info: Redefining \DIFaddbegin on input line 128.
+LaTeX Info: Redefining \DIFaddend on input line 129.
+LaTeX Info: Redefining \DIFdelbegin on input line 130.
+LaTeX Info: Redefining \DIFdelend on input line 131.
+LaTeX Info: Redefining \DIFaddbeginFL on input line 136.
+LaTeX Info: Redefining \DIFaddendFL on input line 137.
+LaTeX Info: Redefining \DIFdelbeginFL on input line 138.
+LaTeX Info: Redefining \DIFdelendFL on input line 139.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3backen
+d-pdftex.def
+File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count284
+\l__pdf_internal_box=\box60
+) (./diff_to_V7.aux)
+\openout1 = `diff_to_V7.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 142.
+LaTeX Font Info:    ... okay on input line 142.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epsto
+pdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/latexconfig/epstop
+df-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\c@maskedRefs=\count285
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/apacite/english.ap
+c
+File: english.apc 2013/07/21 v6.03 apacite language file
+LaTeX Info: Redefining \BPBI on input line 129.
+LaTeX Info: Redefining \BHBI on input line 130.
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 143
+.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 143
+.
+
+(c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+[1
+
+{c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdfte
+x.map}]
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.169 }
+       \DIFdelend \DIFaddbegin \citet{dell2012temperature,burke2015global,pr...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[2]
+<stylized_example_simple_paper_v2.pdf, id=22, 542.35925pt x 300.11826pt>
+File: stylized_example_simple_paper_v2.pdf Graphic file (type pdf)
+<use stylized_example_simple_paper_v2.pdf>
+Package pdftex.def Info: stylized_example_simple_paper_v2.pdf  used on input li
+ne 177.
+(pdftex.def)             Requested size: 379.64888pt x 210.08134pt.
+
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 3 undefined o
+n input line 184.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.184 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.184 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.184 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.184 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.186 }
+       \DIFaddend provides a guidance on choosing this robustification param...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.186 }
+       \DIFaddend provides a guidance on choosing this robustification param...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.186 }
+       \DIFaddend provides a guidance on choosing this robustification param...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.186 }
+       \DIFaddend provides a guidance on choosing this robustification param...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[3] [4 <./stylized_example_simple_paper_v2.pdf>]
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 5 undefined o
+n input line 198.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.198 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.198 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.198 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.198 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.200 }
+       \DIFaddend study whether the proportion (and number) of outliers is d...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.200 }
+       \DIFaddend study whether the proportion (and number) of outliers is d...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.200 }
+       \DIFaddend study whether the proportion (and number) of outliers is d...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.200 }
+       \DIFaddend study whether the proportion (and number) of outliers is d...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[5]
+Overfull \hbox (7.16203pt too wide) in paragraph at lines 208--212
+[][]|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |  
+ []   |   []   |   [][] []|   []
+ []
+
+[6] [7]
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 8 undefined o
+n input line 317.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.317 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.317 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.317 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.317 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.319 }
+       \DIFaddend provide the guidance for selecting the robustification par...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.319 }
+       \DIFaddend provide the guidance for selecting the robustification par...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.319 }
+       \DIFaddend provide the guidance for selecting the robustification par...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.319 }
+       \DIFaddend provide the guidance for selecting the robustification par...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[8] [9]
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.355 ...is section we provide asymptotic theory }
+                                                  \DIFaddend such as tightne...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.355 ...is section we provide asymptotic theory }
+                                                  \DIFaddend such as tightne...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.355 ...is section we provide asymptotic theory }
+                                                  \DIFaddend such as tightne...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.355 ...is section we provide asymptotic theory }
+                                                  \DIFaddend such as tightne...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.368 . }
+         \DIFdelend Firstly, Assumption \ref{sufficient assumptions}$(iii)$ ...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.368 . }
+         \DIFdelend Firstly, Assumption \ref{sufficient assumptions}$(iii)$ ...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.368 . }
+         \DIFdelend Firstly, Assumption \ref{sufficient assumptions}$(iii)$ ...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.368 . }
+         \DIFdelend Firstly, Assumption \ref{sufficient assumptions}$(iii)$ ...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Overfull \hbox (47.61543pt too wide) in paragraph at lines 368--369
+[]|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [
+]   |   []
+ []
+
+[10] [11] [12] [13] [14] [15] [16] [17]
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 18 undefined 
+on input line 725.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.725 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.725 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.725 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.725 }
+       \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.727 }
+       \DIFaddend .
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.727 }
+       \DIFaddend .
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.727 }
+       \DIFaddend .
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.727 }
+       \DIFaddend .
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[18] [19]
+<null_distnorm.pdf, id=142, 794.97pt x 397.485pt>
+File: null_distnorm.pdf Graphic file (type pdf)
+<use null_distnorm.pdf>
+Package pdftex.def Info: null_distnorm.pdf  used on input line 758.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 758--759
+ [][][] 
+ []
+
+<boot_null.pdf, id=143, 939.51pt x 397.485pt>
+File: boot_null.pdf Graphic file (type pdf)
+<use boot_null.pdf>
+Package pdftex.def Info: boot_null.pdf  used on input line 775.
+(pdftex.def)             Requested size: 416.9055pt x 176.37988pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 775--776
+ [][][] 
+ []
+
+[20] [21 <./null_distnorm.pdf> <./boot_null.pdf>]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=163, 794.97pt x 397.485pt
+>
+File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 788.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 788--789
+ [][][] 
+ []
+
+<alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=164, 794.97pt x 397.485pt
+>
+File: alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar1_nreg5_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 798.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 798--799
+ [][][] 
+ []
+
+<boot_alt_lambda4.pdf, id=165, 867.24pt x 505.89pt>
+File: boot_alt_lambda4.pdf Graphic file (type pdf)
+<use boot_alt_lambda4.pdf>
+Package pdftex.def Info: boot_alt_lambda4.pdf  used on input line 810.
+(pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 810--811
+ [][][] 
+ []
+
+<boot_alt_lambda6.pdf, id=166, 867.24pt x 505.89pt>
+File: boot_alt_lambda6.pdf Graphic file (type pdf)
+<use boot_alt_lambda6.pdf>
+Package pdftex.def Info: boot_alt_lambda6.pdf  used on input line 820.
+(pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 820--821
+ [][][] 
+ []
+
+[22 <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.1.pdf>] [23 <./alt_ar1_nreg5_
+palpha0.05_distnorm_outprop0.1.pdf> <./boot_alt_lambda4.pdf>]
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.834 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.834 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.834 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.834 . }
+         \DIFaddend While existing estimates strongly support a non-linear r...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[24 <./boot_alt_lambda6.pdf>]
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.841 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.841 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.841 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.841 from 1961-2017 for 169 }
+                              \DIFaddend countries as a function of populati...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Overfull \hbox (3.43687pt too wide) in paragraph at lines 839--843
+\OT1/cmr/m/n/10.95 nomic growth, we model the change in the log of real GDP per
+ capita []|   []   |   []
+ []
+
+
+Overfull \hbox (114.5655pt too wide) in paragraph at lines 839--843
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   [][]|  
+ []
+ []
+
+
+LaTeX Warning: Reference `pan_m1' on page 25 undefined on input line 845.
+
+[25]
+
+LaTeX Warning: Reference `pan_m1' on page 26 undefined on input line 874.
+
+
+LaTeX Warning: Reference `pan_m1' on page 26 undefined on input line 874.
+
+
+Overfull \hbox (10.14503pt too wide) in paragraph at lines 881--884
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [] 
+  |   []   |   []
+ []
+
+
+Overfull \hbox (46.27039pt too wide) in paragraph at lines 881--884
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [] 
+  |   []   |   []   |   []   |   []
+ []
+
+
+Overfull \hbox (19.16866pt too wide) in paragraph at lines 887--888
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [] 
+  |   []   |   []   |   []
+ []
+
+[26] (./application_main_table.tex)
+<heat1_adapt.pdf, id=210, 578.16pt x 722.7pt>
+File: heat1_adapt.pdf Graphic file (type pdf)
+<use heat1_adapt.pdf>
+Package pdftex.def Info: heat1_adapt.pdf  used on input line 898.
+(pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 898--899
+ [][][] 
+ []
+
+<ctry_map_adapt.pdf, id=211, 505.89pt x 289.08pt>
+File: ctry_map_adapt.pdf Graphic file (type pdf)
+<use ctry_map_adapt.pdf>
+Package pdftex.def Info: ctry_map_adapt.pdf  used on input line 906.
+(pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 906--907
+ [][][] 
+ []
+
+[27] [28 <./heat1_adapt.pdf>] [29 <./ctry_map_adapt.pdf>]
+<eff.adapt.v2.pdf, id=232, 867.24pt x 578.16pt>
+File: eff.adapt.v2.pdf Graphic file (type pdf)
+<use eff.adapt.v2.pdf>
+Package pdftex.def Info: eff.adapt.v2.pdf  used on input line 924.
+(pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 924--925
+ [][][] 
+ []
+
+<coef.adapt.pdf, id=233, 722.7pt x 361.35pt>
+File: coef.adapt.pdf Graphic file (type pdf)
+<use coef.adapt.pdf>
+Package pdftex.def Info: coef.adapt.pdf  used on input line 935.
+(pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 935--936
+ [][][] 
+ []
+
+<Map_IISBase_noprcp_diff.pdf, id=234, 433.62pt x 361.35pt>
+File: Map_IISBase_noprcp_diff.pdf Graphic file (type pdf)
+<use Map_IISBase_noprcp_diff.pdf>
+Package pdftex.def Info: Map_IISBase_noprcp_diff.pdf  used on input line 946.
+(pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 946--947
+ [][][] 
+ []
+
+[30
+
+ <./eff.adapt.v2.pdf>]
+Overfull \hbox (17.65503pt too wide) in paragraph at lines 951--954
+[]|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [
+]   |   []   |   []
+ []
+
+
+Overfull \hbox (24.71466pt too wide) in paragraph at lines 956--959
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [] 
+  |   []   |   []   |   []   |   []
+ []
+
+[31 <./coef.adapt.pdf>] [32 <./Map_IISBase_noprcp_diff.pdf>]
+<projections_noprcp_main.pdf, id=274, 433.62pt x 289.08pt>
+File: projections_noprcp_main.pdf Graphic file (type pdf)
+<use projections_noprcp_main.pdf>
+Package pdftex.def Info: projections_noprcp_main.pdf  used on input line 1078.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1078--1079
+ [][][] 
+ []
+
+(./application_secondary_table.tex)
+Overfull \hbox (0.21904pt too wide) in paragraph at lines 1093--1100
+|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   [] 
+  |   []   |   []   |   []   |   []
+ []
+
+[33] [34 <./projections_noprcp_main.pdf>] [35] [36
+
+] (./diff_to_V7.bbl [37]
+[38] [39]) [40]
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 41 undefined 
+on input line 1147.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.1147 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.1147 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1147 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1147 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.1149 }
+        \DIFaddend , which is built on the empirical process theory recently...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.1149 }
+        \DIFaddend , which is built on the empirical process theory recently...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1149 }
+        \DIFaddend , which is built on the empirical process theory recently...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1149 }
+        \DIFaddend , which is built on the empirical process theory recently...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Package natbib Warning: Citation `jiao2020testingoutlier' on page 41 undefined 
+on input line 1154.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.1154 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.1154 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1154 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1154 }
+        \DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ...z@ \else \UL@putbox \fi \else \egroup 
+                                                  \egroup \UL@putbox \fi \if...
+l.1156 }
+        \DIFaddend , Lemma 8.2) Suppose Assumption \ref{sufficient assumptio...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten \endgroup.
+\UL@stop ... \UL@putbox \fi \else \egroup \egroup 
+                                                  \UL@putbox \fi \ifnum \UL@...
+l.1156 }
+        \DIFaddend , Lemma 8.2) Suppose Assumption \ref{sufficient assumptio...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1156 }
+        \DIFaddend , Lemma 8.2) Suppose Assumption \ref{sufficient assumptio...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1156 }
+        \DIFaddend , Lemma 8.2) Suppose Assumption \ref{sufficient assumptio...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Overfull \hbox (3.04086pt too wide) in paragraph at lines 1152--1157
+[]\OT1/cmr/bx/n/10.95 Lemma A.1. []\OT1/cmr/m/it/10.95 ([]|   [][][]|   [][], L
+emma 8.2) Sup-pose As-sump-tion 2.1[]$\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 i
+; iib\OT1/cmr/m/n/10.95 )$ \OT1/cmr/m/it/10.95 holds.
+ []
+
+[41] [42] [43] [44] [45] [46] [47] [48] [49] [50]
+<alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf, id=341, 794.97pt x 397.485p
+t>
+File: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf Graphic file (type pdf)
+
+<use alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>
+Package pdftex.def Info: alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf  use
+d on input line 1599.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1599--1600
+ [][][] 
+ []
+
+<alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf, id=342, 794.97pt x 397.485pt
+>
+File: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf)
+<use alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0_nreg1_palpha0.05_distnorm_outprop0.1.pdf  used
+ on input line 1611.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1611--1612
+ [][][] 
+ []
+
+<alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf, id=343, 794.97pt x 397.485
+pt>
+File: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf Graphic file (type pdf
+)
+<use alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf>
+Package pdftex.def Info: alt_ar0.5_nreg5_palpha0.05_distnorm_outprop0.1.pdf  us
+ed on input line 1623.
+(pdftex.def)             Requested size: 416.9055pt x 208.45833pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1623--1624
+ [][][] 
+ []
+
+<boot_alt_lambda2.pdf, id=344, 867.24pt x 505.89pt>
+File: boot_alt_lambda2.pdf Graphic file (type pdf)
+<use boot_alt_lambda2.pdf>
+Package pdftex.def Info: boot_alt_lambda2.pdf  used on input line 1635.
+(pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1635--1636
+ [][][] 
+ []
+
+<boot_alt_lambda3.pdf, id=345, 867.24pt x 505.89pt>
+File: boot_alt_lambda3.pdf Graphic file (type pdf)
+<use boot_alt_lambda3.pdf>
+Package pdftex.def Info: boot_alt_lambda3.pdf  used on input line 1645.
+(pdftex.def)             Requested size: 416.9055pt x 243.19496pt.
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1645--1646
+ [][][] 
+ []
+
+[51
+
+ <./alt_ar0_nreg5_palpha0.05_distnorm_outprop0.15.pdf>] [52 <./alt_ar0_nreg1_pa
+lpha0.05_distnorm_outprop0.1.pdf> <./alt_ar0.5_nreg5_palpha0.05_distnorm_outpro
+p0.1.pdf>] [53 <./boot_alt_lambda2.pdf> <./boot_alt_lambda3.pdf>]
+Overfull \hbox (9.76567pt too wide) detected at line 1666
+[][]
+ []
+
+<coef.adapt.L1.pdf, id=386, 722.7pt x 361.35pt>
+File: coef.adapt.L1.pdf Graphic file (type pdf)
+<use coef.adapt.L1.pdf>
+Package pdftex.def Info: coef.adapt.L1.pdf  used on input line 1674.
+(pdftex.def)             Requested size: 416.9055pt x 208.45282pt.
+<eff.adapt.L1.v2.pdf, id=387, 867.24pt x 578.16pt>
+File: eff.adapt.L1.v2.pdf Graphic file (type pdf)
+<use eff.adapt.L1.v2.pdf>
+Package pdftex.def Info: eff.adapt.L1.v2.pdf  used on input line 1682.
+(pdftex.def)             Requested size: 416.9055pt x 277.9371pt.
+<heat1.pdf, id=388, 578.16pt x 722.7pt>
+File: heat1.pdf Graphic file (type pdf)
+<use heat1.pdf>
+Package pdftex.def Info: heat1.pdf  used on input line 1692.
+(pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
+<ctry_map.pdf, id=389, 505.89pt x 289.08pt>
+File: ctry_map.pdf Graphic file (type pdf)
+<use ctry_map.pdf>
+Package pdftex.def Info: ctry_map.pdf  used on input line 1700.
+(pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+<heat1_adapt.L1.pdf, id=390, 578.16pt x 722.7pt>
+File: heat1_adapt.L1.pdf Graphic file (type pdf)
+<use heat1_adapt.L1.pdf>
+Package pdftex.def Info: heat1_adapt.L1.pdf  used on input line 1709.
+(pdftex.def)             Requested size: 416.9055pt x 521.12656pt.
+<ctry_map_adapt.L1.pdf, id=391, 505.89pt x 289.08pt>
+File: ctry_map_adapt.L1.pdf Graphic file (type pdf)
+<use ctry_map_adapt.L1.pdf>
+Package pdftex.def Info: ctry_map_adapt.L1.pdf  used on input line 1717.
+(pdftex.def)             Requested size: 416.9055pt x 238.2381pt.
+<projections_noprcp_appendix.pdf, id=392, 433.62pt x 289.08pt>
+File: projections_noprcp_appendix.pdf Graphic file (type pdf)
+<use projections_noprcp_appendix.pdf>
+Package pdftex.def Info: projections_noprcp_appendix.pdf  used on input line 17
+25.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+<projections_withprcp_main.pdf, id=393, 433.62pt x 289.08pt>
+File: projections_withprcp_main.pdf Graphic file (type pdf)
+<use projections_withprcp_main.pdf>
+Package pdftex.def Info: projections_withprcp_main.pdf  used on input line 1733
+.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+<projections_withprcp_appendix.pdf, id=394, 433.62pt x 289.08pt>
+File: projections_withprcp_appendix.pdf Graphic file (type pdf)
+<use projections_withprcp_appendix.pdf>
+Package pdftex.def Info: projections_withprcp_appendix.pdf  used on input line 
+1742.
+(pdftex.def)             Requested size: 416.9055pt x 277.95032pt.
+<Map_IISBase_withprcp_diff.pdf, id=395, 433.62pt x 361.35pt>
+File: Map_IISBase_withprcp_diff.pdf Graphic file (type pdf)
+<use Map_IISBase_withprcp_diff.pdf>
+Package pdftex.def Info: Map_IISBase_withprcp_diff.pdf  used on input line 1751
+.
+(pdftex.def)             Requested size: 416.9055pt x 347.43793pt.
+
+Package natbib Warning: There were undefined citations.
+
+[54
+
+ <./coef.adapt.L1.pdf>] [55 <./eff.adapt.L1.v2.pdf>] [56 <./heat1.pdf>]
+[57 <./ctry_map.pdf>] [58 <./heat1_adapt.L1.pdf>] [59 <./ctry_map_adapt.L1.pdf>
+ <./projections_noprcp_appendix.pdf>] [60 <./projections_withprcp_main.pdf> <./
+projections_withprcp_appendix.pdf
+
+pdfTeX warning: pdflatex.exe (file ./projections_withprcp_appendix.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+>] [61 <./Map_IISBase_withprcp_diff.pdf>] (./diff_to_V7.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 5572 strings out of 480403
+ 90133 string characters out of 5894552
+ 491102 words of memory out of 5000000
+ 23175 multiletter control sequences out of 15000+600000
+ 419786 words of font info for 88 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 57i,16n,66p,2860b,444s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/e
+c/tcrm0900.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/lj
+four/jknappen/ec/tcrm1095.600pk> <c:/Users/morit/AppData/Roaming/TinyTeX/texmf-
+var/fonts/pk/ljfour/jknappen/ec/tcrm0600.600pk> <c:/Users/morit/AppData/Roaming
+/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1000.600pk> <c:/Users/morit/
+AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm0800.600pk><c
+:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmbx10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmbx12.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/Users/morit/AppData/Roaming/TinyT
+eX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/Users/morit/AppData
+/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><c:/U
+sers/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cmext
+ra/cmex9.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmmi6.pfb><c:/Users/morit/AppData/Roaming/TinyTeX
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/Users/morit/AppData/Ro
+aming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/Users/mor
+it/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb>
+<c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmr10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr12.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmr5.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/Users/morit/AppData/Roami
+ng/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/Users/morit/A
+ppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/U
+sers/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r9.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmss10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmss8.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb><c:/Users/morit/AppData/Roaming/
+TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/Users/morit/Ap
+pData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb><c:/U
+sers/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy7.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmsy8.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy9.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/Users/morit/AppData/Roaming
+/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/Users/morit/A
+ppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/latxfont/lasy6.pf
+b><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfont
+s/symbols/msam10.pfb><c:/Users/morit/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/amsfonts/symbols/msbm10.pfb>
+Output written on diff_to_V7.pdf (61 pages, 12016538 bytes).
+PDF statistics:
+ 649 PDF objects out of 1000 (max. 8388607)
+ 429 compressed objects within 5 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 141 words of extra memory for PDF output out of 10000 (max. 10000000)
+
