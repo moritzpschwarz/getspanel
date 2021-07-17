@@ -816,11 +816,7 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \ignore{Note: Can we show that our residuals produced by IIS are iid normal or at least satisfy either normal, homoscedasticity, or serially independent? Any one of these will help us to defend our paper if referees criticise on our assumptions. In addition, in this case we have a very well specified climate impact model that can pass all the specification tests.}
 
 
-
-
-
-
-\begin{figure}[!htbp]  \vspace{-.35in}
+\begin{figure}[!htbp]  %\vspace{-.35in}
 \centering
 %\includegraphics[scale=0.6]{ctry_map_lag_edited.pdf}
 \includegraphics[width = \textwidth]{projections_noprcp_main.pdf}
@@ -838,10 +834,7 @@ Overall, our results provide macro-econometric evidence of income-driven adaptat
 \section{Conclusion}
 We introduced a formal test to assess outlier distortion in regression models by comparing OLS estimates to those obtained using robust Huber-skip estimators (including Robustified Least Squares and Impulse Indicator Saturation). To develop the proposed test, we fully established asymptotic theory of RLS and IIS. Our analysis is valid in cross sectional and time series settings which include stationary, deterministically trending, and unit root processes. The test performs well in simulations with size close to nominal levels for large ($n>200$) samples and high power under a range of alternatives. Our proposed bootstrap implementation of scaling the cut-off values used to determine outliers improves performance in finite samples and reduces size distortions for the asymptotic test when the reference distribution is different to the true underlying error distribution.
 
-Our application of the outlier distortion test to the macro-economic impacts of climate change highlights the importance of assessing the influence of outliers in regression models. While we find evidence of income-driven adaptation to climate change, the estimates are sensitive to outlying observations.
-When using a robust estimator, the estimated impacts of temperatures onto GDP per capita growth are significantly different to those obtained when using OLS. Resulting projections of impacts with and without adaptation when using a robust estimator show that outliers tend to increase the variability of the expected damages of climate change in both tails of the impact distribution. While our projections indicate significant impacts of future climate change for countries around the tropics in all scenarios, the use of a robust estimator reduces the negative median GDP per capita impacts by up to 8.3\% points in our Base model and up to 7.3\% in our adaptation model.
-
-\ignore{More results}
+Our application of the outlier distortion test to the macro-economic impacts of climate change highlights the importance of assessing the influence of outliers in regression models. We find that estimates of climate impacts are sensitive to outlying observations that necessitate robust estimation in all model specifications. When using a robust estimator, the estimated impacts of temperatures onto GDP per capita growth are significantly different to those obtained when using OLS as our formal test shows. Our econometric estimates show that temperatures have a non-linear effect on GDP per capita growth, but this relationship varies by income, which is evidence of income-driven adaptation to climate change suggesting that higher incomes dampen the impact that future climate change can have. Resulting projections of impacts with and without adaptation show that robust estimation dampens climate impacts onto GDP per capita growth compared to conventional OLS estimates by up to 8\% in our two central models. When considering income-adaptation in isolation, we project a level reduction of impacts by up to 12\% and when considering both robust estimation and income-adaptation we further find that marginal impacts of an additional degree of warming could roughly halve. Nonetheless, all our projections show that even under adaptation, median estimates of GDP per capita losses could be immense under high levels of warming, reemphasizing the need to achieve the temperature goals of the Paris Agreement to avoid large and significant losses, especially in poor countries.
 
 More generally, our proposed test allows for the assessment of outlier-driven distortion in a wide set of regression models and can be readily implemented using the R-package `gets' (\citealt{pretis2018automated}).
 
@@ -1288,7 +1281,9 @@ Set $m = 0$ and $m \to \infty$ such that $\varrho_{\beta, c}^{(1)} = 2 c \mathsf
 \clearpage
 \section{Additional Simulation Results} \label{sec_add_sim}
 
-Here we report additional simulation results in the presence of outliers. Figure \ref{fig_out_sim_alt15} shows the simulation results under a range of alternatives for 15\% outlier contamination. Figure \ref{fig_out_sim_alt1_1reg} shows the simulation results when testing for distortion of a single coefficient under a range of alternatives. Figure \ref{fig_out_sim_alt1_5reg05} shows the simulation results when testing for distortion when the dependent variable shows some persistence (autoregressive coefficient of 0.5) under a range of alternatives.
+Here we report additional simulation results in the presence of outliers. Figure \ref{fig_out_sim_alt15} shows the simulation results under a range of alternatives for 15\% outlier contamination. Figure \ref{fig_out_sim_alt1_1reg} shows the simulation results when testing for distortion of a single coefficient under a range of alternatives. Figure \ref{fig_out_sim_alt1_5reg05} shows the simulation results when testing for distortion when the dependent variable shows some persistence (autoregressive coefficient of 0.5) under a range of alternatives. %We also present our simulation results in Tables for convenience.\ignore{Add references to tables}
+
+\subsection{Simulation Results presented in Figures}
 
 Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the bootstrap simulation results for outlier magnitudes of 2 and 3 standard deviations of the error term respectively.
 
@@ -1337,6 +1332,11 @@ Figures \ref{fig_out_sim_alt_boot2} and \ref{fig_out_sim_alt_boot3} show the boo
 \caption{Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test (for outlier magnitude of 3SD of the error term).}
 \label{fig_out_sim_alt_boot3}
 \end{figure}
+
+%\subsection{Simulation Results presented in Tables}
+
+
+%\include{simulation_tables/NULL_levels.tex}
 
 
 \clearpage
