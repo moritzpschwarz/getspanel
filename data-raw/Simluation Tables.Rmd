@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 
@@ -348,8 +350,7 @@ column_tables(list(tab1),
                       caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for the Normal Distribution identical to Figure \\ref{fig_out_sim_null} right panel."), 
                       label = "fig_out_sim_null_tabright"), sep = "\n") %>% 
   
-  cat(file = here("data-raw/text/v8/","simulation_tables","fig_out_sim_null_tab.tex"))
-
+  cat(file = here("data-raw/text/v8/","table_null.tex"))
 ```
 
 
@@ -454,10 +455,10 @@ for(i in 1:nrow(plot_specs) ){
 #  paste0("\\documentclass{article} \n \\usepackage{booktabs} \n \\usepackage{graphicx} \n\\begin{document}\n",
 #            table_list_alt,
 #            "\n \\end{document}") %>% 
-# cat(file = here("data-raw/text/v8/simulation_tables/alternative.tex"))
+# cat(file = here("data-raw/text/v8/table_alternative.tex"))
 
 
-cat(table_list_alt,file = here("data-raw/text/v8/simulation_tables/alternative.tex"))
+cat(table_list_alt,file = here("data-raw/text/v8/table_alternative.tex"))
 ```
 
 
@@ -496,7 +497,7 @@ reference distribution does and does not match the error distribution in the DGP
 label = "fig_boot_sim_null_table", resize = TRUE) -> tab_boot_null
 
 
-cat(tab_boot_null, file = here("data-raw/text/v8/simulation_tables/boot_null.tex"))
+cat(tab_boot_null, file = here("data-raw/text/v8/table_boot_null.tex"))
 
 ```
 
@@ -537,5 +538,5 @@ for(i in c(2,3, 4, 6)){
 ```
 
 ```{r}
-cat(table_list_boot_alt, file = here("data-raw/text/v8/simulation_tables/alternative_boot.tex"))
+cat(table_list_boot_alt, file = here("data-raw/text/v8/table_boot_alternative.tex"))
 ```

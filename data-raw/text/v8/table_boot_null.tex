@@ -1,0 +1,43 @@
+\begin{table}
+\small
+\caption{Simulation performance of the bootstrap tests under the null of no distortion when the
+reference distribution does and does not match the error distribution in the DGP.}
+\label{fig_boot_sim_null_table}
+ \parbox{0.99\textwidth}{\resizebox{0.99\textwidth}{!}{
+\centering
+\begin{tabular}{rlrrrrrrr}
+\toprule
+n & Cleaned & Scaled p-value & \# Regressors & AR & Level & p-value & Rejection Freq. & L2 Rejection Freq\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{9}{l}{\textbf{Normal Distribution}}\\
+\hspace{1em}50 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.127 & 0.0000000\\
+\hspace{1em}100 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.089 & 0.0000000\\
+\hspace{1em}150 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.073 & 0.0000000\\
+\hspace{1em}200 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.068 & 0.0000000\\
+\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.136 & 0.0000000\\
+\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.136 & 0.0000000\\
+\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.101 & 0.0260000\\
+\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.077 & 0.0020000\\
+\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.079 & 0.0350000\\
+\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.063 & 0.0010000\\
+\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.077 & 0.0430000\\
+\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.059 & 0.0000000\\
+\addlinespace[0.3em]
+\multicolumn{9}{l}{\textbf{$t_3$ Distribution}}\\
+\hspace{1em}50 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.524 & 0.0000000\\
+\hspace{1em}100 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.564 & 0.0000000\\
+\hspace{1em}150 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.584 & 0.0000000\\
+\hspace{1em}200 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.597 & 0.0000000\\
+\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.473 & 0.0490000\\
+\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.473 & 0.0320000\\
+\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.560 & 0.2384770\\
+\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.552 & 0.1194779\\
+\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.592 & 0.2779456\\
+\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.565 & 0.1211211\\
+\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.587 & 0.2802803\\
+\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.592 & 0.1614845\\
+\bottomrule
+\end{tabular}
+}}
+ \end{table}
