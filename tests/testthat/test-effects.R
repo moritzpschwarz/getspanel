@@ -1,121 +1,154 @@
 # devtools::install_github(repo = "moritzpschwarz/getspanel")
-library(getspanel)
+#library(getspanel)
 library(tidyverse) # needed for the plots
 library(fixest)
 library(lfe)
 
 data("pandata_simulated")
 
+pandata_simulated <- pandata_simulated %>% filter(year > 1980)
+
 
 # Case 1: No FE
 
-lm(y~temp,is2$estimateddata) %>% summary
+test_that("Case 1: No FE", {
+  lm(gdp~temp,pandata_simulated) %>% summary
+  feols(gdp~temp, pandata_simulated)
 
-feols(y~temp, is2$estimateddata)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "none",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "none",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "none",
+                          engine = "fixest",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "none",
-          engine = "fixest",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "none",
+                          engine = "felm",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+})
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "none",
-          engine = "felm",
-          csis = TRUE)
 
 # Case 2: Indv FE
 
-lm(y~temp + as.factor(id),is2$estimateddata) %>% summary
-lm(y~temp+ as.factor(id)-1,is2$estimateddata) %>% summary
+test_that("Case 2: Indv FE", {
 
-feols(y~temp|id, is2$estimateddata)
-feols(y~temp-1|id, is2$estimateddata)
+  lm(gdp~temp + as.factor(country),data = pandata_simulated) %>% summary
+  lm(gdp~temp+ as.factor(country)-1,pandata_simulated) %>% summary
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "individual",
-          csis = TRUE)
+  feols(gdp~temp|country, pandata_simulated)
+  feols(gdp~temp-1|country, pandata_simulated)
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "individual",
-          engine = "fixest",
-          csis = TRUE)
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "individual",
-          engine = "felm",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "individual",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "individual",
+                          engine = "fixest",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "individual",
+                          engine = "felm",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+
+
+})
+
 
 # Case 3: Time FE
 
-lm(y~temp + as.factor(time),is2$estimateddata) %>% summary
-lm(y~temp+ as.factor(time)-1,is2$estimateddata) %>% summary
+test_that("Case 3: Time FE", {
+  lm(gdp~temp + as.factor(year),pandata_simulated) %>% summary
+  lm(gdp~temp+ as.factor(year)-1,pandata_simulated) %>% summary
 
-feols(y~temp|time, is2$estimateddata)
-feols(y~temp-1|time, is2$estimateddata)
+  feols(gdp~temp|year, pandata_simulated)
+  feols(gdp~temp-1|year, pandata_simulated)
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "time",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "time",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "time",
-          engine = "fixest",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "time",
+                          engine = "fixest",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "time",
-          engine = "felm",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "time",
+                          engine = "felm",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+
+})
+
+
 
 # Case 4: Two-way FE
 
-lm(y~temp + as.factor(time) + as.factor(id),is2$estimateddata) %>% summary
-lm(y~temp+ as.factor(time) + as.factor(id)-1,is2$estimateddata) %>% summary
+test_that("Case 4: Two-way FE", {
+  lm(gdp~temp + as.factor(year) + as.factor(country),pandata_simulated) %>% summary
+  lm(gdp~temp+ as.factor(year) + as.factor(country)-1,pandata_simulated) %>% summary
 
-feols(y~temp|time + id, is2$estimateddata)
-feols(y~temp-1|time + id, is2$estimateddata)
+  feols(gdp~temp|year + country, pandata_simulated)
+  feols(gdp~temp-1|year + country, pandata_simulated)
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "twoways",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "twoways",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "twoways",
-          engine = "fixest",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "twoways",
+                          engine = "fixest",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
 
-isatpanel(data = pandata_simulated,
-          formula = gdp ~ temp,
-          index = c("country","year"),
-          effect = "twoways",
-          engine = "felm",
-          csis = TRUE)
+  expect_silent(isatpanel(data = pandata_simulated,
+                          formula = gdp ~ temp,
+                          index = c("country","year"),
+                          effect = "twoways",
+                          engine = "felm",
+                          csis = TRUE,
+                          print.searchinfo = FALSE))
+
+})
+
+
 
 
 

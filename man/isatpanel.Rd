@@ -44,7 +44,7 @@ isatpanel(
 
 \item{na.remove}{remove NAs}
 
-\item{engine}{Function to use}
+\item{engine}{Estimation function to use. Default is NULL, which uses the default estimation procedure of the gets package. Alternatives are "fixest", "plm", or "felm".}
 
 \item{user.estimator}{Use a user.estimator}
 
@@ -80,7 +80,7 @@ isatpanel(
 
 \item{mxreg}{The co-variates matrix}
 
-\item{...}{Further arguments to gets::isat}
+\item{...}{Further arguments to gets::isat()}
 }
 \value{
 

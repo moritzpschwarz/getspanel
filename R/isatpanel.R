@@ -10,7 +10,7 @@
 #' @param mxreg The co-variates matrix
 #' @param effect Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".
 #' @param na.remove remove NAs
-#' @param engine Function to use
+#' @param engine Estimation function to use. Default is NULL, which uses the default estimation procedure of the gets package. Alternatives are "fixest", "plm", or "felm".
 #' @param user.estimator Use a user.estimator
 #' @param cluster cluster Standard Errors at this level. Default is "none". Possible values are: "indvidiual", "time", or "twoways".
 #' @param plm_model Type of PLM model (only if engine = "PLM")
@@ -462,6 +462,15 @@ isatpanel <- function(
 
 
   out$finaldata <- data.frame(estimateddata, indicators)
+
+  out$arguments <- list()
+  out$arguments$index <- index
+  out$arguments$engine <- engine
+  out$arguments$user.estimator <- user.estimator
+  out$arguments$cluster <- cluster
+  out$arguments$effect <- effect
+
+  #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
 
   try(
     if(plot == TRUE){

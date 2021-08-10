@@ -40,7 +40,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     # the cluster argument
     parse_FE <- if(effect == "twoways") {
       if (cluster == "individual") {
-        "individual + time"
+        "| individual + time"
       } else {
         "| time + individual"
       }
