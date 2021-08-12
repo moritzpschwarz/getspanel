@@ -255,13 +255,13 @@ This is 3.1a and
 sum_tab %>% 
   filter(hypothesis == "null" & bootstrap == FALSE) %>% 
   
-  filter(test.lev %in% c(0.01, 0.05) & nreg == 5 & ar == 0 & p_alpha %in% c(0.01,0.05)) %>% 
+  filter(test.lev %in% c(0.01, 0.05) & 
+           nreg == 5 & ar == 0 & p_alpha %in% c(0.01,0.05)) %>% 
   
   select(sample, rej, p_alpha, nreg, test.lev, dist) %>% 
-  arrange(p_alpha) %>% 
+  arrange(dist, p_alpha, sample) %>% 
   pivot_wider(id_cols = c(sample, nreg, test.lev),
               names_from = c(dist,p_alpha), values_from = rej) %>% 
-  
   arrange(test.lev, sample) %>% 
   
   select(-test.lev) %>% 
@@ -274,7 +274,7 @@ sum_tab %>%
   #pack_rows("Normal Distribution",1, 10) %>%
   #pack_rows("$t_3$ Distribution", 11, 20) %>% 
   
-  add_header_above(c(" " = 2, "$\\\\gamma$" = 4),escape = FALSE) %>% 
+  add_header_above(c(" " = 2, "$\\\\gamma_c$" = 4),escape = FALSE) %>% 
   add_header_above(c(" " = 2, "Normal Distr." = 2, "$t_3$ Distr." = 2), escape = FALSE) %>% 
   
   pack_rows("Level 0.01",1, 5) %>%
@@ -296,7 +296,10 @@ sum_tab %>%
               names_from = c(nreg), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(format = "latex", col.names = c("n", "Level","p-value", "1","5","10"), booktabs = TRUE) %>% 
+  kable(format = "latex", 
+        digits = 3,
+        col.names = c("n", "Level","$\\gamma_c$", "1","5","10"), 
+        booktabs = TRUE, escape = FALSE) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
@@ -321,7 +324,10 @@ sum_tab %>%
               names_from = c(ar), values_from = rej) %>% 
   
   select(-dist) %>% 
-  kable(format = "latex",col.names = c("n", "Level","p-value","# Regressors", "0","0.5","1"), booktabs = TRUE) %>% 
+  kable(format = "latex", booktabs = TRUE,
+        digits = 3,
+        col.names = c("n", "Level","$\\gamma_c$",
+                      "\\# Regressors", "0","0.5","1"),  escape = FALSE) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
@@ -337,17 +343,17 @@ sum_tab %>%
 ```{r}
 
 column_tables(list(tab1), 
-              caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for the Normal Distribution identical to Figure \\ref{fig_out_sim_null} left panel."), 
+              caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} left panel."), 
               label = "fig_out_sim_null_tableft") %>% 
   paste(., 
         
         column_tables(list(tab2), 
-                      caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for the Normal Distribution identical to Figure \\ref{fig_out_sim_null} middle panel."), 
+                      caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} middle panel."), 
                       label = "fig_out_sim_null_tabmid"), sep = "\n") %>% 
   
   paste(., 
         column_tables(list(tab2), 
-                      caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for the Normal Distribution identical to Figure \\ref{fig_out_sim_null} right panel."), 
+                      caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} right panel."), 
                       label = "fig_out_sim_null_tabright"), sep = "\n") %>% 
   
   cat(file = here("data-raw/text/v8/","table_null.tex"))
@@ -365,10 +371,10 @@ plot_specs_overall %>%
 table_list_alt <- ""
 
 plot_specs %>% 
-  mutate(text = "Simulation performance under the alternative for varying sample sizes and outlier magnitudes when the dependent variable exhibits ", 
-         text = paste0(text, case_when(ar == 0 ~"no autocorrelation", 
-                                       ar == 0.5 ~"0.5 autocorrelation", 
-                                       ar == 1 ~"autocorrelation of 1"))) %>% 
+  mutate(text = "Simulation performance under the alternative for varying sample sizes and outlier magnitudes when the dependent variable is a  ", 
+         text = paste0(text, case_when(ar == 0 ~"cross-sectional process.", 
+                                       ar == 0.5 ~"stationary autoregressive process with coefficient of 0.5 on the autoregressive term.", 
+                                       ar == 1 ~"unit-root process."))) %>% 
   
   mutate(text = paste0(text, " and ", 
                        case_when(out_prop == 0.10 ~ "10\\% of the sample is outlier-contaminated.", 
@@ -401,46 +407,71 @@ for(i in 1:nrow(plot_specs) ){
   #### against euclidian distance of coefficients
   datalt$is.euclid.sc <- datalt$is.euclid/max(datalt$is.euclid)
   
+  # 
+  # datalt %>% 
+  #   select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda, dist, is.euclid.sc) %>% 
+  #   pivot_wider(id_cols = c(sample, ar, out_prop, test.lev, p_alpha, nreg, dist),
+  #               names_from = c(lambda), values_from = c(rej,is.euclid.sc)) %>% 
+  #   
+  #   pivot_longer(c(contains(c("rej","euclid")))) %>% 
+  #   separate(col = name, sep ="_",into = c("type","lambda")) %>% 
+  #   pivot_wider(names_from = lambda, values_from = value) %>% 
+  #   mutate(type = ifelse(type == "rej", "Rejection Freq","Scaled Eucl. Dist."))-> df_to_table
+  # 
+  # 
+  # group_by(df_to_table, sample,dist)  %>% group_indices() -> group_index
+  # 
+  # df_to_table %>% 
+  #   select(-sample, -dist) %>% 
+  #   rename(` ` = type) %>%  
+  #   kable(format = "latex", booktabs = TRUE,
+  #         col.names = c("AR", "Outl. Prop.", "Level","p-value","# Regressors","Type", "2","3","4","6")) %>% 
+  #   kable_styling(full_width = FALSE) %>% 
+  #   kable_paper() %>% 
+  #   pack_rows("Normal Distribution",1, 10) %>%
+  #   pack_rows("$t_3$ Distribution", 11, 20, escape = FALSE) %>% 
+  #   
+  #   pack_rows("n = 100", 1, 2) %>% 
+  #   pack_rows("n = 200", 3, 4) %>% 
+  #   pack_rows("n = 300", 5, 6) %>% 
+  #   pack_rows("n = 400", 7, 8) %>% 
+  #   pack_rows("n = 500", 9, 10) %>% 
+  #   pack_rows("n = 100", 11, 12) %>% 
+  #   pack_rows("n = 200", 13, 14) %>% 
+  #   pack_rows("n = 300", 15, 16) %>% 
+  #   pack_rows("n = 400", 17, 18) %>% 
+  #   pack_rows("n = 500", 19, 20) %>% 
+  #   
+  #   
+  #   #add_header_above(c(" " = 6, "$\\lambda$" = 4),escape = FALSE) %>% 
+  #   add_header_above(c(" " = 6, "$\\\\lambda$" = 4), escape = FALSE) -> tab_intermed
+  # 
+  # 
+  # 
+  # 
+  
+  
   
   datalt %>% 
-    select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda, dist, is.euclid.sc) %>% 
+    select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda, dist) %>% 
     pivot_wider(id_cols = c(sample, ar, out_prop, test.lev, p_alpha, nreg, dist),
-                names_from = c(lambda), values_from = c(rej,is.euclid.sc)) %>% 
-    
-    pivot_longer(c(contains(c("rej","euclid")))) %>% 
-    separate(col = name, sep ="_",into = c("type","lambda")) %>% 
-    pivot_wider(names_from = lambda, values_from = value) %>% 
-    mutate(type = ifelse(type == "rej", "Rejection Freq","Scaled Eucl. Dist."))-> df_to_table
-  
-  
-  group_by(df_to_table, sample,dist)  %>% group_indices() -> group_index
-  
+                names_from = c(lambda), values_from = c(rej)) -> df_to_table
   
   df_to_table %>% 
-    select(-sample, -dist) %>% 
-    rename(` ` = type) %>%  
-    kable(format = "latex", booktabs = TRUE,
-          col.names = c("AR", "Outl. Prop.", "Level","p-value","# Regressors","Type", "2","3","4","6")) %>% 
+    select( -dist) %>% 
+    kable(format = "latex", 
+          booktabs = TRUE,
+          escape = FALSE,
+          digits = 3,
+          col.names = c("n","AR", "Outl. Prop.", "Level","$\\gamma_c$","\\# Regressors", "2","3","4","6")) %>% 
     kable_styling(full_width = FALSE) %>% 
     kable_paper() %>% 
-    pack_rows("Normal Distribution",1, 10) %>%
-    pack_rows("$t_3$ Distribution", 11, 20, escape = FALSE) %>% 
-    
-    pack_rows("n = 100", 1, 2) %>% 
-    pack_rows("n = 200", 3, 4) %>% 
-    pack_rows("n = 300", 5, 6) %>% 
-    pack_rows("n = 400", 7, 8) %>% 
-    pack_rows("n = 500", 9, 10) %>% 
-    pack_rows("n = 100", 11, 12) %>% 
-    pack_rows("n = 200", 13, 14) %>% 
-    pack_rows("n = 300", 15, 16) %>% 
-    pack_rows("n = 400", 17, 18) %>% 
-    pack_rows("n = 500", 19, 20) %>% 
+    pack_rows("Normal Distribution",1, 5) %>%
+    pack_rows("$t_3$ Distribution", 6, 10, escape = FALSE) %>% 
     
     
     #add_header_above(c(" " = 6, "$\\lambda$" = 4),escape = FALSE) %>% 
-    add_header_above(c(" " = 6, "$\\\\lambda$" = 4), escape = FALSE) -> tab_intermed
-  
+    add_header_above(header = c(" " = 6, "Rejection Frequency for $\\\\lambda$" = 4), escape = FALSE) -> tab_intermed
   column_tables(list(tab_intermed), 
                 caption = alt_caption_list[i], 
                 label = alt_label_list[i], resize = TRUE) %>% 
@@ -475,15 +506,20 @@ datnull <- datnull[datnull$test.lev==0.05,]
 datnull %>% 
   select(dist, sample, clean.sample, nreg, ar, test.lev, p_alpha, boot.pval.scale, rej, rej.L2.boot) %>% 
   arrange(dist, clean.sample, sample, nreg, p_alpha) %>% 
-  mutate(clean.sample = ifelse(clean.sample, "Cleaned","Not cleaned")) %>% 
+  mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw")) %>% 
   select(-dist) %>% 
   kable(
-    format = "latex", booktabs = TRUE, 
-    col.names = c("n","Cleaned", "Scaled p-value","# Regressors", "AR",
-                  "Level","p-value", "Rejection Freq.", "L2 Rejection Freq")) %>% 
+    #format = "latex", booktabs = TRUE, 
+    col.names = c("n","Cleaned", 
+                  "\\# Regressors", "AR", "Level","$\\gamma_c$",
+                  "Scaling",
+                  "$L_1$", "$L_2$"), 
+    escape = FALSE, 
+    digits = 3) %>% 
   
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
+  add_header_above(c(" " = 7, "Rejection Frequency" = 2)) %>% 
   pack_rows("Normal Distribution",1, 12) %>%
   pack_rows("$t_3$ Distribution", 13, 24, escape = FALSE) -> tab_boot_null
 ```
@@ -515,17 +551,21 @@ for(i in c(2,3, 4, 6)){
            lambda == i) %>% 
     select(dist, lambda, sample, clean.sample, nreg, ar, test.lev, p_alpha, boot.pval.scale, rej, rej.L2.boot) %>% 
     arrange(dist, clean.sample, sample, nreg, p_alpha) %>% 
-    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Not cleaned")) %>% 
+    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw")) %>% 
     select(-dist) %>% 
     kable(
       format = "latex", booktabs = TRUE, 
-      col.names = c("$\\lambda$", "n","Cleaned", "Scaled p-value","\\# Regressors", "AR",
-                    "Level","p-value", "Rejection Freq.", "L2 Rejection Freq"), escape = FALSE) %>% 
+      col.names = c("$\\lambda$", "n","Cleaned", 
+                    "\\# Regressors", "AR","Level",
+                    "$\\gamma_c$", "Scaling",
+                    "$L_1$", "$L_2$"), escape = FALSE, 
+      digits = 3) %>% 
     
     kable_styling(full_width = FALSE) %>% 
     kable_paper() %>% 
     pack_rows("Normal Distribution",1, 24) %>%
-    pack_rows("$t_3$ Distribution", 25, 48, escape = FALSE) -> tab_boot_alt_intermed
+    pack_rows("$t_3$ Distribution", 25, 48, escape = FALSE) %>% 
+    add_header_above(c(" " = 8, "Rejection Frequency" = 2)) -> tab_boot_alt_intermed
   
   
   column_tables(list(tab_boot_alt_intermed), 
