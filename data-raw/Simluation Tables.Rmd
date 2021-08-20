@@ -242,6 +242,40 @@ column_tables <- function(table_list, tex_alone = FALSE, caption = "", label = "
 ```
 
 
+
+
+
+
+
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\begin{document}
+
+
+\include{table_null}
+
+\include{table_alternative}
+
+\include{table_boot_null}
+
+\include{table_boot_alternative}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
 # No Bootstrap
 
 ## Null Hypothesis
@@ -265,10 +299,10 @@ sum_tab %>%
   arrange(test.lev, sample) %>% 
   
   select(-test.lev) %>% 
-  kable(#format = "latex",
-    digits = 3,
-    col.names = c("n", "# Regressors", "0.01", "0.05"), 
-    booktabs = TRUE) %>% 
+  kable(format = "latex",
+        digits = 3,
+        col.names = c("n", "# Regressors", "0.01", "0.05"), 
+        booktabs = TRUE) %>% 
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   #pack_rows("Normal Distribution",1, 10) %>%
@@ -326,7 +360,7 @@ sum_tab %>%
   kable_styling(full_width = FALSE) %>% 
   kable_paper() %>% 
   
-  add_header_above(c(" " = 4, "AR" = 3))  -> tab3 
+  add_header_above(c(" " = 4, "$\\\\rho$" = 3), escape = FALSE)  -> tab3 
 
 # pack_rows("Normal Distribution",1, 5) %>%
 # pack_rows("$t_3$ Distribution", 6, 10, escape = FALSE)  -> tab3 
@@ -410,7 +444,7 @@ for(i in 1:nrow(plot_specs) ){
           booktabs = TRUE,
           escape = FALSE,
           digits = 3,
-          col.names = c("n","AR", "Outl. Prop.", "Level",
+          col.names = c("n","$\\rho$", "Outl. Prop.", "Level",
                         "$\\gamma_c$","\\# Regressors", "2","3","4","6")) %>% 
     kable_styling(full_width = FALSE) %>% 
     kable_paper() %>%  
@@ -444,6 +478,9 @@ cat(table_list_alt,file = here("data-raw/text/v8/table_alternative.tex"))
 
 # Bootstrap
 
+test.lev==0.05 & p_alpha==0.05 & nreg==5 & ar==0 & dist == "norm" &
+clean.sample == TRUE & boot.pval.scale == 1
+
 ## Null
 
 ```{r}
@@ -462,21 +499,30 @@ datnull %>%
               names_from = c(clean.sample, boot.pval.scale),
               values_from = c(rej, rej.L1.boot, rej.L2.boot)) %>% 
   
-  select(dist:p_alpha, contains("Raw"), 
-         contains("Cleaned_1"),contains("Cleaned_2"), everything()) %>% 
-  
+  select(dist:p_alpha, 
+         # asym
+         rej_Cleaned_1, 
+         # raw
+         rej.L1.boot_Raw_1, 
+         rej.L2.boot_Raw_1, 
+         # cleaned
+         rej.L1.boot_Cleaned_1, 
+         rej.L2.boot_Cleaned_1, 
+         # cleaned scaled
+         rej.L1.boot_Cleaned_5, 
+         rej.L2.boot_Cleaned_5) %>% 
   mutate(across( c(contains("rej")) , ~format(round(.,3),nsmall = 3))) %>% 
   
   select(-dist) %>% 
   kable(
     format = "latex", booktabs = TRUE, 
-    col.names = c("n","\\# Regressors", "AR", "Level","$\\gamma_c$",
-                  rep(c("Asymp.","$L_1$","$L_2$"),3)), 
+    col.names = c("n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$"," ",
+                  rep(c("$L_1$","$L_2$"),3)), 
     escape = FALSE
   ) %>% 
   kable_paper() %>% 
-  add_header_above(c(" " = 5, "Raw" = 3, "Clean" = 3, "Clean Scaled" = 3)) %>% 
-  add_header_above(c(" " = 5, "Rejection Frequency" = 9)) %>% 
+  add_header_above(c(" " = 5, "Asymp." = 1,  "Raw" = 2, "Clean" = 2, "Clean Scaled" = 2)) %>% 
+  add_header_above(c(" " = 5, "Rejection Frequency" = 7)) %>% 
   
   pack_rows("Normal Distribution",1, 4) %>%
   pack_rows("$t_3$ Distribution", 5, 8, escape = FALSE) -> tab_boot_null
@@ -487,7 +533,7 @@ datnull %>%
 ```{r}
 column_tables(list(tab_boot_null), 
               caption = "Simulation performance of the bootstrap tests under the null of no distortion when the reference distribution does and does not match the error distribution in the DGP. \\vspace{0.1cm}", 
-label = "fig_boot_sim_null_table", resize = TRUE) -> tab_boot_null
+              label = "fig_boot_sim_null_table", resize = TRUE) -> tab_boot_null
 
 
 cat(tab_boot_null, file = here("data-raw/text/v8/table_boot_null.tex"))
@@ -518,19 +564,29 @@ for(i in c(2,3, 4, 6)){
     
     mutate(across( c(contains("rej")) , ~format(round(.,3),nsmall = 3))) %>% 
     
-    select(dist:p_alpha, contains("Raw"), 
-           contains("Cleaned_1"),contains("Cleaned_2"), everything()) %>% 
+    select(dist:p_alpha, 
+           # asym
+           rej_Cleaned_1, 
+           # raw
+           rej.L1.boot_Raw_1, 
+           rej.L2.boot_Raw_1, 
+           # cleaned
+           rej.L1.boot_Cleaned_1, 
+           rej.L2.boot_Cleaned_1, 
+           # cleaned scaled
+           rej.L1.boot_Cleaned_5, 
+           rej.L2.boot_Cleaned_5) %>% 
     
     select(-dist) %>% 
     kable(
       format = "latex", booktabs = TRUE, 
-      col.names = c("$\\lambda$", "n","\\# Regressors", "AR", "Level","$\\gamma_c$",
-                    rep(c("Asymp.","$L_1$","$L_2$"),3)), 
+      col.names = c("$\\lambda$", "n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$"," ",
+                    rep(c("$L_1$","$L_2$"),3)), 
       escape = FALSE
     ) %>% 
     kable_paper() %>% 
-    add_header_above(c(" " = 6, "Raw" = 3, "Clean" = 3, "Clean Scaled" = 3)) %>% 
-    add_header_above(c(" " = 6, "Rejection Frequency" = 9)) %>% 
+    add_header_above(c(" " = 6, "Asymp." = 1, "Raw" = 2, "Clean" = 2, "Clean Scaled" = 2)) %>% 
+    add_header_above(c(" " = 6, "Rejection Frequency" = 7)) %>% 
     
     pack_rows("Normal Distribution",1, 8) %>%
     pack_rows("$t_3$ Distribution", 9, 16, escape = FALSE) -> tab_boot_alt_intermed
