@@ -1,42 +1,29 @@
 \begin{table}
 \small
-\caption{Simulation performance of the bootstrap tests under the null of no distortion when the
-reference distribution does and does not match the error distribution in the DGP.}
+\caption{Simulation performance of the bootstrap tests under the null of no distortion when the reference distribution does and does not match the error distribution in the DGP. \vspace{0.1cm}}
 \label{fig_boot_sim_null_table}
  \parbox{0.99\textwidth}{\resizebox{0.99\textwidth}{!}{
 \centering
-\begin{tabular}{rlrrrrrrr}
+\begin{tabular}{rrrrrlllllll}
 \toprule
-n & Cleaned & Scaled p-value & \# Regressors & AR & Level & p-value & Rejection Freq. & L2 Rejection Freq\\
+\multicolumn{5}{c}{ } & \multicolumn{7}{c}{Rejection Frequency} \\
+\cmidrule(l{3pt}r{3pt}){6-12}
+\multicolumn{5}{c}{ } & \multicolumn{1}{c}{Asymp.} & \multicolumn{2}{c}{Raw} & \multicolumn{2}{c}{Clean} & \multicolumn{2}{c}{Clean Scaled} \\
+\cmidrule(l{3pt}r{3pt}){6-6} \cmidrule(l{3pt}r{3pt}){7-8} \cmidrule(l{3pt}r{3pt}){9-10} \cmidrule(l{3pt}r{3pt}){11-12}
+n & \# Regressors & $\rho$ & Level & $\gamma_c$ &   & $L_1$ & $L_2$ & $L_1$ & $L_2$ & $L_1$ & $L_2$\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{9}{l}{\textbf{Normal Distribution}}\\
-\hspace{1em}50 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.127 & 0.0000000\\
-\hspace{1em}100 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.089 & 0.0000000\\
-\hspace{1em}150 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.073 & 0.0000000\\
-\hspace{1em}200 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.068 & 0.0000000\\
-\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.136 & 0.0000000\\
-\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.136 & 0.0000000\\
-\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.101 & 0.0260000\\
-\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.077 & 0.0020000\\
-\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.079 & 0.0350000\\
-\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.063 & 0.0010000\\
-\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.077 & 0.0430000\\
-\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.059 & 0.0000000\\
+\multicolumn{12}{l}{\textbf{Normal Distribution}}\\
+\hspace{1em}50 & 5 & 0 & 0.05 & 0.05 & 0.136 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000\\
+\hspace{1em}100 & 5 & 0 & 0.05 & 0.05 & 0.101 & 0.000 & 0.000 & 0.036 & 0.026 & 0.002 & 0.002\\
+\hspace{1em}150 & 5 & 0 & 0.05 & 0.05 & 0.079 & 0.000 & 0.000 & 0.037 & 0.035 & 0.002 & 0.001\\
+\hspace{1em}200 & 5 & 0 & 0.05 & 0.05 & 0.077 & 0.000 & 0.000 & 0.037 & 0.043 & 0.000 & 0.000\\
 \addlinespace[0.3em]
-\multicolumn{9}{l}{\textbf{$t_3$ Distribution}}\\
-\hspace{1em}50 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.524 & 0.0000000\\
-\hspace{1em}100 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.564 & 0.0000000\\
-\hspace{1em}150 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.584 & 0.0000000\\
-\hspace{1em}200 & Not cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.597 & 0.0000000\\
-\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.473 & 0.0490000\\
-\hspace{1em}50 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.473 & 0.0320000\\
-\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.560 & 0.2384770\\
-\hspace{1em}100 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.552 & 0.1194779\\
-\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.592 & 0.2779456\\
-\hspace{1em}150 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.565 & 0.1211211\\
-\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 1 & 0.587 & 0.2802803\\
-\hspace{1em}200 & Cleaned & 5 & 0 & 0.05 & 0.05 & 5 & 0.592 & 0.1614845\\
+\multicolumn{12}{l}{\textbf{$t_3$ Distribution}}\\
+\hspace{1em}50 & 5 & 0 & 0.05 & 0.05 & 0.473 & 0.000 & 0.000 & 0.051 & 0.049 & 0.033 & 0.032\\
+\hspace{1em}100 & 5 & 0 & 0.05 & 0.05 & 0.560 & 0.000 & 0.000 & 0.236 & 0.238 & 0.114 & 0.119\\
+\hspace{1em}150 & 5 & 0 & 0.05 & 0.05 & 0.592 & 0.000 & 0.000 & 0.258 & 0.278 & 0.121 & 0.121\\
+\hspace{1em}200 & 5 & 0 & 0.05 & 0.05 & 0.587 & 0.000 & 0.000 & 0.263 & 0.280 & 0.162 & 0.161\\
 \bottomrule
 \end{tabular}
 }}
