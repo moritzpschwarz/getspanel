@@ -47,7 +47,7 @@ controls <- data.frame(dat %>% dplyr::select(lgdp,lgdp_sq))
 
 # Specify control variables:
 test_that("test",{
-  expect_silent(controls <- data.frame(dat %>% dplyr::select(lgdp,lgdp_sq)))
+  expect_silent(controls <- data.frame(dat[,c("lgdp","lgdp_sq")]))
 })
 
 #

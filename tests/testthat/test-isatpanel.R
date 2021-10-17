@@ -109,7 +109,32 @@ test_that("Simple Default Test",{
 
 
 test_that("Simple Default Test with AR1",{
-  expect_message(isatpanel(y=pandata_simulated$gdp,id=pandata_simulated$country,time=pandata_simulated$year,mxreg=pandata_simulated$temp,effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,cluster = "individual",ar=1))
+  expect_message(isatpanel(
+    y = pandata_simulated$gdp,
+    id = pandata_simulated$country,
+    time = pandata_simulated$year,
+    mxreg = pandata_simulated$temp,
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    t.pval = 0.01,
+    #cluster = "individual",
+    ar = 1
+  ))
+
+  expect_message(isatpanel(
+    y = pandata_simulated$gdp,
+    id = pandata_simulated$country,
+    time = pandata_simulated$year,
+    mxreg = pandata_simulated$temp,
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    t.pval = 0.01,
+    engine = "fixest",
+    cluster = "individual",
+    ar = 1
+  ))
 })
 
 
