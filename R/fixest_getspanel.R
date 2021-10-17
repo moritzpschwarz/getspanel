@@ -88,5 +88,51 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
   out$rss <- sum(out$residuals2)
   out$sigma2 <- out$rss/out$df
 
+
+  # # Adapt mXnames in arx when fixest removes collinearity
+  # This is what I had tried using the <<- operator, but this didn't work either
+  if(ncol(x) > length(out$coefficients)){
+    original <- data.frame(term = colnames(x),
+                           index = 1:length(colnames(x)), row.names = NULL)
+    outcome <- data.frame(term = names(coef(tmp)),
+                          coef = coef(tmp),
+                          row.names = NULL)
+    merged <- merge(original, outcome, by = "term", all = TRUE, sort = FALSE)
+    index_kept <- order(merged$index)
+    merged <- merged[index_kept,]
+
+    out$coefficients <- merged$coef
+
+    vcov_mat_orig <- matrix(nrow = length(colnames(x)), ncol = length(colnames(x)), NA,
+           dimnames = list(colnames(x), colnames(x)))
+
+    vcov_mat_orig[rownames(vcov_mat_orig) %in% rownames(out$vcov),
+                  colnames(vcov_mat_orig) %in% colnames(out$vcov)] <-
+      out$vcov[rownames(out$vcov) %in% rownames(vcov_mat_orig),
+               colnames(out$vcov) %in% colnames(vcov_mat_orig)]
+
+    out$vcov <- vcov_mat_orig
+
+
+
+    # test <- structure(rep(NA,ncol(x)), names=colnames(x))
+    # out$coefficients[names(out$coefficients) %in% names(test)]
+    #
+    #
+    #
+    # aux_out <- dynGet("aux")
+    #
+    # aux_out$mXnames <- names(out)
+    # for(i in 1:sys.nframe()){
+    #   if(any(names(sys.frame(i)) %in% "aux")){right_frame <- i}
+    # }
+    # #browser()
+    # right_pos <- (sys.nframe() - right_frame) #* -1
+    # #assign("aux",aux_out,pos = right_pos)
+    # assign("aux",aux_out,pos = 2)
+    #
+
+    #aux$mXnames <<- names(out$coefficients)
+  }
   return(out)
 }
