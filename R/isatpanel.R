@@ -386,6 +386,7 @@ isatpanel <- function(
       stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
     }
     if(engine == "felm"){
+      require(lfe, quietly = TRUE)
       user.estimator <- list(
         name = getspanel:::felmFun,
         time = time,
@@ -396,6 +397,7 @@ isatpanel <- function(
       mc = FALSE
     }
     if(engine == "fixest"){
+      require(fixest, quietly = TRUE)
       user.estimator <- list(
         name = getspanel:::fixestFun,
         time = time,
@@ -407,6 +409,7 @@ isatpanel <- function(
       mc = FALSE
     }
     if(engine == "plm"){
+      require(plm, quietly = TRUE)
       user.estimator <- list(
         name = getspanel:::plmFun,
         time = time,
@@ -441,8 +444,16 @@ isatpanel <- function(
   #############################
   ####### Estimate
   ###############################
-  #ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=TRUE, ...)
-  ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+
+  # Save original arx mc warning setting and disable it here
+  tmpmc <- getOption("mc.warning")
+  options(mc.warning = FALSE)
+
+  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+  #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+
+  # Set the old arx mc warning again
+  options(mc.warning = tmpmc)
 
   ###############################
   ############## Return output

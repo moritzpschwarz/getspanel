@@ -1,19 +1,19 @@
 # devtools::install_github(repo = "moritzpschwarz/getspanel")
 #library(getspanel)
-library(tidyverse) # needed for the plots
+#library(tidyverse) # needed for the plots
 library(fixest)
 library(lfe)
 
 data("pandata_simulated")
 
-pandata_simulated <- pandata_simulated %>% filter(year > 1980)
+pandata_simulated <- pandata_simulated[pandata_simulated$year > 1980,]
 
 
 # Case 1: No FE
 
 test_that("Case 1: No FE", {
-  lm(gdp~temp,pandata_simulated) %>% summary
-  feols(gdp~temp, pandata_simulated)
+  #summary(lm(gdp~temp,pandata_simulated))
+  #fixest::feols(gdp~temp, pandata_simulated)
 
   expect_silent(isatpanel(data = pandata_simulated,
                           formula = gdp ~ temp,
@@ -44,11 +44,11 @@ test_that("Case 1: No FE", {
 
 test_that("Case 2: Indv FE", {
 
-  lm(gdp~temp + as.factor(country),data = pandata_simulated) %>% summary
-  lm(gdp~temp+ as.factor(country)-1,pandata_simulated) %>% summary
-
-  feols(gdp~temp|country, pandata_simulated)
-  feols(gdp~temp-1|country, pandata_simulated)
+  # lm(gdp~temp + as.factor(country),data = pandata_simulated) %>% summary
+  # lm(gdp~temp+ as.factor(country)-1,pandata_simulated) %>% summary
+  #
+  # fixest::feols(gdp~temp|country, pandata_simulated)
+  # fixest::feols(gdp~temp-1|country, pandata_simulated)
 
 
   expect_silent(isatpanel(data = pandata_simulated,
@@ -81,11 +81,11 @@ test_that("Case 2: Indv FE", {
 # Case 3: Time FE
 
 test_that("Case 3: Time FE", {
-  lm(gdp~temp + as.factor(year),pandata_simulated) %>% summary
-  lm(gdp~temp+ as.factor(year)-1,pandata_simulated) %>% summary
-
-  feols(gdp~temp|year, pandata_simulated)
-  feols(gdp~temp-1|year, pandata_simulated)
+  # lm(gdp~temp + as.factor(year),pandata_simulated) %>% summary
+  # lm(gdp~temp+ as.factor(year)-1,pandata_simulated) %>% summary
+  #
+  # feols(gdp~temp|year, pandata_simulated)
+  # feols(gdp~temp-1|year, pandata_simulated)
 
   expect_silent(isatpanel(data = pandata_simulated,
                           formula = gdp ~ temp,
@@ -117,11 +117,11 @@ test_that("Case 3: Time FE", {
 # Case 4: Two-way FE
 
 test_that("Case 4: Two-way FE", {
-  lm(gdp~temp + as.factor(year) + as.factor(country),pandata_simulated) %>% summary
-  lm(gdp~temp+ as.factor(year) + as.factor(country)-1,pandata_simulated) %>% summary
-
-  feols(gdp~temp|year + country, pandata_simulated)
-  feols(gdp~temp-1|year + country, pandata_simulated)
+  # lm(gdp~temp + as.factor(year) + as.factor(country),pandata_simulated) %>% summary
+  # lm(gdp~temp+ as.factor(year) + as.factor(country)-1,pandata_simulated) %>% summary
+  #
+  # feols(gdp~temp|year + country, pandata_simulated)
+  # feols(gdp~temp-1|year + country, pandata_simulated)
 
   expect_silent(isatpanel(data = pandata_simulated,
                           formula = gdp ~ temp,
