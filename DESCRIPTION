@@ -24,7 +24,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    lfe
+    lfe, 
+    prettydoc
 Imports: 
     gets,
     fixest,
@@ -37,4 +38,4 @@ Imports:
     plm
 Depends: 
     R (>= 3.5.0)
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
