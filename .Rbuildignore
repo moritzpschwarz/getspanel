@@ -4,3 +4,6 @@
 ^README\.Rmd$
 ^data-raw$
 ^.github
+^getspanel\.Rcheck$
+^getspanel.*\.tar\.gz$
+^getspanel.*\.tgz$
