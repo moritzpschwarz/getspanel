@@ -10,6 +10,12 @@ A data frame with 400 rows and 9 variables:
 \item{country}{A random country}
 \item{gdp}{A simulated Gross Domestic Product}
 \item{temp}{A simulated variable standing for temperature}
+\item{const}{The constant}
+\item{country_1}{A dummy for country 1}
+\item{country_2}{A dummy for country 2}
+\item{country_3}{A dummy for country 3}
+\item{country_4}{A dummy for country 4}
+
 ...
 }
 }
