@@ -33,9 +33,15 @@
 #' @export
 #'
 #' @examples
-#' data <- pandata_simulated
+#' data <- pandata_simulated[pandata_simulated$year > 1980,]
+#'
 #' isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
+#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01)
+#'
+#' \dontrun{isatpanel(data = data, gdp ~ temp, index = c("country","year"),
+#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")}
+#'
+#'
 
 isatpanel <- function(
   data=NULL,
