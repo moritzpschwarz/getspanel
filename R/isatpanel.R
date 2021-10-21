@@ -25,8 +25,10 @@
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
-#' @param csis_var The csis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
-#' @param cfesis_var The cfesis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
+#' @param csis_var The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
+#' @param csis_id The csis method can be conducted for all (default) individuals/units (i.e. looking for joint breaks in the coefficients) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability of the coefficient in a character vector.
+#' @param cfesis_var The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
+#' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is FALSE.
 #'
 #' @return

@@ -27,7 +27,7 @@
 #'   \item{year}{Year}
 #'   \item{gdp}{Gross Domestic Product}
 #'   \item{pop}{Population}
-#'   \item{transport.emissisions}{Transport CO2 Emissions}
+#'   \item{transport.emissions}{Transport CO2 Emissions}
 #'   \item{lgdp}{Log GDP}
 #'   \item{lpop}{Log Population}
 #'   \item{ltransport.emissions}{Log Transport CO2 Emissions}

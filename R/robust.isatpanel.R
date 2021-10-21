@@ -3,6 +3,8 @@
 #' @param object An isatpanel object
 #' @param robust Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity?
 #' @param HAC Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used?
+#' @param lag Number of Lags to be used with HAC in coeftest. Cannot be specified when HAC = FALSE.
+#' @param effect The effects introduced into the plm model, one of "individual", "time", "twoways" (default), or "nested"
 #' @param type Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang
 #' @param cluster 'group' or 'time' or FALSE
 #'
