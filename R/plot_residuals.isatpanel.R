@@ -2,7 +2,6 @@
 #'
 #' @param isatpanelobject An output from the 'isatpanel' function
 #'
-#' @return
 #' @export
 #'
 #' @examples

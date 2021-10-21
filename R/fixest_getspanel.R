@@ -8,7 +8,7 @@
 #' @param cluster Character vector of the variable(s) to cluster Standard Errors at
 #' @param ... Further arguments to pass to gets::isat
 #'
-#' @return
+#' @return List to be used by gets::isat
 #'
 
 

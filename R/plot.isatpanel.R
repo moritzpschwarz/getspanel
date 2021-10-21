@@ -6,7 +6,6 @@
 #' @param title Plot title. Must be a character vector.
 #' @param ... Further arguments to be passed to ggplot2.
 #'
-#' @return
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline

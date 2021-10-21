@@ -8,7 +8,7 @@
 #' @param type Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang
 #' @param cluster 'group' or 'time' or FALSE
 #'
-#' @return
+#' @return A list with robust estimates
 #' @export
 #'
 robust.isatpanel <- function(object,

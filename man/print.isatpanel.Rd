@@ -7,10 +7,8 @@
 \method{print}{isatpanel}(obj)
 }
 \arguments{
-\item{obj}{An isatpanel object.}
-}
-\value{
-
+\item{obj}{An isatpanel object.
+#' @export}
 }
 \description{
 Printing isatpanel results

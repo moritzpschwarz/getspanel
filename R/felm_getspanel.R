@@ -5,12 +5,11 @@
 #' @param effect Fixed Effect specification
 #' @param time Character vector of name of the time variable
 #' @param id Character vector of the name of the group variable
-#' @param cluster Character vector of the variable(s)
-#' to cluster Standard Errors at
+#' @param cluster Character vector of the variable(s) to cluster Standard Errors at
 #' @param ... Further arguments to pass to gets::isat
 #'
 #' @export
-#' @return
+#' @return List to be used by gets::isat
 #'
 
 felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {

@@ -64,9 +64,13 @@ isatpanel(
 
 \item{cfesis}{Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
-\item{csis_var}{The csis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+\item{csis_var}{The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 
-\item{cfesis_var}{The cfesis method can be conducted for all variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability in a character vector.}
+
+\item{cfesis_var}{The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+
+\item{cfesis_id}{The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
 
 \item{plot}{Logical. Should the final object be plotted? Default is FALSE.}
 
@@ -83,7 +87,7 @@ isatpanel(
 \item{...}{Further arguments to gets::isat()}
 }
 \value{
-
+an isatpanel object
 }
 \description{
 Panel isat function

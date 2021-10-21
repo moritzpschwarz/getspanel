@@ -21,12 +21,16 @@ robust.isatpanel(
 
 \item{HAC}{Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used?}
 
+\item{lag}{Number of Lags to be used with HAC in coeftest. Cannot be specified when HAC = FALSE.}
+
+\item{effect}{The effects introduced into the plm model, one of "individual", "time", "twoways" (default), or "nested"}
+
 \item{type}{Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang}
 
 \item{cluster}{'group' or 'time' or FALSE}
 }
 \value{
-
+A list with robust estimates
 }
 \description{
 Get robust Standard Errors for the isatpanel result

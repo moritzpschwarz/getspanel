@@ -22,7 +22,7 @@ fixestFun(y, x, effect, time, id, cluster = "individual", ...)
 \item{...}{Further arguments to pass to gets::isat}
 }
 \value{
-
+List to be used by gets::isat
 }
 \description{
 fixest Estimation Method

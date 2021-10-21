@@ -2,7 +2,6 @@
 
 S3method(logLik,plm)
 S3method(plot,isatpanel)
-S3method(print,isatpanel)
 S3method(within,plm)
 export(felmFun)
 export(isatpanel)

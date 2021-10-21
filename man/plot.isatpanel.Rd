@@ -23,9 +23,6 @@
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }
-\value{
-
-}
 \description{
 Plotting an isatpanel object
 }

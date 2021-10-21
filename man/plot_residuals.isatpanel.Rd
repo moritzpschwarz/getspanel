@@ -9,9 +9,6 @@ plot_residuals.isatpanel(isatpanelobject)
 \arguments{
 \item{isatpanelobject}{An output from the 'isatpanel' function}
 }
-\value{
-
-}
 \description{
 Plot Residuals from 'isatpanel' against OLS
 }
