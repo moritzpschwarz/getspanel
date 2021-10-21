@@ -8,8 +8,8 @@
 
 set.seed(123)
 
-data(co2driverseu)
-data <- data[-1]
+data("EU_emissions_road")
+data <- EU_emissions_road[,-1]
 
 data$lgdp_sq <- data$lgdp^2
 
