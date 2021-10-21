@@ -91,12 +91,8 @@ This already means that the following two commands will give the same result:
 
 Using the new method
 
-```{r, echo = FALSE}
-if(!dir.exists("introduction_files")){dir.create("introduction_files")}
-```
 
-
-```{r, eval = !file.exists("introduction_files/is_lm.RData")}
+```{r, eval = !file.exists("is_lm.RData")}
 is_lm <- isatpanel(data = pandata_simulated,
                    formula = gdp ~ temp, 
                    index = c("country","year"),
@@ -106,18 +102,18 @@ is_lm <- isatpanel(data = pandata_simulated,
                    fesis = TRUE)
 ```
 
-```{r, eval = !file.exists("introduction_files/is_lm.RData"), echo=FALSE}
-save(is_lm, file = "introduction_files/is_lm.RData")
+```{r, eval = !file.exists("is_lm.RData"), echo=FALSE}
+save(is_lm, file = "is_lm.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/is_lm.RData"), echo = FALSE}
-load(file = "introduction_files/is_lm.RData")
+```{r, eval = file.exists("is_lm.RData"), echo = FALSE}
+load(file = "is_lm.RData")
 ```
 
 
 Using the traditional method
 
-```{r, eval = !file.exists("introduction_files/is_gets.RData")}
+```{r, eval = !file.exists("is_gets.RData")}
 is_gets <- isatpanel(y = pandata_simulated$gdp,
                      mxreg = pandata_simulated$temp,
                      time = pandata_simulated$year,
@@ -129,12 +125,12 @@ is_gets <- isatpanel(y = pandata_simulated$gdp,
 ```
 
 
-```{r, eval = !file.exists("introduction_files/is_gets.RData"), echo=FALSE}
-save(is_gets, file = "introduction_files/is_gets.RData")
+```{r, eval = !file.exists("is_gets.RData"), echo=FALSE}
+save(is_gets, file = "is_gets.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/is_gets.RData"), echo = FALSE}
-load(file = "introduction_files/is_gets.RData")
+```{r, eval = file.exists("is_gets.RData"), echo = FALSE}
+load(file = "is_gets.RData")
 ```
 
 
@@ -174,7 +170,7 @@ This argument works just as in the **gets** package. The method simply adds a `0
 
 Simply set `iis = TRUE`.
 
-```{r, eval = !file.exists("introduction_files/iis_example.RData")}
+```{r, eval = !file.exists("iis_example.RData")}
 iis_example <- isatpanel(data = pandata_simulated,
                          formula = gdp ~ temp,
                          index = c("country","year"),
@@ -185,12 +181,12 @@ iis_example <- isatpanel(data = pandata_simulated,
 ```
 
 
-```{r, eval = !file.exists("introduction_files/iis_example.RData"), echo=FALSE}
-save(iis_example, file = "introduction_files/iis_example.RData")
+```{r, eval = !file.exists("iis_example.RData"), echo=FALSE}
+save(iis_example, file = "iis_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/iis_example.RData"), echo = FALSE}
-load(file = "introduction_files/iis_example.RData")
+```{r, eval = file.exists("iis_example.RData"), echo = FALSE}
+load(file = "iis_example.RData")
 ```
 
 
@@ -209,7 +205,7 @@ It is possible, however, to consider Step Indicator Saturation with common break
 
 If, however, `effect = "individual"` then we can use `jsis = TRUE` to select over all individual time fixed effects.
 
-```{r, eval = !file.exists("introduction_files/jsis_example.RData")}
+```{r, eval = !file.exists("jsis_example.RData")}
 jsis_example <- isatpanel(data = pandata_simulated,
                           formula = gdp ~ temp,
                           index = c("country","year"),
@@ -222,12 +218,12 @@ jsis_example <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/jsis_example.RData"), echo=FALSE}
-save(jsis_example, file = "introduction_files/jsis_example.RData")
+```{r, eval = !file.exists("jsis_example.RData"), echo=FALSE}
+save(jsis_example, file = "jsis_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/jsis_example.RData"), echo = FALSE}
-load(file = "introduction_files/jsis_example.RData")
+```{r, eval = file.exists("jsis_example.RData"), echo = FALSE}
+load(file = "jsis_example.RData")
 ```
 
 
@@ -243,7 +239,7 @@ This method allows detection of coefficient breaks that are common across all gr
 
 To illustrate this, as well as the advantages of using the `lm` approach, we include a non-linear term of the temperature variable using `I(temp^2)`:
 
-```{r, eval = !file.exists("introduction_files/csis_example.RData")}
+```{r, eval = !file.exists("csis_example.RData")}
 csis_example <- isatpanel(data = pandata_simulated,
                           formula = gdp ~ temp + I(temp^2),
                           index = c("country","year"),
@@ -255,12 +251,12 @@ csis_example <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/csis_example.RData"), echo=FALSE}
-save(csis_example, file = "introduction_files/csis_example.RData")
+```{r, eval = !file.exists("csis_example.RData"), echo=FALSE}
+save(csis_example, file = "csis_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/csis_example.RData"), echo = FALSE}
-load(file = "introduction_files/csis_example.RData")
+```{r, eval = file.exists("csis_example.RData"), echo = FALSE}
+load(file = "csis_example.RData")
 ```
 
 
@@ -271,7 +267,7 @@ plot(csis_example)
 
 By default, all coefficients will be interacted and added to the indicator list - but his can be controlled using the `csis_var`, which takes a character vector of column names i.e. `csis_var = "temp"`.
 
-```{r, eval = !file.exists("introduction_files/csis_example2.RData")}
+```{r, eval = !file.exists("csis_example2.RData")}
 csis_example2 <- isatpanel(data = pandata_simulated,
                            formula = gdp ~ temp + I(temp^2),
                            index = c("country","year"),
@@ -284,12 +280,12 @@ csis_example2 <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/csis_example2.RData"), echo=FALSE}
-save(csis_example2, file = "introduction_files/csis_example2.RData")
+```{r, eval = !file.exists("csis_example2.RData"), echo=FALSE}
+save(csis_example2, file = "csis_example2.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/csis_example2.RData"), echo = FALSE}
-load(file = "introduction_files/csis_example2.RData")
+```{r, eval = file.exists("csis_example2.RData"), echo = FALSE}
+load(file = "csis_example2.RData")
 ```
 
 
@@ -299,7 +295,7 @@ load(file = "introduction_files/csis_example2.RData")
 
 This is equivalent to supplying a constant to the mxbreak argument in the old method. This essentially breaks the group-specific intercept i.e. the individual fixed effect.
 
-```{r, eval = !file.exists("introduction_files/fesis_example.RData")}
+```{r, eval = !file.exists("fesis_example.RData")}
 fesis_example <- isatpanel(data = pandata_simulated,
                            formula = gdp ~ temp + I(temp^2),
                            index = c("country","year"),
@@ -312,12 +308,12 @@ fesis_example <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/fesis_example.RData"), echo=FALSE}
-save(fesis_example, file = "introduction_files/fesis_example.RData")
+```{r, eval = !file.exists("fesis_example.RData"), echo=FALSE}
+save(fesis_example, file = "fesis_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fesis_example.RData"), echo = FALSE}
-load(file = "introduction_files/fesis_example.RData")
+```{r, eval = file.exists("fesis_example.RData"), echo = FALSE}
+load(file = "fesis_example.RData")
 ```
 
 
@@ -329,7 +325,7 @@ plot(fesis_example)
 
 Similar to the `csis_var` idea, we can specify the `fesis` method for a subset of individuals as well using the `fesis_id` variable, which takes a character vector of individuals. In this case we can use e.g. `fesis_id = c("2","3")`.
 
-```{r, eval = !file.exists("introduction_files/fesis_example2.RData")}
+```{r, eval = !file.exists("fesis_example2.RData")}
 fesis_example2 <- isatpanel(data = pandata_simulated,
                            formula = gdp ~ temp + I(temp^2),
                            index = c("country","year"),
@@ -343,12 +339,12 @@ fesis_example2 <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/fesis_example2.RData"), echo=FALSE}
-save(fesis_example2, file = "introduction_files/fesis_example2.RData")
+```{r, eval = !file.exists("fesis_example2.RData"), echo=FALSE}
+save(fesis_example2, file = "fesis_example2.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fesis_example.RData"), echo = FALSE}
-load(file = "introduction_files/fesis_example2.RData")
+```{r, eval = file.exists("fesis_example.RData"), echo = FALSE}
+load(file = "fesis_example2.RData")
 ```
 
 
@@ -364,7 +360,7 @@ This method combines the `csis` and the `fesis` approach and detects whether coe
 
 This means we can also combine the subsetting in both the variable and in the individual units using `cfesis_id` and `cfesis_var`.
 
-```{r, eval = !file.exists("introduction_files/cfesis_example.RData")}
+```{r, eval = !file.exists("cfesis_example.RData")}
 cfesis_example <- isatpanel(data = pandata_simulated,
                             formula = gdp ~ temp + I(temp^2),
                             index = c("country","year"),
@@ -378,12 +374,12 @@ cfesis_example <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/cfesis_example.RData"), echo=FALSE}
-save(cfesis_example, file = "introduction_files/cfesis_example.RData")
+```{r, eval = !file.exists("cfesis_example.RData"), echo=FALSE}
+save(cfesis_example, file = "cfesis_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/cfesis_example.RData"), echo = FALSE}
-load(file = "introduction_files/cfesis_example.RData")
+```{r, eval = file.exists("cfesis_example.RData"), echo = FALSE}
+load(file = "cfesis_example.RData")
 ```
 
 
@@ -395,7 +391,7 @@ plot(cfesis_example)
 
 It is now possible to specify an argument to include autoregressive coefficients, using the `ar` argument.
 
-```{r, eval = !file.exists("introduction_files/fesis_ar1_example.RData")}
+```{r, eval = !file.exists("fesis_ar1_example.RData")}
 fesis_ar1_example <- isatpanel(data = pandata_simulated,
                                formula = gdp ~ temp + I(temp^2),
                                index = c("country","year"),
@@ -407,12 +403,12 @@ fesis_ar1_example <- isatpanel(data = pandata_simulated,
                                ar = 1)
 ```
 
-```{r, eval = !file.exists("introduction_files/fesis_ar1_example.RData"), echo=FALSE}
-save(fesis_ar1_example, file = "introduction_files/fesis_ar1_example.RData")
+```{r, eval = !file.exists("fesis_ar1_example.RData"), echo=FALSE}
+save(fesis_ar1_example, file = "fesis_ar1_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fesis_ar1_example.RData"), echo = FALSE}
-load(file = "introduction_files/fesis_ar1_example.RData")
+```{r, eval = file.exists("fesis_ar1_example.RData"), echo = FALSE}
+load(file = "fesis_ar1_example.RData")
 ```
 
 
@@ -430,7 +426,7 @@ Another new argument is also the `engine` argument. This allows us to use an ext
 
 This also means that we can now use an argument to cluster Standard Errors using `cluster`.
 
-```{r, eval = !file.exists("introduction_files/fixest_example.RData") & R.version$major > 4}
+```{r, eval = !file.exists("fixest_example.RData") & R.version$major > 4}
 fixest_example <- isatpanel(data = pandata_simulated,
                             formula = gdp ~ temp,
                             index = c("country","year"),
@@ -444,12 +440,12 @@ fixest_example <- isatpanel(data = pandata_simulated,
 ```
 
 
-```{r, eval = !file.exists("introduction_files/fixest_example.RData")& R.version$major > 4, echo=FALSE}
-save(fixest_example, file = "introduction_files/fixest_example.RData")
+```{r, eval = !file.exists("fixest_example.RData")& R.version$major > 4, echo=FALSE}
+save(fixest_example, file = "fixest_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fixest_example.RData")& R.version$major > 4, echo = FALSE}
-load(file = "introduction_files/fixest_example.RData")
+```{r, eval = file.exists("fixest_example.RData")& R.version$major > 4, echo = FALSE}
+load(file = "fixest_example.RData")
 ```
 
 
@@ -468,7 +464,7 @@ head(is_lm$isatpanel.result$mean.results)
 
 However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - therefore clustering is therefore not recommended.**
 
-```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4}
+```{r, eval = !file.exists("fixest_example_cluster.RData") & R.version$major > 4}
 fixest_example_cluster <- isatpanel(data = pandata_simulated,
                                     formula = gdp ~ temp + I(temp^2),
                                     index = c("country","year"),
@@ -483,12 +479,12 @@ fixest_example_cluster <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4, echo=FALSE}
-save(fixest_example_cluster, file = "introduction_files/fixest_example_cluster.RData")
+```{r, eval = !file.exists("fixest_example_cluster.RData") & R.version$major > 4, echo=FALSE}
+save(fixest_example_cluster, file = "fixest_example_cluster.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4, echo = FALSE}
-load(file = "introduction_files/fixest_example_cluster.RData")
+```{r, eval = file.exists("fixest_example_cluster.RData") & R.version$major > 4, echo = FALSE}
+load(file = "fixest_example_cluster.RData")
 ```
 
 
