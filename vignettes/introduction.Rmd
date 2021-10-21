@@ -1,7 +1,7 @@
 ---
 title: "getspanel: Getting Started"
-output: rmarkdown::html_vignette
-#output: prettydoc::html_pretty
+#output: rmarkdown::html_vignette
+output: prettydoc::html_pretty
 #  code_download: true
 
 vignette: >
@@ -430,7 +430,7 @@ Another new argument is also the `engine` argument. This allows us to use an ext
 
 This also means that we can now use an argument to cluster Standard Errors using `cluster`.
 
-```{r, eval = !file.exists("introduction_files/fixest_example.RData") & R.version$major > 3}
+```{r, eval = !file.exists("introduction_files/fixest_example.RData") & R.version$major > 4}
 fixest_example <- isatpanel(data = pandata_simulated,
                             formula = gdp ~ temp,
                             index = c("country","year"),
@@ -444,11 +444,11 @@ fixest_example <- isatpanel(data = pandata_simulated,
 ```
 
 
-```{r, eval = !file.exists("introduction_files/fixest_example.RData")& R.version$major > 3, echo=FALSE}
+```{r, eval = !file.exists("introduction_files/fixest_example.RData")& R.version$major > 4, echo=FALSE}
 save(fixest_example, file = "introduction_files/fixest_example.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fixest_example.RData")& R.version$major > 3, echo = FALSE}
+```{r, eval = file.exists("introduction_files/fixest_example.RData")& R.version$major > 4, echo = FALSE}
 load(file = "introduction_files/fixest_example.RData")
 ```
 
@@ -456,19 +456,19 @@ load(file = "introduction_files/fixest_example.RData")
 
 We can verify that, using no clustering of Standard Errors at all, using the **fixest** package does not change our estimates:
 
-```{r, eval = R.version$major > 3}
+```{r, eval = R.version$major > 4}
 head(fixest_example$isatpanel.result$mean.results)
 ```
 
 Compared to the default estimator:
 
-```{r, eval = R.version$major > 3}
+```{r, eval = R.version$major > 4}
 head(is_lm$isatpanel.result$mean.results)
 ```
 
 However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - therefore clustering is therefore not recommended.**
 
-```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 3}
+```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4}
 fixest_example_cluster <- isatpanel(data = pandata_simulated,
                                     formula = gdp ~ temp + I(temp^2),
                                     index = c("country","year"),
@@ -483,16 +483,16 @@ fixest_example_cluster <- isatpanel(data = pandata_simulated,
 
 
 
-```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 3, echo=FALSE}
+```{r, eval = !file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4, echo=FALSE}
 save(fixest_example_cluster, file = "introduction_files/fixest_example_cluster.RData")
 ```
 
-```{r, eval = file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 3, echo = FALSE}
+```{r, eval = file.exists("introduction_files/fixest_example_cluster.RData") & R.version$major > 4, echo = FALSE}
 load(file = "introduction_files/fixest_example_cluster.RData")
 ```
 
 
 
-```{r, eval = R.version$major > 3}
+```{r, eval = R.version$major > 4}
 plot(fixest_example_cluster)
 ```
