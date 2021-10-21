@@ -9,6 +9,7 @@
 #' @return
 #' @export
 #'
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline
 #'
 plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
 
@@ -63,7 +64,7 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
   } else {cfesis <- NULL}
 
 
-  ggplot2::ggplot(df, ggplot2::aes(
+  ggplot(df, aes(
     x = time,
     y = fitted,
     group = id,
@@ -71,36 +72,36 @@ plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "f
 
 
     # Impulses
-    ggplot2::geom_vline(data = impulses,ggplot2::aes(xintercept = time),color="grey",size = 0.1) +
+    geom_vline(data = impulses,aes(xintercept = time),color="grey",size = 0.1) +
 
     # Steps
-    ggplot2::geom_vline(data = steps, ggplot2::aes(xintercept = time),color="darkgreen",size = 0.1) -> g
+    geom_vline(data = steps, aes(xintercept = time),color="darkgreen",size = 0.1) -> g
 
   # fesis
   if(!is.null(fesis)){
-    g = g + ggplot2::geom_vline(data = fesis, ggplot2::aes(xintercept = time),color="blue",size = 0.1)
+    g = g + geom_vline(data = fesis, aes(xintercept = time),color="blue",size = 0.1)
   }
 
   # cfesis
   if(!is.null(cfesis)){
-    g = g + ggplot2::geom_vline(data = cfesis, ggplot2::aes(xintercept = time,linetype = variable),color="blue",size = 0.1)
+    g = g + geom_vline(data = cfesis, aes(xintercept = time,linetype = variable),color="blue",size = 0.1)
   }
 
 
   g +
-    ggplot2::geom_line(ggplot2::aes(y = y),size = 1, linetype = 1, color="black") +
-    ggplot2::geom_line(linetype = 1, color="blue") +
+    geom_line(aes(y = y),size = 1, linetype = 1, color="black") +
+    geom_line(linetype = 1, color="blue") +
 
     # Faceting
-    ggplot2::facet_wrap( ~ id, scales = facet.scales) +
+    facet_wrap( ~ id, scales = facet.scales) +
 
-    ggplot2::theme(legend.position = "none",
-                   strip.background = ggplot2::element_blank(),
-                   panel.border = ggplot2::element_rect(colour = "grey",fill = NA),
-                   panel.background = ggplot2::element_blank(),
-                   panel.grid.major.y = ggplot2::element_line(colour = "grey",size = 0.1)) +
+    theme(legend.position = "none",
+                   strip.background = element_blank(),
+                   panel.border = element_rect(colour = "grey",fill = NA),
+                   panel.background = element_blank(),
+                   panel.grid.major.y = element_line(colour = "grey",size = 0.1)) +
 
-    ggplot2::labs(title = title,subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted", y = NULL, x = NULL) -> plotoutput
+    labs(title = title,subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted", y = NULL, x = NULL) -> plotoutput
 
 
   # browser

@@ -7,10 +7,14 @@
 #'
 #' @examples
 #'
+#'\dontrun{
 #' data <- pandata_simulated
 #' outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
 #' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
 #' plot_residuals.isatpanel(outcome)
+#'}
+#'
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline
 #'
 plot_residuals.isatpanel <- function(isatpanelobject){
   finaldata <- isatpanelobject$finaldata
