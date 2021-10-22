@@ -5,7 +5,7 @@
 \title{Plotting an isatpanel object}
 \usage{
 \method{plot}{isatpanel}(
-  isatpanelobject,
+  x,
   max.id.facet = 16,
   facet.scales = "free",
   title = "Panel Saturation",
@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{isatpanelobject}{An object produced by the isatpanel function}
+\item{x}{An object produced by the isatpanel function}
 
 \item{max.id.facet}{The resulting plot will be faceted for each individual in the panel. Beyond a certain number, this might result in unreadable figures. Default set at 16.}
 

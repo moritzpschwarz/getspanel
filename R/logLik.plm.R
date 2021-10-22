@@ -1,10 +1,11 @@
 #' Log-Likelihood Function for a plm object
 #'
 #' @param object A plm object
+#' @param ... Further Arguments
 #'
 #' @return The Log-Likelihood
 #' @export
 #'
-logLik.plm <- function(object){
+logLik.plm <- function(object, ...){
   -plm:::nobs.panelmodel(summary(object)) * log(2 * var(object$residuals) * pi)/2 - plm:::deviance.panelmodel(summary(object))/(2 * var(object$residuals))
 }

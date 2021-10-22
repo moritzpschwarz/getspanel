@@ -9,7 +9,7 @@
 #' @param model model specification
 #' @param ... Further arguments passed to plm
 #'
-#' @return
+#' @return A list to be used by gets::isat
 #'
 #'
 #'
@@ -36,7 +36,7 @@ plmFun <- function(y, x, time, id, cluster, effect, model = "pooling", ...){
 
     est_df <- data.frame(y,individual = id,time)
     est_df <- cbind(est_df,x)
-    est_df <- pdata.frame(est_df,index = c("individual","time"))
+    est_df <- plm::pdata.frame(est_df,index = c("individual","time"))
 
     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),""))
     tmp <- plm::plm(formula = parsed_formula,data = est_df, effect = effect, model = model)

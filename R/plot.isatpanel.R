@@ -1,6 +1,6 @@
 #' Plotting an isatpanel object
 #'
-#' @param isatpanelobject An object produced by the isatpanel function
+#' @param x An object produced by the isatpanel function
 #' @param max.id.facet The resulting plot will be faceted for each individual in the panel. Beyond a certain number, this might result in unreadable figures. Default set at 16.
 #' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
 #' @param title Plot title. Must be a character vector.
@@ -10,32 +10,32 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline
 #'
-plot.isatpanel <- function(isatpanelobject, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
+plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
 
 
-  df <- isatpanelobject$estimateddata
-  indicators <- isatpanelobject$isatpanel.result$aux$mX
+  df <- x$estimateddata
+  indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
 
-  if(is.null(isatpanelobject$isatpanel.result$fit)){
-    fitted <- as.numeric(isatpanelobject$isatpanel.result$mean.fit)
+  if(is.null(x$isatpanel.result$fit)){
+    fitted <- as.numeric(x$isatpanel.result$mean.fit)
   } else {
-    fitted <- as.numeric(isatpanelobject$isatpanel.result$fit)
+    fitted <- as.numeric(x$isatpanel.result$fit)
   }
 
   df <- cbind(df,fitted)
 
 
   df %>%
-    tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
+    tidyr::pivot_longer(cols = -c("id","time","y","fitted")) %>%
     dplyr::filter(grepl("iis",name)) %>%
     dplyr::filter(value == 1) -> impulses
 
   df %>%
-    tidyr::pivot_longer(cols = -c(id,time,y,fitted)) %>%
+    tidyr::pivot_longer(cols = -c("id","time","y","fitted")) %>%
     dplyr::filter(grepl("sis",name)) %>%
     dplyr::filter(!grepl("fesis",name)) %>%
     dplyr::filter(value == 1) -> steps

@@ -24,7 +24,7 @@ plmFun(y, x, time, id, cluster, effect, model = "pooling", ...)
 \item{...}{Further arguments passed to plm}
 }
 \value{
-
+A list to be used by gets::isat
 }
 \description{
 plm Function to estimate isatpanel

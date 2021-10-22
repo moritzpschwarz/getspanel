@@ -4,10 +4,12 @@
 \alias{logLik.plm}
 \title{Log-Likelihood Function for a plm object}
 \usage{
-\method{logLik}{plm}(object)
+\method{logLik}{plm}(object, ...)
 }
 \arguments{
 \item{object}{A plm object}
+
+\item{...}{Further Arguments}
 }
 \value{
 The Log-Likelihood

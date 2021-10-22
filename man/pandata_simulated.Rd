@@ -8,6 +8,7 @@
 A data frame with 400 rows and 9 variables:
 \describe{
 \item{country}{A random country}
+\item{year}{Year}
 \item{gdp}{A simulated Gross Domestic Product}
 \item{temp}{A simulated variable standing for temperature}
 \item{const}{The constant}

@@ -25,17 +25,20 @@ Suggests:
     knitr,
     rmarkdown,
     lfe, 
-    prettydoc
+    prettydoc,
+    plm,
+    fixest, 
+    lmtest, 
+    sandwich
 Imports: 
     gets,
-    fixest,
     fastDummies,
     Matrix,
     ggplot2,
     dplyr,
     tidyr,
     magrittr,
-    plm
+    stats
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown

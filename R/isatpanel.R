@@ -394,9 +394,9 @@ isatpanel <- function(
       stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
     }
     if(engine == "felm"){
-      require(lfe, quietly = TRUE)
+      #require(lfe, quietly = TRUE)
       user.estimator <- list(
-        name = getspanel:::felmFun,
+        name = felmFun,
         time = time,
         id = id,
         effect = effect,
@@ -405,9 +405,9 @@ isatpanel <- function(
       mc = FALSE
     }
     if(engine == "fixest"){
-      require(fixest, quietly = TRUE)
+      #require(fixest, quietly = TRUE)
       user.estimator <- list(
-        name = getspanel:::fixestFun,
+        name = fixestFun,
         time = time,
         id = id,
         effect = effect,
@@ -417,9 +417,10 @@ isatpanel <- function(
       mc = FALSE
     }
     if(engine == "plm"){
-      require(plm, quietly = TRUE)
+      #require(plm, quietly = TRUE)
+      # alternatively use requireNamespace
       user.estimator <- list(
-        name = getspanel:::plmFun,
+        name = plmFun,
         time = time,
         id = id,
         effect = effect,
