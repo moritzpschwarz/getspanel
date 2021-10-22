@@ -28,9 +28,11 @@ plot_residuals.isatpanel <- function(isatpanelobject){
   residual_df <- data.frame(finaldata[,c("id","time")],
                             diff = saturation$residuals - counterfactual$residuals)
 
+  residual_df$time <- as.numeric(residual_df$time)
+
   ggplot(residual_df) +
-    aes(x = as.numeric(time), group = id, y = diff) +
-    facet_wrap(~id) +
+    aes_string(x = "time", group = "id", y = "diff") +
+    facet_wrap("id") +
     geom_line() +
     geom_hline(aes(yintercept = 0))+
     labs(x = NULL, y = "Residual Difference", title = "Difference in Residuals between OLS and isatpanel object") +

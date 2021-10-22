@@ -46,9 +46,9 @@ plmFun <- function(y, x, time, id, cluster, effect, model = "pooling", ...){
     out$fit <- plm:::fitted_exp.plm(tmp)
     out$coefficients <- coef(tmp)
     out$vcov <- if (cluster == "individual") {
-      plm::vcovHC.plm(tmp, type = "HC0", cluster = "group")
+      plm:::vcovHC.plm(tmp, type = "HC0", cluster = "group")
     } else if (cluster == "time") {
-      plm::vcovHC.plm(tmp, type = "HC0", cluster = "time")
+      plm:::vcovHC.plm(tmp, type = "HC0", cluster = "time")
     } else if (cluster == "none") {
       vcov(tmp)
     } else{

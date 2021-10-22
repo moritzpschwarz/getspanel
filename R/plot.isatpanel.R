@@ -8,7 +8,10 @@
 #'
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_string
+#' @importFrom tidyr starts_with pivot_longer separate
+#' @importFrom dplyr select filter mutate distinct everything across contains
+#' @importFrom rlang .data
 #'
 plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
 
@@ -26,73 +29,105 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     fitted <- as.numeric(x$isatpanel.result$fit)
   }
 
-  df <- cbind(df,fitted)
+  varying_vars <- names(df)[!names(df)%in% c("id","time","y","fitted")]
 
+  df_l <- reshape(df,
+                  varying = varying_vars,
+                  idvar = c("id","time"),
+                  v.names = "value",
+                  timevar = "name",
+                  times = varying_vars,
+                  direction = "long")
 
-  df %>%
-    tidyr::pivot_longer(cols = -c("id","time","y","fitted")) %>%
-    dplyr::filter(grepl("iis",name)) %>%
-    dplyr::filter(value == 1) -> impulses
+  impulses <- df_l[grepl("iis",df_l$name) & df_l$value == 1,]
+  steps <- df_l[grepl("sis",df_l$name) & df_l$value == 1 & !grepl("fesis", df_l$name),]
 
-  df %>%
-    tidyr::pivot_longer(cols = -c("id","time","y","fitted")) %>%
-    dplyr::filter(grepl("sis",name)) %>%
-    dplyr::filter(!grepl("fesis",name)) %>%
-    dplyr::filter(value == 1) -> steps
 
   if(any(grepl("^fesis",names(df)))){
-    df %>%
-      dplyr::select(starts_with("fesis")) %>%
-      tidyr::pivot_longer(cols = dplyr::everything()) %>%
-      tidyr::separate(col = name,sep = "\\.",into = c("id","time")) %>%
-      dplyr::mutate(id = gsub("fesis","",id),
-                    time = as.numeric(time)) %>%
-      dplyr::select(-value) %>%
-      dplyr::distinct(time,id) -> fesis
+    fesis_wide <- df[,grepl("^fesis", names(df))]
+    fesis_l <- reshape(fesis_wide,
+                       direction = "long",
+                       varying = names(fesis_wide),
+                       times = names(fesis_wide),
+                       v.names = "value",
+                       timevar = "name")
+
+
+    split_list <- strsplit(x = fesis_l$name, split = "\\.")
+
+    fesis_l$id <- unlist(lapply(split_list, `[[`, 1))
+    fesis_l$id <- gsub("fesis","",fesis_l$id)
+    fesis_l$time <- unlist(lapply(split_list, `[[`, 2))
+    fesis_l$time <- as.numeric(fesis_l$time)
+
+    fesis_l <- fesis_l[c("id","time","name")]
+
+    fesis <- fesis_l[!duplicated(fesis_l),]
+
   } else {fesis <- NULL}
 
   if(any(grepl("cfesis",names(df)))){
-    df %>%
-      dplyr::select(contains("cfesis")) %>%
-      tidyr::pivot_longer(cols = everything()) %>%
-      tidyr::separate(col = name,sep = "\\.",into = c("variable","id","time")) %>%
-      dplyr::mutate(id = gsub("cfesis","",id),
-                    time = as.numeric(time)) %>%
-      dplyr::select(-value) %>%
-      dplyr::distinct(variable, time,id) -> cfesis
+
+    cfesis_wide <- df[,grepl("^cfesis", names(df))]
+    cfesis_l <- reshape(cfesis_wide,
+                       direction = "long",
+                       varying = names(cfesis_wide),
+                       times = names(cfesis_wide),
+                       v.names = "value",
+                       timevar = "name")
+
+
+    split_list <- strsplit(x = cfesis_l$name, split = "\\.")
+
+    cfesis_l$id <- unlist(lapply(split_list, `[[`, 1))
+    cfesis_l$id <- gsub("cfesis","",cfesis_l$id)
+    cfesis_l$time <- unlist(lapply(split_list, `[[`, 2))
+    cfesis_l$time <- as.numeric(cfesis_l$time)
+
+    cfesis_l <- cfesis_l[c("id","time","name")]
+
+    cfesis <- cfesis_l[!duplicated(cfesis_l),]
+
+    # df %>%
+    #   select(contains("cfesis")) %>%
+    #   pivot_longer(cols = everything()) %>%
+    #   separate(col = "name",sep = "\\.",into = c("variable","id","time")) %>%
+    #   mutate(id = gsub("cfesis","",id),
+    #                 time = as.numeric(time)) %>%
+    #   select(-"value") %>%
+    #   distinct(across(c("variable", "time", "id"))) -> cfesis
   } else {cfesis <- NULL}
 
-
-  ggplot(df, aes(
-    x = time,
-    y = fitted,
-    group = id,
+  ggplot(df, aes_string(
+    x = "time",
+    y = "fitted",
+    group = "id",
   )) +
 
 
     # Impulses
-    geom_vline(data = impulses,aes(xintercept = time),color="grey",size = 0.1) +
+    geom_vline(data = impulses,aes_string(xintercept = "time"),color="grey",size = 0.1) +
 
     # Steps
-    geom_vline(data = steps, aes(xintercept = time),color="darkgreen",size = 0.1) -> g
+    geom_vline(data = steps, aes_string(xintercept = "time"),color="darkgreen",size = 0.1) -> g
 
   # fesis
   if(!is.null(fesis)){
-    g = g + geom_vline(data = fesis, aes(xintercept = time),color="blue",size = 0.1)
+    g = g + geom_vline(data = fesis, aes_string(xintercept = "time"),color="blue",size = 0.1)
   }
 
   # cfesis
   if(!is.null(cfesis)){
-    g = g + geom_vline(data = cfesis, aes(xintercept = time,linetype = variable),color="blue",size = 0.1)
+    g = g + geom_vline(data = cfesis, aes_string(xintercept = "time", linetype = "variable"),color="blue",size = 0.1)
   }
 
 
   g +
-    geom_line(aes(y = y),size = 1, linetype = 1, color="black") +
+    geom_line(aes_string(y = "y"),size = 1, linetype = 1, color="black") +
     geom_line(linetype = 1, color="blue") +
 
     # Faceting
-    facet_wrap( ~ id, scales = facet.scales) +
+    facet_wrap("id", scales = facet.scales) +
 
     theme(legend.position = "none",
                    strip.background = element_blank(),
@@ -102,11 +137,11 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
     labs(title = title,subtitle = "Grey: Impulse - Blue: FE Steps - Green: Steps\nBlue line fitted", y = NULL, x = NULL) -> plotoutput
 
-
-  # browser
-  #   if(interactive){
-  #     plotoutput <- plotly::ggplotly(p = plotoutput)
-  #   }
-
+  #
+  # # browser
+  # #   if(interactive){
+  # #     plotoutput <- plotly::ggplotly(p = plotoutput)
+  # #   }
+  #
   return(plotoutput)
 }

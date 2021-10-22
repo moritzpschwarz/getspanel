@@ -1,9 +1,10 @@
 #' Printing isatpanel results
 #'
-#' @param obj An isatpanel object.
-#'#' @export
+#' @param x An isatpanel object.
+#' @param ... Further arguments passed to print
+#' @export
 #'
 #'
-print.isatpanel <- function(obj){
-  gets::print.isat(obj$isatpanel.result)
+print.isatpanel <- function(x, ...){
+  gets::print.isat(x$isatpanel.result)
 }

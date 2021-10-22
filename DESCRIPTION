@@ -38,7 +38,8 @@ Imports:
     dplyr,
     tidyr,
     magrittr,
-    stats
+    stats, 
+    rlang
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown

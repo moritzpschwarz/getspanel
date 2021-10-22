@@ -4,11 +4,12 @@
 \alias{print.isatpanel}
 \title{Printing isatpanel results}
 \usage{
-\method{print}{isatpanel}(obj)
+\method{print}{isatpanel}(x, ...)
 }
 \arguments{
-\item{obj}{An isatpanel object.
-#' @export}
+\item{x}{An isatpanel object.}
+
+\item{...}{Further arguments passed to print}
 }
 \description{
 Printing isatpanel results
