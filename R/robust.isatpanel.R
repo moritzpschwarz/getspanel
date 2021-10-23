@@ -28,7 +28,7 @@ robust.isatpanel <- function(object,
   pdata <- plm::pdata.frame(df,index = c("id","time"))
 
   # Let's look at the plm output
-  formula <- as.formula(paste0("y ~ ",names(pdata[,!names(pdata) %in% c("y","id","time")]) %>% paste0(collapse = " + ")))
+  formula <- as.formula(paste0("y ~ ",paste0(names(pdata[,!names(pdata) %in% c("y","id","time")]),collapse = " + ")))
   plm_object <- plm::plm(formula = formula,data = pdata, effect = effect,model = "within")
 
   out$plm_object <- plm_object

@@ -9,9 +9,6 @@
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_string
-#' @importFrom tidyr starts_with pivot_longer separate
-#' @importFrom dplyr select filter mutate distinct everything across contains
-#' @importFrom rlang .data
 #'
 plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = "Panel Saturation", ...){
 

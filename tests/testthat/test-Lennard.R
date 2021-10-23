@@ -1,6 +1,6 @@
 # rm(list = ls())
 # library(gets)
- library(dplyr)
+# library(dplyr)
 # library(tidyr)
 # library(ggplot2)
 # library(gridExtra)
@@ -34,8 +34,8 @@ syear <- 1995
 runit <- "Austria"
 
 
-dat <- dplyr::filter(data, country %in% EU15, year>=syear)
-controls <- data.frame(dat %>% dplyr::select(lgdp,lgdp_sq))
+dat <- data[data$country %in% EU15 & data$year >=syear,]
+controls <- data.frame(dat[,c("lgdp","lgdp_sq")])
 # y=dat$ltransport.emissions_pc
 # id=dat$country
 # time=dat$year
