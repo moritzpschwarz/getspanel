@@ -7,3 +7,4 @@
 ^getspanel\.Rcheck$
 ^getspanel.*\.tar\.gz$
 ^getspanel.*\.tgz$
+^\.github$
