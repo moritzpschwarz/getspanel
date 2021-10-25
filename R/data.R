@@ -16,7 +16,7 @@
 #'
 #'   ...
 #' }
-#' @source \url{http://github.com/moritzpschwarz/getspanel/}
+#' @source \url{https://github.com/moritzpschwarz/getspanel/}
 "pandata_simulated"
 
 #' CO2 Data for EU Road Emissions
@@ -37,7 +37,7 @@
 #'   \item{L1.lgdp}{Lag 1 Log GDP}
 #'   \item{L1.lpop}{Lag 1 Log Population}
 #' }
-#' @source \url{http://github.com/moritzpschwarz/getspanel/}
+#' @source \url{https://github.com/moritzpschwarz/getspanel/}
 #'
 
 "EU_emissions_road"

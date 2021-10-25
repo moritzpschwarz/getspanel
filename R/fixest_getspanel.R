@@ -9,7 +9,7 @@
 #' @param ... Further arguments to pass to gets::isat
 #'
 #' @return List to be used by gets::isat
-#' @importFrom stats as.formula coef complete.cases dnorm lm logLik model.matrix model.response na.omit time var vcov reshape
+#' @importFrom stats as.formula coef complete.cases dnorm lm logLik model.matrix model.response na.omit time var vcov reshape fitted.values deviance
 
 
 

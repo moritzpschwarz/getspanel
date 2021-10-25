@@ -23,7 +23,7 @@ A data frame with 400 rows and 9 variables:
 }
 }
 \source{
-\url{http://github.com/moritzpschwarz/getspanel/}
+\url{https://github.com/moritzpschwarz/getspanel/}
 }
 \usage{
 EU_emissions_road

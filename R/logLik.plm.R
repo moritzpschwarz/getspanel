@@ -7,5 +7,5 @@
 #' @export
 #'
 logLik.plm <- function(object, ...){
-  -plm:::nobs.panelmodel(summary(object)) * log(2 * var(object$residuals) * pi)/2 - plm:::deviance.panelmodel(summary(object))/(2 * var(object$residuals))
+  -plm::nobs(object) * log(2 * var(object$residuals) * pi)/2 - deviance(object)/(2 * var(object$residuals))
 }

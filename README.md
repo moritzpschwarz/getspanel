@@ -11,7 +11,7 @@ status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.
 
 This package is a **development version** and will therefore contain some bugs and errros. 
 
-The package is a panel adaptation of the `gets` package [see here](https://cran.r-project.org/web/packages/gets/index.html).
+The package is a panel adaptation of the `gets` package [see here](https://CRAN.R-project.org/package=gets).
 
 This code is being developed by Felix Pretis and Moritz Schwarz. 
 The associated paper will be published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis and Schwarz. 
