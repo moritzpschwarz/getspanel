@@ -105,6 +105,9 @@ isatpanel <- function(
   if(cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))){stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
   if(fesis == FALSE & (!missing(fesis_id))){stop("You cannot specify fesis_id when fesis = FALSE.")}
 
+
+  if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)){stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
+
   if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))){
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data"), names(mf), 0L)
@@ -126,7 +129,7 @@ isatpanel <- function(
     mxreg <- x
 
     if(missing(csis_var)){csis_var <- colnames(mxreg)}
-    if(missing(cfesis_var)){csis_var <- colnames(mxreg)}
+    if(missing(cfesis_var)){cfesis_var <- colnames(mxreg)}
 
   }
 
