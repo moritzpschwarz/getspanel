@@ -4,13 +4,7 @@
 \alias{plot.isatpanel}
 \title{Plotting an isatpanel object}
 \usage{
-\method{plot}{isatpanel}(
-  x,
-  max.id.facet = 16,
-  facet.scales = "free",
-  title = "Panel Saturation",
-  ...
-)
+\method{plot}{isatpanel}(x, max.id.facet = 16, facet.scales = "free", title = NULL, ...)
 }
 \arguments{
 \item{x}{An object produced by the isatpanel function}

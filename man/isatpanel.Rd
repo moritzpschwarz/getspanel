@@ -15,6 +15,7 @@ isatpanel(
   cluster = "none",
   ar = 0,
   iis = FALSE,
+  sis = FALSE,
   jiis = FALSE,
   jsis = FALSE,
   fesis = FALSE,
@@ -53,6 +54,8 @@ isatpanel(
 \item{ar}{Autoregressive Term to be included. default is 0.}
 
 \item{iis}{use Impulse Indicator Saturation}
+
+\item{sis}{use Step Indicator Saturation. This is only possible if time fixed effects are not used, as they are collinear otherwise.}
 
 \item{jiis}{use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.}
 

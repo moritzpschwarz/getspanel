@@ -16,6 +16,7 @@
 #' @param plm_model Type of PLM model (only if engine = "PLM")
 #' @param ar Autoregressive Term to be included. default is 0.
 #' @param iis use Impulse Indicator Saturation
+#' @param sis use Step Indicator Saturation. This is only possible if time fixed effects are not used, as they are collinear otherwise.
 #' @param jiis use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
 #' @param jsis use Join Step Indicator Saturation (steps are common across all units)
 #' @param fesis Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
@@ -58,6 +59,7 @@ isatpanel <- function(
 
   ar=0,
   iis = FALSE,
+  sis = FALSE,
   jiis = FALSE,
   jsis = FALSE,
   fesis = FALSE,
@@ -99,6 +101,7 @@ isatpanel <- function(
 
   if(is.null(engine) & cluster != "none"){stop("Cluster specifications are currently only implemented for engine = 'fixest'. Either select cluster = 'none' or engine = 'fixest'.")}
 
+  if(sis & (effect == "twoways" | effect == "time")){warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
 
   # csis and cfesis
   if(csis == FALSE & (!missing(csis_var))){stop("You cannot specify csis_var when csis = FALSE.")}
@@ -132,7 +135,6 @@ isatpanel <- function(
     if(missing(cfesis_var)){cfesis_var <- colnames(mxreg)}
 
   }
-
 
   # Set up Infrastructure
   out <- list()
@@ -270,8 +272,11 @@ isatpanel <- function(
 
   # csis = TRUE
   if(csis){
-    csis_init <- merge(df_base,as.data.frame(cbind(time = unique(time),gets::sim(Tsample))),by="time",sort=FALSE)
+    csis_init <- cbind(time = unique(time),gets::sim(Tsample))
+    names(csis_init) <- c("time",paste0("csis",unique(time)[-1]))
+    csis_init <- merge(df_base,csis_init,by="time",sort=FALSE)
     csis_df <- csis_init[,c("id","time")]
+
     for(i in csis_var){
       csis_intermed <- csis_init[,!names(csis_init) %in% c("id","time")] * mxreg[,i]
       names(csis_intermed) <- paste0(i,".",names(csis_intermed))
@@ -461,7 +466,7 @@ isatpanel <- function(
   tmpmc <- getOption("mc.warning")
   options(mc.warning = FALSE)
 
-  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=sis, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   # Set the old arx mc warning again

@@ -9,7 +9,7 @@
 #'\dontrun{
 #' data <- pandata_simulated
 #' outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")
+#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")
 #' plot_residuals.isatpanel(outcome)
 #'}
 #'
