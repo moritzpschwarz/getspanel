@@ -26,112 +26,7 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     fitted <- as.numeric(x$isatpanel.result$fit)
   }
 
-  varying_vars <- names(df)[!names(df)%in% c("id","time","y","fitted")]
-
-  df_l <- reshape(df,
-                  varying = varying_vars,
-                  idvar = c("id","time"),
-                  v.names = "value",
-                  timevar = "name",
-                  times = varying_vars,
-                  direction = "long")
-
-  # Impulses and Steps
-  impulses <- df_l[grepl("iis",df_l$name) & df_l$value == 1,]
-  steps <- df_l[grepl("sis",df_l$name) & df_l$value == 1 & !grepl("fesis", df_l$name) & !grepl("csis", df_l$name),]
-
-  # FESIS
-  if(any(grepl("^fesis",names(df)))){
-    fesis_wide <- df[,grepl("^fesis", names(df)), drop = FALSE]
-    fesis_l <- reshape(fesis_wide,
-                       direction = "long",
-                       varying = names(fesis_wide),
-                       times = names(fesis_wide),
-                       v.names = "value",
-                       timevar = "name")
-
-
-    split_list <- strsplit(x = fesis_l$name, split = "\\.")
-
-    fesis_l$id <- unlist(lapply(split_list, `[[`, 1))
-    fesis_l$id <- gsub("fesis","",fesis_l$id)
-    fesis_l$time <- unlist(lapply(split_list, `[[`, 2))
-    fesis_l$time <- as.numeric(fesis_l$time)
-
-    fesis_l <- fesis_l[c("id","time","name")]
-
-    fesis <- fesis_l[!duplicated(fesis_l),]
-
-  } else {fesis <- NULL}
-
-  # CFESIS
-  if(any(grepl("cfesis",names(df)))){
-
-    cfesis_wide <- df[,grepl("cfesis", names(df)), drop = FALSE]
-    cfesis_l <- reshape(cfesis_wide,
-                        direction = "long",
-                        varying = names(cfesis_wide),
-                        times = names(cfesis_wide),
-                        v.names = "value",
-                        timevar = "name")
-
-
-    split_list <- strsplit(x = cfesis_l$name, split = "\\.")
-
-    cfesis_l$name <- unlist(lapply(split_list, `[[`, 1))
-
-    cfesis_l$id <- unlist(lapply(split_list, `[[`, 2))
-    cfesis_l$id <- gsub("cfesis","",cfesis_l$id)
-
-    cfesis_l$time <- unlist(lapply(split_list, `[[`, 3))
-    cfesis_l$time <- as.numeric(cfesis_l$time)
-
-    cfesis_l <- cfesis_l[c("id","time","name")]
-
-    cfesis <- cfesis_l[!duplicated(cfesis_l),]
-
-    # df %>%
-    #   select(contains("cfesis")) %>%
-    #   pivot_longer(cols = everything()) %>%
-    #   separate(col = "name",sep = "\\.",into = c("variable","id","time")) %>%
-    #   mutate(id = gsub("cfesis","",id),
-    #                 time = as.numeric(time)) %>%
-    #   select(-"value") %>%
-    #   distinct(across(c("variable", "time", "id"))) -> cfesis
-  } else {cfesis <- NULL}
-
-  # CSIS
-
-  if(any(grepl("csis",names(df)))){
-
-    csis_wide <- df[,grepl("csis", names(df)), drop = FALSE]
-    csis_l <- reshape(csis_wide,
-                        direction = "long",
-                        varying = names(csis_wide),
-                        times = names(csis_wide),
-                        v.names = "value",
-                        timevar = "name")
-
-    split_list <- strsplit(x = csis_l$name, split = "\\.")
-
-    csis_l$name <- unlist(lapply(split_list, `[[`, 1))
-    csis_l$time <- unlist(lapply(split_list, `[[`, 2))
-    csis_l$time <- gsub("csis","",csis_l$time)
-    csis_l$time <- as.numeric(csis_l$time)
-
-    csis_l <- csis_l[c("time","name")]
-
-    csis <- csis_l[!duplicated(csis_l),]
-
-    # df %>%
-    #   select(contains("cfesis")) %>%
-    #   pivot_longer(cols = everything()) %>%
-    #   separate(col = "name",sep = "\\.",into = c("variable","id","time")) %>%
-    #   mutate(id = gsub("cfesis","",id),
-    #                 time = as.numeric(time)) %>%
-    #   select(-"value") %>%
-    #   distinct(across(c("variable", "time", "id"))) -> cfesis
-  } else {csis <- NULL}
+  df_identified <- identify_indicator_timing(df)
 
   sub_title <- NULL
 
@@ -143,26 +38,26 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
 
   # Impulses
-  if(nrow(impulses)>0){
-    g = g + geom_vline(data = impulses,aes_(xintercept = ~time,color="grey"))
+  if(nrow(df_identified$impulses)>0){
+    g = g + geom_vline(data = df_identified$impulses,aes_(xintercept = ~time,color="grey"))
   }
   # Steps
-  if(nrow(steps)>0){
-    g = g + geom_vline(data = steps, aes_(xintercept = time,color="purple"))
+  if(nrow(df_identified$steps)>0){
+    g = g + geom_vline(data = df_identified$steps, aes_(xintercept = time,color="purple"))
   }
   # fesis
-  if(!is.null(fesis)){
-    g = g + geom_vline(data = fesis, aes_(xintercept = ~time,color="red"))
+  if(!is.null(df_identified$fesis)){
+    g = g + geom_vline(data = df_identified$fesis, aes_(xintercept = ~time,color="red"))
   }
 
   # cfesis
-  if(!is.null(cfesis)){
-    g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, color="darkgreen", linetype = ~name))
+  if(!is.null(df_identified$cfesis)){
+    g = g + geom_vline(data = df_identified$cfesis, aes_(xintercept = ~time, color="darkgreen", linetype = ~name))
   }
 
   # csis
-  if(!is.null(csis)){
-    g = g + geom_vline(data = csis, aes_(xintercept = ~time, color="orange", linetype = ~name))
+  if(!is.null(df_identified$csis)){
+    g = g + geom_vline(data = df_identified$csis, aes_(xintercept = ~time, color="orange", linetype = ~name))
   }
 
   g +
@@ -190,10 +85,10 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
     labs(title = title,subtitle = sub_title, y = NULL, x = NULL) -> plotoutput
 
-  # cfesis
-  if(!is.null(cfesis)){
-    g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, linetype = ~variable, color="green"))
-  }#
+  # # cfesis
+  # if(!is.null(cfesis)){
+  #   g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, linetype = ~variable, color="green"))
+  # }#
   # # browser
   # #   if(interactive){
   # #     plotoutput <- plotly::ggplotly(p = plotoutput)

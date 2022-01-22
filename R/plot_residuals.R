@@ -10,12 +10,12 @@
 #' data <- pandata_simulated
 #' outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
 #' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")
-#' plot_residuals.isatpanel(outcome)
+#' plot_residuals(outcome)
 #'}
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline
 #'
-plot_residuals.isatpanel <- function(isatpanelobject){
+plot_residuals <- function(isatpanelobject){
   finaldata <- isatpanelobject$finaldata
   finaldata$id <- as.factor(finaldata$id)
   finaldata$time <- as.factor(finaldata$time)
