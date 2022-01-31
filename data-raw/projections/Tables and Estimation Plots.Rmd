@@ -275,7 +275,7 @@ modelsummary(intermediate_list_modified,
              add_rows = data.frame("Fixed Effects", "Country \\& Year","Country \\& Year","",
                                    "Country \\& Year","Country \\& Year",""),
              #output = here("data-raw/projections/out/models.tex"),
-             notes = "(Standard Errors) and [p-values]") %>% 
+             notes = "(Standard Errors) and [p-values]\nPlease note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus, its outlier distortion test statistics is not zero.") %>% 
   
   column_spec(column = c(4,7), border_left = TRUE, border_right = TRUE) -> tab
 
@@ -473,7 +473,7 @@ modelsummary(intermediate_list_modified,
              escape = FALSE, 
              add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
              output = here("data-raw/projections/out/models - Appendix.tex"),
-             notes = "(Standard Errors) and [p-values]")
+             notes = "(Standard Errors) and [p-values]\nPlease note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus, its outlier distortion test statistics is not zero.")
 
 
 modelsummary(intermediate_list_modified, 
@@ -487,7 +487,7 @@ modelsummary(intermediate_list_modified,
              add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
              output = "kableExtra",
              #output = here("data-raw/projections/out/models.tex"),
-             notes = "(Standard Errors) and [p-values]")  %>% 
+             notes = "(Standard Errors) and [p-values]\nPlease note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus, its outlier distortion test statistics is not zero.")  %>% 
   kable_styling() %>% 
   kable_paper() %>% 
   save_kable(x = .,file = here("data-raw/projections/out/models - Appendix.jpg"), zoom = 2) 
