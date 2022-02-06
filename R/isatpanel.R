@@ -34,6 +34,7 @@
 #'
 #' @return an isatpanel object
 #' @export
+#' @importFrom fastDummies dummy_cols
 #'
 #' @examples
 #' data <- pandata_simulated[pandata_simulated$year > 1980,]
@@ -353,7 +354,7 @@ isatpanel <- function(
     if(effect %in% c("individual", "twoways")){FE <- append(FE,"id")}
     if(effect %in% c("time", "twoways")){FE <- append(FE,"time")}
 
-    dummies <- fastDummies::dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
+    dummies <- dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
     dummies <- dummies[,!names(dummies)%in%c("id","time")]
     names(dummies) <- gsub("_","",names(dummies))
 
