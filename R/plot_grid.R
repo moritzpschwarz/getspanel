@@ -52,13 +52,19 @@ plot_grid <- function(x, title = NULL, ...){
                           times = varying_vars,
                           direction = "long")
 
-  # Deal with CSIS within facets
+  # introduce facets
   default_facet_name <- "Intercept (IIS, FESIS)"
   indicators_l$facet <- default_facet_name
+
+  # Deal with CSIS within facets
   indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
   indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
 
-  # Control the order of the factes
+  # Deal with CFESIS within facets
+  indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+  indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis[0-9]+","",indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"name"])))
+
+  # Control the order of the facets
   facet_order <- unique(indicators_l$facet)
   facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
   indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)

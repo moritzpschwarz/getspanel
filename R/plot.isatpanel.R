@@ -8,7 +8,7 @@
 #'
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ scale_color_identity scale_linetype
 #'
 plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL, ...){
 
@@ -26,7 +26,7 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     fitted <- as.numeric(x$isatpanel.result$fit)
   }
 
-  df_identified <- identify_indicator_timing(df)
+  df_identified <- identify_indicator_timings(df)
 
   sub_title <- NULL
 
