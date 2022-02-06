@@ -6,9 +6,10 @@
 #'
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2
+#' @importFrom stats aggregate
 #'
-plot_grid <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL, ...){
+plot_grid <- function(x, title = NULL, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
 
@@ -51,6 +52,17 @@ plot_grid <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL,
                           times = varying_vars,
                           direction = "long")
 
+  # Deal with CSIS within facets
+  default_facet_name <- "Intercept (IIS, FESIS)"
+  indicators_l$facet <- default_facet_name
+  indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+  indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
+
+  # Control the order of the factes
+  facet_order <- unique(indicators_l$facet)
+  facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
+  indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
+
   indicators_l_merged <- merge(indicators_l,
                                data.frame(name = names(x$isatpanel.result$coefficients),
                                           coef = x$isatpanel.result$coefficients),
@@ -59,21 +71,22 @@ plot_grid <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL,
   indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
 
 
-  indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id), sum)
-  names(indicators_toplot) <- c("time","id","effect")
+  indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), sum)
+  names(indicators_toplot) <- c("time","id","facet","effect")
   indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
 
-  ggplot(indicators_toplot, aes(x = time, y = id, fill = effect)) +
+  ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
     geom_tile(na.rm = NA) +
-    scale_fill_viridis_c(na.value = NA) +
+    #scale_fill_viridis_c(na.value = NA) +
+    scale_fill_gradient2(na.value = NA, name = "Effect")+
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_discrete(expand = c(0, 0)) +
+    facet_wrap(~facet) +
     theme_bw() +
     theme(panel.grid = element_blank(),
-          panel.border = element_rect(fill = NA)) +
+          panel.border = element_rect(fill = NA),
+          strip.background = element_blank()) +
     labs(x = NULL, y = NULL)
-
-
 
 
 
