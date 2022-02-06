@@ -17,6 +17,7 @@ plot_grid <- function(x, title = NULL, ...){
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
+  indicators <- indicators[,!grepl("^id|^time",colnames(indicators))]
   df <- cbind(df,indicators)
 
   if(is.null(x$isatpanel.result$fit)){
@@ -70,8 +71,8 @@ plot_grid <- function(x, title = NULL, ...){
   indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
 
   indicators_l_merged <- merge(indicators_l,
-                               data.frame(name = names(x$isatpanel.result$coefficients),
-                                          coef = x$isatpanel.result$coefficients),
+                               data.frame(name = names(coef(x$isatpanel.result)),
+                                          coef = coef(x$isatpanel.result)),
                                by = "name", all.x = TRUE)
 
   indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
