@@ -78,8 +78,8 @@ jobs:
       #
       # and then you can debug as much as you like (e.g. include broswer() in the code files or set options(error=recover))
 
-      #- name: Debugging with tmate
-      #  uses: mxschmitt/action-tmate@v3.1
+      - name: Debugging with tmate
+        uses: mxschmitt/action-tmate@v3.1
 
       - name: Check
         env:
