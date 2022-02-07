@@ -30,7 +30,6 @@ test_that("Creating five isatpanel objects for snapshot tests", {
     path
   }
 
-
   outcome1$isatpanel.result$time.started <- NULL
   outcome2$isatpanel.result$time.started <- NULL
   outcome3$isatpanel.result$time.started <- NULL
@@ -42,6 +41,24 @@ test_that("Creating five isatpanel objects for snapshot tests", {
   outcome3$isatpanel.result$time.finished <- NULL
   outcome4$isatpanel.result$time.finished <- NULL
   outcome5$isatpanel.result$time.finished <- NULL
+
+  outcome1$isatpanel.result$date <- NULL
+  outcome2$isatpanel.result$date <- NULL
+  outcome3$isatpanel.result$date <- NULL
+  outcome4$isatpanel.result$date <- NULL
+  outcome5$isatpanel.result$date <- NULL
+
+  outcome1$isatpanel.result$aux$user.estimator$envir <- NULL
+  outcome2$isatpanel.result$aux$user.estimator$envir <- NULL
+  outcome3$isatpanel.result$aux$user.estimator$envir <- NULL
+  outcome4$isatpanel.result$aux$user.estimator$envir <- NULL
+  outcome5$isatpanel.result$aux$user.estimator$envir <- NULL
+
+  outcome1$arguments$user.estimator$envir <- NULL
+  outcome2$arguments$user.estimator$envir <- NULL
+  outcome3$arguments$user.estimator$envir <- NULL
+  outcome4$arguments$user.estimator$envir <- NULL
+  outcome5$arguments$user.estimator$envir <- NULL
 
   outcomes <- list()
   outcomes$outcome1 <- outcome1
