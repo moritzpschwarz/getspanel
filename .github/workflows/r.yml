@@ -76,10 +76,17 @@ jobs:
       #
       # rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
       #
-      # and then you can debug as much as you like (e.g. include broswer() in the code files or set options(error=recover))
+      # and then you can debug as much as you like (e.g. include browser() in the code files or set options(error=recover))
+      #
+      # to upload any files for subsequent use use curl
+      # see here: https://www.tecmint.com/file-sharing-from-linux-commandline/
+      # an example for the tecmint.txt file is:
+      # curl --upload-file ./tecmint.txt https://transfer.sh/tecmint.txt
+      # and then to download
+      # curl https://transfer.sh/Vq3Kg/tecmint.txt -o tecmint.txt
 
-      - name: Debugging with tmate
-        uses: mxschmitt/action-tmate@v3.1
+      # - name: Debugging with tmate
+      #   uses: mxschmitt/action-tmate@v3.1
 
       - name: Check
         env:
