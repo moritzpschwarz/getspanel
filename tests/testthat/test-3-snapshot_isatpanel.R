@@ -2,7 +2,7 @@
 
 
 test_that("Creating five isatpanel objects for snapshot tests", {
-
+  skip_on_ci()
   data <- pandata_simulated
   #data <- data[data$year>1979,]
 
