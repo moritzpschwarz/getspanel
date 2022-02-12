@@ -35,7 +35,8 @@ Imports:
     fastDummies,
     Matrix,
     ggplot2,
-    stats
+    stats,
+    mvtnorm
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown

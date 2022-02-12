@@ -1,15 +1,15 @@
 #' Plot the Counterfactual Path
 #'
 #' @param x An object produced by the isatpanel function
-#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
 #' @param plus_t Number of time periods for the counterfactual to be displayed (default = 5).
+#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
+#' @param title Plot title. Must be a character vector.
 #'
-#' @return
 #' @export
 #'
-#' @importFrom ggplot2 geom_ribbon guides
+#' @importFrom ggplot2 geom_ribbon guides geom_rect
 #'
-plot_counterfactual <- function(x, facet.scales = "free", plus_t = 5){
+plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL){
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
@@ -21,14 +21,6 @@ plot_counterfactual <- function(x, facet.scales = "free", plus_t = 5){
   } else {
     fitted <- as.numeric(x$isatpanel.result$fit)
   }
-
-  #
-  # df_identified <- identify_indicator_timings(df)
-  #
-  # df_identified_coef <- merge(df_identified$fesis,
-  #                             data.frame(name = names(coef(x$isatpanel.result)),
-  #                                        coef = coef(x$isatpanel.result),
-  #                                        sd = sqrt(diag(vcov(x$isatpanel.result)))), by = "name")
 
   max_times <- aggregate(x$estimateddata$time,by = list(x$estimateddata$id),FUN = function(x){max(x, na.rm = TRUE)})
   names(max_times) <- c("id","maxtime")
@@ -55,24 +47,8 @@ plot_counterfactual <- function(x, facet.scales = "free", plus_t = 5){
   effects$cf_upr99 <- ((effects$coef + (2.57*effects$sd)) * (-1)) +  effects$fitted
   effects$cf_lwr99 <- ((effects$coef - (2.57*effects$sd)) * (-1)) +  effects$fitted
 
-
-  # as.list(df_ident[,c("id","time")])
-  # df_ident$endtime <- df_ident$time + plus_t
-  # df_ident$time:df_ident$endtime
-  #
-  #
-  # max_times <- aggregate(x$estimateddata$time,by = list(x$estimateddata$id),FUN = function(x){max(x, na.rm = TRUE)})
-  # names(max_times) <- c("id","maxtime")
-  #
-  # max_times_breaks <- merge(df_ident[, c("id", "time")], max_times, by = c("id"))
-  # max_times_breaks$end <- max_times_breaks$time + plus_t
-  # max_times_breaks$end <- ifelse(max_times_breaks$end > max_times_breaks$maxtime, max_times_breaks$maxtime, max_times_breaks$end)
-  #
-  # #plot_df <- merge(x$estimateddata, max_times, by = "id")
-  # plot_df <- merge(x$estimateddata, max_times_breaks[,c("id","end")], by = "id")
-  # plot_df_coef <- merge(plot_df, df_ident[,names(df_ident) %in% c("id","time","coef")], by = c("id","time"), all.x = TRUE)
-  #
-  #
+  effects$start_rect <- effects$origtime - effects$tci
+  effects$end_rect <- effects$origtime + effects$tci
 
   sub_title <- NULL
 
@@ -83,30 +59,20 @@ plot_counterfactual <- function(x, facet.scales = "free", plus_t = 5){
   )) -> g
 
   # fesis
-  #if(!is.null(df_identified$fesis)){
-  g = g + geom_vline(data = identify_indicator_timings(df)$fesis, aes_(xintercept = ~time,color="red"))
-  #}
-
-  # ggplot(effects, aes(x = time)) +
-  #   geom_line(aes(y = y)) +
-  #   geom_line(aes(y = fitted), color = "blue") +
-  #   ggplot2::geom_ribbon(aes(ymin = cf_lwr, ymax = cf_upr), fill = "red", alpha = 0.5)+
-  #   geom_line(aes(y = cf), color = "red") +
-  #   # geom_line(aes(y = cf_upr), color = "red") +
-  #   # geom_line(aes(y = cf_lwr), color = "red") +
-  #
-  #   facet_wrap(~id)
+  g <- g + geom_vline(data = identify_indicator_timings(df)$fesis, aes_(xintercept = ~time,color="red"))
 
   g +
     geom_line(aes_(y = ~y, color = "black"), size = 0.7) +
     geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
     geom_hline(aes(yintercept = 0)) +
 
+    geom_rect(data = effects, aes_(xmin = ~start_rect, xmax = ~end_rect, ymin = -Inf, ymax = Inf),
+              fill = "grey",alpha = 0.2, na.rm = TRUE) +
     geom_ribbon(data = effects, aes_(ymin = ~cf_lwr, ymax = ~cf_upr, fill = "red"), alpha = 0.5, na.rm = FALSE) +
     geom_line(data = effects, aes_(y = ~cf, color = "red", group = 1), na.rm = TRUE) +
 
-    # Faceting
-    facet_wrap("id", scales = facet.scales) +
+  # Faceting
+  facet_wrap("id", scales = facet.scales) +
 
     scale_color_identity(name = NULL,
                          breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
@@ -116,12 +82,11 @@ plot_counterfactual <- function(x, facet.scales = "free", plus_t = 5){
     scale_linetype(name = "Variable") +
     guides(fill = "none") +
 
-    theme(#legend.position = "none",
+    theme(
       strip.background = element_blank(),
       legend.key = element_rect(fill = NA),
       panel.border = element_rect(colour = "grey",fill = NA),
       panel.background = element_blank()#,
-      #panel.grid.major.y = element_line(colour = "grey",size = 0.1)
     ) +
 
     labs(title = title, subtitle = sub_title, y = NULL, x = NULL) -> plotoutput
