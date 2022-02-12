@@ -128,6 +128,8 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
 
   df_identified <- identify_indicator_timings(df)
 
+  if(is.null(df_identified$fesis)){stop("Function currently only works on FESIS variables - No FESIS Indicators found in this isatpanel object.")}
+
   df_identified_coef <- merge(df_identified$fesis,
                               data.frame(name = names(coef(x$isatpanel.result)),
                                          coef = coef(x$isatpanel.result),
