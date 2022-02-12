@@ -16,6 +16,8 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
 
+  df_ident_fesis <- identify_indicator_timings(df)$fesis
+
   if(is.null(x$isatpanel.result$fit)){
     fitted <- as.numeric(x$isatpanel.result$mean.fit)
   } else {
@@ -28,7 +30,15 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   df_ident <- break_uncertainty(x)
   df_ident <- merge(df_ident, max_times, by = "id")
   df_ident$origtime <- df_ident$time
-  df_ident_overall <- df_ident
+
+  # make sure the preceding observation collapses on the last observation
+  df_ident_start <- df_ident
+  df_ident_start$time <- df_ident_start$time - 1
+  df_ident_start$coef <- 0
+  df_ident_start$sd <- 0
+  df_ident_start$tci <- NA
+
+  df_ident_overall <- rbind(df_ident_start, df_ident)
   for(i in 1:plus_t){
     intermed <- df_ident
     intermed$time <- intermed$time + i
@@ -42,15 +52,18 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   effects <- merge(x$estimateddata, df_ident_overall, by = c("id","time"), all.x = TRUE)
   effects$fitted <- fitted
   effects$cf <-  (effects$coef * (-1)) +  effects$fitted
-  effects$cf_upr <-   ((effects$coef + (1.96*effects$sd)) * (-1)) +  effects$fitted
-  effects$cf_lwr <-   ((effects$coef - (1.96*effects$sd)) * (-1)) +  effects$fitted
-  effects$cf_upr99 <- ((effects$coef + (2.57*effects$sd)) * (-1)) +  effects$fitted
-  effects$cf_lwr99 <- ((effects$coef - (2.57*effects$sd)) * (-1)) +  effects$fitted
+  effects$cf_upr <- ((effects$coef + (1.96 * effects$sd)) * (-1)) +  effects$fitted
+  effects$cf_lwr <- ((effects$coef - (1.96 * effects$sd)) * (-1)) +  effects$fitted
+  effects$cf_upr99 <- ((effects$coef + (2.57 * effects$sd)) * (-1)) +  effects$fitted
+  effects$cf_lwr99 <- ((effects$coef - (2.57 * effects$sd)) * (-1)) +  effects$fitted
 
   effects$start_rect <- effects$origtime - effects$tci
   effects$end_rect <- effects$origtime + effects$tci
 
   sub_title <- NULL
+
+
+
 
   ggplot(df, aes_(
     x = ~time,
@@ -59,7 +72,7 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   )) -> g
 
   # fesis
-  g <- g + geom_vline(data = identify_indicator_timings(df)$fesis, aes_(xintercept = ~time,color="red"))
+  g <- g + geom_vline(data = df_ident_fesis, aes_(xintercept = ~time,color="red"))
 
   g +
     geom_line(aes_(y = ~y, color = "black"), size = 0.7) +
@@ -71,8 +84,8 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     geom_ribbon(data = effects, aes_(ymin = ~cf_lwr, ymax = ~cf_upr, fill = "red"), alpha = 0.5, na.rm = FALSE) +
     geom_line(data = effects, aes_(y = ~cf, color = "red", group = 1), na.rm = TRUE) +
 
-  # Faceting
-  facet_wrap("id", scales = facet.scales) +
+    # Faceting
+    facet_wrap("id", scales = facet.scales) +
 
     scale_color_identity(name = NULL,
                          breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
