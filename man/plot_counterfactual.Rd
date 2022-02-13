@@ -4,7 +4,13 @@
 \alias{plot_counterfactual}
 \title{Plot the Counterfactual Path}
 \usage{
-plot_counterfactual(x, plus_t = 5, facet.scales = "free", title = NULL)
+plot_counterfactual(
+  x,
+  plus_t = 5,
+  facet.scales = "free",
+  title = NULL,
+  zero_line = TRUE
+)
 }
 \arguments{
 \item{x}{An object produced by the isatpanel function}
@@ -14,9 +20,8 @@ plot_counterfactual(x, plus_t = 5, facet.scales = "free", title = NULL)
 \item{facet.scales}{To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".}
 
 \item{title}{Plot title. Must be a character vector.}
-}
-\value{
 
+\item{zero_line}{Plot a horizontal line at y = 0. Default is TRUE.}
 }
 \description{
 Plot the Counterfactual Path

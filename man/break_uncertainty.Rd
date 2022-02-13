@@ -13,9 +13,6 @@ break_uncertainty(x, m = 15, interval = 0.99)
 
 \item{interval}{Approximate level of interval. CI level will be at least > interval. Default 0.99 is a 99\% CI, so the time interval will always be the integer that results in at least > 99\% coverage.}
 }
-\value{
-
-}
 \description{
 Estimate Breakdate Uncertainty
 }

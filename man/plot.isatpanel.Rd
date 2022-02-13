@@ -4,7 +4,14 @@
 \alias{plot.isatpanel}
 \title{Plotting an isatpanel object}
 \usage{
-\method{plot}{isatpanel}(x, max.id.facet = 16, facet.scales = "free", title = NULL, ...)
+\method{plot}{isatpanel}(
+  x,
+  max.id.facet = 16,
+  facet.scales = "free",
+  title = NULL,
+  zero_line = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object produced by the isatpanel function}
@@ -14,6 +21,8 @@
 \item{facet.scales}{To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".}
 
 \item{title}{Plot title. Must be a character vector.}
+
+\item{zero_line}{Plot a horizontal line at y = 0. Default is TRUE.}
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }
