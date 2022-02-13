@@ -4,12 +4,13 @@
 #' @param plus_t Number of time periods for the counterfactual to be displayed (default = 5).
 #' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
 #' @param title Plot title. Must be a character vector.
+#' @param zero_line Plot a horizontal line at y = 0. Default is TRUE.
 #'
 #' @export
 #'
 #' @importFrom ggplot2 geom_ribbon guides geom_rect
 #'
-plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL){
+plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = TRUE){
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
@@ -50,7 +51,10 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
 
 
   effects <- merge(x$estimateddata, df_ident_overall, by = c("id","time"), all.x = TRUE)
-  effects$fitted <- fitted
+  # time-id pairs can also be duplicated if there are multiple rows at a time
+  # this is why effects can have more rows than the original data (and we need to use merge in the row below)
+  effects <- merge(effects,data.frame(x$estimateddata[,c("id","time")], fitted), by = c("id","time"))
+
   effects$cf <-  (effects$coef * (-1)) +  effects$fitted
   effects$cf_upr <- ((effects$coef + (1.96 * effects$sd)) * (-1)) +  effects$fitted
   effects$cf_lwr <- ((effects$coef - (1.96 * effects$sd)) * (-1)) +  effects$fitted
@@ -60,9 +64,10 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   effects$start_rect <- effects$origtime - effects$tci
   effects$end_rect <- effects$origtime + effects$tci
 
+  effects$cf_upr[is.na(effects$cf_upr)] <- effects$fitted[is.na(effects$cf_upr)]
+  effects$cf_lwr[is.na(effects$cf_lwr)] <- effects$fitted[is.na(effects$cf_lwr)]
+
   sub_title <- NULL
-
-
 
 
   ggplot(df, aes_(
@@ -71,18 +76,23 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     group = ~id
   )) -> g
 
-  # fesis
-  g <- g + geom_vline(data = df_ident_fesis, aes_(xintercept = ~time,color="red"))
+
+
+  if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
 
   g +
     geom_line(aes_(y = ~y, color = "black"), size = 0.7) +
-    geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
-    geom_hline(aes(yintercept = 0)) +
 
-    geom_rect(data = effects, aes_(xmin = ~start_rect, xmax = ~end_rect, ymin = -Inf, ymax = Inf),
-              fill = "grey",alpha = 0.2, na.rm = TRUE) +
-    geom_ribbon(data = effects, aes_(ymin = ~cf_lwr, ymax = ~cf_upr, fill = "red"), alpha = 0.5, na.rm = FALSE) +
-    geom_line(data = effects, aes_(y = ~cf, color = "red", group = 1), na.rm = TRUE) +
+    geom_rect(data = effects, aes_(xmin = ~start_rect, xmax = ~end_rect, ymin = -Inf, ymax = Inf, group = ~name),fill = "grey",alpha = 0.1, na.rm = TRUE) +
+
+    geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
+
+    # fesis
+    geom_vline(data = df_ident_fesis, aes_(xintercept = ~time,color="red")) +
+
+    geom_ribbon(data = effects, aes_(ymin = ~cf_lwr, ymax = ~cf_upr, fill = "red", group = ~name), alpha = 0.5, na.rm = FALSE) +
+
+    geom_line(data = effects, aes_(y = ~cf, color = "red", group = ~name), na.rm = TRUE) +
 
     # Faceting
     facet_wrap("id", scales = facet.scales) +
