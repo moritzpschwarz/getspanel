@@ -2,7 +2,7 @@
 
 
 test_that("Creating five isatpanel objects for snapshot tests", {
-  skip_on_ci()
+
   data <- pandata_simulated
   #data <- data[data$year>1979,]
 
@@ -67,12 +67,15 @@ test_that("Creating five isatpanel objects for snapshot tests", {
   outcomes$outcome4 <- outcome4
   outcomes$outcome5 <- outcome5
 
-  expect_snapshot_file(save_file(outcomes), name = "outcomes.RData")
+  expect_snapshot(outcome1)
+  expect_snapshot(outcome2)
+  expect_snapshot(outcome3)
+  expect_snapshot(outcome4)
+  expect_snapshot(outcome5)
 
-  # expect_snapshot_file(save_file(outcome2), name = "outcome2.RData")
-  # expect_snapshot_file(save_file(outcome3), name = "outcome3.RData")
-  # expect_snapshot_file(save_file(outcome4), name = "outcome4.RData")
-  # expect_snapshot_file(save_file(outcome5), name = "outcome5.RData")
+
+  skip_on_ci()
+  expect_snapshot_file(save_file(outcomes), name = "outcomes.RData")
 
 })
 
