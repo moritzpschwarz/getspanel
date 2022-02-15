@@ -36,6 +36,8 @@
 #' @export
 #' @importFrom fastDummies dummy_cols
 #'
+#' @references Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
+#'
 #' @examples
 #' data <- pandata_simulated[pandata_simulated$year > 1980,]
 #'
@@ -81,7 +83,6 @@ isatpanel <- function(
   ...
 )
 {
-
   # Error checks
   if(! effect %in% c("twoways", "individual", "time","none")){stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
 
@@ -117,6 +118,7 @@ isatpanel <- function(
     m <- match(c("formula", "data"), names(mf), 0L)
     mf <- mf[c(1L, m)]
     mf$drop.unused.levels <- TRUE
+    mf$na.action <- "na.pass"
     mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
 
@@ -165,6 +167,33 @@ isatpanel <- function(
   } else {
     mxnames <- NULL
   }
+
+  #################################
+  ########## Remove NA observations
+  #################################
+
+  if (na.remove)  {
+
+    if (!is.null(mxreg))
+    {
+      #rel.xy <- cbind(y, mx)
+      rel.xy <- cbind(y, mxreg)
+    } else {
+      rel.xy <- y
+    }
+
+    if (any(!complete.cases(rel.xy)))  {
+
+      remove <- which(!complete.cases(rel.xy)==TRUE)
+
+      y <- y[-remove]
+      # mx <- mx[-remove,]
+      id <- id[-remove]
+      time <- time[-remove]
+      mxreg <- mxreg[-remove,]
+    }
+  }
+
 
   ############# Get sample length and id out
   Tsample  <- length(unique(time))
@@ -245,7 +274,14 @@ isatpanel <- function(
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
-    fesis_names <- paste0("fesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
+    # find the minimum time for each id
+    fesis_names_mintime <- aggregate(df$time, by = list(df$id), min)
+    names(fesis_names_mintime) <- c("id","mintime")
+    # remove the mintime for each id
+    fesis_names_merged <- merge(df_balanced, fesis_names_mintime, by = "id")
+    fesis_names_intermed <- fesis_names_merged[fesis_names_merged$time != fesis_names_merged$mintime,c("id","time")]
+
+    fesis_names <- paste0("fesis",fesis_names_intermed$id,".",fesis_names_intermed$time)
 
     sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
     fesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
@@ -304,7 +340,14 @@ isatpanel <- function(
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
-    cfesis_names <- paste0("cfesis",df_balanced$id[!df$time == min(df$time)],".",df_balanced$time[!df$time == min(df$time)])
+    # find the minimum time for each id
+    cfesis_names_mintime <- aggregate(df$time, by = list(df$id), min)
+    names(cfesis_names_mintime) <- c("id","mintime")
+    # remove the mintime for each id
+    cfesis_names_merged <- merge(df_balanced, cfesis_names_mintime, by = "id")
+    cfesis_names_intermed <- cfesis_names_merged[cfesis_names_merged$time != cfesis_names_merged$mintime,c("id","time")]
+
+    cfesis_names <- paste0("cfesis",cfesis_names_intermed$id,".",cfesis_names_intermed$time)
 
     sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
     cfesis_df <- as.data.frame(as.matrix(Matrix::bdiag(sistlist)))
@@ -372,29 +415,6 @@ isatpanel <- function(
   }
 
 
-  #################################
-  ########## Remove NA observations
-  #################################
-
-  if (na.remove)  {
-
-    if (!is.null(mxreg))
-    {
-      rel.xy <- cbind(y, mx)
-    } else {
-      rel.xy <- y
-    }
-
-    if (any(!complete.cases(rel.xy)))  {
-
-      remove <- which(!complete.cases(rel.xy)==TRUE)
-
-      y <- y[-remove]
-      mx <- mx[-remove,]
-    }
-  }
-
-
   #############################
   ####### Set Engine
   ###############################
@@ -440,7 +460,6 @@ isatpanel <- function(
     }
 
   }
-
 
   if(is.null(engine)){
     user.estimator <- NULL
