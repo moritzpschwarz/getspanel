@@ -20,83 +20,84 @@ plot_grid <- function(x, title = NULL, ...){
   indicators <- indicators[,!grepl("^id|^time",colnames(indicators))]
   df <- cbind(df,indicators)
 
-  if(is.null(x$isatpanel.result$fit)){
-    fitted <- as.numeric(x$isatpanel.result$mean.fit)
-  } else {
-    fitted <- as.numeric(x$isatpanel.result$fit)
-  }
+  if(dim(indicators)[2] != 0){
 
-  # df_identified <- identify_indicator_timings(df)
-  # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
-  # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
-  #
-  # fesis <- df_identified$fesis[names(df_identified$fesis) %in% c("id","time")]
-  # fesis$value <- 1
-  # merge_fesis <- merge(x$estimateddata, fesis, by = c("id","time"), all.x = TRUE)
-  # merge_fesis[is.na(merge_fesis$value),"value"] <- 0
-  # merge_fesis$id <- as.factor(merge_fesis$id)
-  # aggregate(merge_fesis$value, by = list(merge_fesis$id), cumsum)
-  #
-  #
-  # steps <- df_identified$steps[names(df_identified$impulses) %in% c("id","time","value")]
-  #
-  # merge(x$estimateddata, impulses, by = c("id","time"), all.x = TRUE)
+    if(is.null(x$isatpanel.result$fit)){
+      fitted <- as.numeric(x$isatpanel.result$mean.fit)
+    } else {
+      fitted <- as.numeric(x$isatpanel.result$fit)
+    }
 
-  indicators_df <- cbind(df[,names(df) %in% c("id","time")],indicators)
-  varying_vars <- names(indicators_df)[!names(indicators_df)%in% c("id","time","y","fitted")]
+    # df_identified <- identify_indicator_timings(df)
+    # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
+    # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
+    #
+    # fesis <- df_identified$fesis[names(df_identified$fesis) %in% c("id","time")]
+    # fesis$value <- 1
+    # merge_fesis <- merge(x$estimateddata, fesis, by = c("id","time"), all.x = TRUE)
+    # merge_fesis[is.na(merge_fesis$value),"value"] <- 0
+    # merge_fesis$id <- as.factor(merge_fesis$id)
+    # aggregate(merge_fesis$value, by = list(merge_fesis$id), cumsum)
+    #
+    #
+    # steps <- df_identified$steps[names(df_identified$impulses) %in% c("id","time","value")]
+    #
+    # merge(x$estimateddata, impulses, by = c("id","time"), all.x = TRUE)
 
-  indicators_l <- reshape(indicators_df,
-                          varying = varying_vars,
-                          idvar = c("id","time"),
-                          v.names = "value",
-                          timevar = "name",
-                          times = varying_vars,
-                          direction = "long")
+    indicators_df <- cbind(df[,names(df) %in% c("id","time")],indicators)
+    varying_vars <- names(indicators_df)[!names(indicators_df)%in% c("id","time","y","fitted")]
 
-  # introduce facets
-  default_facet_name <- "Intercept (IIS, FESIS)"
-  indicators_l$facet <- default_facet_name
+    indicators_l <- reshape(indicators_df,
+                            varying = varying_vars,
+                            idvar = c("id","time"),
+                            v.names = "value",
+                            timevar = "name",
+                            times = varying_vars,
+                            direction = "long")
 
-  # Deal with CSIS within facets
-  indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-  indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
+    # introduce facets
+    default_facet_name <- "Intercept (IIS, FESIS)"
+    indicators_l$facet <- default_facet_name
 
-  # Deal with CFESIS within facets
-  indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-  indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis[0-9]+","",indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"name"])))
+    # Deal with CSIS within facets
+    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
 
-  # Control the order of the facets
-  facet_order <- unique(indicators_l$facet)
-  facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
-  indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
+    # Deal with CFESIS within facets
+    indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis[0-9]+","",indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"name"])))
 
-  indicators_l_merged <- merge(indicators_l,
-                               data.frame(name = names(coef(x$isatpanel.result)),
-                                          coef = coef(x$isatpanel.result)),
-                               by = "name", all.x = TRUE)
+    # Control the order of the facets
+    facet_order <- unique(indicators_l$facet)
+    facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
+    indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
 
-  indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
+    indicators_l_merged <- merge(indicators_l,
+                                 data.frame(name = names(coef(x$isatpanel.result)),
+                                            coef = coef(x$isatpanel.result)),
+                                 by = "name", all.x = TRUE)
 
-
-  indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), sum)
-  names(indicators_toplot) <- c("time","id","facet","effect")
-  indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
-
-  ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
-    geom_tile(na.rm = NA) +
-    #scale_fill_viridis_c(na.value = NA) +
-    scale_fill_gradient2(na.value = NA, name = "Effect")+
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0)) +
-    facet_wrap(~facet) +
-    theme_bw() +
-    theme(panel.grid = element_blank(),
-          panel.border = element_rect(fill = NA),
-          strip.background = element_blank()) +
-    labs(x = NULL, y = NULL)
+    indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
 
 
+    indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), sum)
+    names(indicators_toplot) <- c("time","id","facet","effect")
+    indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
 
+    ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
+      geom_tile(na.rm = NA) +
+      #scale_fill_viridis_c(na.value = NA) +
+      scale_fill_gradient2(na.value = NA, name = "Effect")+
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_discrete(expand = c(0, 0)) +
+      facet_wrap(~facet) +
+      theme_bw() +
+      theme(panel.grid = element_blank(),
+            panel.border = element_rect(fill = NA),
+            strip.background = element_blank()) +
+      labs(x = NULL, y = NULL)
+
+  } else {warning("No indicators identified in the isatpanel object. No plot produced.")}
 
 
   #
@@ -277,4 +278,5 @@ plot_grid <- function(x, title = NULL, ...){
   # #   }
   #
   # return(plotoutput)
+
 }

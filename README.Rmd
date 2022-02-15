@@ -7,8 +7,10 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
+  comment = "",
   fig.path = "man/figures/README-",
+  fig.width = 8, 
+  fig.height = 6,
   out.width = "100%"
 )
 ```
@@ -19,7 +21,9 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.svg)](https://github.com/moritzpschwarz/getspanel/actions)
 <!-- badges: end -->
 
-The goal of getspanel is to ...
+The package is a panel adaptation of the gets package see [see here](https://CRAN.R-project.org/package=gets).
+
+This code is being developed by Felix Pretis and Moritz Schwarz. The associated working paper is published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis and Schwarz, which is available at SSRN [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745).
 
 ## Installation
 
@@ -37,25 +41,115 @@ devtools::install_github("moritzpschwarz/getspanel")
 ```
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ```{r example}
 library(getspanel)
-## basic example code
+
+data("EU_emissions_road")
+subset_EU15 <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland", 
+                 "France",  "Greece", "Ireland", "Italy", "Luxembourg", "Netherlands","Portugal",  "Sweden", "United Kingdom")
+
+EU_emissions_road <- EU_emissions_road[EU_emissions_road$country %in% subset_EU15, ]
+
+is1 <- isatpanel(data = EU_emissions_road,
+                 formula = transport.emissions ~ lgdp + lpop, 
+                 index = c("country","year"),
+                 effect = "twoways",
+                 fesis = TRUE,
+                 
+                 print.searchinfo = FALSE # to save space we suppress the status information in the estimation
+)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
+```{r example_textoutput}
+is1
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r example_plot}
+plot(is1)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+Let's explore the other plots that we can use: 
+
+```{r}
+plot_grid(is1)
+```
+
+We can plot the counterfactual aspects compared 
+
+```{r}
+plot_counterfactual(is1)
+```
+
+We can plot the residuals against an OLS model:
+
+```{r}
+plot_residuals(is1)
+```
+
+
+An example using coefficient step indicator saturation and impulse indicator saturation:
+
+```{r, results='hide'}
+is2 <- isatpanel(data = EU_emissions_road,
+                 formula = transport.emissions ~ lgdp + lpop, 
+                 index = c("country","year"),
+                 effect = "twoways",
+                 csis = TRUE, 
+                 iis = TRUE,  
+                 print.searchinfo = FALSE # to save space we suppress the status information in the estimation
+)
+```
+
+```{r}
+is2     
+plot(is2)
+
+```
+
+
+```{r}
+plot_grid(is2)
+```
+
+
+and an example of Coefficient Fixed-Effect Step indicator saturation: 
+
+```{r, results='hide'}
+is3 <- isatpanel(data = EU_emissions_road,
+                 formula = transport.emissions ~ lgdp + lpop, 
+                 index = c("country","year"),
+                 effect = "twoways",
+                 cfesis = TRUE, 
+                 print.searchinfo = FALSE # to save space we suppress the status information in the estimation
+)
+```
+
+
+```{r, results='hide'}
+is3    
+plot(is3)
+
+```
+
+
+We can also use e.g. the `fixest` package to estimate our models: 
+
+```{r, results='hide'}
+is4 <- isatpanel(data = EU_emissions_road,
+                 formula = transport.emissions ~ lgdp + lpop, 
+                 index = c("country","year"),
+                 effect = "twoways",
+                 engine = "fixest",
+                 fesis = TRUE, 
+                 print.searchinfo = FALSE # to save space we suppress the status information in the estimation
+)
+```
+
+
+```{r, results='hide'}
+plot(is4)
+```
+
+

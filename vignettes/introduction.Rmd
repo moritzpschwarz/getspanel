@@ -34,7 +34,6 @@ Once installed we need to load the library:
 
 ```{r setup}
 library(getspanel)
-#library(tidyverse) # needed for the plots
 ```
 
 
@@ -154,11 +153,22 @@ From here onwards, I will use the `lm` notation.
 
 ## Plotting
 
-We can plot these simply using the default plotting methods (rely on the **tidyverse** package):
+We can plot these simply using the default plotting methods (rely on the **ggplot2** package):
 
 ```{r}
 plot(is_lm)
 ```
+
+
+```{r}
+plot_grid(is_lm)
+```
+
+
+```{r}
+plot_counterfactual(is_lm)
+```
+
 
 <!-- ![](getspanel_plot.png) -->
 

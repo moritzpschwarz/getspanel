@@ -106,3 +106,6 @@ effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "i
 
 
 }
+\references{
+Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
+}
