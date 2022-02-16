@@ -24,6 +24,7 @@ save_png <- function(a) {
 
 test_that("Standard Plot",{
   skip_on_ci()
+  skip_on_cran()
   expect_snapshot_file(save_png(plot(outcomes$outcome1)),name = "Standard_plot_outcome1.png")
   expect_snapshot_file(save_png(plot(outcomes$outcome2)),name = "Standard_plot_outcome2.png")
   expect_snapshot_file(save_png(plot(outcomes$outcome3)),name = "Standard_plot_outcome3.png")
@@ -34,6 +35,7 @@ test_that("Standard Plot",{
 
 test_that("Grid Plot",{
   skip_on_ci()
+  skip_on_cran()
   expect_snapshot_file(save_png(plot_grid(outcomes$outcome1)),name = "Grid_plot_outcome1.png")
   expect_snapshot_file(save_png(plot_grid(outcomes$outcome2)),name = "Grid_plot_outcome2.png")
   expect_snapshot_file(save_png(plot_grid(outcomes$outcome3)),name = "Grid_plot_outcome3.png")
@@ -43,6 +45,7 @@ test_that("Grid Plot",{
 
 test_that("Residuals Plot",{
   skip_on_ci()
+  skip_on_cran()
   expect_snapshot_file(save_png(plot_residuals(outcomes$outcome1)),name = "Residuals_plot_outcome1.png")
   expect_snapshot_file(save_png(plot_residuals(outcomes$outcome2)),name = "Residuals_plot_outcome2.png")
   expect_snapshot_file(save_png(plot_residuals(outcomes$outcome3)),name = "Residuals_plot_outcome3.png")

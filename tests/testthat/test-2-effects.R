@@ -1,12 +1,12 @@
 # devtools::install_github(repo = "moritzpschwarz/getspanel")
 #library(getspanel)
 #library(tidyverse) # needed for the plots
-library(fixest)
-library(lfe)
+# library(fixest)
+# library(lfe)
 
 data("pandata_simulated")
 
-pandata_simulated <- pandata_simulated[pandata_simulated$year > 1980,]
+pandata_simulated <- pandata_simulated[pandata_simulated$year > 1979,]
 
 
 # Case 1: No FE
