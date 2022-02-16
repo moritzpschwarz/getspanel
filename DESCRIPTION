@@ -15,7 +15,8 @@ Authors@R:
 Description: Uses the gets package for Panel Data.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://github.com/moritzpschwarz/getspanel
+URL: https://github.com/moritzpschwarz/getspanel,
+    http://moritzschwarz.org/getspanel/
 BugReports: https://github.com/moritzpschwarz/getspanel/issues
 LazyData: true
 Roxygen: list(markdown = TRUE)
