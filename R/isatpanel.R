@@ -39,14 +39,18 @@
 #' @references Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
 #'
 #' @examples
-#' data <- pandata_simulated[pandata_simulated$year > 1980,]
+#' \dontrun{
+#' data <- pandata_simulated
 #'
-#' isatpanel(data = data, gdp ~ temp, index = c("country","year"),
+#' is1 <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
 #' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01)
+#' plot(is1)
+#' plot_grid(is1)
 #'
-#' \dontrun{isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest",cluster = "individual")}
-#'
+#' is2 <- isatpanel(data = data, gdp ~ temp + I(temp^2), index = c("country","year"),
+#' effect="twoways",iis=TRUE,fesis=TRUE, csis = TRUE,t.pval=0.01,engine = "fixest")
+#'plot(is2)
+#'plot_grid(is2)}
 #'
 
 isatpanel <- function(
