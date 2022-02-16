@@ -1,4 +1,4 @@
-#' Title Use the 'lfe' package to estimate models
+#' Internal lfe/felm Estimation Method
 #'
 #' @param y dependent variable
 #' @param x matrix of regressors

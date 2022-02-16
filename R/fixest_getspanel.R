@@ -1,4 +1,4 @@
-#' fixest Estimation Method
+#' Internal fixest/feols Estimation Method
 #'
 #' @param y dependent variable
 #' @param x matrix of regressors
