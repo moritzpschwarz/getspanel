@@ -2,7 +2,7 @@
 % Please edit documentation in R/fixest_getspanel.R
 \name{fixestFun}
 \alias{fixestFun}
-\title{fixest Estimation Method}
+\title{Internal fixest/feols Estimation Method}
 \usage{
 fixestFun(y, x, effect, time, id, cluster = "individual", ...)
 }
@@ -25,5 +25,5 @@ fixestFun(y, x, effect, time, id, cluster = "individual", ...)
 List to be used by gets::isat
 }
 \description{
-fixest Estimation Method
+Internal fixest/feols Estimation Method
 }

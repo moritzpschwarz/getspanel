@@ -2,7 +2,7 @@
 % Please edit documentation in R/felm_getspanel.R
 \name{felmFun}
 \alias{felmFun}
-\title{Title Use the 'lfe' package to estimate models}
+\title{Internal lfe/felm Estimation Method}
 \usage{
 felmFun(y, x, effect, time, id, cluster = "individual", ...)
 }
@@ -25,5 +25,5 @@ felmFun(y, x, effect, time, id, cluster = "individual", ...)
 List to be used by gets::isat
 }
 \description{
-Title Use the 'lfe' package to estimate models
+Internal lfe/felm Estimation Method
 }

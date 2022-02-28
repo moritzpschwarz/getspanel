@@ -12,7 +12,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "moritz.schwarz@scmo.eu",
            comment = c(ORCID = "0000-0003-0340-3780")))
-Description: Uses the gets package for Panel Data.
+Description: Uses several types of indicator saturation and automated General-to-Specific (GETS) modelling from the 'gets' package and applies it to panel data. This allows the detection of structural breaks in panel data, operationalising a reverse causal approach of causal inference, see Pretis and Schwarz (2022) <doi:10.2139/ssrn.4022745>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 URL: https://github.com/moritzpschwarz/getspanel,
