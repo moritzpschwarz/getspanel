@@ -48,8 +48,8 @@ distorttest.boot <- function(
     only.ols = FALSE,
     clean.sample = TRUE,
     parametric = FALSE,
-    parametric.ar=FALSE,
-    y0=NULL,
+    timeseries = FALSE,
+    raw_data = NULL,
     scale.t.pval = 1,
     parallel = FALSE,
     ncore = detectCores()[1] - 1,
@@ -137,7 +137,7 @@ distorttest.boot <- function(
     return( dist.res)
   }
 
-  if (parametric.ar){ #residual bootstrap with time series
+  if (parametric & timeseries){ #residual bootstrap with time series
     ## From here: Moritz parametric TS bootstrap
 
     base <- x
@@ -158,7 +158,7 @@ distorttest.boot <- function(
       }
 
       is.boot <- isat(y.boot, mxreg=xvars, ar = 1,
-                      mc = FALSE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
+                      mc = TRUE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
                       print.searchinfo = FALSE, max.block.size = max.block.size)
       dist.boot <- distorttest(is.boot)
       out.boot <- outliertest(is.boot)
@@ -186,13 +186,14 @@ distorttest.boot <- function(
 
                                       # arguments for the stat function
                                       boot.tpval = boot.tpval,
-                                      parallel = parallel,
+                                      parallel = "snow",
 
                                       max.block.size = max.block.size,
                                       ran.gen = res.sim, ran.args = list(),
-                                      xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
+                                      #xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
+                                      xvars = raw_data[,-1],
                                       orig.model = base,
-                                      y0 = y0)
+                                      y0 = raw_data[1,1])
 
 
     outcome_parametric_ar_bootstrap <- as.data.frame(parametric_ar_bootstrap$t)
@@ -202,100 +203,137 @@ distorttest.boot <- function(
 
   }
 
+  if(!parametric & timeseries){
+    if(clean.sample){
+      raw_data_clean <- raw_data[!x$aux$y.index %in% isatdates(x)$iis$index,] # remove the indicators from the raw_data
+    } else {
+      raw_data_clean <- raw_data
+    }
+    raw_data_clean_ts <- as.ts(raw_data_clean)
+
+    stat <- function(tsb, t.pval, boot.tpval, max.block.size,p_alpha){
+      y.boot <- tsb[,1]
+      x.boot <- tsb[,2:ncol(tsb)]
+
+      is.boot <- isat(y.boot, mxreg=x.boot, mc=TRUE, t.pval=boot.tpval, iis=TRUE, ar = 1,
+                      sis=FALSE,  print.searchinfo=FALSE, max.block.size = max.block.size)
+      dist.boot <- distorttest(is.boot)
+      out.boot <- outliertest(is.boot)
+
+      dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
+      names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test")
+      return( dist.res)
+
+    }
+
+    non_param_timeseries <- tsboot(tseries = raw_data_clean_ts,
+                                   statistic = stat,
+                                   R = nboot,
+                                   n.sim = nrow(raw_data),
+                                   l = ceiling(nrow(raw_data)^(1/3)),
+                                   sim = "fixed",
+                                   boot.tpval = boot.tpval,#specs$boot.pval.scale[j],
+                                   parallel = "snow",
+                                   max.block.size=max.block.size)
+
+    coefdist.sample <- as.data.frame(non_param_timeseries$t)
+    colnames(coefdist.sample) <- c(names(dist.full$coef.diff), "dist", "prop", "prop.test", "count", "count.test")
+
+  }
+
+  if(!timeseries){
 
 
-  if (parallel){
-    #ncore=7
-    #  boot.tpval <- 0.05
-    cl <- makeCluster(ncore) #not to overload your computer
-    registerDoParallel(cl)
-    coefdist.sample <- foreach(i=1:nboot, .combine=rbind) %dopar% {
-      require(gets)
-      boot.samp <-  boot.samples[[i]]
 
-      if (parametric & !parametric.ar){ #parametric bootstrap (residual resampling)
+    if (parallel){
+      #ncore=7
+      #  boot.tpval <- 0.05
+      cl <- makeCluster(ncore) #not to overload your computer
+      registerDoParallel(cl)
+      coefdist.sample <- foreach(i=1:nboot, .combine=rbind) %dopar% {
+        require(gets)
+        boot.samp <-  boot.samples[[i]]
 
-        # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]
-        # res.boot <- as.vector(x$residuals)[boot.samp]
-        # ####### continue from here....
-        #
-        # #NROW(boot.samp)
-        #
-        # y0 <- y0.input #median(x$aux$y) #initial value needs to be specified!
-        #
-        # y.boot <- matrix(NA, N, 1)
-        # y.boot[1] <- y0
-        #
-        # x.boot.sim <- rbind(rep(NA, NCOL(x.boot)), x.boot)
-        # res.boot.sim <- res.boot
-        #
-        # NROW(y.boot)
-        # NROW(x.boot.sim)
-        # NROW(res.boot.sim)
-        #
-        #
-        # for (m in 2:(N)){
-        #   y.boot[m] <- x.boot.sim[m,]%*% coefficients(x)[!(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]  + res.boot.sim[m] +  coefficients(x)[("ar1")]* y.boot[m-1]
-        #
-        # }
-        # #y.boot <- y.boot[2:length(y.boot)]
-        # #NROW(y.boot)
-        # #arx(y=y.boot, mxreg=x.boot.sim[,-1], ar=1) # check constant and if it recovers the correct thing.
-        # # FROM HERE ON NOT FINISHED (nothing happens with y.boot)
+        if (parametric & !parametric.ar){ #parametric bootstrap (residual resampling)
+
+          # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]
+          # res.boot <- as.vector(x$residuals)[boot.samp]
+          # ####### continue from here....
+          #
+          # #NROW(boot.samp)
+          #
+          # y0 <- y0.input #median(x$aux$y) #initial value needs to be specified!
+          #
+          # y.boot <- matrix(NA, N, 1)
+          # y.boot[1] <- y0
+          #
+          # x.boot.sim <- rbind(rep(NA, NCOL(x.boot)), x.boot)
+          # res.boot.sim <- res.boot
+          #
+          # NROW(y.boot)
+          # NROW(x.boot.sim)
+          # NROW(res.boot.sim)
+          #
+          #
+          # for (m in 2:(N)){
+          #   y.boot[m] <- x.boot.sim[m,]%*% coefficients(x)[!(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]  + res.boot.sim[m] +  coefficients(x)[("ar1")]* y.boot[m-1]
+          #
+          # }
+          # #y.boot <- y.boot[2:length(y.boot)]
+          # #NROW(y.boot)
+          # #arx(y=y.boot, mxreg=x.boot.sim[,-1], ar=1) # check constant and if it recovers the correct thing.
+          # # FROM HERE ON NOT FINISHED (nothing happens with y.boot)
 
           x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
           res.boot <- as.vector(x$residuals)[boot.samp]
           y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
+        } else { #nonparametric
+          y.boot <- x$aux$y[boot.samp]
+          x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
         }
 
-      } else { #nonparametric
-        y.boot <- x$aux$y[boot.samp]
-        x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
+        if (!only.ols){
+          tempMatrix =   dist.boot.temp(y.boot, x.boot, boot.tpval)
+
+        } else { #if we're only bootstrapping ols part
+          tempMatrix =   dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
+        }
       }
+      #stop cluster
+      stopCluster(cl)
 
-      if (!only.ols){
-        tempMatrix =   dist.boot.temp(y.boot, x.boot, boot.tpval)
+    } else { #if not using parallel
+      coefdist.sample <-foreach(i=1:nboot,.combine=rbind) %do% {
+        boot.samp <-  boot.samples[[i]]
 
-      } else { #if we're only bootstrapping ols part
-        tempMatrix =   dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
+
+        if (parametric==TRUE){ #parametric bootstrap (residual resampling)
+          x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
+          res.boot <- as.vector(x$residuals)[boot.samp]
+          y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
+
+        } else { #nonparametric
+          y.boot <- x$aux$y[boot.samp]
+          x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
+        }
+        #  y.boot <- x$aux$y[boot.samp]
+        # x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
+        #
+        # dist.boot.temp(y.boot, x.boot, boot.tpval)
+        if (!only.ols){
+          dist.boot.temp(y.boot, x.boot, boot.tpval)
+        } else { #if we're only bootstrapping ols part
+          dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
+        }
       }
-    }
-    #stop cluster
-    stopCluster(cl)
-
-  } else { #if not using parallel
-    coefdist.sample <-foreach(i=1:nboot,.combine=rbind) %do% {
-      boot.samp <-  boot.samples[[i]]
-
-
-      if (parametric==TRUE){ #parametric bootstrap (residual resampling)
-        x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
-        res.boot <- as.vector(x$residuals)[boot.samp]
-        y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
-
-      } else { #nonparametric
-        y.boot <- x$aux$y[boot.samp]
-        x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
-      }
-      #  y.boot <- x$aux$y[boot.samp]
-      # x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
-      #
-      # dist.boot.temp(y.boot, x.boot, boot.tpval)
-      if (!only.ols){
-        dist.boot.temp(y.boot, x.boot, boot.tpval)
-      } else { #if we're only bootstrapping ols part
-        dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
-      }
-    }
-  } #parallel if closed
-
+    } #parallel if closed
+  }
   # end.time <- Sys.time()
   # time.diff <-  end.time - start.time
   # print(paste("Boot Complete in", sep=""))
   # print(time.diff)
 
   # start.time <- Sys.time()
-
   coefdist.sample <- as.data.frame(coefdist.sample)
   coefdist.res <- data.frame(matrix(NA, nrow=nboot, ncol=1))
   names(coefdist.res) <- "boot"
