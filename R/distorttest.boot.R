@@ -42,17 +42,32 @@
 #' @export
 #'
 distorttest.boot <- function(
-  x,
-  nboot = 199,
-  clean.sample = TRUE,
-  parametric = FALSE,
-  scale.t.pval = 1,
-  parallel = FALSE,
-  ncore = detectCores()[1] - 1,
-  ...
+    x,
+    nboot = 199,
+    m = NULL,
+    only.ols = FALSE,
+    clean.sample = TRUE,
+    parametric = FALSE,
+    parametric.ar=FALSE,
+    y0=NULL,
+    scale.t.pval = 1,
+    parallel = FALSE,
+    ncore = detectCores()[1] - 1,
+    ...
 ){
 
 
+  # x=is1
+  # nboot=100
+  # clean.sample = FALSE
+  # parametric=TRUE
+  # scale.t.pval = 1
+  # parallel=TRUE
+  # ncore=2
+  # max.block.size=2
+  # only.ols <- FALSE
+  # parametric.ar <- TRUE
+  # y0 <- y[1]
   # x <- is1
   # nboot=199
   #
@@ -64,10 +79,14 @@ distorttest.boot <- function(
   out.full <- outliertest(x)
 
   is0.date <- isatdates(x)$iis$index
+  y0.input <- y0
   N <- x$aux$y.n
   # define the set over which to sample the bootstraps from as all observations apart from those where IIS identified outliers
   n.null <- seq(1:N)[!(seq(1:N) %in% is0.date)]
 
+  if (!is.null(m)){
+    N <- m
+  }
   boot.samples <- list()
 
   if (parametric){
@@ -100,6 +119,22 @@ distorttest.boot <- function(
     dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
     names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test")
     return( dist.res)
+
+  }
+
+  #dist.boot.temp.ols_only <- function(y.boot, x.boot, boot.tpval, ...){ # commented out by MORITZ because I don't see any value for the ... with the isat function also commented out
+  dist.boot.temp.ols_only <- function(y.boot, x.boot, boot.tpval){
+    # y.boot <- x$aux$y
+    # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
+
+    #is.boot <- isat(y.boot, mxreg=x.boot, mc=FALSE, t.pval=boot.tpval, iis=TRUE, sis=FALSE,  print.searchinfo=FALSE, ...)
+    ols.y <- arx(y = y.boot, mxreg=x.boot, mc=FALSE)
+
+    dist.boot <- distorttest(x, ols=ols.y)
+    out.boot <- outliertest(x)
+    dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
+    names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test")
+    return( dist.res)
   }
 
 
@@ -114,17 +149,117 @@ distorttest.boot <- function(
 
 
       if (parametric==TRUE){ #parametric bootstrap (residual resampling)
-        x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
-        res.boot <- as.vector(x$residuals)[boot.samp]
-        y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
+
+        # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]
+        # res.boot <- as.vector(x$residuals)[boot.samp]
+        # ####### continue from here....
+        #
+        # #NROW(boot.samp)
+        #
+        # y0 <- y0.input #median(x$aux$y) #initial value needs to be specified!
+        #
+        # y.boot <- matrix(NA, N, 1)
+        # y.boot[1] <- y0
+        #
+        # x.boot.sim <- rbind(rep(NA, NCOL(x.boot)), x.boot)
+        # res.boot.sim <- res.boot
+        #
+        # NROW(y.boot)
+        # NROW(x.boot.sim)
+        # NROW(res.boot.sim)
+        #
+        #
+        # for (m in 2:(N)){
+        #   y.boot[m] <- x.boot.sim[m,]%*% coefficients(x)[!(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]  + res.boot.sim[m] +  coefficients(x)[("ar1")]* y.boot[m-1]
+        #
+        # }
+        # #y.boot <- y.boot[2:length(y.boot)]
+        # #NROW(y.boot)
+        # #arx(y=y.boot, mxreg=x.boot.sim[,-1], ar=1) # check constant and if it recovers the correct thing.
+        # # FROM HERE ON NOT FINISHED (nothing happens with y.boot)
+
+        if (parametric.ar){ #residual bootstrap with time series
+          ## From here: Moritz parametric TS bootstrap
+
+          base <- x
+          res <- base$residuals[!base$aux$y.index %in% isatdates(base)$iis$index] # remove the indicators from the residuals
+          #y0 <- -1.12153061
+          #max.block.size <- 30
+
+          # Function to be used in tsboot
+          stat <- function(tsb, xvars, t.pval, boot.tpval, max.block.size,p_alpha, orig.model, y0){
+
+            for(i in 1:nrow(xvars)){
+              if(i == 1){
+                y.boot <- y0
+              } else {
+                y.boot <- c(y.boot,
+                            as.numeric(c(y.boot[(i-1)], xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
+              }
+            }
+
+            is.boot <- isat(y.boot, mxreg=xvars, ar = 1,
+                            mc = FALSE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
+                            print.searchinfo = FALSE, max.block.size = max.block.size)
+            dist.boot <- distorttest(is.boot)
+            out.boot <- outliertest(is.boot)
+
+            dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
+
+            dist.res <- c(dist.res, is.boot$coefficients[!(colnames(is.boot$aux$mX) %in% is.boot$ISnames)])
+
+            names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
+                                 names(dist.boot$coef.diff))
+            return(dist.res)
+          }
+
+
+          res.sim <- function(res, n.sim, ran.args) {
+            rg1 <- function(n, res) sample(res, n, replace = TRUE)
+            c(rg1((n.sim),as.numeric(res)))
+          }
+
+
+          parametric_ar_bootstrap <- tsboot(tseries = res, statistic = stat,
+                                            R = nboot, sim = "model",
+                                            n.sim = base$aux$y.n + 1,
+                                            orig.t = FALSE,
+
+                                            # arguments for the stat function
+                                            boot.tpval = boot.tpval,
+
+                                            max.block.size = max.block.size,
+                                            ran.gen = res.sim, ran.args = list(),
+                                            xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
+                                            orig.model = base,
+                                            y0 = y0)
+
+
+          outcome_parametric_ar_bootstrap <- as.data.frame(parametric_ar_bootstrap$t)
+          names(outcome_parametric_ar_bootstrap) <- c(names(dist.full$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
+                                                      names(dist.full$coef.diff))
+          coefdist.sample = outcome_parametric_ar_bootstrap
+
+
+        } else {
+          # TO DO!!!!!
+          # REMOVE the indicators!!
+          x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
+          res.boot <- as.vector(x$residuals)[boot.samp]
+          y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
+        }
 
       } else { #nonparametric
         y.boot <- x$aux$y[boot.samp]
         x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
       }
 
-      tempMatrix =   dist.boot.temp(y.boot, x.boot, boot.tpval)
+      if (!only.ols){
+        tempMatrix =   dist.boot.temp(y.boot, x.boot, boot.tpval)
 
+      } else { #if we're only bootstrapping ols part
+        tempMatrix =   dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
+      }
     }
     #stop cluster
     stopCluster(cl)
@@ -146,7 +281,12 @@ distorttest.boot <- function(
       #  y.boot <- x$aux$y[boot.samp]
       # x.boot <- x$aux$mX[boot.samp, !(colnames(x$aux$mX) %in% x$ISnames)]
       #
-      dist.boot.temp(y.boot, x.boot, boot.tpval)
+      # dist.boot.temp(y.boot, x.boot, boot.tpval)
+      if (!only.ols){
+        dist.boot.temp(y.boot, x.boot, boot.tpval)
+      } else { #if we're only bootstrapping ols part
+        dist.boot.temp.ols_only(y.boot, x.boot, boot.tpval)
+      }
     }
   } #parallel if closed
 
@@ -211,6 +351,7 @@ distorttest.boot <- function(
 
   out <- list()
 
+  out$coefdist.sample <- coefdist.sample[,names(dist.full$coef.diff)] # keeping the difference explicit
   out$coefdist.res <- coefdist.res
 
   out$prop.full <- prop.full
@@ -239,6 +380,16 @@ distorttest.boot <- function(
   out$boot.q.dist <- boot.q.dist
   out$boot.p.dist <- boot.p.dist
 
+  ####compute test statistic with bootstrapped variance
+  vboot <- cov(coefdist.sample[,names(dist.full$coef.diff)])
+  man.var.boot <-  distorttest(x, var.man = vboot)
+
+  out$boot.var.p <- man.var.boot$p.value
+  out$boot.var.stat <- man.var.boot$statistic
+
+
+  # t1$statistic
+  # t1$p.value
 
   out$dist.full <- dist.full
 
