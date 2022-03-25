@@ -137,6 +137,72 @@ distorttest.boot <- function(
     return( dist.res)
   }
 
+  if (parametric.ar){ #residual bootstrap with time series
+    ## From here: Moritz parametric TS bootstrap
+
+    base <- x
+    res <- base$residuals[!base$aux$y.index %in% isatdates(base)$iis$index] # remove the indicators from the residuals
+    #y0 <- -1.12153061
+    #max.block.size <- 30
+
+    # Function to be used in tsboot
+    stat <- function(tsb, xvars, t.pval, boot.tpval, max.block.size,p_alpha, orig.model, y0){
+
+      for(i in 1:nrow(xvars)){
+        if(i == 1){
+          y.boot <- y0
+        } else {
+          y.boot <- c(y.boot,
+                      as.numeric(c(y.boot[(i-1)], xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
+        }
+      }
+
+      is.boot <- isat(y.boot, mxreg=xvars, ar = 1,
+                      mc = FALSE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
+                      print.searchinfo = FALSE, max.block.size = max.block.size)
+      dist.boot <- distorttest(is.boot)
+      out.boot <- outliertest(is.boot)
+
+      dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
+
+      dist.res <- c(dist.res, is.boot$coefficients[!(colnames(is.boot$aux$mX) %in% is.boot$ISnames)])
+
+      names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
+                           names(dist.boot$coef.diff))
+      return(dist.res)
+    }
+
+
+    res.sim <- function(res, n.sim, ran.args) {
+      rg1 <- function(n, res) sample(res, n, replace = TRUE)
+      c(rg1((n.sim),as.numeric(res)))
+    }
+
+
+    parametric_ar_bootstrap <- tsboot(tseries = res, statistic = stat,
+                                      R = nboot, sim = "model",
+                                      n.sim = base$aux$y.n + 1,
+                                      orig.t = FALSE,
+
+                                      # arguments for the stat function
+                                      boot.tpval = boot.tpval,
+                                      parallel = parallel,
+
+                                      max.block.size = max.block.size,
+                                      ran.gen = res.sim, ran.args = list(),
+                                      xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
+                                      orig.model = base,
+                                      y0 = y0)
+
+
+    outcome_parametric_ar_bootstrap <- as.data.frame(parametric_ar_bootstrap$t)
+    names(outcome_parametric_ar_bootstrap) <- c(names(dist.full$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
+                                                names(dist.full$coef.diff))
+    coefdist.sample = outcome_parametric_ar_bootstrap
+
+  }
+
+
 
   if (parallel){
     #ncore=7
@@ -147,8 +213,7 @@ distorttest.boot <- function(
       require(gets)
       boot.samp <-  boot.samples[[i]]
 
-
-      if (parametric==TRUE){ #parametric bootstrap (residual resampling)
+      if (parametric & !parametric.ar){ #parametric bootstrap (residual resampling)
 
         # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]
         # res.boot <- as.vector(x$residuals)[boot.samp]
@@ -178,72 +243,6 @@ distorttest.boot <- function(
         # #arx(y=y.boot, mxreg=x.boot.sim[,-1], ar=1) # check constant and if it recovers the correct thing.
         # # FROM HERE ON NOT FINISHED (nothing happens with y.boot)
 
-        if (parametric.ar){ #residual bootstrap with time series
-          ## From here: Moritz parametric TS bootstrap
-
-          base <- x
-          res <- base$residuals[!base$aux$y.index %in% isatdates(base)$iis$index] # remove the indicators from the residuals
-          #y0 <- -1.12153061
-          #max.block.size <- 30
-
-          # Function to be used in tsboot
-          stat <- function(tsb, xvars, t.pval, boot.tpval, max.block.size,p_alpha, orig.model, y0){
-
-            for(i in 1:nrow(xvars)){
-              if(i == 1){
-                y.boot <- y0
-              } else {
-                y.boot <- c(y.boot,
-                            as.numeric(c(y.boot[(i-1)], xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
-              }
-            }
-
-            is.boot <- isat(y.boot, mxreg=xvars, ar = 1,
-                            mc = FALSE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
-                            print.searchinfo = FALSE, max.block.size = max.block.size)
-            dist.boot <- distorttest(is.boot)
-            out.boot <- outliertest(is.boot)
-
-            dist.res <- c(dist.boot$coef.diff, dist.boot$statistic,  out.boot$proportion$estimate,  out.boot$proportion$statistic, out.boot$count$estimate, out.boot$count$statistic)
-
-            dist.res <- c(dist.res, is.boot$coefficients[!(colnames(is.boot$aux$mX) %in% is.boot$ISnames)])
-
-            names(dist.res) <- c(names(dist.boot$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
-                                 names(dist.boot$coef.diff))
-            return(dist.res)
-          }
-
-
-          res.sim <- function(res, n.sim, ran.args) {
-            rg1 <- function(n, res) sample(res, n, replace = TRUE)
-            c(rg1((n.sim),as.numeric(res)))
-          }
-
-
-          parametric_ar_bootstrap <- tsboot(tseries = res, statistic = stat,
-                                            R = nboot, sim = "model",
-                                            n.sim = base$aux$y.n + 1,
-                                            orig.t = FALSE,
-
-                                            # arguments for the stat function
-                                            boot.tpval = boot.tpval,
-
-                                            max.block.size = max.block.size,
-                                            ran.gen = res.sim, ran.args = list(),
-                                            xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
-                                            orig.model = base,
-                                            y0 = y0)
-
-
-          outcome_parametric_ar_bootstrap <- as.data.frame(parametric_ar_bootstrap$t)
-          names(outcome_parametric_ar_bootstrap) <- c(names(dist.full$coef.diff), "dist", "prop", "prop.test", "count", "count.test",
-                                                      names(dist.full$coef.diff))
-          coefdist.sample = outcome_parametric_ar_bootstrap
-
-
-        } else {
-          # TO DO!!!!!
-          # REMOVE the indicators!!
           x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% x$ISnames)]
           res.boot <- as.vector(x$residuals)[boot.samp]
           y.boot <-   x.boot %*% coefficients(x)[!(colnames(x$aux$mX) %in% x$ISnames)] + res.boot
