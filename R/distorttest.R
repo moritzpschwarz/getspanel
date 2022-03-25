@@ -2,11 +2,12 @@
 #'
 #' @param x An isat object
 #' @param coef character string. Default is "all"
-#'
+#' @param ols Pre specify an ols model to use (must be an arx object)
+#' @param var.man Specify a manual variance-covariance matrix of the coefficient difference. This is useful for bootstrapping the variance of the difference in the Outlier distortion test.
 #' @return
 #' @export
 #'
-distorttest <- function(x, coef="all"){
+distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
 
   if (!is.null(x)){
 
@@ -73,61 +74,71 @@ distorttest <- function(x, coef="all"){
   nOLS <- length(x$aux$y)
   nOLS_rob <- length(x$aux$y) - length(x$ISnames)
 
+
   # This is the GUM
-  ols.y <- arx(y, mxreg=mx, mc=FALSE, plot=FALSE, ar=FALSE)
+  if (is.null(ols)){
+    ols.y <- arx(y, mxreg=mx, mc=FALSE, plot=FALSE, ar=FALSE)
+  } else {
+    ols.y <- ols
+  }
 
 
   if (NROW(coef)==1){
     if (coef=="all"){ #if testing on all coefficients
 
-        betaOLS1 <- coefficients(x)[keep]
-        betaOLS <- coefficients(ols.y)
+      betaOLS1 <- coefficients(x)[keep]
+      betaOLS <- coefficients(ols.y)
 
-        V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[keep, keep]
+      V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[keep, keep]
 
     } else { #testing on subset of coefficients
 
-        betaOLS1 <- coefficients(x)[coef]
-        betaOLS <- coefficients(ols.y)[coef]
+      betaOLS1 <- coefficients(x)[coef]
+      betaOLS <- coefficients(ols.y)[coef]
 
 
-        V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
+      V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
 
     }
 
   } else {
 
-      betaOLS1 <- coefficients(x)[coef]
-      betaOLS <- coefficients(ols.y)[coef]
+    betaOLS1 <- coefficients(x)[coef]
+    betaOLS <- coefficients(ols.y)[coef]
 
-      V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
+    V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
 
   }
 
-    if (NROW(coef)==1){
-      if ( coef=="all"){
-        rel.df <- length(coef(x)[keep])  #degrees of freedom
-      } else {
-        rel.df <- length(coef)
-      }
-
+  if (NROW(coef)==1){
+    if ( coef=="all"){
+      rel.df <- length(coef(x)[keep])  #degrees of freedom
     } else {
       rel.df <- length(coef)
     }
 
+  } else {
+    rel.df <- length(coef)
+  }
 
-    cf_diff <- (betaOLS1 - betaOLS) #difference between coefficients
 
-    esigma2MinverseOLS1 = nOLS * rhoc1 * V
-    eavarOLS10 = avar1 * esigma2MinverseOLS1
+  cf_diff <- (betaOLS1 - betaOLS) #difference between coefficients
+
+  esigma2MinverseOLS1 = nOLS * rhoc1 * V
+  eavarOLS10 = avar1 * esigma2MinverseOLS1
 
 
   if (any(!cf_diff==0)){ #if the difference between OLS and IIS coefficients is not zero
 
-    HtestOLS10 = as.numeric(nOLS * t(cf_diff) %*% solve(eavarOLS10) %*% as.vector(cf_diff))
+    if (is.null(var.man)){
+      HtestOLS10 = as.numeric(nOLS * t(cf_diff) %*% solve(eavarOLS10) %*% as.vector(cf_diff))
 
-     } else {
-       HtestOLS10 <- 0
+    } else {
+      HtestOLS10 = as.numeric(t(cf_diff) %*% solve(var.man) %*% as.vector(cf_diff))
+    }
+
+  } else {
+    HtestOLS10 <- 0
   }
 
   p.test <- pchisq(HtestOLS10, df = rel.df, lower.tail = FALSE)
