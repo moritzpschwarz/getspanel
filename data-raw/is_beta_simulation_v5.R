@@ -312,7 +312,7 @@ specs <- rbind(a, specs)
 
 specs <- as.data.frame(specs, row.names = NULL)
 
-specs[602,c("reps","nboot")] <- c(3,99)
+#specs[602,c("reps","nboot")] <- c(3,99)
 
 save(specs, file = here("data-raw", "simulations", "spec_list_trial.RData"))
 
@@ -323,8 +323,8 @@ save(specs, file = here("data-raw", "simulations", "spec_list_trial.RData"))
 
 #for (j in new_order_final$id.seq){
 
-for (j in 602:602){
-#for (j in 601:632){
+#for (j in 602:602){
+for (j in 601:632){
   #j = 601
   #j <- 1
   print(j)
@@ -375,22 +375,22 @@ for (j in 602:602){
 
   sis.dates.list <- list()
 
-  res <- data.frame(matrix(NA, specs$reps[j], 2))
-  names(res) <- c("rep", "is.dist1.p")
-
-  res$is.dist1.boot.L2.p <- NA
-  res$is.dist1.boot.L1.p <- NA
-  res$is.dist1.boot.dist.p <- NA
-
-  res$is.dist1.boot.var.p <- NA
-
-  res$is.prop.test.p <- NA
-  res$is.prop.boot.p <- NA
-  res$is.prop.boot.test.p <- NA
-
-  res$is.avg.dist.pct <- NA
-  res$is.euclid <- NA
-
+  # res <- data.frame(matrix(NA, specs$reps[j], 2))
+  # names(res) <- c("rep", "is.dist1.p")
+  #
+  # res$is.dist1.boot.L2.p <- NA
+  # res$is.dist1.boot.L1.p <- NA
+  # res$is.dist1.boot.dist.p <- NA
+  #
+  # res$is.dist1.boot.var.p <- NA
+  #
+  # res$is.prop.test.p <- NA
+  # res$is.prop.boot.p <- NA
+  # res$is.prop.boot.test.p <- NA
+  #
+  # res$is.avg.dist.pct <- NA
+  # res$is.euclid <- NA
+  #
 
 
   if (specs$hypothesis[j]=="alternative"){
@@ -401,12 +401,12 @@ for (j in 602:602){
 
   }
 
-
+  if(exists("res")){rm(res)}
   library(doMC)
   registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
-  foreach(i = 1:specs$reps[j], .packages = loadedNamespaces(), .errorhandling = "pass") %dopar% {
-  #for (i in 1:specs$reps[j]){
-  #for (i in 1:3){
+  res <- foreach(i = 1:specs$reps[j], .packages = loadedNamespaces(), .errorhandling = "pass", .combine = "rbind") %dopar% {
+    #for (i in 1:specs$reps[j]){
+    #for (i in 1:3){
     #i <- 1
     print(i)
 
@@ -594,36 +594,58 @@ for (j in 602:602){
 
     #######################
 
-
-    res$rep[i] <- i
-    res$is.dist1.p[i] <- dist1$p.value
-
-
-    res$is.prop.test.p[i] <- outl1$proportion$p.value
-
+    res_local <- data.frame(rep = i,
+                            is.dist1.p = dist1$p.value,
+                            is.prop.test.p = outl1$proportion$p.value,
+                            is.avg.dist.pct = coefdif.prop.abs.m,
+                            is.euclid = coefdif.euclid)
 
     if (specs$bootstrap[j]){
-      res$is.dist1.boot.L2.p[i] <- dist1.boot$boot.p.L2
-      res$is.dist1.boot.L1.p[i] <- dist1.boot$boot.p.L1
-      res$is.dist1.boot.dist.p[i] <- dist1.boot$boot.p.dist
+      res_local <- data.frame(res_local,data.frame(
 
-      res$is.dist1.boot.var.p[i] <- as.numeric(dist1.boot$boot.var.p)
-      res$is.prop.boot.p[i] <- dist1.boot$boot.p.prop
-      res$is.prop.boot.test.p[i] <- dist1.boot$boot.p.prop.stat
+        is.dist1.boot.L2.p = dist1.boot$boot.p.L2,
+        is.dist1.boot.L1.p = dist1.boot$boot.p.L1,
+        is.dist1.boot.dist.p = dist1.boot$boot.p.dist,
+
+        is.dist1.boot.var.p = as.numeric(dist1.boot$boot.var.p),
+        is.prop.boot.p = dist1.boot$boot.p.prop,
+        is.prop.boot.test.p = dist1.boot$boot.p.prop.stat))
 
     }
 
-    res$is.avg.dist.pct[i] <- coefdif.prop.abs.m
-    res$is.euclid[i] <- coefdif.euclid
+    as.vector(res_local)
 
-    print(res)
+
+    # this is the original res below
+    # res$rep[i] <- i
+    # res$is.dist1.p[i] <- dist1$p.value
+    #
+    #
+    # res$is.prop.test.p[i] <- outl1$proportion$p.value
+    #
+    #
+    # if (specs$bootstrap[j]){
+    #   res$is.dist1.boot.L2.p[i] <- dist1.boot$boot.p.L2
+    #   res$is.dist1.boot.L1.p[i] <- dist1.boot$boot.p.L1
+    #   res$is.dist1.boot.dist.p[i] <- dist1.boot$boot.p.dist
+    #
+    #   res$is.dist1.boot.var.p[i] <- as.numeric(dist1.boot$boot.var.p)
+    #   res$is.prop.boot.p[i] <- dist1.boot$boot.p.prop
+    #   res$is.prop.boot.test.p[i] <- dist1.boot$boot.p.prop.stat
+    #
+    # }
+    #
+    # res$is.avg.dist.pct[i] <- coefdif.prop.abs.m
+    # res$is.euclid[i] <- coefdif.euclid
+
+    #print(res_local)
 
   } #i loop closed
 
   res$id <- id
   res$id.seq <- id.seq
 
-  list.res[[j]] <- res
+  #list.res[[j]] <- res
 
   save(res, file = here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))
   unlink(here("data-raw", "simulations",paste0("Running_",j,".txt")))

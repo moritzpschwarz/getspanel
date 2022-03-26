@@ -79,7 +79,7 @@ distorttest.boot <- function(
   out.full <- outliertest(x)
 
   is0.date <- isatdates(x)$iis$index
-  y0.input <- y0
+  #y0.input <- y0
   N <- x$aux$y.n
   # define the set over which to sample the bootstraps from as all observations apart from those where IIS identified outliers
   n.null <- seq(1:N)[!(seq(1:N) %in% is0.date)]
@@ -152,8 +152,18 @@ distorttest.boot <- function(
         if(i == 1){
           y.boot <- y0
         } else {
+
+          #if(is.null(orig.model$call$mc)|orig.model$call$mc == TRUE){
           y.boot <- c(y.boot,
-                      as.numeric(c(y.boot[(i-1)], xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
+                      as.numeric(c(y.boot[(i-1)], 1 ,xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
+          # } else {
+          #   y.boot <- c(y.boot,
+          #               as.numeric(c(y.boot[(i-1)], xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
+          #
+          # }
+
+          # y.boot <- c(y.boot,
+          #             as.numeric(c(y.boot[(i-1)], 1 ,xvars[i,]) %*% coefficients(orig.model)[!(colnames(orig.model$aux$mX) %in% orig.model$ISnames)])  + tsb[i])
         }
       }
 
@@ -186,7 +196,8 @@ distorttest.boot <- function(
 
                                       # arguments for the stat function
                                       boot.tpval = boot.tpval,
-                                      parallel = "snow",
+                                      parallel = if(parallel){"snow"}else{"no"},
+                                      #parallel = "no",
 
                                       max.block.size = max.block.size,
                                       ran.gen = res.sim, ran.args = list(),
@@ -233,7 +244,8 @@ distorttest.boot <- function(
                                    l = ceiling(nrow(raw_data)^(1/3)),
                                    sim = "fixed",
                                    boot.tpval = boot.tpval,#specs$boot.pval.scale[j],
-                                   parallel = "snow",
+                                   parallel = if(parallel){"snow"}else{"no"},
+                                   #parallel = "no",
                                    max.block.size=max.block.size)
 
     coefdist.sample <- as.data.frame(non_param_timeseries$t)
