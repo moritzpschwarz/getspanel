@@ -558,6 +558,7 @@ for (j in 601:632){
         #parallel = FALSE,
         parallel = TRUE,
         ncore = 1,
+        #ncore = parallel::detectCores()-1,
         max.block.size = 30,
         timeseries = specs$timeseries[j],
         raw_data = cbind(y_x_T1,mx_T1)
@@ -601,15 +602,16 @@ for (j in 601:632){
                             is.euclid = coefdif.euclid)
 
     if (specs$bootstrap[j]){
-      res_local <- data.frame(res_local,data.frame(
+      res_local <- data.frame(
+        res_local,
+        data.frame(
+          is.dist1.boot.L2.p = dist1.boot$boot.p.L2,
+          is.dist1.boot.L1.p = dist1.boot$boot.p.L1,
+          is.dist1.boot.dist.p = dist1.boot$boot.p.dist,
 
-        is.dist1.boot.L2.p = dist1.boot$boot.p.L2,
-        is.dist1.boot.L1.p = dist1.boot$boot.p.L1,
-        is.dist1.boot.dist.p = dist1.boot$boot.p.dist,
-
-        is.dist1.boot.var.p = as.numeric(dist1.boot$boot.var.p),
-        is.prop.boot.p = dist1.boot$boot.p.prop,
-        is.prop.boot.test.p = dist1.boot$boot.p.prop.stat))
+          is.dist1.boot.var.p = as.numeric(dist1.boot$boot.var.p),
+          is.prop.boot.p = dist1.boot$boot.p.prop,
+          is.prop.boot.test.p = dist1.boot$boot.p.prop.stat))
 
     }
 
