@@ -314,28 +314,29 @@ new_order_final <- rbind(rbind(new_order2, new_order3),new_order4)
 #
 # #specs[602,c("reps","nboot")] <- c(3,99)
 #
-# save(specs, file = here("data-raw", "simulations", "spec_list_trial.RData"))
-#
 
 
 
+save(specs, file = here("data-raw", "simulations/rr2203", "spec_list_trial.RData"))
 
 # Start of spec loop ------------------------------------------------------
+
 #specs$nboot <- 5
-#for (j in new_order_final$id.seq){
-for (j in specs$id.seq[specs$bootstrap == TRUE]){
+#specs$reps <- 10
+for (j in new_order_final$id.seq){
+#for (j in specs$id.seq[specs$bootstrap == TRUE]){
 
 #for (j in 602:602){
 #for (j in 601:632){
-#j = 289
+#j = 129
 #j <- 1
 print(j)
-# if(file.exists(here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
-# if(file.exists(here("data-raw", "simulations",paste0("Running_",j,".txt")))){
-#   next
-# } else {
-#   file.create(here("data-raw", "simulations",paste0("Running_",j,".txt")))
-# }
+if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
+  next
+} else {
+  file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+}
 
 
 
@@ -718,8 +719,8 @@ res$id.seq <- id.seq
 
 #list.res[[j]] <- res
 
-save(res, file = here("data-raw", "simulations",paste0(paste(specs[j,],collapse = "_"),".RData")))
-unlink(here("data-raw", "simulations",paste0("Running_",j,".txt")))
+save(res, file = here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))
+unlink(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
 } #j loop  closed
 
 
