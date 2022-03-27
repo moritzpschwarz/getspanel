@@ -6,14 +6,13 @@ sum_list <- list()
 sum_rej_05_list <- list()
 sum_rej_01_list <- list()
 
-load(here("data-raw","simulations","spec_list.RData"))
+load(here("data-raw","simulations/rr2203","spec_list_trial.RData"))
 spec_n <- NROW(specs)
 
 missing <- 0
 
-for (l in 1:spec_n){
+for (l in 601:632){
 
-  # l <- 1
   # res <- list.res[[l]]
   if(file.exists(here("data-raw","simulations",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
     load(here("data-raw","simulations",paste0(paste0(specs[l,],collapse = "_"),".RData")))
@@ -22,8 +21,12 @@ for (l in 1:spec_n){
     missing <- missing + 1
     next
   }
+  # <- 1
+  #load(list.files(here("data-raw/simulations"), pattern = "602.RData", full.names = TRUE))
+  #load(here("data-raw/simulations/","100_null_TRUE_100_TRUE_99_TRUE_TRUE_norm_NA_NA_5_0.05_1_0.5_601_601.RData"))
 
 
+  #load(list.files(here("data-raw/simulations"), pattern = "6[0-9][0-9].RData", full.names = TRUE))
   res.rej05 <- res[,2:NCOL(res)]
   res.rej05$rej <- NA
   res.rej05$rej.L2.boot <- NA
@@ -34,6 +37,7 @@ for (l in 1:spec_n){
   res.rej05$rej.prop.test.boot <- NA
   res.rej05$rej.prop.boot <- NA
 
+  res.rej05$rej.var.boot <- NA
 
 
   res.rej05$rej[res.rej05$is.dist1.p > 0.05] <- 999
@@ -51,6 +55,10 @@ for (l in 1:spec_n){
   res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p > 0.05] <- 999
   res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p < 0.05] <- 1
   res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0
+
+  res.rej05$rej.var.boot[res.rej05$is.dist1.boot.var.p > 0.05] <- 999
+  res.rej05$rej.var.boot[res.rej05$is.dist1.boot.var.p < 0.05] <- 1
+  res.rej05$rej.var.boot[res.rej05$rej.var.boot > 1] <- 0
 
 
   ####proportion test
@@ -83,6 +91,8 @@ for (l in 1:spec_n){
   res.rej01$rej.L1.boot <- NA
   res.rej01$rej.dist.boot <- NA
 
+  res.rej01$rej.var.boot <- NA
+
   res.rej01$rej.prop.test <- NA
   res.rej01$rej.prop.test.boot <- NA
   res.rej01$rej.prop.boot <- NA
@@ -104,6 +114,10 @@ for (l in 1:spec_n){
   res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p > 0.01] <- 999
   res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p < 0.01] <- 1
   res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0
+
+  res.rej01$rej.var.boot[res.rej01$is.dist1.boot.var.p > 0.01] <- 999
+  res.rej01$rej.var.boot[res.rej01$is.dist1.boot.var.p < 0.01] <- 1
+  res.rej01$rej.var.boot[res.rej01$rej.var.boot > 1] <- 0
 
   ###proportion test
   res.rej01$rej.prop.test[res.rej01$is.prop.test.p > 0.01] <- 999
@@ -134,11 +148,11 @@ print(paste0("Number of files still missing: ",missing))
 
 
 sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
-names(sum.05) <- names(sum_rej_05_list[[401]])
+names(sum.05) <- names(sum_rej_05_list[[602]])
 sum.05$test.lev <- 0.05
 
 sum.01 <- do.call(rbind.data.frame, sum_rej_01_list)
-names(sum.01) <- names(sum_rej_01_list[[401]])
+names(sum.01) <- names(sum_rej_01_list[[602]])
 sum.01$test.lev <- 0.01
 
 ###combine
