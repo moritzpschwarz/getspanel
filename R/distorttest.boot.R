@@ -79,7 +79,7 @@ distorttest.boot <- function(
   out.full <- outliertest(x)
 
   is0.date <- isatdates(x)$iis$index
-  #y0.input <- y0
+
   N <- x$aux$y.n
   # define the set over which to sample the bootstraps from as all observations apart from those where IIS identified outliers
   n.null <- seq(1:N)[!(seq(1:N) %in% is0.date)]
@@ -215,18 +215,23 @@ distorttest.boot <- function(
   }
 
   if(!parametric & timeseries){
+    raw_data_intermediate <- data.frame(y = raw_data[,1],
+                                        ar1 = c(NA,raw_data[1:(nrow(raw_data)-1),1]),
+                                        raw_data[,2:ncol(raw_data)])
     if(clean.sample){
-      raw_data_clean <- raw_data[!x$aux$y.index %in% isatdates(x)$iis$index,] # remove the indicators from the raw_data
+      raw_data_clean <- raw_data_intermediate[!x$aux$y.index %in% isatdates(x)$iis$index,] # remove the indicators from the raw_data
     } else {
       raw_data_clean <- raw_data
     }
-    raw_data_clean_ts <- as.ts(raw_data_clean)
+
+    raw_data_clean_ts <- as.ts(raw_data_clean[complete.cases(raw_data_clean),])
 
     stat <- function(tsb, t.pval, boot.tpval, max.block.size,p_alpha){
       y.boot <- tsb[,1]
       x.boot <- tsb[,2:ncol(tsb)]
 
-      is.boot <- isat(y.boot, mxreg=x.boot, mc=TRUE, t.pval=boot.tpval, iis=TRUE, ar = 1,
+      is.boot <- isat(y.boot, mxreg=x.boot, mc=TRUE, t.pval=boot.tpval, iis=TRUE,
+                      ar = NULL,
                       sis=FALSE,  print.searchinfo=FALSE, max.block.size = max.block.size)
       dist.boot <- distorttest(is.boot)
       out.boot <- outliertest(is.boot)
