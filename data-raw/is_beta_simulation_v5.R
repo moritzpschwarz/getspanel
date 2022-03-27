@@ -74,7 +74,7 @@ dist_c <- c("norm", "t3") #can choose from: ("norm", "t3", "cauchy", "uniform", 
 
 
 general_options <- list(
-  beta_coef = 1, # Coefficients of the covariates
+  beta_coef = c(0.5,1), # Coefficients of the covariates
   dist = c("norm","t3"),  # reference distributions
   max.block.size = 30, # block size for isat
   out_prop = 0.1, # proportion of sample to be outliers
@@ -161,6 +161,8 @@ specs$id <- 1001:(nrow(specs)+1000)
 
 ###drop a few specs that are redundant
 spec.drop <- specs$id[specs$ar == 0 & specs$timeseries == TRUE] # if AR = 0 then we don't need TS treamtment
+spec.drop <- c(spec.drop,specs$id[specs$beta_coef == 1 & specs$bad_leverage == FALSE]) # we don't want other coefficients than 0.5 unless for bad leverage points
+spec.drop <- c(spec.drop,specs$id[specs$beta_coef == 0.5 & specs$bad_leverage == TRUE])# we don't want other coefficients than 0.5 unless for bad leverage points
 spec.drop <- c(spec.drop,specs$id[specs$ar > 0 & specs$timeseries == FALSE]) # if AR > 0 then we don't need non-TS treamtment
 spec.drop <- c(spec.drop,specs$id[specs$ar > 0 & specs$nreg != 5])
 spec.drop <- c(spec.drop,specs$id[specs$ar > 0 & specs$p_alpha != 0.05])
@@ -315,412 +317,418 @@ new_order_final <- rbind(rbind(new_order2, new_order3),new_order4)
 # #specs[602,c("reps","nboot")] <- c(3,99)
 #
 
+### Changes to the current run - not changing the fundamental structure
 
+specs <- specs[specs$bootstrap == TRUE,]
+specs <- specs[specs$lambda > 3 | is.na(specs$lambda),]
+specs <- specs[(specs$parametric & !specs$clean.sample),]
+specs$id.seq <- 1:nrow(specs)
 
+specs$nboot <- 199
+specs$reps <- 200
 save(specs, file = here("data-raw", "simulations/rr2203", "spec_list_trial.RData"))
 
 # Start of spec loop ------------------------------------------------------
 
-#specs$nboot <- 5
-#specs$reps <- 10
-for (j in new_order_final$id.seq){
-#for (j in specs$id.seq[specs$bootstrap == TRUE]){
 
-#for (j in 602:602){
-#for (j in 601:632){
-#j = 129
-#j <- 1
-print(j)
-if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
-if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
-  next
-} else {
-  file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
-}
-
-
-
-p_alpha <-   specs$p_alpha[j]
-ar <- specs$ar[j]
-
-if (specs$bootstrap[j]){
-
-  clean.sample <- specs$clean.sample[j]
-  boot.pval.scale <- specs$boot.pval.scale[j]
-}
-
-p <- specs$nreg[j]
-dist <- specs$dist[j]
+#for (j in new_order_final$id.seq){
+for (j in specs$id.seq){
+  #j = 131
+  #for (j in 602:602){
+  #for (j in 601:632){
+  #j = 129
+  #j <- 1
+  print(j)
+  if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+  if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
+    next
+  } else {
+    file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+  }
 
 
 
-if (specs$hypothesis[j] == "alternative"){
-  out_lam <- specs$lambda[j]
-  out_prop <- specs$out_prop[j]
-  bad_leverage <- specs$bad_leverage[j]
+  p_alpha <-   specs$p_alpha[j]
+  ar <- specs$ar[j]
 
-}
+  if (specs$bootstrap[j]){
 
+    clean.sample <- specs$clean.sample[j]
+    boot.pval.scale <- specs$boot.pval.scale[j]
+  }
 
-id <- specs$id[j]
-id.seq <- specs$id.seq[j]
-Tlength <- specs$sample[j]
-loc_limit <-   floor(Tlength*1)
-
-if (p > 0){
-  pcoef <- c(rep(specs$beta_coef[j], p))
-} else {
-  pcoef <- NULL
-}
+  p <- specs$nreg[j]
+  dist <- specs$dist[j]
 
 
-is.dates.list <- list()
-isalt.dates.list <- list()
 
-sis.dates.list <- list()
+  if (specs$hypothesis[j] == "alternative"){
+    out_lam <- specs$lambda[j]
+    out_prop <- specs$out_prop[j]
+    bad_leverage <- specs$bad_leverage[j]
 
-# res <- data.frame(matrix(NA, specs$reps[j], 2))
-# names(res) <- c("rep", "is.dist1.p")
-#
-# res$is.dist1.boot.L2.p <- NA
-# res$is.dist1.boot.L1.p <- NA
-# res$is.dist1.boot.dist.p <- NA
-#
-# res$is.dist1.boot.var.p <- NA
-#
-# res$is.prop.test.p <- NA
-# res$is.prop.boot.p <- NA
-# res$is.prop.boot.test.p <- NA
-#
-# res$is.avg.dist.pct <- NA
-# res$is.euclid <- NA
-#
+  }
 
 
-if (specs$hypothesis[j]=="alternative"){
-  print(paste0("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
+  id <- specs$id[j]
+  id.seq <- specs$id.seq[j]
+  Tlength <- specs$sample[j]
+  loc_limit <-   floor(Tlength*1)
 
-} else {
-  print(paste0("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
+  if (p > 0){
+    pcoef <- c(rep(specs$beta_coef[j], p))
+  } else {
+    pcoef <- NULL
+  }
 
-}
 
-# Start of rep loop in parallel ------------------------------------------------------
+  is.dates.list <- list()
+  isalt.dates.list <- list()
 
-# Setting up the parallel system on Linux and Windows
-if(exists("res")){rm(res)}
-if(!Sys.info()["sysname"]=="Windows"){
-  library(doMC)
-  registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
-} else {
-  parallel::makeCluster((parallel::detectCores()-1))
-}
+  sis.dates.list <- list()
 
-# Starting the loop
-res <- foreach(i =1:specs$reps[j],
-               .packages = loadedNamespaces(),
-               .errorhandling = "pass",
-               .combine = "rbind"
-) %dopar% {
-  #) %do% {
-
-  #for (i in 1:3){
-  #i <- 1
-  print(i)
-
-  # if (specs$hypothesis[j]=="alternative"){
-  #   print(paste("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
+  # res <- data.frame(matrix(NA, specs$reps[j], 2))
+  # names(res) <- c("rep", "is.dist1.p")
   #
-  # } else {
-  #   print(paste("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
+  # res$is.dist1.boot.L2.p <- NA
+  # res$is.dist1.boot.L1.p <- NA
+  # res$is.dist1.boot.dist.p <- NA
   #
-  # }
+  # res$is.dist1.boot.var.p <- NA
+  #
+  # res$is.prop.test.p <- NA
+  # res$is.prop.boot.p <- NA
+  # res$is.prop.boot.test.p <- NA
+  #
+  # res$is.avg.dist.pct <- NA
+  # res$is.euclid <- NA
+  #
+
 
   if (specs$hypothesis[j]=="alternative"){
-    noutl <- floor(out_prop*Tlength)
-    out_loc <- rdunif(noutl, 0, loc_limit)
-
-    if (bad_leverage){
-      out_lam_x <- specs$lambda[j]
-      out_lam <- 0
-    }
+    print(paste0("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
 
   } else {
-    noutl <- 0
-    out_loc <- NULL
-    out_lam <- 0
-    out_lam_x <- 0
-  }
-  ########## regression tests
+    print(paste0("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
 
-  out_loc_s_T1 <- as.vector(rep(0,Tlength+1))
-  out_loc_s_T1[out_loc] <- 1
-
-  out_loc_s <- out_loc_s_T1[2:(Tlength+1)]
-
-  if (dist=="norm"){
-    eps_T1 <-  rnorm((Tlength+1), 0, 1)
-  } else if (dist=="t3"){
-    eps_T1 <-  rt((Tlength+1), df=3)
-  } else if (dist=="cauchy"){
-    eps_T1 <-  rcauchy((Tlength+1))
-  } else if (dist=="uniform"){
-    eps_T1 <-  runif((Tlength+1))
-  }else if (dist=="lognorm"){
-    eps_T1 <-  rlnorm((Tlength+1), 0, 1)
   }
 
+  # Start of rep loop in parallel ------------------------------------------------------
 
-  eps <-  eps_T1[2:(Tlength+1)]
-
-  y_x_T1 <- as.vector(rep(NA, Tlength+1))
-
-  if ( p > 0){
-
-    if (p > 1){
-      mx_T1 <- matrix(rnorm((Tlength+1)*p, 0, 1), ncol=p)
-      mx <- mx_T1[2:(Tlength+1),]
-      colnames(mx) <- paste("x", seq(1:p), sep="")
-    } else {
-      mx_T1 <- matrix(rnorm((Tlength+1)*p, 0, 1), ncol=p)
-      mx <- mx_T1[2:(Tlength+1),]
-      #names(mx) <- paste("x", seq(1:p), sep="")
-    }
-
-
-
-
-    if (ar !=0){
-
-      if (p > 1){
-        y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
-      } else {
-        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
-      }
-
-
-      for (t in 2:((Tlength+1))){
-        if (p > 1){
-          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
-        } else {
-          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
-        }
-
-      }
-
-      # yx <- y_x_T1[2:Tlength]
-    } else {
-      if (p > 1){
-        y_x <- mx%*%pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
-      } else {
-        y_x <- mx*pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
-      }
-
-
-
-    }
-
-
-
+  # Setting up the parallel system on Linux and Windows
+  if(exists("res")){rm(res)}
+  if(!Sys.info()["sysname"]=="Windows"){
+    library(doMC)
+    registerDoMC(detectCores()-2)  # coefsamples if enough cores available - otherwise total-1
   } else {
-    mx <- NULL
-
-    if (ar !=0){
-
-      if (p > 1){
-        y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
-      } else {
-        y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
-      }
-
-      for (t in 2:(Tlength)){
-        if (p > 1){
-          y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
-        } else {
-          y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
-        }
-
-      }
-
-
-    } else {
-      if (alternative){
-        y_x <- out_loc_s*out_lam +  eps
-      } else {
-        y_x <-  eps
-      }
-    }
-  }
-  if (p > 0){
-
-    if (bad_leverage){
-
-      if (p==1){
-        mx_T1_lev <- mx_T1
-        mx_T1_lev[which(out_loc_s==1)] <- mx_T1_lev[which(out_loc_s==1)]  + out_lam_x
-        mx_T1 <- mx_T1_lev
-
-
-        mx_lev <- mx
-        mx_lev[which(out_loc_s==1)] <- mx_lev[which(out_loc_s==1)]  + out_lam_x
-        mx <- mx_lev
-      } else {
-        mx_T1_lev <- mx_T1
-        mx_T1_lev[which(out_loc_s==1),] <- mx_T1_lev[which(out_loc_s==1),]  + out_lam_x
-        mx_T1 <- mx_T1_lev
-
-
-        mx_lev <- mx
-        mx_lev[which(out_loc_s==1),] <- mx_lev[which(out_loc_s==1),]  + out_lam_x
-        mx <- mx_lev
-      }
-
-
-    }
-
+    parallel::makeCluster((parallel::detectCores()-1))
   }
 
-  ## ISAT --------------------------------------------------------------------
+  # Starting the loop
+  res <- foreach(i =1:specs$reps[j],
+                 .packages = loadedNamespaces(),
+                 .errorhandling = "pass",
+                 .combine = "rbind"
+  ) %dopar% {
+    #) %do% {
 
-  if (ar != 0){
-    is1 <- isat(y_x_T1, mxreg=mx_T1, ar=1, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
+    #for (i in 1:3){
+    #i <- 1
+    print(i)
 
-  } else {
-    is1 <- isat(y_x, mxreg=mx, ar=NULL, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
-
-  }
-
-
-
-  dist1 <- distorttest(is1, coef="all")
-  outl1 <- outliertest(is1)
-
-
-  # Bootstrap ---------------------------------------------------------------
-
-  if (specs$bootstrap[j]){
-
-    # j
-    # i
-    # boot.pval.scale <- 1
+    # if (specs$hypothesis[j]=="alternative"){
+    #   print(paste("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
     #
-    # nboot <- 199
-    #
-    #  set.seed(123)
-
-    # N <- is1$aux$y.n
-    # if (!is.null(m_out_n)){
-    #   m <- round((2/3)*N)
     # } else {
-    #   m <- NULL
+    #   print(paste("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", "), "| rep:", i, " of ", specs$reps[j], sep="") )
+    #
     # }
 
-    dist1.boot <-  distorttest.boot(
-      x = is1,
-      nboot = specs$nboot[j],
-      ols.only = specs$only.ols[j],
-      m = specs$m[j],
-      clean.sample = specs$clean.sample[j],
-      parametric = specs$parametric[j],
-      scale.t.pval = specs$boot.pval.scale[j],
-      parallel = FALSE,
-      #parallel = TRUE,
-      #ncore = 1,
-      #ncore = parallel::detectCores()-1,
-      max.block.size = specs$max.block.size[j],
-      timeseries = specs$timeseries[j],
-      raw_data = cbind(y_x_T1,mx_T1)
-    )
+    if (specs$hypothesis[j]=="alternative"){
+      noutl <- floor(out_prop*Tlength)
+      out_loc <- rdunif(noutl, 0, loc_limit)
 
-  }
+      if (bad_leverage){
+        out_lam_x <- specs$lambda[j]
+        out_lam <- 0
+      }
 
+    } else {
+      noutl <- 0
+      out_loc <- NULL
+      out_lam <- 0
+      out_lam_x <- 0
+    }
+    ########## regression tests
 
-  #####record distortion
+    out_loc_s_T1 <- as.vector(rep(0,Tlength+1))
+    out_loc_s_T1[out_loc] <- 1
 
-  rel.coef.name <- names(dist1$coef.diff)
-  sum.ols <- summary(dist1$ols)
+    out_loc_s <- out_loc_s_T1[2:(Tlength+1)]
 
-  coefdif.prop <- dist1$coef.diff/dist1$ols$mean.results[rel.coef.name,"coef"]
-  coefdif.prop.abs.m <- mean(abs(coefdif.prop))
-  coefdif.euclid <- sqrt(sum(dist1$coef.diff^2)) #euclidian distance of coefficients
-
-  #hist(dist1.boot$coefdist.res$prop)
-
-  #dist1.boot$coefdist.res$prop
-
-  #(1-ecdf(dist1.boot$coefdist.res$prop)(prop.full))*2
-
-  # xx <- rnorm(100000)
-  # (1-ecdf(xx)(1.96))*2
-  # #0.99
-  #
-  #
-  # aycdf(c(0, .5, .7))
-  #
-  # prop.full <- outl1$proportion$estimate
-  #
-  # boot.p.prop <- 2*min(sum(dist1.boot$coefdist.res$prop > prop.full)/nboot,  sum(dist1.boot$coefdist.res$prop <= prop.full)/nboot) #check the p-values here.
+    if (dist=="norm"){
+      eps_T1 <-  rnorm((Tlength+1), 0, 1)
+    } else if (dist=="t3"){
+      eps_T1 <-  rt((Tlength+1), df=3)
+    } else if (dist=="cauchy"){
+      eps_T1 <-  rcauchy((Tlength+1))
+    } else if (dist=="uniform"){
+      eps_T1 <-  runif((Tlength+1))
+    }else if (dist=="lognorm"){
+      eps_T1 <-  rlnorm((Tlength+1), 0, 1)
+    }
 
 
-  # Collect results into res ---------------------------------------------------------
+    eps <-  eps_T1[2:(Tlength+1)]
+
+    y_x_T1 <- as.vector(rep(NA, Tlength+1))
+
+    if ( p > 0){
+
+      if (p > 1){
+        mx_T1 <- matrix(rnorm((Tlength+1)*p, 0, 1), ncol=p)
+        mx <- mx_T1[2:(Tlength+1),]
+        colnames(mx) <- paste("x", seq(1:p), sep="")
+      } else {
+        mx_T1 <- matrix(rnorm((Tlength+1)*p, 0, 1), ncol=p)
+        mx <- mx_T1[2:(Tlength+1),]
+        #names(mx) <- paste("x", seq(1:p), sep="")
+      }
 
 
-  res_local <- data.frame(rep = i,
-                          is.dist1.p = dist1$p.value,
-                          is.prop.test.p = outl1$proportion$p.value,
-                          is.avg.dist.pct = coefdif.prop.abs.m,
-                          is.euclid = coefdif.euclid)
-
-  if (specs$bootstrap[j]){
-    res_local <- data.frame(
-      res_local,
-      data.frame(
-        is.dist1.boot.L2.p = dist1.boot$boot.p.L2,
-        is.dist1.boot.L1.p = dist1.boot$boot.p.L1,
-        is.dist1.boot.dist.p = dist1.boot$boot.p.dist,
-
-        is.dist1.boot.var.p = as.numeric(dist1.boot$boot.var.p),
-        is.prop.boot.p = dist1.boot$boot.p.prop,
-        is.prop.boot.test.p = dist1.boot$boot.p.prop.stat))
-
-  }
-
-  as.vector(res_local)
 
 
-  # this is the original res below
-  # res$rep[i] <- i
-  # res$is.dist1.p[i] <- dist1$p.value
-  #
-  #
-  # res$is.prop.test.p[i] <- outl1$proportion$p.value
-  #
-  #
-  # if (specs$bootstrap[j]){
-  #   res$is.dist1.boot.L2.p[i] <- dist1.boot$boot.p.L2
-  #   res$is.dist1.boot.L1.p[i] <- dist1.boot$boot.p.L1
-  #   res$is.dist1.boot.dist.p[i] <- dist1.boot$boot.p.dist
-  #
-  #   res$is.dist1.boot.var.p[i] <- as.numeric(dist1.boot$boot.var.p)
-  #   res$is.prop.boot.p[i] <- dist1.boot$boot.p.prop
-  #   res$is.prop.boot.test.p[i] <- dist1.boot$boot.p.prop.stat
-  #
-  # }
-  #
-  # res$is.avg.dist.pct[i] <- coefdif.prop.abs.m
-  # res$is.euclid[i] <- coefdif.euclid
+      if (ar !=0){
 
-  #print(res_local)
+        if (p > 1){
+          y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
+        } else {
+          y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
+        }
 
-} #i loop closed
 
-res$id <- id
-res$id.seq <- id.seq
+        for (t in 2:((Tlength+1))){
+          if (p > 1){
+            y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
+          } else {
+            y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
+          }
 
-#list.res[[j]] <- res
+        }
 
-save(res, file = here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))
-unlink(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+        # yx <- y_x_T1[2:Tlength]
+      } else {
+        if (p > 1){
+          y_x <- mx%*%pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
+        } else {
+          y_x <- mx*pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
+        }
+
+
+
+      }
+
+
+
+    } else {
+      mx <- NULL
+
+      if (ar !=0){
+
+        if (p > 1){
+          y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
+        } else {
+          y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
+        }
+
+        for (t in 2:(Tlength)){
+          if (p > 1){
+            y_x_T1[t] <- mx_T1[t,]%*%pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
+          } else {
+            y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
+          }
+
+        }
+
+
+      } else {
+        if (alternative){
+          y_x <- out_loc_s*out_lam +  eps
+        } else {
+          y_x <-  eps
+        }
+      }
+    }
+    if (p > 0){
+
+      if (bad_leverage){
+
+        if (p==1){
+          mx_T1_lev <- mx_T1
+          mx_T1_lev[which(out_loc_s==1)] <- mx_T1_lev[which(out_loc_s==1)]  + out_lam_x
+          mx_T1 <- mx_T1_lev
+
+
+          mx_lev <- mx
+          mx_lev[which(out_loc_s==1)] <- mx_lev[which(out_loc_s==1)]  + out_lam_x
+          mx <- mx_lev
+        } else {
+          mx_T1_lev <- mx_T1
+          mx_T1_lev[which(out_loc_s==1),] <- mx_T1_lev[which(out_loc_s==1),]  + out_lam_x
+          mx_T1 <- mx_T1_lev
+
+
+          mx_lev <- mx
+          mx_lev[which(out_loc_s==1),] <- mx_lev[which(out_loc_s==1),]  + out_lam_x
+          mx <- mx_lev
+        }
+
+
+      }
+
+    }
+
+    ## ISAT --------------------------------------------------------------------
+
+    if (ar != 0){
+      is1 <- isat(y_x_T1, mxreg=mx_T1, ar=1, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
+
+    } else {
+      is1 <- isat(y_x, mxreg=mx, ar=NULL, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
+
+    }
+
+
+
+    dist1 <- distorttest(is1, coef="all")
+    outl1 <- outliertest(is1)
+
+
+    # Bootstrap ---------------------------------------------------------------
+
+    if (specs$bootstrap[j]){
+
+      # j
+      # i
+      # boot.pval.scale <- 1
+      #
+      # nboot <- 199
+      #
+      #  set.seed(123)
+
+      # N <- is1$aux$y.n
+      # if (!is.null(m_out_n)){
+      #   m <- round((2/3)*N)
+      # } else {
+      #   m <- NULL
+      # }
+
+      dist1.boot <-  distorttest.boot(
+        x = is1,
+        nboot = specs$nboot[j],
+        ols.only = specs$only.ols[j],
+        m = NULL,
+        clean.sample = specs$clean.sample[j],
+        parametric = specs$parametric[j],
+        scale.t.pval = specs$boot.pval.scale[j],
+        parallel = FALSE,
+        #parallel = TRUE,
+        #ncore = 1,
+        #ncore = parallel::detectCores()-1,
+        max.block.size = specs$max.block.size[j],
+        timeseries = specs$timeseries[j],
+        raw_data = cbind(y_x_T1,mx_T1)
+      )
+
+    }
+
+
+    #####record distortion
+
+    rel.coef.name <- names(dist1$coef.diff)
+    sum.ols <- summary(dist1$ols)
+
+    coefdif.prop <- dist1$coef.diff/dist1$ols$mean.results[rel.coef.name,"coef"]
+    coefdif.prop.abs.m <- mean(abs(coefdif.prop))
+    coefdif.euclid <- sqrt(sum(dist1$coef.diff^2)) #euclidian distance of coefficients
+
+    #hist(dist1.boot$coefdist.res$prop)
+
+    #dist1.boot$coefdist.res$prop
+
+    #(1-ecdf(dist1.boot$coefdist.res$prop)(prop.full))*2
+
+    # xx <- rnorm(100000)
+    # (1-ecdf(xx)(1.96))*2
+    # #0.99
+    #
+    #
+    # aycdf(c(0, .5, .7))
+    #
+    # prop.full <- outl1$proportion$estimate
+    #
+    # boot.p.prop <- 2*min(sum(dist1.boot$coefdist.res$prop > prop.full)/nboot,  sum(dist1.boot$coefdist.res$prop <= prop.full)/nboot) #check the p-values here.
+
+
+    # Collect results into res ---------------------------------------------------------
+
+
+    res_local <- data.frame(rep = i,
+                            is.dist1.p = dist1$p.value,
+                            is.prop.test.p = outl1$proportion$p.value,
+                            is.avg.dist.pct = coefdif.prop.abs.m,
+                            is.euclid = coefdif.euclid)
+
+    if (specs$bootstrap[j]){
+      res_local <- data.frame(
+        res_local,
+        data.frame(
+          is.dist1.boot.L2.p = dist1.boot$boot.p.L2,
+          is.dist1.boot.L1.p = dist1.boot$boot.p.L1,
+          is.dist1.boot.dist.p = dist1.boot$boot.p.dist,
+
+          is.dist1.boot.var.p = as.numeric(dist1.boot$boot.var.p),
+          is.prop.boot.p = dist1.boot$boot.p.prop,
+          is.prop.boot.test.p = dist1.boot$boot.p.prop.stat))
+
+    }
+
+    as.vector(res_local)
+
+
+    # this is the original res below
+    # res$rep[i] <- i
+    # res$is.dist1.p[i] <- dist1$p.value
+    #
+    #
+    # res$is.prop.test.p[i] <- outl1$proportion$p.value
+    #
+    #
+    # if (specs$bootstrap[j]){
+    #   res$is.dist1.boot.L2.p[i] <- dist1.boot$boot.p.L2
+    #   res$is.dist1.boot.L1.p[i] <- dist1.boot$boot.p.L1
+    #   res$is.dist1.boot.dist.p[i] <- dist1.boot$boot.p.dist
+    #
+    #   res$is.dist1.boot.var.p[i] <- as.numeric(dist1.boot$boot.var.p)
+    #   res$is.prop.boot.p[i] <- dist1.boot$boot.p.prop
+    #   res$is.prop.boot.test.p[i] <- dist1.boot$boot.p.prop.stat
+    #
+    # }
+    #
+    # res$is.avg.dist.pct[i] <- coefdif.prop.abs.m
+    # res$is.euclid[i] <- coefdif.euclid
+
+    #print(res_local)
+
+  } #i loop closed
+
+  res$id <- id
+  res$id.seq <- id.seq
+
+  #list.res[[j]] <- res
+
+  save(res, file = here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))
+  unlink(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
 } #j loop  closed
 
 
