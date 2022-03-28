@@ -271,7 +271,7 @@ distorttest.boot <- function(
         require(gets)
         boot.samp <-  boot.samples[[i]]
 
-        if (parametric & !parametric.ar){ #parametric bootstrap (residual resampling)
+        if (parametric & !timeseries){ #parametric bootstrap (residual resampling)
 
           # x.boot <- x$aux$mX[, !(colnames(x$aux$mX) %in% c(x$ISnames, "ar1"))]
           # res.boot <- as.vector(x$residuals)[boot.samp]
