@@ -110,7 +110,6 @@ distorttest.boot <- function(
   boot.tpval <- x$aux$t.pval*scale.t.pval #bootstrap level of significance of selection
 
 
-
   ### function used in parallel loop
   dist.boot.temp <- function(y.boot, x.boot, boot.tpval, ...){
     is.boot <- isat(y.boot, mxreg=x.boot, mc=FALSE, t.pval=boot.tpval, iis=TRUE, sis=FALSE,  print.searchinfo=FALSE, ...)
@@ -146,7 +145,7 @@ distorttest.boot <- function(
     #max.block.size <- 30
 
     # Function to be used in tsboot
-    stat <- function(tsb, xvars, t.pval, boot.tpval, max.block.size,p_alpha, orig.model, y0){
+    stat <- function(tsb, xvars, t.pval, boot.tpval,p_alpha, orig.model, y0){
 
       for(i in 1:nrow(xvars)){
         if(i == 1){
@@ -169,7 +168,7 @@ distorttest.boot <- function(
 
       is.boot <- isat(y.boot, mxreg=xvars, ar = 1,
                       mc = TRUE, t.pval = boot.tpval, iis=TRUE, sis = FALSE,
-                      print.searchinfo = FALSE, max.block.size = max.block.size)
+                      print.searchinfo = FALSE, max.block.size = 30)
       dist.boot <- distorttest(is.boot)
       out.boot <- outliertest(is.boot)
 
@@ -197,9 +196,8 @@ distorttest.boot <- function(
                                       # arguments for the stat function
                                       boot.tpval = boot.tpval,
                                       parallel = if(parallel){"snow"}else{"no"},
-                                      #parallel = "no",
+                                      ncpus = ncore,
 
-                                      max.block.size = max.block.size,
                                       ran.gen = res.sim, ran.args = list(),
                                       #xvars = rbind(NA,base$aux$mX[,!(colnames(base$aux$mX) %in% c("ar1",base$ISnames))]),
                                       xvars = raw_data[,-1],
@@ -221,18 +219,18 @@ distorttest.boot <- function(
     if(clean.sample){
       raw_data_clean <- raw_data_intermediate[!x$aux$y.index %in% isatdates(x)$iis$index,] # remove the indicators from the raw_data
     } else {
-      raw_data_clean <- raw_data
+      raw_data_clean <- raw_data_intermediate
     }
 
     raw_data_clean_ts <- as.ts(raw_data_clean[complete.cases(raw_data_clean),])
 
-    stat <- function(tsb, t.pval, boot.tpval, max.block.size,p_alpha){
+    stat <- function(tsb, t.pval, boot.tpval,p_alpha){
       y.boot <- tsb[,1]
       x.boot <- tsb[,2:ncol(tsb)]
 
       is.boot <- isat(y.boot, mxreg=x.boot, mc=TRUE, t.pval=boot.tpval, iis=TRUE,
                       ar = NULL,
-                      sis=FALSE,  print.searchinfo=FALSE, max.block.size = max.block.size)
+                      sis=FALSE,  print.searchinfo=FALSE, max.block.size = 30)
       dist.boot <- distorttest(is.boot)
       out.boot <- outliertest(is.boot)
 
@@ -250,8 +248,8 @@ distorttest.boot <- function(
                                    sim = "fixed",
                                    boot.tpval = boot.tpval,#specs$boot.pval.scale[j],
                                    parallel = if(parallel){"snow"}else{"no"},
-                                   #parallel = "no",
-                                   max.block.size=max.block.size)
+                                   ncpus = ncore)
+    #parallel = "no"
 
     coefdist.sample <- as.data.frame(non_param_timeseries$t)
     colnames(coefdist.sample) <- c(names(dist.full$coef.diff), "dist", "prop", "prop.test", "count", "count.test")
