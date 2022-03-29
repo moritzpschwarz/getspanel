@@ -158,10 +158,28 @@ setdiff(names(specs_asym), names(specs_BS))
 
 specs <- rbind(specs_asym,specs_BS)
 
+
+# add lognormal
+specs <- rbind(specs, data.frame(
+  dist = "lognorm",
+
+  beta_coef = 0.5,  max.block.size = 30,
+  out_prop = NA, sample = 400, nreg = 5, p_alpha = 0.05, bootstrap = TRUE,
+  reps = 500, nboot = 499, boot.pval.scale = NA, clean.sample = FALSE,
+  bad_leverage = FALSE, hypothesis = "null", lambda = NA,
+  loc_limits = NA, ar = 0, parametric = FALSE, timeseries = FALSE))
+
+
+
+
 specs$hypothesis <- as.character(specs$hypothesis)
 specs$dist <- as.character(specs$dist)
 specs$id <- 1001:(nrow(specs)+1000)
 
+
+# modify bad leverage
+specs$nreg[specs$bad_leverage] <- 1 # inspired by Dehon et al
+specs$out_prop[specs$bad_leverage] <- 0.05 # inspired by Dehon et al
 
 ###drop a few specs that are redundant
 spec.drop <- vector()
@@ -174,7 +192,17 @@ spec.drop <- c(spec.drop,specs$id[(specs$hypothesis == "null" & specs$bad_levera
 spec.drop <- c(spec.drop,specs$id[(specs$parametric & !specs$clean.sample)]) # when we have parametric we always want to have a clean sample
 spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & specs$parametric & !specs$clean.sample & specs$hypothesis=="alternative")]) # should not return any because clean.sample must be true when parametric
 spec.drop <- c(spec.drop,specs$id[(!specs$parametric & specs$hypothesis=="alternative" & !specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")]) # when we have non-parametric non-TS alt we don't want the combination of T3 and clean.sample
+spec.drop <- c(spec.drop,specs$id[(specs$parametric & specs$hypothesis == "alternative" & !specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")])
+spec.drop <- c(spec.drop,specs$id[(!specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")])
+spec.drop <- c(spec.drop,specs$id[(specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")]) # Drop t3 for alt param TS because clean overrejects
 
+# Bad Leverage
+spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$ar > 0])
+spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$parametric])
+spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$timeseries])
+spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$dist == "t3"])
+
+# Deprecated
 spec.drop <- c(spec.drop,specs$id[specs$ar > 0 & specs$p_alpha != 0.05]) # deprecated will not return any
 spec.drop <- c(spec.drop,specs$id[specs$clean.sample == FALSE & specs$boot.pval.scale > 1]) # deprecated will not return any
 
@@ -183,11 +211,7 @@ specs <- specs[!(specs$id %in% spec.drop),]
 specs$id.seq <- seq(1:NROW(specs))
 
 
-## Checks
 specs
-
-
-
 
 
 
@@ -572,10 +596,10 @@ for (j in specs$id.seq){
                  #) %dopar% {
   ) %dopar% {
 
-  #res <- data.frame()
+    #res <- data.frame()
 
-  #for (i in 1:10){ #specs$reps[j]){
-  #for (i in 1:specs$reps[j]){
+    #for (i in 1:10){ #specs$reps[j]){
+    #for (i in 1:specs$reps[j]){
     #i <- 1
     print(i)
 
