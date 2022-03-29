@@ -33,51 +33,47 @@ library(purrr)
 #bootstrap <- TRUE #does not work yet with AR terms
 
 # General Options ---------------------------------------------------------
+#
+# ## bootstrap options
+# #nboot <- 1000 #number of bootstrap replications
+# clean.sample_c <- c(FALSE, TRUE) #bootstrap on clean sample, TRUE or FALSE
+# boot.pval.scale_c <- c(1, 5) #scale the p-value
+# # boot.parallel <- TRUE #parallelize bootstrap (significant speed gains!)
+# # cores <- parallel::detectCores()-1 #number of cores for bootstrap
+# # cores <- 7 #number of cores for bootstrap
+# parametric <- FALSE #nonparametric or parametric bootstrap
+#
+#
+# max.block.size <- 30 #block size for isat, =2 is fastest.
+#
+# set.seed(123)
+# ### number of regressors
+# #px <- c(5) #regressors
+# #ar_c <- c(0)#ar coefficient in DGP#### ar non-zero does not yet work for bootstrap, as it's not clear what the null model should be on 'clean' observations, and bootstrap also unclear
+# #sample_c <- c(50, 100) #sample size
+#
+# #p_alpha_c <- c(0.05) #significance level for isat testing
+#
+# ############### Specifications for alternative
+# #lambda_c <- c(6) ### outlier magnitude:
+# out_prop_c <- c(0.1) ### outlier proportion:
+#
+# ### distribution in sample
+# loc_limits_c <- c(1) #outliers distributed from 0 to this value times the sample T
+#
+# ####distribution of error terms
+# dist_c <- c("norm", "t3") #can choose from: ("norm", "t3", "cauchy", "uniform", "lognorm")
+#
 
-#### bootstrap options
-#nboot <- 1000 #number of bootstrap replications
-clean.sample_c <- c(FALSE, TRUE) #bootstrap on clean sample, TRUE or FALSE
-boot.pval.scale_c <- c(1, 5) #scale the p-value
-# boot.parallel <- TRUE #parallelize bootstrap (significant speed gains!)
-# cores <- parallel::detectCores()-1 #number of cores for bootstrap
-# cores <- 7 #number of cores for bootstrap
-parametric <- FALSE #nonparametric or parametric bootstrap
-####
-
-max.block.size <- 30 #block size for isat, =2 is fastest.
-
-set.seed(123)
-### number of regressors
-#px <- c(5) #regressors
-#ar_c <- c(0)#ar coefficient in DGP#### ar non-zero does not yet work for bootstrap, as it's not clear what the null model should be on 'clean' observations, and bootstrap also unclear
-#sample_c <- c(50, 100) #sample size
-
-#p_alpha_c <- c(0.05) #significance level for isat testing
-
-############### Specifications for alternative
-#lambda_c <- c(6) ### outlier magnitude:
-out_prop_c <- c(0.1) ### outlier proportion:
-
-### distribution in sample
-loc_limits_c <- c(1) #outliers distributed from 0 to this value times the sample T
-
-####distribution of error terms
-dist_c <- c("norm", "t3") #can choose from: ("norm", "t3", "cauchy", "uniform", "lognorm")
-
-
-
-
-
-
+# turn off arx warning
+options(mc.warning = FALSE)
 
 
 ####### Combining all the above options into a list of specifications to be looped over:
-
-
 general_options <- list(
   beta_coef = c(0.5,1), # Coefficients of the covariates
   dist = c("norm","t3"),  # reference distributions
-  max.block.size = 30, # block size for isat
+  #max.block.size = 30, # block size for isat
   out_prop = 0.1, # proportion of sample to be outliers
   sample = c(50,100,200,400),
   nreg = 5,
@@ -163,9 +159,9 @@ specs <- rbind(specs_asym,specs_BS)
 specs <- rbind(specs, data.frame(
   dist = "lognorm",
 
-  beta_coef = 0.5,  max.block.size = 30,
+  beta_coef = 0.5,
   out_prop = NA, sample = 400, nreg = 5, p_alpha = 0.05, bootstrap = TRUE,
-  reps = 500, nboot = 499, boot.pval.scale = NA, clean.sample = FALSE,
+  reps = 500, nboot = 499, boot.pval.scale = 1, clean.sample = FALSE,
   bad_leverage = FALSE, hypothesis = "null", lambda = NA,
   loc_limits = NA, ar = 0, parametric = FALSE, timeseries = FALSE))
 
@@ -215,33 +211,10 @@ specs
 
 
 
-
-
-
-
-#################### All the different specifications to be looped over, each with "reps" number of replications.
-
-
-
-# ###### Total runs:
-# spec_n*reps
-
-## DELETE THIS!!!!
-# specs <- specs[specs$id==740,]
-# specs$reps <- 1
-# specs$nboot <- 10
-###
-
-spec_n <- NROW(specs)
-spec_n
+spec_n <- nrow(specs)
 
 
 # Finalise the specs section (order) --------------------------------------------------
-
-list.res <- list()
-list.reg <- list()
-
-start.time <- Sys.time()
 
 #save(specs, file = here("data-raw", "simulations", "spec_list.RData"))
 
@@ -251,119 +224,10 @@ start.time <- Sys.time()
 
 #for (j in 1:spec_n){
 
-spec_order <- 1:spec_n
-spec_order <- spec_order[!spec_order < 401]
+spec_order <- specs$id.seq
+spec_order <- specs$id.seq[specs$bootstrap] # only BS
 spec_order <- spec_order[order(specs[spec_order,"sample"])]
 
-new_order <- specs[spec_order,c("id.seq","sample","lambda")]
-new_order1 <- new_order[new_order$sample != 150,]
-new_order2 <- new_order1[new_order1$lambda %in% c(2,4,6,NA),]
-
-new_order3 <- new_order[new_order$sample == 150,]
-new_order4 <- new_order[new_order$lambda %in% 3 & new_order$sample!=150,]
-
-new_order_final <- rbind(rbind(new_order2, new_order3),new_order4)
-
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "null",
-#                                  reps = 100,
-#                                  p_alpha = 0.05, nreg = 5, sample = 50, ar = 0.5,
-#                                  dist = "norm",
-#                                  lambda = NA, out_prop = NA, nboot = 99,
-#                                  clean.sample = TRUE,
-#                                  boot.pval.scale = 1, id = 1, id.seq = 521))
-#
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "alternative",
-#                                  reps = 20,
-#                                  p_alpha = 0.05, nreg = 5, sample = 50, ar = 0.5,
-#                                  dist = "norm",
-#                                  lambda = 6, out_prop = 0.1, nboot = 99,
-#                                  clean.sample = TRUE,
-#                                  boot.pval.scale = 1, id = 2, id.seq = 522))
-#
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "alternative",
-#                                  reps = 20,
-#                                  p_alpha = 0.05, nreg = 5, sample = 100, ar = 0.000001,
-#                                  dist = "norm",
-#                                  lambda = 6, out_prop = 0.1, nboot = 99,
-#                                  clean.sample = TRUE,
-#                                  boot.pval.scale = 1, id = 523, id.seq = 523))
-#
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "null",
-#                                  reps = 20,
-#                                  p_alpha = 0.05, nreg = 5, sample = 50, ar = 0.5,
-#                                  dist = "norm",
-#                                  lambda = NA, out_prop = NA, nboot = 99,
-#                                  clean.sample = FALSE,
-#                                  boot.pval.scale = 1, id = 524, id.seq = 524))
-#
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "null",
-#                                  reps = 20,
-#                                  p_alpha = 0.05, nreg = 5, sample = 50, ar = 0.5,
-#                                  dist = "norm",
-#                                  lambda = NA, out_prop = NA, nboot = 99,
-#                                  clean.sample = TRUE,
-#                                  boot.pval.scale = 1, id = 525, id.seq = 525))
-#
-# specs <- rbind(specs, data.frame(bootstrap = TRUE, hypothesis = "alternative",
-#                                  reps = 10,
-#                                  p_alpha = 0.05, nreg = 5, sample = 100, ar = 0.5,
-#                                  dist = "norm",
-#                                  lambda = 6, out_prop = 0.1, nboot = 99,
-#                                  clean.sample = TRUE,
-#                                  boot.pval.scale = 1, id = 526, id.seq = 526))
-#
-#
-#
-# spec_list_null <- list(
-#   sample = c(100,200),
-#   hypothesis = "null",
-#   bootstrap = TRUE,
-#   reps = 100,
-#   clean.sample = c(TRUE,FALSE),
-#   nboot = 99,
-#   timeseries = TRUE,
-#   parametric = c(TRUE, FALSE),
-#   dist = c("norm","t3"),
-#   lambda = NA,
-#   out_prop = NA,
-#   nreg = 5,
-#   p_alpha = 0.05,
-#   boot.pval.scale = 1,
-#   ar = 0.5
-# )
-#
-# spec_list_alt <- list(
-#   sample = c(100,200),
-#   hypothesis = "alternative",
-#   bootstrap = TRUE,
-#   reps = 50,
-#   clean.sample = c(TRUE,FALSE),
-#   nboot = 99,
-#   timeseries = TRUE,
-#   parametric = c(TRUE, FALSE),
-#   dist = c("norm","t3"),
-#   lambda = 6,
-#   out_prop = 0.1,
-#   nreg = 5,
-#   p_alpha = 0.05,
-#   boot.pval.scale = 1,
-#   ar = 0.5
-#
-# )
-#
-#
-# specs <- rbind(expand.grid(spec_list_null),expand.grid(spec_list_alt))
-# specs$id.seq <- 601:632
-# specs$id <- 601:632
-#
-# a <- matrix(NA, nrow = 600, ncol = ncol(specs))
-# colnames(a) <- names(specs)
-# specs <- rbind(a, specs)
-#
-# specs <- as.data.frame(specs, row.names = NULL)
-#
-# #specs[602,c("reps","nboot")] <- c(3,99)
-#
 
 ### Changes to the current run - not changing the fundamental structure
 #
@@ -377,141 +241,45 @@ new_order_final <- rbind(rbind(new_order2, new_order3),new_order4)
 #
 #
 #
-# specs$nboot <- 199
-# specs$reps <- 200
-# #save(specs, file = here("data-raw", "simulations/rr2203", "spec_list_trial.RData"))
-#
-#
-#
-# # #1836      specs <- failed_df
-# # specs <- specs[specs$id == 1836,]
-# # specs$id.seq <- 1:nrow(specs)
-# # specs$nboot <- 20
-# # specs$reps <- 3
-#
-#
-#
-#
-# specs1 <- data.frame(nboot = 99,
-#                      reps = 50,
-#                      hypothesis = "null",
-#                      parametric = TRUE,
-#                      timeseries = FALSE,
-#                      beta_coef = 0.5,
-#                      sample = 50,
-#                      dist = "norm",
-#                      max.block.size = 30,
-#                      nreg = 5,
-#                      ar = 0,
-#                      p_alpha = 0.05,
-#                      bootstrap = TRUE,
-#                      clean.sample = TRUE,
-#                      bad_leverage = FALSE,
-#                      loc_limits = 1,
-#                      id = 1,
-#                      id.seq = 1,
-#                      out_prop = NA,
-#                      boot.pval.scale = 1,
-#                      lambda = NA)
-#
-# specs <- structure(list(beta_coef = c(1, 1, 1, 1, 0.5, 0.5, 1, 1, 0.5,
-#                                       0.5, 1, 1, 0.5, 0.5, 1),
-#                         dist = c("t3", "t3", "norm", "t3", "norm",
-#                                  "t3", "norm", "t3", "norm", "t3", "norm", "t3", "norm", "t3",
-#                                  "norm"),
-#                         max.block.size = c(30, 30, 30, 30, 30, 30, 30, 30, 30,
-#                                            30, 30, 30, 30, 30, 30),
-#                         out_prop = c(0.1, 0.1, 0.1, 0.1, 0.1,
-#                                      0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1),
-#                         sample = c(50,
-#                                    50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 100),
-#                         nreg = c(5,
-#                                  5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
-#                         p_alpha = c(0.05,
-#                                     0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
-#                                     0.05, 0.05, 0.05),
-#                         bootstrap = c(TRUE, TRUE, TRUE, TRUE, TRUE,
-#                                       TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-#                         reps = c(200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
-#                                  200, 200, 200, 200, 200),
-#                         nboot = c(199, 199, 199, 199, 199,
-#                                   199, 199, 199, 199, 199, 199, 199, 199, 199, 199),
-#                         boot.pval.scale = c(1,
-#                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-#                         clean.sample = c(TRUE,
-#                                          TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-#                                          FALSE, FALSE, FALSE, FALSE, FALSE),
-#                         bad_leverage = c(TRUE,
-#                                          TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE,
-#                                          TRUE, TRUE, FALSE, FALSE, TRUE),
-#                         hypothesis = c("alternative",
-#                                        "alternative", "alternative", "alternative", "alternative",
-#                                        "alternative", "alternative", "alternative", "alternative",
-#                                        "alternative", "null", "null", "null", "null", "alternative"
-#                         ),
-#                         lambda = c(4, 6, 4, 4, 4, 4, 6, 6, 6, 6, NA, NA, NA, NA,
-#                                    4),
-#                         loc_limits = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, NA, NA,
-#                                        NA, NA, 1),
-#                         ar = c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-#                                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5),
-#                         parametric = c(TRUE,
-#                                        TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-#                                        FALSE, FALSE, FALSE, FALSE, FALSE),
-#                         timeseries = c(TRUE,
-#                                        TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
-#                                        TRUE, TRUE, TRUE, TRUE), id = c(1772L, 1836L, 2170L, 2172L,
-#                                                                        2201L, 2203L, 2234L, 2236L, 2265L, 2267L, 3258L, 3260L, 3289L,
-#                                                                        3291L, 2174L),
-#                         id.seq = c(2L, 6L, 11L, 12L, 15L, 16L, 19L,
-#                                    20L, 23L, 24L, 55L, 56L, 59L, 60L, 83L)),
-#                    out.attrs = list(
-#                      dim = c(beta_coef = 2L, dist = 2L, max.block.size = 1L, out_prop = 1L,
-#                              sample = 4L, nreg = 1L, p_alpha = 1L, bootstrap = 1L, reps = 1L,
-#                              nboot = 1L,
-#                              boot.pval.scale = 1L, clean.sample = 1L,
-#                              bad_leverage = 1L,
-#                              hypothesis = 1L,
-#                              lambda = 3L, loc_limits = 1L, ar = 2L, parametric = 2L,
-#                              timeseries = 2L),
-#                      dimnames = list(beta_coef = c("beta_coef=0.5",
-#                                                    "beta_coef=1.0"), dist = c("dist=norm", "dist=t3"), max.block.size = "max.block.size=30",
-#                                      out_prop = "out_prop=0.1", sample = c("sample= 50", "sample=100",
-#                                                                            "sample=200", "sample=400"), nreg = "nreg=5", p_alpha = "p_alpha=0.05",
-#                                      bootstrap = "bootstrap=FALSE", reps = "reps=10000", nboot = "nboot=NA",
-#                                      boot.pval.scale = "boot.pval.scale=1", clean.sample = "clean.sample=NA",
-#                                      bad_leverage = "bad_leverage=FALSE", hypothesis = "hypothesis=alternative",
-#                                      lambda = c("lambda=2", "lambda=4", "lambda=6"), loc_limits = "loc_limits=1",
-#                                      ar = c("ar=0.0", "ar=0.5"), parametric = c("parametric=TRUE",
-#                                                                                 "parametric=FALSE"),
-#                                      timeseries = c("timeseries=TRUE",
-#                                                     "timeseries=FALSE"))),
-#                    row.names = c(772L, 836L, 1170L,
-#                                  1172L, 1201L, 1203L, 1234L, 1236L, 1265L, 1267L, 2258L, 2260L,
-#                                  2289L, 2291L, 1174L), class = "data.frame")
-#
-# specs$id.seq <- 1:nrow(specs)
-use_parallel <- TRUE
-# Start of spec loop ------------------------------------------------------
-for (j in specs$id.seq){
-  #for (j in new_order_final$id.seq){
-  # for (j in specs$id.seq[specs$id %in% c(1772L, 1836L, 2170L, 2172L, 2201L, 2203L, 2234L, 2236L, 2265L,
-  #                                        2267L, 3260L)]){
 
-  #j = 131
-  #for (j in 602:602){
-  #for (j in 601:632){
-  #j = 129
+
+
+#
+# specs <- failed_df
+# specs <- specs[specs$id == 1836,]
+# specs$id.seq <- 1:nrow(specs)
+# specs$nboot <- 20
+
+
+specs$nboot <- 30
+specs$reps <- 10
+
+save(specs, file = here("data-raw", "simulations/rr2203/trial", "spec_list.RData"))
+
+list.res <- list()
+list.reg <- list()
+
+start.time <- Sys.time()
+use_parallel <- TRUE
+
+#specs$sample[specs$id == 3561] <- 50
+#spec_order <- specs$id.seq[specs$bootstrap]
+#spec_order <- specs$id.seq[specs$id == 3289]
+
+# Start of spec loop ------------------------------------------------------
+#for (j in specs$id.seq){
+#for (j in spec_order){
+for (j in spec_order){
+
+  #for (j in new_order_final$id.seq){
   #j <- 1
   print(j)
-  # if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
-  # if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
+  # if(file.exists(here("data-raw", "simulations/rr2203/trial",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+  # if(file.exists(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))){
   #   next
   # } else {
-  #   file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+  #   file.create(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))
   # }
-
-
 
   p_alpha <-   specs$p_alpha[j]
   ar <- specs$ar[j]
@@ -530,8 +298,6 @@ for (j in specs$id.seq){
   if (specs$hypothesis[j] == "alternative"){
     out_lam <- specs$lambda[j]
     out_prop <- specs$out_prop[j]
-    #bad_leverage <- specs$bad_leverage[j]
-
   }
 
 
@@ -569,13 +335,13 @@ for (j in specs$id.seq){
   # res$is.euclid <- NA
   #
 
-  if (specs$hypothesis[j]=="alternative"){
-    print(paste0("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
-
-  } else {
-    print(paste0("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
-
-  }
+  # if (specs$hypothesis[j]=="alternative"){
+  #   print(paste0("Alt | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
+  #
+  # } else {
+  #   print(paste0("Null | ", "Spec: ", j,  " of ", spec_n, " |", paste(colnames(specs),specs[j,],  collapse=", ")))
+  #
+  # }
 
   # Start of rep loop in parallel ------------------------------------------------------
 
@@ -593,12 +359,10 @@ for (j in specs$id.seq){
                  .packages = loadedNamespaces(),
                  .errorhandling = "pass",
                  .combine = "rbind"
-                 #) %dopar% {
-  ) %dopar% {
+                 ) %dopar% {
 
     #res <- data.frame()
 
-    #for (i in 1:10){ #specs$reps[j]){
     #for (i in 1:specs$reps[j]){
     #i <- 1
     print(i)
@@ -664,7 +428,6 @@ for (j in specs$id.seq){
 
 
 
-
       if (ar !=0){
 
         if (p > 1){
@@ -672,7 +435,6 @@ for (j in specs$id.seq){
         } else {
           y_x_T1[1] <- mx_T1[1,]*pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
         }
-
 
         for (t in 2:((Tlength+1))){
           if (p > 1){
@@ -690,18 +452,12 @@ for (j in specs$id.seq){
         } else {
           y_x <- mx*pcoef + out_loc_s*out_lam + eps #+  ar* y_x[t-1]
         }
-
-
-
       }
-
-
 
     } else {
       mx <- NULL
 
       if (ar !=0){
-
         if (p > 1){
           y_x_T1[1] <- mx_T1[1,]%*%pcoef+ out_loc_s[1]*out_lam + eps_T1[1]
         } else {
@@ -714,10 +470,7 @@ for (j in specs$id.seq){
           } else {
             y_x_T1[t] <- mx_T1[t,]*pcoef + out_loc_s_T1[t]*out_lam + eps_T1[t] +  ar* y_x_T1[t-1]
           }
-
         }
-
-
       } else {
         if (alternative){
           y_x <- out_loc_s*out_lam +  eps
@@ -727,14 +480,11 @@ for (j in specs$id.seq){
       }
     }
     if (p > 0){
-
       if (bad_leverage){
-
         if (p==1){
           mx_T1_lev <- mx_T1
           mx_T1_lev[which(out_loc_s==1)] <- mx_T1_lev[which(out_loc_s==1)]  + out_lam_x
           mx_T1 <- mx_T1_lev
-
 
           mx_lev <- mx
           mx_lev[which(out_loc_s==1)] <- mx_lev[which(out_loc_s==1)]  + out_lam_x
@@ -744,25 +494,25 @@ for (j in specs$id.seq){
           mx_T1_lev[which(out_loc_s==1),] <- mx_T1_lev[which(out_loc_s==1),]  + out_lam_x
           mx_T1 <- mx_T1_lev
 
-
           mx_lev <- mx
           mx_lev[which(out_loc_s==1),] <- mx_lev[which(out_loc_s==1),]  + out_lam_x
           mx <- mx_lev
         }
-
-
       }
-
     }
 
 
     ## ISAT --------------------------------------------------------------------
 
     if (ar != 0){
-      is1 <- isat(y_x_T1, mxreg=mx_T1, ar=1, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
+      is1 <- isat(y_x_T1, mxreg=mx_T1, ar=1, iis=TRUE, sis=FALSE, tis=FALSE,
+                  t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE,
+                  max.block.size=30)
 
     } else {
-      is1 <- isat(y_x, mxreg=mx, ar=NULL, iis=TRUE, sis=FALSE, tis=FALSE, t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE, max.block.size=max.block.size)
+      is1 <- isat(y_x, mxreg=mx, ar=NULL, iis=TRUE, sis=FALSE, tis=FALSE,
+                  t.pval=p_alpha, plot=FALSE, print.searchinfo = FALSE,
+                  max.block.size=30)
 
     }
 
@@ -803,7 +553,7 @@ for (j in specs$id.seq){
         #parallel = TRUE,
         #ncore = 1,
         #ncore = parallel::detectCores()-1,
-        max.block.size = specs$max.block.size[j],
+        max.block.size = 30,
         timeseries = specs$timeseries[j],
         raw_data = cbind(y_x_T1,mx_T1)
       )
@@ -894,10 +644,10 @@ for (j in specs$id.seq){
   res$id <- id
   res$id.seq <- id.seq
 
-  res
+  #res
 
   #list.res[[j]] <- res
 
-  save(res, file = here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))
-  #unlink(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+  save(res, file = here("data-raw", "simulations/rr2203/trial",paste0(paste(specs[j,],collapse = "_"),".RData")))
+  unlink(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))
 } #j loop  closed
