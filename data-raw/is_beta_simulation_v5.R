@@ -83,11 +83,23 @@ general_options <- list(
 
 general_asymptotic_options <- list(
   bootstrap = FALSE,
+  nreg = 1,
+  beta_coef = 1,
+  lambda = c(2,3,4,6),
+  sample = c(100,200,300,400,500),
   reps = 10000,
+  ar = c(0,0.5),
+  out_prop = 0.05,
+  hypothesis = "alternative",
+  dist = "norm",
+  p_alpha = 0.05,
+  loc_limits = 1,
+  parametric = NA,
+  timeseries = NA,
   nboot = NA,
   boot.pval.scale = 1,
   clean.sample = NA,
-  bad_leverage = FALSE
+  bad_leverage = TRUE
 )
 
 
@@ -120,19 +132,9 @@ general_ar_options <- list(
 )
 
 
-
-
 # Add the specs together --------------------------------------------------
 
-specs_alt_nonBS <- expand.grid(append(general_options,
-                                      append(general_asymptotic_options,
-                                             append(general_alternative_options, general_ar_options))))
-
-specs_null_nonBS <- expand.grid(append(general_options,
-                                       append(general_asymptotic_options,
-                                              append(general_null_options, general_ar_options))))
-
-
+specs_asym <- expand.grid(general_asymptotic_options)
 
 specs_alt_BS <- expand.grid(append(general_options,
                                    append(general_bootstrap_options,
@@ -147,12 +149,8 @@ specs_null_BS <- expand.grid(append(general_options,
 
 
 specs_BS <- rbind(specs_alt_BS, specs_null_BS)
-specs_asym <- rbind(specs_alt_nonBS,specs_null_nonBS)
 
-setdiff(names(specs_asym), names(specs_BS))
-
-
-specs <- rbind(specs_asym,specs_BS)
+specs <- bind_rows(specs_asym,specs_BS)
 
 
 # add lognormal
@@ -179,50 +177,47 @@ specs$out_prop[specs$bad_leverage] <- 0.05 # inspired by Dehon et al
 
 ###drop a few specs that are redundant
 spec.drop <- vector()
-spec.drop <- c(spec.drop,specs$id[(specs$ar == 0 & specs$timeseries == TRUE)]) # if AR = 0 then we don't need TS treamtment
+spec.drop <- c(spec.drop,specs$id[(specs$ar == 0 & specs$timeseries == TRUE)]) # if AR = 0 then we don't need TS treatment
 spec.drop <- c(spec.drop,specs$id[(specs$beta_coef == 1 & specs$bad_leverage == FALSE)]) # we don't want other coefficients than 0.5 unless for bad leverage points
 spec.drop <- c(spec.drop,specs$id[(specs$beta_coef == 0.5 & specs$bad_leverage == TRUE)])# we don't want other coefficients than 0.5 unless for bad leverage points
 spec.drop <- c(spec.drop,specs$id[(specs$ar > 0 & specs$timeseries == FALSE)]) # if AR > 0 then we don't need non-TS treatment
-spec.drop <- c(spec.drop,specs$id[(specs$ar > 0 & specs$nreg != 5)])
+
 spec.drop <- c(spec.drop,specs$id[(specs$hypothesis == "null" & specs$bad_leverage == TRUE)])
 spec.drop <- c(spec.drop,specs$id[(specs$parametric & !specs$clean.sample)]) # when we have parametric we always want to have a clean sample
+
 spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & specs$parametric & !specs$clean.sample & specs$hypothesis=="alternative")]) # should not return any because clean.sample must be true when parametric
-spec.drop <- c(spec.drop,specs$id[(!specs$parametric & specs$hypothesis=="alternative" & !specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")]) # when we have non-parametric non-TS alt we don't want the combination of T3 and clean.sample
-spec.drop <- c(spec.drop,specs$id[(specs$parametric & specs$hypothesis == "alternative" & !specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")])
-spec.drop <- c(spec.drop,specs$id[(!specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")])
-spec.drop <- c(spec.drop,specs$id[(specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$bootstrap & specs$clean.sample & specs$dist=="t3")]) # Drop t3 for alt param TS because clean overrejects
+spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & !specs$parametric & specs$hypothesis=="alternative" & !specs$timeseries & specs$clean.sample & specs$dist=="t3")]) # when we have non-parametric non-TS alt we don't want the combination of T3 and clean.sample
+spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & specs$parametric & specs$hypothesis == "alternative" & !specs$timeseries & specs$clean.sample & specs$dist=="t3")])
+spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & !specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$clean.sample & specs$dist=="t3")])
+spec.drop <- c(spec.drop,specs$id[(specs$bootstrap & specs$parametric & specs$hypothesis == "alternative" & specs$timeseries & specs$clean.sample & specs$dist=="t3")]) # Drop t3 for alt param TS because clean overrejects
 
 # Bad Leverage
-spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$ar > 0])
-spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$parametric])
-spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$timeseries])
-spec.drop <- c(spec.drop,specs$id[specs$bad_leverage & specs$dist == "t3"])
+spec.drop <- c(spec.drop,specs$id[specs$bootstrap & specs$bad_leverage & specs$ar > 0])
+spec.drop <- c(spec.drop,specs$id[specs$bootstrap & specs$bad_leverage & specs$parametric])
+spec.drop <- c(spec.drop,specs$id[specs$bootstrap & specs$bad_leverage & specs$timeseries])
+spec.drop <- c(spec.drop,specs$id[specs$bootstrap & specs$bad_leverage & specs$dist == "t3"])
+
+# Asymptotic
+spec.drop <- c(spec.drop,specs$id[!specs$bootstrap & !specs$bad_leverage])
 
 # Deprecated
 spec.drop <- c(spec.drop,specs$id[specs$ar > 0 & specs$p_alpha != 0.05]) # deprecated will not return any
 spec.drop <- c(spec.drop,specs$id[specs$clean.sample == FALSE & specs$boot.pval.scale > 1]) # deprecated will not return any
 
-
+# Actually Drop
 specs <- specs[!(specs$id %in% spec.drop),]
+
+
+# Create sequential id
 specs$id.seq <- seq(1:NROW(specs))
 
-
 specs
-
 
 
 spec_n <- nrow(specs)
 
 
 # Finalise the specs section (order) --------------------------------------------------
-
-#save(specs, file = here("data-raw", "simulations", "spec_list.RData"))
-
-# library(doMC)
-# registerDoMC(detectCores()-1)  # coefsamples if enough cores available - otherwise total-1
-# foreach(j = 1:spec_n, .packages = loadedNamespaces()) %dopar% {
-
-#for (j in 1:spec_n){
 
 spec_order <- specs$id.seq
 spec_order <- specs$id.seq[specs$bootstrap] # only BS
@@ -231,40 +226,18 @@ spec_order <- spec_order[order(specs[spec_order,"sample"])]
 
 ### Changes to the current run - not changing the fundamental structure
 #
-# specs <- specs[specs$bootstrap == TRUE,]
-# specs <- specs[specs$lambda > 3 | is.na(specs$lambda),]
-# specs <- specs[!(specs$parametric & !specs$clean.sample),]
 #
-# specs <- specs[order(specs$sample),]
-#
-# specs$id.seq <- 1:nrow(specs)
-#
-#
-#
-
 
 
 #
 # specs <- failed_df
 # specs <- specs[specs$id == 1836,]
-# specs$id.seq <- 1:nrow(specs)
 # specs$nboot <- 20
 
+save(specs, file = here("data-raw", "simulations/rr2203", "spec_list.RData"))
 
-specs$nboot <- 30
-specs$reps <- 10
-
-save(specs, file = here("data-raw", "simulations/rr2203/trial", "spec_list.RData"))
-
-list.res <- list()
-list.reg <- list()
-
-start.time <- Sys.time()
 use_parallel <- TRUE
 
-#specs$sample[specs$id == 3561] <- 50
-#spec_order <- specs$id.seq[specs$bootstrap]
-#spec_order <- specs$id.seq[specs$id == 3289]
 
 # Start of spec loop ------------------------------------------------------
 #for (j in specs$id.seq){
@@ -274,11 +247,11 @@ for (j in spec_order){
   #for (j in new_order_final$id.seq){
   #j <- 1
   print(j)
-  # if(file.exists(here("data-raw", "simulations/rr2203/trial",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
-  # if(file.exists(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))){
+  # if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+  # if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
   #   next
   # } else {
-  #   file.create(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))
+  #   file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
   # }
 
   p_alpha <-   specs$p_alpha[j]
@@ -359,7 +332,7 @@ for (j in spec_order){
                  .packages = loadedNamespaces(),
                  .errorhandling = "pass",
                  .combine = "rbind"
-                 ) %dopar% {
+  ) %dopar% {
 
     #res <- data.frame()
 
@@ -648,6 +621,6 @@ for (j in spec_order){
 
   #list.res[[j]] <- res
 
-  save(res, file = here("data-raw", "simulations/rr2203/trial",paste0(paste(specs[j,],collapse = "_"),".RData")))
-  unlink(here("data-raw", "simulations/rr2203/trial",paste0("Running_",j,".txt")))
+  save(res, file = here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))
+  unlink(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
 } #j loop  closed
