@@ -150,7 +150,7 @@ specs_null_BS <- expand.grid(append(general_options,
 
 specs_BS <- rbind(specs_alt_BS, specs_null_BS)
 
-specs <- bind_rows(specs_asym,specs_BS)
+specs <- rbind(specs_asym,specs_BS)
 
 
 # add lognormal
@@ -247,12 +247,12 @@ for (j in spec_order){
   #for (j in new_order_final$id.seq){
   #j <- 1
   print(j)
-  # if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
-  # if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
-  #   next
-  # } else {
-  #   file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
-  # }
+  if(file.exists(here("data-raw", "simulations/rr2203",paste0(paste(specs[j,],collapse = "_"),".RData")))){next}
+  if(file.exists(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))){
+    next
+  } else {
+    file.create(here("data-raw", "simulations/rr2203",paste0("Running_",j,".txt")))
+  }
 
   p_alpha <-   specs$p_alpha[j]
   ar <- specs$ar[j]
@@ -322,10 +322,13 @@ for (j in spec_order){
   if(exists("res")){rm(res)}
   if(!Sys.info()["sysname"]=="Windows" & use_parallel){
     library(doMC)
-    registerDoMC(detectCores()-2)}  # coefsamples if enough cores available - otherwise total-1
-  # } else {
-  #   parallel::makeCluster((parallel::detectCores()-1))
-  # }
+    registerDoMC(detectCores()-2)#}  # coefsamples if enough cores available - otherwise total-1
+  } else if(use_parallel){
+    library(doSNOW)
+    #parallel::makeCluster((parallel::detectCores()-1))
+    cl <- parallel::makeCluster(10)
+    doSNOW::registerDoSNOW(cl)
+  }
 
   #Starting the loop
   res <- foreach(i = 1:specs$reps[j],
@@ -616,6 +619,8 @@ for (j in spec_order){
 
   res$id <- id
   res$id.seq <- id.seq
+
+  if(Sys.info()["sysname"]=="Windows" & use_parallel){stopCluster(cl)}
 
   #res
 
