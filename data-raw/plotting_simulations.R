@@ -1,29 +1,43 @@
 library(here)
 
+
+# Start -------------------------------------------------------------------
+
+
+
 ########### Analyse Simulation: compare p-values to 0.01 and 0.05 cut-offs
 
 sum_list <- list()
 sum_rej_05_list <- list()
 sum_rej_01_list <- list()
 
-load(here("data-raw","simulations/rr2203","spec_list_trial.RData"))
+load(here("data-raw","simulations/rr2203","spec_list.RData"))
 spec_n <- NROW(specs)
 
 missing <- 0
+failed <- vector()
 
-for (l in 601:632){
+files <- list.files(here("data-raw/simulations/rr2203"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+
+for (l in files){
 
   # res <- list.res[[l]]
-  if(file.exists(here("data-raw","simulations",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
-    load(here("data-raw","simulations",paste0(paste0(specs[l,],collapse = "_"),".RData")))
-  } else{
-    print(paste0("File Specification ",l," skipped - not found."))
-    missing <- missing + 1
-    next
-  }
+  #if(file.exists(here("data-raw","simulations/rr2203",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
+  load(l)
+  #} else{
+  # print(paste0("File Specification ",l," skipped - not found."))
+  #  missing <- missing + 1
+  # next
+  #}
   # <- 1
   #load(list.files(here("data-raw/simulations"), pattern = "602.RData", full.names = TRUE))
   #load(here("data-raw/simulations/","100_null_TRUE_100_TRUE_99_TRUE_TRUE_norm_NA_NA_5_0.05_1_0.5_601_601.RData"))
+  #load(here("data-raw/simulations/rr2203/1_t3_30_0.1_50_5_0.05_TRUE_3_20_1_TRUE_TRUE_alternative_4_1_0.5_TRUE_TRUE_1772_1.RData"))
+  if(class(res) == "list"){
+    failed <- c(failed,res$id)
+    next
+  }
+
 
 
   #load(list.files(here("data-raw/simulations"), pattern = "6[0-9][0-9].RData", full.names = TRUE))
@@ -147,12 +161,12 @@ for (l in 601:632){
 print(paste0("Number of files still missing: ",missing))
 
 
-sum.05 <- do.call(rbind.data.frame, sum_rej_05_list)
-names(sum.05) <- names(sum_rej_05_list[[602]])
+sum.05 <- dplyr::bind_rows(sum_rej_05_list)
+#names(sum.05) <- names(sum_rej_05_list[[1]])
 sum.05$test.lev <- 0.05
 
-sum.01 <- do.call(rbind.data.frame, sum_rej_01_list)
-names(sum.01) <- names(sum_rej_01_list[[602]])
+sum.01 <- dplyr::bind_rows(sum_rej_01_list)
+#names(sum.01) <- names(sum_rej_01_list[[1]])
 sum.01$test.lev <- 0.01
 
 ###combine
@@ -161,7 +175,13 @@ sum.05.m <- merge(sum.05, specs, by="id")
 
 sum_tab <- rbind(sum.01.m, sum.05.m)
 
+
+# sum_tab -----------------------------------------------------------------
+
 sum_tab
+
+failed_df <- specs[specs$id %in% failed,]
+failed_df$id
 
 #
 #
@@ -189,7 +209,9 @@ sum_tab
 # Same for p_alpha
 # Currently only lambda 4
 
-plot_specs_overall <- dplyr::distinct(specs,hypothesis,out_prop, bootstrap, dist, ar, p_alpha, nreg, lambda)
+plot_specs_overall <- dplyr::distinct(specs,
+                                      hypothesis,out_prop, bootstrap, dist, ar,
+                                      p_alpha, nreg, lambda, parametric, bad_leverage, timeseries, clean.sample)
 
 
 #for(boot in c(FALSE,TRUE)){
@@ -199,7 +221,7 @@ for(boot in c(TRUE)){
     print(paste0("Boot: ",boot," Hypothesis: ",hypo))
 
     if(!boot & hypo == "null"){
-      # Null --------------------------------------------------------------------
+      # Asym - Null --------------------------------------------------------------------
       plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==FALSE&plot_specs_overall$hypothesis=="null",]
       plot_specs <- dplyr::distinct(plot_specs,dist)
 
@@ -211,7 +233,7 @@ for(boot in c(TRUE)){
         pdf.height <- 5.5
 
 
-        pdf(here(paste0("data-raw/figures/null_dist",plot_specs[i,"dist"],".pdf")), width=pdf.width, height=pdf.height)
+        pdf(here(paste0("data-raw/figures/rr2203/null_dist",plot_specs[i,"dist"],".pdf")), width=pdf.width, height=pdf.height)
         par(mfrow=c(1,3))
 
         #### Plot 1: Size against number of observations for different levels
@@ -306,6 +328,11 @@ for(boot in c(TRUE)){
 
     }
 
+
+    # Asym - Alt --------------------------------------------------------------
+
+
+
     if(!boot & hypo == "alternative"){
       plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==FALSE&plot_specs_overall$hypothesis=="alternative",]
       plot_specs <- dplyr::distinct(plot_specs,dist,out_prop, p_alpha, ar,nreg)
@@ -331,7 +358,7 @@ for(boot in c(TRUE)){
         col.lam8 <- "gray25"
 
         #"./simulations/stored/alt_ar0.pdf"
-        pdf(here(paste0("data-raw/figures/alt_ar",plot_specs[i,"ar"],"_nreg",plot_specs[i,"nreg"],"_palpha",
+        pdf(here(paste0("data-raw/figures/rr2203/alt_ar",plot_specs[i,"ar"],"_nreg",plot_specs[i,"nreg"],"_palpha",
                         plot_specs[i,"p_alpha"],"_dist",plot_specs[i,"dist"],"_outprop",plot_specs[i,"out_prop"],".pdf")), width=pdf.width, height=pdf.height)
 
         par(mfrow=c(1,3))
@@ -410,99 +437,126 @@ for(boot in c(TRUE)){
     }
 
 
+    # Boot - Null ---------------------------------------------------------------
+
+
 
     if(boot & hypo == "null"){
+      for(param in c(TRUE,FALSE)){
 
-      # plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==TRUE&plot_specs_overall$hypothesis=="null",]
-      # plot_specs <- dplyr::distinct(plot_specs,dist)
-      #
-      # for(i in 1:nrow(plot_specs)){
+        # plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==TRUE&plot_specs_overall$hypothesis=="null",]
+        # plot_specs <- dplyr::distinct(plot_specs,dist)
+        #
+        # for(i in 1:nrow(plot_specs)){
 
-      datnull <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="null",]
+        datnull <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="null",]
 
-      datnull <- datnull[datnull$test.lev==0.05,]
+        datnull <- datnull[datnull$test.lev==0.05,]
+        datnull <- datnull[datnull$parametric==param,]
 
-      pdf.width <- 13
-      pdf.height <- 5.5
+        pdf.width <- 13
+        pdf.height <- 5.5
 
-      pdf(here(paste0("data-raw/figures/boot_null.pdf")), width=pdf.width, height=pdf.height)
-      par(mfrow=c(1,4))
+        pdf(here(paste0("data-raw/figures/rr2203/boot_null_",ifelse(param,"param","nonparam"),".pdf")), width=pdf.width, height=pdf.height)
+        par(mfrow=c(1,4))
 
-      #### Plot 1: Size against number of observations for different levels
-      col.asym <- "gray55"
-      col.bootfull <- "#ff7f00"
-      col.bootclean <- "#1f78b4"
-      col.bootclean.scale <- "#33a02c"
-
-
-      datnull$specfam <- 0
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == FALSE] <- 1
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 2
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 3
-
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == FALSE] <- 4
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 5
-      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 6
+        #### Plot 1: Size against number of observations for different levels
+        col.asym <- "gray55"
+        col.bootfull <- "#ff7f00"
+        col.bootclean <- "#1f78b4"
+        col.bootclean.scale <- "#33a02c"
 
 
-      dat.sub <- datnull[datnull$specfam %in% c(1, 2,3, 4, 5, 6),]
+        datnull$specfam <- 0
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == FALSE] <- 1
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 2
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 3
 
-      #
-      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
-      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
-
-
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)")
-      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
-
-      legend(50, 0.8, c("Asym", "Full Data", "Clean Data", "Clean Data Scaled"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean, col.bootclean.scale), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
-
-      abline(h=0.05, col="gray12")
-      text(x=55, y=0.07, label="0.05", col="gray12")
-
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)")
-      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
-
-      abline(h=0.05, col="gray12")
-      text(x=55, y=0.07, label="0.05", col="gray12")
-
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Correct Reference Distribution (Normal)")
-      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L1.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L1.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L1.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
-
-      abline(h=0.05, col="gray12")
-      text(x=55, y=0.07, label="0.05", col="gray12")
-
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Incorrect Reference Distribution (t3)")
-      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L1.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L1.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L1.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
-
-      abline(h=0.05, col="gray12")
-      text(x=55, y=0.07, label="0.05", col="gray12")
-
-      dev.off()
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == FALSE] <- 4
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 5
+        datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 6
 
 
+        dat.sub <- datnull[datnull$specfam %in% c(1, 2,3, 4, 5, 6),]
+
+        #
+        # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
+        # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
+
+
+        plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)")
+        lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
+
+        legend(50, 0.8, c("Asym", "Full Data", "Clean Data", "Clean Data Scaled"),  bg=NA, bty = "n", title.adj=-0.03,
+               lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean, col.bootclean.scale), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
+
+        abline(h=0.05, col="gray12")
+        text(x=55, y=0.07, label="0.05", col="gray12")
+
+        plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)")
+        lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
+
+        abline(h=0.05, col="gray12")
+        text(x=55, y=0.07, label="0.05", col="gray12")
+
+        plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Correct Reference Distribution (Normal)")
+        lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L1.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L1.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L1.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
+
+        abline(h=0.05, col="gray12")
+        text(x=55, y=0.07, label="0.05", col="gray12")
+
+        plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Incorrect Reference Distribution (t3)")
+        lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L1.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L1.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+        lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L1.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootclean.scale, lwd=2)
+
+        abline(h=0.05, col="gray12")
+        text(x=55, y=0.07, label="0.05", col="gray12")
+
+        dev.off()
+
+      }
     }
+
+
+    # Boot - Alt --------------------------------------------------------------
+
+
 
     if(boot & hypo == "alternative"){
 
 
       plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==TRUE&plot_specs_overall$hypothesis=="alternative",]
-      plot_specs <- dplyr::distinct(plot_specs,lambda)
+      plot_specs <- dplyr::distinct(plot_specs,lambda, ar, parametric, bad_leverage, timeseries, clean.sample)
+
+      datalt.boot <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="alternative",]
 
       for(i in 1:nrow(plot_specs)){
 
         #### against sample size (for different lambda)
+        # TO DO MS:
+        # Used to be: cleansample T/F and boot.pval scale
+        # now not needed/appropriate anymore
 
-        datalt.boot <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="alternative",]
+
+        datalt.boot %>%
+          filter(test.lev == 0.05, bootstrap) %>%
+          as_tibble() %>% select(-hypothesis) %>%
+          pivot_longer(-c(id, dist, sample, parametric, clean.sample, timeseries, lambda)) %>%
+        # pivot_longer(-c(id, where(is.character)))
+          filter(name %in% c("rej","rej.L2.boot")) %>%
+
+          ggplot(aes(x = sample, y = value, color = timeseries, linetype = parametric)) +
+          geom_line() +
+          facet_wrap(lambda~dist)
+
+
 
         #datalt.boot <- read.csv("./simulations/stored/500 reps 500 boots/alt_v1_boot.csv")
 
@@ -510,29 +564,35 @@ for(boot in c(TRUE)){
         datalt.boot$specfam[datalt.boot$test.lev==0.05 &
                               datalt.boot$p_alpha==0.05 &
                               datalt.boot$nreg==5 &
-                              datalt.boot$ar==0 &
+                              datalt.boot$timeseries==plot_specs[i,"timeseries"] &
                               datalt.boot$lambda==plot_specs[i,"lambda"] &
                               datalt.boot$dist=="norm" &
                               datalt.boot$boot.pval.scale == 1 &
-                              datalt.boot$clean.sample == FALSE] <- 1
+                              datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                              datalt.boot$parametric == plot_specs[i,"parametric"] &
+                              datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 1
 
         datalt.boot$specfam[datalt.boot$test.lev==0.05 &
                               datalt.boot$p_alpha==0.05 &
                               datalt.boot$nreg==5 &
-                              datalt.boot$ar==0 &
+                              datalt.boot$timeseries==plot_specs[i,"timeseries"] &
                               datalt.boot$lambda==plot_specs[i,"lambda"] &
                               datalt.boot$dist=="norm" &
                               datalt.boot$boot.pval.scale == 1 &
-                              datalt.boot$clean.sample == TRUE] <- 2
+                              datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                              datalt.boot$parametric == plot_specs[i,"parametric"] &
+                              datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 2
 
         datalt.boot$specfam[datalt.boot$test.lev==0.05 &
                               datalt.boot$p_alpha==0.05 &
                               datalt.boot$nreg==5 &
-                              datalt.boot$ar==0 &
+                              datalt.boot$timeseries==plot_specs[i,"timeseries"] &
                               datalt.boot$lambda==plot_specs[i,"lambda"] &
                               datalt.boot$dist=="norm" &
                               datalt.boot$boot.pval.scale == 5 &
-                              datalt.boot$clean.sample == TRUE] <- 3
+                              datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                              datalt.boot$parametric == plot_specs[i,"parametric"] &
+                              datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 3
 
 
         # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
@@ -545,14 +605,17 @@ for(boot in c(TRUE)){
         col.lam8 <- "gray25"
 
 
-        pdf(here(paste0("data-raw/figures/boot_alt_lambda",plot_specs[i,"lambda"],".pdf")), width=12, height=7)
+        pdf(here(paste0("data-raw/figures/rr2203/boot_alt_lambda",plot_specs[i,"lambda"],"_",
+                        ifelse(plot_specs[i,"parametric"],"param","nonparam"),
+                        ifelse(plot_specs[i,"bad_leverage"],"_badleverage",""),
+                        ifelse(plot_specs[i,"timeseries"],"_TS","_stationary"),".pdf")), width=12, height=7)
 
         par(mfrow=c(1,3))
 
         #datalt.boot[datalt.boot$specfam == 1,]
 
         plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-             xlim=c(50, 220), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
+             xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
              main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", L2)"))
         lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
         lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
@@ -601,7 +664,7 @@ for(boot in c(TRUE)){
 
 
         plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
-             lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.lam1, ylab="Null Rejection Frequency",
+             lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
              xlab="Sample Size n", main=paste0("Power (t3, Lambda=",plot_specs[i,"lambda"],", L2)"))
         lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
         lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
@@ -620,7 +683,7 @@ for(boot in c(TRUE)){
 
 
         plot(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3] ,
-             lty=1, type="b", ylim=c(0, 1), xlim=c(50, 220), col=col.lam4, ylab="Null Rejection Frequency",
+             lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam4, ylab="Null Rejection Frequency",
              xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", Clean Data Scale)"))
         lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
         #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
