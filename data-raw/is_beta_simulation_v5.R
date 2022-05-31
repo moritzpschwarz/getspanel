@@ -234,7 +234,7 @@ spec_order <- spec_order[order(specs[spec_order,"sample"])]
 # specs <- specs[specs$id == 1836,]
 # specs$nboot <- 20
 
-save(specs, file = here("data-raw", "simulations/rr2203", "spec_list.RData"))
+#save(specs, file = here("data-raw", "simulations/rr2203", "spec_list.RData"))
 
 use_parallel <- TRUE
 
