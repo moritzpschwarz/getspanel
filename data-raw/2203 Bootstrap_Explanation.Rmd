@@ -1,0 +1,161 @@
+---
+author: Moritz Schwarz
+output: html_document
+---
+
+# Bootstrap Outlier Distortion
+
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+```
+
+
+## Preparation
+Check if file already exists
+
+Check whether we are doing Bootstrap or not and then extract the information on the scaled p-value and whether to clean the sample
+
+Then collect the info on the number of regressors and the true distribution
+
+Then check whether we are doing this under the null of no outliers or the alternative that there are outliers
+
+For each x-variable we are then getting the pcoef (I think this is the p-value for the xvar -- UPDATE: I now think it's the coefficient for the x variables)
+
+In the data frame we are then creating two columns:
+rep (replication) and is.dist1.p which is the pvalue outcome from the outlier distortion test i.e. the original test outcome that has not been bootstrapped
+
+We are then adding the bootstrap distortion values
+is.dist1.boot.L2.p
+is.dist1.boot.L1.p
+is.dist1.boot.dist.p
+
+and then do the same with the proportion.
+
+The variables that are added after that (is.avg.dist.pct and is.euclid) are distances or distortions
+
+## Reps
+
+Then we cycle through the reps, which are typically 10,000 for non-Bootstrap and 1,000 for Bootstraps
+
+If we are in the alternative then, we:
+XXXXXX
+(I think we determine the number of outliers and sample where in the sample they will occur, e.g. 5 outliers in n = 100)
+
+If we are in the null, then we set the number of outliers to 0 and the out_loc NULL and the out_lam to 0. 
+
+This means that all out_loc_s_T1 are 0 for the alternative - and then the out_loc_s will always be equal to n but shifted by one to the right
+
+Then we simulation the eps_T1 (I think the error) and again select the by 1 shifted data 
+
+### x-vars
+
+Then we simulate the covariates from a normal distribution
+
+### y
+
+Then the following chunk of code is simulating the y variable (depending on ar settings, x vars and eps)
+
+
+### IIS 
+
+Then we run the initial IIS (currently with a max.block.size = 2)
+
+And then run the distortion and proportion test
+
+### Bootstrap Distortion Test
+
+And then we run the bootstrap distortion test
+
+#### Details Bootstrapped Distortion Test
+
+The input object is an isat object
+
+We first run the outlier and the distortiontest again
+
+We get the isatdates of the original isat object and then define a set that is all observations BUT the indicators in iis (we need this to clean the sample)
+
+If we do a parametric bootstrap, we always clean the sample
+
+We then create individual samples for each bootstrap replication and save them in boot.samples - if we do clean sample, then we only choose the subset that does not contain any indicators. Otherwise we sample over all n
+
+We always sample N (the same length as the original) but we have replace = TRUE so we can sample the same value multiple times
+
+We then select the target p-value which is the original p value of the isat object * the scaling factor
+
+
+
+If we do a parametric bootstrap, we first remove the indicators from the covariates and subset the residuals to our drawn sample using `as.vector(x$residuals)[boot.samp]`. We then matrix multiply the covariates with the relevant coefficients and then add the residuals to create the y.boot. 
+
+If we do not use a parametric bootstrap, we simply subset the y and covariates based on our bootstramp sample. 
+
+In both cases, we use the `y.boot`, `x.boot` and target p-value for applying the bootstrap function and the collect the results in the `tempMatrix`.
+
+### Actual Bootstrap Function 
+The actual bootstraps function runs IIS on the sample with the scaled p-value. Then we run the distortion and proportion test on this. 
+We then collect: i) the coeff difference (distortion test), the distortion test statistic, the proportion estimate and the proportion test statistic as well as the proportion count estimate and proportion count statistic
+
+Which means: 
+
+
+```{r}
+tibble(Names = c("names(disorttest(x)$coef.diff)", "dist", "prop", "prop.test", "count", "count.test"),
+       Description = c("The variable names of the covariates", "Distortion Test Statistic", "Proportion Estimate", "Proportion Test Statistic", "Proportion Count Estimate", "Proportion Count Test Statistic"),
+        Values = c("dist.boot$coef.diff", "dist.boot$statistic", "out.boot$proportion$estimate", "out.boot$proportion$statistic", "out.boot$count$estimate", "out.boot$count$statistic")) %>% 
+  
+  kable(escape = FALSE) %>% 
+  kableExtra::kable_styling()
+
+```
+
+
+The outcome of the bootstrap function is collected in the `coefdist.sample`. We also set up the `coefdist.res`, which has the same number of rows as the number of bootstraps. There we create the L2 and L1. 
+The L2 is created like $\sqrt{\sum_k^K{x^2}}$ where $k$ and $K$ are number of covariates and L1 is $\sum_k^K{|x|}$ for each bootstrap sample. 
+
+We then also collect all Distortion Test Statistic, Proportion Estimate, Proportion Test Statistic, Proportion Count Estimate, Proportion Count Test Statistic for each bootstrap run.
+
+We also calculate/collect the L2, L1 and Dist Test Stat for the original (non-BS) sample as well as the proportion and count measures. Those we always denote `full`.
+
+We then calculate the quantiles across the bootstrap runs. 
+
+And then we calculate the p values as the number of cases where the L2 (or L1) in the bootstrap is higher than the L2 (L1) of the full sample, divided by the number of boostraps to get a ratio $\frac{\sum_{nboot}^{Nboot} 1_{when L2 boot > L2 full}}{Nboot}$ (so this will give something like 6 out of 10 bootstraps/10 bootstraps). Lastly we also get the p-values for the proportion test.
+
+Finally we add all this to the out list.
+
+
+
+
+### Post processing
+
+We then look at the initial non-BS version of the test and also get the ols version.
+
+We then divide the coeff.diff (i.e. the differences in the ols and IIS coefficients) by the ols coefficients (to make these relative to each other)
+
+coefdif.prop.abs.m is the mean absolute value across all differences 
+
+And the euclid is then the square root of the sum of the squared differences
+
+Then we just collect the rep id, the p-value from the non-BS test and add it to res$is.dist1.p
+
+Then we do the same with the p-value from the non-BS proportion test: 
+res$is.prop.test.p
+
+
+We then add all relevant bootstrap information for the distortion (L2, L1, bootstrapped p-value) and the proportion test (bootstrapped p-value, boostraped test stat)
+
+
+
+
+
+
+
+
+
+
+

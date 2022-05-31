@@ -1,0 +1,16 @@
+
+- version 0.34
+- change the distorttest function in the gets package
+- change the distorttestboot function in the gets package
+- check distorttestboot if it does it on all variables and if not create argument for not testing all coefficients
+- check behaviour of distorttest when ar = 1 in isat (the y.index then starts from 2)
+
+- check with TS parametric whether there is an intercept
+
+To consider: 
+- Store the bootstrap output and the isat models run on the bootstrap and separate the testing from this to a different script. 
+Benefit: if we do another analysis measure, we don't have to re-estimate all isat objects
+
+
+
+change non-param TS with AR hard coded when cleaning
