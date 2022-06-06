@@ -448,7 +448,6 @@ for(boot in c(TRUE)){
     if(boot & hypo == "null"){
 
       datnull.boot <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="null",]
-
       # exclude lognorm
       datnull.boot <- datnull.boot[datnull.boot$dist != "lognorm",]
 
@@ -542,6 +541,178 @@ for(boot in c(TRUE)){
           dev.off()
         }
       }
+
+
+
+      ## Parametric Non TS --------------------------------------------------------------
+      datnull <- datnull.boot
+
+      datnull <- datnull[datnull$test.lev==0.05,] # choose test level
+      datnull <- datnull[datnull$parametric==TRUE,] # choose non-parametric
+
+      pdf.width <- 13
+      pdf.height <- 11
+
+      pdf(here(paste0("data-raw/figures/rr2203/boot_null_param.pdf")), width=pdf.width, height=pdf.height)
+      par(mfrow=c(2,4))
+
+      #### Plot 1: Size against number of observations for different levels
+      col.asym <- "gray55"
+      col.bootfull <- "#ff7f00"
+      col.bootclean <- "#1f78b4"
+
+      datnull$specfam <- 0
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == FALSE] <- 1
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 2
+      #datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 3
+
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == FALSE] <- 4
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 5
+      #datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 6
+
+
+      dat.sub <- datnull[datnull$specfam %in% c(1, 2,3, 4, 5, 6),]
+
+      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
+      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
+
+
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "iid")
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+
+      legend(50, 0.8, c("Asym", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "iid")
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Correct Reference Distribution (Normal)", sub = "iid")
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L1.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L1.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=2, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L1.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Incorrect Reference Distribution (t3)", sub = "iid")
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L1.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L1.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=2, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L1.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      ## Parametric TS --------------------------------------------------------------
+      datnull <- datnull.boot
+
+      datnull <- datnull[datnull$test.lev==0.05,] # choose test level
+      datnull <- datnull[datnull$parametric==TRUE,] # choose non-parametric
+
+
+      #### Plot 1: Size against number of observations for different levels
+      col.asym <- "gray55"
+      col.bootfull <- "#ff7f00"
+      col.bootclean <- "#1f78b4"
+
+      datnull$specfam <- 0
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==TS & datnull$dist == "norm" & datnull$clean.sample == FALSE] <- 1
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==TS & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 2
+      #datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "norm" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 3
+
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==TS & datnull$dist == "t3" & datnull$clean.sample == FALSE] <- 4
+      datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==TS & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 1] <- 5
+      #datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0 & datnull$dist == "t3" & datnull$clean.sample == TRUE & datnull$boot.pval.scale == 5] <- 6
+
+
+      dat.sub <- datnull[datnull$specfam %in% c(1, 2,3, 4, 5, 6),]
+
+      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
+      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
+
+
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "AR = 0.5")
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+
+      legend(50, 0.8, c("Asym", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "AR = 0.5")
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Correct Reference Distribution (Normal)", sub = "AR = 0.5")
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L1.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L1.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=2, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L1.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L1: Incorrect Reference Distribution (t3)", sub = "AR = 0.5")
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L1.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L1.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
+      # variance
+      lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=2, type="b",   col=col.bootfull, lwd=2)
+      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=2, type="b",   col=col.bootclean, lwd=2)
+      # now defunct: clean scaled
+      lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L1.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+
+      abline(h=0.05, col="gray12")
+      text(x=55, y=0.07, label="0.05", col="gray12")
+
+      dev.off()
+
+
+
 
 
       ## Non Parametric, TS -----------------------------------------------------------------
@@ -809,65 +980,18 @@ for(boot in c(TRUE)){
 
       dev.off()
 
-  }
+    }
 
 
     # Boot - Alt --------------------------------------------------------------
 
-
-
     if(boot & hypo == "alternative"){
 
-
-      plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==TRUE&plot_specs_overall$hypothesis=="alternative",]
+      plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap == TRUE &
+                                         plot_specs_overall$hypothesis == "alternative",]
       plot_specs <- dplyr::distinct(plot_specs,lambda, ar, parametric, bad_leverage, timeseries, clean.sample)
 
       datalt.boot <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="alternative",]
-
-
-      for(param in c(TRUE, FALSE)){
-        for(BL in c(TRUE, FALSE)){
-          for(TS in c(TRUE, FALSE)){
-
-            datalt.boot %>%
-              filter(bad_leverage == BL, timeseries == TS, parametric == param) -> intermed
-
-            if(nrow(intermed)==0){next}
-
-            intermed %>%
-              filter(test.lev == 0.05, bootstrap, sample > 50) %>%
-              as_tibble() %>% select(-hypothesis) %>%
-              pivot_longer(-c(id, dist, sample, parametric, clean.sample, timeseries, lambda, bad_leverage)) %>%
-              # pivot_longer(-c(id, where(is.character)))
-              filter(name %in% c("rej","rej.L2.boot","rej.var.boot",#"rej.L1.boot" ,
-                                 NULL
-              )) %>%
-
-
-              ggplot(aes(x = sample, y = value, linetype = clean.sample, color = name)) +
-              geom_hline(aes(yintercept = 0.05), size = 0.5, colour = "grey")+
-              geom_line(size = .75) +
-              geom_point(size = 1) +
-
-              facet_grid(dist~lambda) +
-              scale_colour_met_d("Java")+
-              labs(y = "Null Rejection Frequency", x = "Sample",
-                   subtitle = paste0("Alternative\nBad Leverage = ",BL,"   ",
-                                     "Time Series = ", TS, "   ",
-                                     "Parametric = ", param))+
-              theme(panel.background = element_blank(),#,
-                    panel.border = element_rect(colour = "black", fill = NA),
-                    #panel.grid.major.y = element_line(color = "grey"),
-                    text = element_text(family = "Myriad Pro", size = 14),
-                    strip.background = element_blank()
-              ) -> a
-            ggsave(a, filename = here("data-raw/figures/rr2203",
-                                      paste0("Boot_Alt_BL",BL,"_",
-                                             "TS", TS, "_",
-                                             "Param",param, ".pdf")), width = 8, height = 6)
-          }
-        }
-      }
 
 
       # for(i in 1:nrow(plot_specs)){
@@ -879,146 +1003,192 @@ for(boot in c(TRUE)){
 
       #datalt.boot <- read.csv("./simulations/stored/500 reps 500 boots/alt_v1_boot.csv")
       #
-      # datalt.boot$specfam <- 0
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$timeseries==plot_specs[i,"timeseries"] &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="norm" &
-      #                       datalt.boot$boot.pval.scale == 1 &
-      #                       datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
-      #                       datalt.boot$parametric == plot_specs[i,"parametric"] &
-      #                       datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 1
-      #
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$timeseries==plot_specs[i,"timeseries"] &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="norm" &
-      #                       datalt.boot$boot.pval.scale == 1 &
-      #                       datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
-      #                       datalt.boot$parametric == plot_specs[i,"parametric"] &
-      #                       datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 2
-      #
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$timeseries==plot_specs[i,"timeseries"] &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="norm" &
-      #                       datalt.boot$boot.pval.scale == 5 &
-      #                       datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
-      #                       datalt.boot$parametric == plot_specs[i,"parametric"] &
-      #                       datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 3
-      #
-      #
-      # # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
-      # # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==4] <- 3
-      #
-      # col.lam1 <- "#fcbba1"
-      # col.lam2 <- "#fb6a4a"
-      # col.lam4 <- "#99000d"
-      # col.lam6 <- "#67000d"
-      # col.lam8 <- "gray25"
-      #
-      #
-      # pdf(here(paste0("data-raw/figures/rr2203/boot_alt_lambda",plot_specs[i,"lambda"],"_",
-      #                 ifelse(plot_specs[i,"parametric"],"param","nonparam"),
-      #                 ifelse(plot_specs[i,"bad_leverage"],"_badleverage",""),
-      #                 ifelse(plot_specs[i,"timeseries"],"_TS","_stationary"),".pdf")), width=12, height=7)
-      #
-      # par(mfrow=c(1,3))
-      #
-      # #datalt.boot[datalt.boot$specfam == 1,]
-      #
-      # plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-      #      xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
-      #      main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", L2)"))
-      # lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
-      # lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-      # lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
-      #
-      #
-      #
-      # abline(h=0.05, col="gray55")
-      # text(x=50, y=0.017, label="0.05", col="gray55")
-      #
-      # legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
-      #        lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
-      #
-      #
-      # ##### t3 distribution
-      #
-      # #datalt.boot$specfam <- 0
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$ar==0 &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="t3" &
-      #                       datalt.boot$boot.pval.scale == 1 &
-      #                       datalt.boot$clean.sample == FALSE] <- 4
-      #
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$ar==0 &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="t3" &
-      #                       datalt.boot$boot.pval.scale == 1 &
-      #                       datalt.boot$clean.sample == TRUE] <- 5
-      #
-      # datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-      #                       datalt.boot$p_alpha==0.05 &
-      #                       datalt.boot$nreg==5 &
-      #                       datalt.boot$ar==0 &
-      #                       datalt.boot$lambda==plot_specs[i,"lambda"] &
-      #                       datalt.boot$dist=="t3" &
-      #                       datalt.boot$boot.pval.scale == 5 &
-      #                       datalt.boot$clean.sample == TRUE] <- 6
-      #
-      # #datalt.boot$is.euclid.sc <- datalt.boot$is.euclid/max(datalt.boot$is.euclid)
-      #
-      #
-      # plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
-      #      lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
-      #      xlab="Sample Size n", main=paste0("Power (t3, Lambda=",plot_specs[i,"lambda"],", L2)"))
-      # lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
-      # lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
-      # lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col="gray55")
-      #
-      #
-      #
-      # abline(h=0.05, col="gray55")
-      # text(x=50, y=0.017, label="0.05", col="gray55")
-      #
-      # legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
-      #        lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
-      #
-      #
-      # # L1 vs L2 vs Stat ###
-      #
-      #
-      # plot(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3] ,
-      #      lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam4, ylab="Null Rejection Frequency",
-      #      xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", Clean Data Scale)"))
-      # lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
-      # #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
-      # lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
-      #
-      #
-      #
-      # abline(h=0.05, col="gray55")
-      # text(x=50, y=0.017, label="0.05", col="gray55")
-      #
-      # legend(50, 0.7, c("Asympt", "L2", "L1"),  bg=NA, bty = "n", title.adj=-0.03,
-      #        lty=c(1, 1, 2), col=c("gray55", col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
-      #
-      # dev.off()
-      # }
+      datalt.boot$specfam <- 0
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$timeseries==plot_specs[i,"timeseries"] &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="norm" &
+                            datalt.boot$boot.pval.scale == 1 &
+                            datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                            datalt.boot$parametric == plot_specs[i,"parametric"] &
+                            datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 1
+
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$timeseries==plot_specs[i,"timeseries"] &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="norm" &
+                            datalt.boot$boot.pval.scale == 1 &
+                            datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                            datalt.boot$parametric == plot_specs[i,"parametric"] &
+                            datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 2
+
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$timeseries==plot_specs[i,"timeseries"] &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="norm" &
+                            datalt.boot$boot.pval.scale == 5 &
+                            datalt.boot$bad_leverage == plot_specs[i,"bad_leverage"] &
+                            datalt.boot$parametric == plot_specs[i,"parametric"] &
+                            datalt.boot$clean.sample == plot_specs[i,"clean.sample"]] <- 3
+
+
+      # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
+      # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==4] <- 3
+
+      col.lam1 <- "#fcbba1"
+      col.lam2 <- "#fb6a4a"
+      col.lam4 <- "#99000d"
+      col.lam6 <- "#67000d"
+      col.lam8 <- "gray25"
+
+
+      pdf(here(paste0("data-raw/figures/rr2203/boot_alt_lambda",plot_specs[i,"lambda"],"_",
+                      ifelse(plot_specs[i,"parametric"],"param","nonparam"),
+                      ifelse(plot_specs[i,"bad_leverage"],"_badleverage",""),
+                      ifelse(plot_specs[i,"timeseries"],"_TS","_stationary"),".pdf")), width=12, height=7)
+
+      par(mfrow=c(1,3))
+
+      #datalt.boot[datalt.boot$specfam == 1,]
+
+      plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", L2)"))
+      lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
+      lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+
+
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+
+      legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+
+      ##### t3 distribution
+
+      #datalt.boot$specfam <- 0
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$ar==0 &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="t3" &
+                            datalt.boot$boot.pval.scale == 1 &
+                            datalt.boot$clean.sample == FALSE] <- 4
+
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$ar==0 &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="t3" &
+                            datalt.boot$boot.pval.scale == 1 &
+                            datalt.boot$clean.sample == TRUE] <- 5
+
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$nreg==5 &
+                            datalt.boot$ar==0 &
+                            datalt.boot$lambda==plot_specs[i,"lambda"] &
+                            datalt.boot$dist=="t3" &
+                            datalt.boot$boot.pval.scale == 5 &
+                            datalt.boot$clean.sample == TRUE] <- 6
+
+      #datalt.boot$is.euclid.sc <- datalt.boot$is.euclid/max(datalt.boot$is.euclid)
+
+
+      plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
+           lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
+           xlab="Sample Size n", main=paste0("Power (t3, Lambda=",plot_specs[i,"lambda"],", L2)"))
+      lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
+      lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
+      lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col="gray55")
+
+
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+
+      legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+
+      # L1 vs L2 vs Stat ###
+
+
+      plot(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3] ,
+           lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam4, ylab="Null Rejection Frequency",
+           xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", Clean Data Scale)"))
+      lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
+      #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
+      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+
+
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+
+      legend(50, 0.7, c("Asympt", "L2", "L1"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 2), col=c("gray55", col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+      dev.off()
     }
-}
   }
+}
+}
+
+
+# for(param in c(TRUE, FALSE)){
+#   for(BL in c(TRUE, FALSE)){
+#     for(TS in c(TRUE, FALSE)){
+#
+#       datalt.boot %>%
+#         filter(bad_leverage == BL, timeseries == TS, parametric == param) -> intermed
+#
+#       if(nrow(intermed)==0){next}
+#
+#       intermed %>%
+#         filter(test.lev == 0.05, bootstrap, sample > 50) %>%
+#         as_tibble() %>% select(-hypothesis) %>%
+#         pivot_longer(-c(id, dist, sample, parametric, clean.sample, timeseries, lambda, bad_leverage)) %>%
+#         # pivot_longer(-c(id, where(is.character)))
+#         filter(name %in% c("rej","rej.L2.boot","rej.var.boot",#"rej.L1.boot" ,
+#                            NULL
+#         )) %>%
+#
+#
+#         ggplot(aes(x = sample, y = value, linetype = clean.sample, color = name)) +
+#         geom_hline(aes(yintercept = 0.05), size = 0.5, colour = "grey")+
+#         geom_line(size = .75) +
+#         geom_point(size = 1) +
+#
+#         facet_grid(dist~lambda) +
+#         scale_colour_met_d("Java")+
+#         labs(y = "Null Rejection Frequency", x = "Sample",
+#              subtitle = paste0("Alternative\nBad Leverage = ",BL,"   ",
+#                                "Time Series = ", TS, "   ",
+#                                "Parametric = ", param))+
+#         theme(panel.background = element_blank(),#,
+#               panel.border = element_rect(colour = "black", fill = NA),
+#               #panel.grid.major.y = element_line(color = "grey"),
+#               text = element_text(family = "Myriad Pro", size = 14),
+#               strip.background = element_blank()
+#         ) -> a
+#       ggsave(a, filename = here("data-raw/figures/rr2203",
+#                                 paste0("Boot_Alt_BL",BL,"_",
+#                                        "TS", TS, "_",
+#                                        "Param",param, ".pdf")), width = 8, height = 6)
+#     }
+#   }
+# }
+#
 
