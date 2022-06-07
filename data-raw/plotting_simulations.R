@@ -447,7 +447,7 @@ for(boot in c(TRUE)){
     # Boot - Null ---------------------------------------------------------------
     if(boot & hypo == "null"){
 
-      datnull.boot <- sum_tab[sum_tab$bootstrap==TRUE&sum_tab$hypothesis=="null",]
+      datnull.boot <- sum_tab[sum_tab$bootstrap==TRUE & sum_tab$hypothesis=="null" & sum_tab$sample > 50,]
       # exclude lognorm
       datnull.boot <- datnull.boot[datnull.boot$dist != "lognorm",]
 
@@ -486,12 +486,12 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "iid")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\niid")
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -502,12 +502,12 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "iid")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\niid")
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -540,12 +540,12 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "AR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\nAR = 0.5")
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -556,12 +556,12 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "AR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\nAR = 0.5")
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -573,6 +573,7 @@ for(boot in c(TRUE)){
 
       ## Parametric --------------------------------------------------------------
       ### Non TS -----
+
       datnull <- datnull.boot
 
       datnull <- datnull[datnull$test.lev==0.05,] # choose test level
@@ -605,12 +606,12 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "iid")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\niid")
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -621,18 +622,18 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "iid")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\niid")
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
-#
+      #
 
       ### TS --------------------------------------------------------------
       datnull <- datnull.boot
@@ -662,12 +663,12 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)", sub = "AR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\nAR = 0.5")
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.var.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -678,12 +679,12 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)", sub = "AR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\nAR = 0.5")
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.var.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
+      #lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.var.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # now defunct: clean scaled
       # lines(dat.sub$sample[dat.sub$specfam==6], dat.sub$rej.L2.boot[dat.sub$specfam==6 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
@@ -746,48 +747,48 @@ for(boot in c(TRUE)){
       #
       #
 
-
-
-      ### Log Normal --------------------------------------------------------------
-
-      datnull.boot <- sum_tab[sum_tab$dist == "lognorm" & sum_tab$test.lev == 0.05,]
-
-      datnull <- datnull.boot
-
-      datnull <- datnull[datnull$test.lev==0.05,] # choose test level
-
-      pdf.width <- 5.5
-      pdf.height <- 5.5
-
-      pdf(here(paste0("data-raw/figures/rr2203/boot_null_lognorm.pdf")), width=pdf.width, height=pdf.height)
-      par(mfrow=c(1,1))
-
-      #### Plot 1: Size against number of observations for different levels
-      col.asym <- "gray55"
-      datnull$specfam <- 1
-
-      dat.sub <- datnull[datnull$specfam %in% c(1),]
-
-      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
-      # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
-
-
-      plot(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej[dat.sub$specfam==1 ], lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (Lognormal)")
-      lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
-      # variance
-      #lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
-      # now defunct: clean scaled
-      # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
-
-
-      legend(50, 0.8, c("Asym", "Full Data"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
-
-      abline(h=0.05, col="gray12")
-      text(x=55, y=0.07, label="0.05", col="gray12")
-
-
-      dev.off()
+      #   COMMENTED OUT: ONLY TABLE
+      #
+      #       ### Log Normal --------------------------------------------------------------
+      #
+      #       datnull.boot <- sum_tab[sum_tab$dist == "lognorm" & sum_tab$test.lev == 0.05,]
+      #
+      #       datnull <- datnull.boot
+      #
+      #       datnull <- datnull[datnull$test.lev==0.05,] # choose test level
+      #
+      #       pdf.width <- 5.5
+      #       pdf.height <- 5.5
+      #
+      #       pdf(here(paste0("data-raw/figures/rr2203/boot_null_lognorm.pdf")), width=pdf.width, height=pdf.height)
+      #       par(mfrow=c(1,1))
+      #
+      #       #### Plot 1: Size against number of observations for different levels
+      #       col.asym <- "gray55"
+      #       datnull$specfam <- 1
+      #
+      #       dat.sub <- datnull[datnull$specfam %in% c(1),]
+      #
+      #       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.01 & datnull$nreg==5 & datnull$ar==0] <- 3
+      #       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
+      #
+      #
+      #       plot(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej[dat.sub$specfam==1 ], lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (Lognormal)")
+      #       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
+      #       # variance
+      #       #lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.var.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
+      #       # now defunct: clean scaled
+      #       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
+      #
+      #
+      #       legend(50, 0.8, c("Asym", "Full Data"),  bg=NA, bty = "n", title.adj=-0.03,
+      #              lty=c(1, 1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
+      #
+      #       abline(h=0.05, col="gray12")
+      #       text(x=55, y=0.07, label="0.05", col="gray12")
+      #
+      #
+      #       dev.off()
 
     }
 
