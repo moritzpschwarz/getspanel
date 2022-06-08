@@ -857,32 +857,28 @@ for(boot in c(TRUE)){
           # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
           # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==4] <- 3
 
-          col.lam1 <- "#fcbba1"
-          col.lam2 <- "#fb6a4a"
-          col.lam4 <- "#99000d"
-          col.lam6 <- "#67000d"
-          col.lam8 <- "gray25"
 
-
+          col.asym <- "gray55"
+          col.bootfull <- "#ff7f00"
+          col.bootclean <- "#1f78b4"
 
           #datalt.boot[datalt.boot$specfam == 1,]
 
           plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-               xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
-               main=paste0("Norm, Lambda=",lambda,", L2\niid"))
-          lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
+               xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+               main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
+          lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.bootclean, lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
           # Variance
-          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.lam2)
+          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==1], lty=3, type="b",  col=col.bootfull, lwd = 2)
 
 
-
-          abline(h=0.05, col="gray55")
-          text(x=50, y=0.017, label="0.05", col="gray55")
+          abline(h=0.05, col=col.asym)
+          text(x=50, y=0.017, label="0.05", col=col.asym)
 
           legend(50, 0.7, c("Asymp", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
-                 lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+                 lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 
           ##### t3 distribution
@@ -919,21 +915,21 @@ for(boot in c(TRUE)){
 
 
           plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
-               lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
-               xlab="Sample Size n", main=paste0("t3, Lambda = ",lambda,", L2\niid"))
-          #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
+               lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",
+               xlab="Sample Size n", main=paste0("t3, Lambda = ",lambda,", L2\niid"), lwd = 2)
+          #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
-          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col="gray55")
+          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
           # Variance
-          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.var.boot[datalt.boot$specfam==4], lty=3, type="b",   col=col.lam1)
+          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.var.boot[datalt.boot$specfam==4], lty=3, type="b",   col=col.bootfull, lwd = 2)
 
 
-          #
-          # abline(h=0.05, col="gray55")
-          # text(x=50, y=0.017, label="0.05", col="gray55")
-          #
+
+          abline(h=0.05, col=col.asym)
+          text(x=50, y=0.017, label="0.05", col=col.asym)
+
           # legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
-          #        lty=c(1, 1, 1), col = c("gray55", col.lam1, col.lam2), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+          #        lty=c(1, 1, 1), col = c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
           #
           #
 
@@ -972,32 +968,25 @@ for(boot in c(TRUE)){
           # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
           # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==4] <- 3
 
-          col.lam1 <- "#fcbba1"
-          col.lam2 <- "#fb6a4a"
-          col.lam4 <- "#99000d"
-          col.lam6 <- "#67000d"
-          col.lam8 <- "gray25"
-
-
 
           #datalt.boot[datalt.boot$specfam == 1,]
 
           plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-               xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
-               main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"))
-          lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
+               xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+               main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
+          lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.bootclean, lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
           # Variance
-          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.lam2)
+          lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==1], lty=3, type="b",   col=col.bootfull, lwd = 2)
 
-          #
-          #
-          # abline(h=0.05, col="gray55")
-          # text(x=50, y=0.017, label="0.05", col="gray55")
-          #
+
+
+          abline(h=0.05, col=col.asym)
+          text(x=50, y=0.017, label="0.05", col=col.asym)
+
           # legend(50, 0.7, c("Asymp", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
-          #        lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+          #        lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 
           ##### t3 distribution
@@ -1034,21 +1023,21 @@ for(boot in c(TRUE)){
 
 
           plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
-               lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
-               xlab="Sample Size n", main=paste0("t3, Lambda = ",lambda,", L2\nAR = 0.5"))
-          #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
+               lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",
+               xlab="Sample Size n", main=paste0("t3, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
+          #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
-          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col="gray55")
+          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
           # Variance
-          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.var.boot[datalt.boot$specfam==4], lty=3, type="b",   col=col.lam1)
+          lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.var.boot[datalt.boot$specfam==4], lty=3, type="b",   col=col.bootfull, lwd = 2)
 
 
-          #
-          # abline(h=0.05, col="gray55")
-          # text(x=50, y=0.017, label="0.05", col="gray55")
-          #
+
+          abline(h=0.05, col=col.asym)
+          text(x=50, y=0.017, label="0.05", col=col.asym)
+
           # legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
-          #        lty=c(1, 1, 1), col = c("gray55", col.lam1, col.lam2), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+          #        lty=c(1, 1, 1), col = c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
           #
           #
           #
@@ -1060,7 +1049,7 @@ for(boot in c(TRUE)){
 
 
 
-        pdf(here(paste0("data-raw/figures/boot_alt_nonparam.pdf")), width=12, height=12)
+        pdf(here(paste0("data-raw/figures/rr2203/boot_alt_nonparam.pdf")), width=12, height=10)
 
         par(mfrow=c(3,4))
 
@@ -1071,6 +1060,28 @@ for(boot in c(TRUE)){
 
         dev.off()
 
+        pdf(here(paste0("data-raw/figures/rr2203/boot_alt_param.pdf")), width=12, height=10)
+
+        par(mfrow=c(3,4))
+
+        plot_alternative_boot(sum_tab = sum_tab, lambda = 2, parametric = TRUE)
+        plot_alternative_boot(sum_tab = sum_tab, lambda = 4, parametric = TRUE)
+        plot_alternative_boot(sum_tab = sum_tab, lambda = 6, parametric = TRUE)
+
+
+        dev.off()
+
+
+
+        # par(mfrow=c(3,4))
+        #
+        # plot_alternative_boot(sum_tab = sum_tab, lambda = 2, parametric = TRUE)
+        # plot_alternative_boot(sum_tab = sum_tab, lambda = 4, parametric = TRUE)
+        # plot_alternative_boot(sum_tab = sum_tab, lambda = 6, parametric = TRUE)
+        #
+        #
+        # dev.off()
+
 
         # # L1 vs L2 vs Stat ###
         #
@@ -1080,15 +1091,15 @@ for(boot in c(TRUE)){
         #      xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",lambda,", Clean Data Scale)"))
         # lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
         # #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
-        # lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+        # lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym)
         #
         #
         #
-        # abline(h=0.05, col="gray55")
-        # text(x=50, y=0.017, label="0.05", col="gray55")
+        # abline(h=0.05, col=col.asym)
+        # text(x=50, y=0.017, label="0.05", col=col.asym)
         #
         # legend(50, 0.7, c("Asympt", "L2", "L1"),  bg=NA, bty = "n", title.adj=-0.03,
-        #        lty=c(1, 1, 2), col=c("gray55", col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+        #        lty=c(1, 1, 2), col=c(col.asym, col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
         #
         dev.off()
       }
@@ -1195,8 +1206,8 @@ for(boot in c(TRUE)){
       # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==3] <- 2
       # datalt.boot$specfam[datalt.boot$test.lev==0.05 & datalt.boot$p_alpha==0.05 & datalt.boot$nreg==5 & datalt.boot$ar==0 & datalt.boot$lambda==4] <- 3
 
-      col.lam1 <- "#fcbba1"
-      col.lam2 <- "#fb6a4a"
+      col.bootfull <- "#fcbba1"
+      col.bootclean <- "#fb6a4a"
       col.lam4 <- "#99000d"
       col.lam6 <- "#67000d"
       col.lam8 <- "gray25"
@@ -1212,19 +1223,19 @@ for(boot in c(TRUE)){
       #datalt.boot[datalt.boot$specfam == 1,]
 
       plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-           xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
            main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", L2)"))
-      lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.lam2)
+      lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.bootclean)
       lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym)
 
 
 
-      abline(h=0.05, col="gray55")
-      text(x=50, y=0.017, label="0.05", col="gray55")
+      abline(h=0.05, col=col.asym)
+      text(x=50, y=0.017, label="0.05", col=col.asym)
 
       legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+             lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 
       ##### t3 distribution
@@ -1261,19 +1272,19 @@ for(boot in c(TRUE)){
 
 
       plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,
-           lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.lam1, ylab="Null Rejection Frequency",
+           lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",
            xlab="Sample Size n", main=paste0("Power (t3, Lambda=",plot_specs[i,"lambda"],", L2)"))
-      lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.lam2)
+      lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
       lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
-      lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col="gray55")
+      lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym)
 
 
 
-      abline(h=0.05, col="gray55")
-      text(x=50, y=0.017, label="0.05", col="gray55")
+      abline(h=0.05, col=col.asym)
+      text(x=50, y=0.017, label="0.05", col=col.asym)
 
       legend(50, 0.7, c("Asympt", "Raw Data", "Clean Data", "Clean Data Scale"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1), col=c("gray55", col.lam1, col.lam2, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+             lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 
       # L1 vs L2 vs Stat ###
@@ -1284,15 +1295,15 @@ for(boot in c(TRUE)){
            xlab="Sample Size n", main=paste0("Power (Norm, Lambda=",plot_specs[i,"lambda"],", Clean Data Scale)"))
       lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L1.boot[datalt.boot$specfam==3], lty=2, type="b",   col=col.lam4)
       #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.dist.boot[datalt.boot$specfam==3], lty=3, type="b",   col=col.lam4)
-      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col="gray55")
+      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym)
 
 
 
-      abline(h=0.05, col="gray55")
-      text(x=50, y=0.017, label="0.05", col="gray55")
+      abline(h=0.05, col=col.asym)
+      text(x=50, y=0.017, label="0.05", col=col.asym)
 
       legend(50, 0.7, c("Asympt", "L2", "L1"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 2), col=c("gray55", col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+             lty=c(1, 1, 2), col=c(col.asym, col.lam4, col.lam4), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
       dev.off()
     }
