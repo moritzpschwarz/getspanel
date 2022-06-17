@@ -439,6 +439,90 @@ for(boot in c(TRUE)){
       }
     }
 
+    ## Asym Alternative Bad Leverage ----
+    # function definition
+    plot_alternative_asym_badleverage <- function(sum_tab,
+                                              lambda = 2){
+
+      datalt.boot <- sum_tab[sum_tab$bootstrap == FALSE &
+                               sum_tab$sample > 50 &
+                               sum_tab$bad_leverage & sum_tab$test.lev == 0.05 &
+                               sum_tab$lambda == lambda,]
+
+
+
+      datalt.boot$specfam <- 0
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$ar==0 &
+                            datalt.boot$lambda==lambda &
+                            datalt.boot$dist=="norm" &
+                            datalt.boot$boot.pval.scale == 1] <- 1
+
+
+      col.asym <- "gray55"
+      col.bootfull <- "#ff7f00"
+      col.bootclean <- "#1f78b4"
+
+      #datalt.boot[datalt.boot$specfam == 1,]
+
+      plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
+      #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
+
+
+      abline(h=0.05, col=col.asym)
+      text(x=50, y=0.017, label="0.05", col=col.asym)
+
+      legend(50, 0.7, c("Asymp"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1), col=c(col.asym), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+
+      ### AR ###
+
+      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                            datalt.boot$p_alpha==0.05 &
+                            datalt.boot$ar==0.5 &
+                            datalt.boot$lambda==lambda &
+                            datalt.boot$dist=="norm" &
+                            datalt.boot$boot.pval.scale == 1] <- 4
+
+      col.asym <- "gray55"
+
+      #datalt.boot[datalt.boot$specfam == 1,]
+
+      plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
+      #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
+
+      abline(h=0.05, col=col.asym)
+      text(x=50, y=0.017, label="0.05", col=col.asym)
+
+
+    }
+
+
+    pdf(here(paste0("data-raw/figures/rr2203/asymp_alt_badleverage.pdf")), width=7, height=10)
+
+    par(mfrow=c(4,2))
+
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 2)
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 3)
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 4)
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 6)
+
+
+    dev.off()
+
+
+
+
+
+
 
     # Bootstraps --------------------------------------------------------------
 
@@ -931,3 +1015,71 @@ for(boot in c(TRUE)){
   }
 }
 
+
+
+# Bad Leverage  ----
+
+
+# function definition
+plot_alternative_boot_badleverage <- function(sum_tab,
+                                  lambda = 2){
+
+  datalt.boot <- sum_tab[sum_tab$bootstrap == TRUE & sum_tab$hypothesis == "alternative" &
+                           sum_tab$sample > 50 &
+                           sum_tab$bad_leverage & sum_tab$test.lev == 0.05,]
+
+
+
+  datalt.boot$specfam <- 0
+  datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                        datalt.boot$p_alpha==0.05 &
+                        datalt.boot$ar==0 &
+                        datalt.boot$lambda==lambda &
+                        datalt.boot$dist=="norm" &
+                        datalt.boot$boot.pval.scale == 1 &
+                        datalt.boot$clean.sample == FALSE] <- 1
+
+  datalt.boot$specfam[datalt.boot$test.lev==0.05 &
+                        datalt.boot$p_alpha==0.05 &
+                        datalt.boot$ar==0 &
+                        datalt.boot$lambda==lambda &
+                        datalt.boot$dist=="norm" &
+                        datalt.boot$boot.pval.scale == 1 &
+                        datalt.boot$clean.sample == TRUE] <- 2
+
+
+  col.asym <- "gray55"
+  col.bootfull <- "#ff7f00"
+  col.bootclean <- "#1f78b4"
+
+  #datalt.boot[datalt.boot$specfam == 1,]
+
+  plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+       xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+       main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
+  lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.bootclean, lwd = 2)
+  #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
+  lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
+  # Variance
+  lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==1], lty=3, type="b",  col=col.bootfull, lwd = 2)
+
+
+  abline(h=0.05, col=col.asym)
+  text(x=50, y=0.017, label="0.05", col=col.asym)
+
+  legend(50, 0.7, c("Asymp", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
+         lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+}
+
+
+pdf(here(paste0("data-raw/figures/rr2203/boot_alt_badleverage.pdf")), width=8, height=5)
+
+par(mfrow=c(1,3))
+
+plot_alternative_boot_badleverage(sum_tab = sum_tab, lambda = 2)
+plot_alternative_boot_badleverage(sum_tab = sum_tab, lambda = 4)
+plot_alternative_boot_badleverage(sum_tab = sum_tab, lambda = 6)
+
+
+dev.off()
