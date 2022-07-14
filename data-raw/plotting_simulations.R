@@ -11,18 +11,18 @@ sum_list <- list()
 sum_rej_05_list <- list()
 sum_rej_01_list <- list()
 
-load(here("data-raw","simulations/rr2207","spec_list.RData"))
+load(here("data-raw","simulations/rr2203","spec_list.RData"))
 spec_n <- NROW(specs)
 
 missing <- 0
 failed <- vector()
 
-files <- list.files(here("data-raw/simulations/rr2207"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+files <- list.files(here("data-raw/simulations/rr2203"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
 
 for (l in files){
 
   # res <- list.res[[l]]
-  #if(file.exists(here("data-raw","simulations/rr2207",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
+  #if(file.exists(here("data-raw","simulations/rr2203",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
   load(l)
   #} else{
   # print(paste0("File Specification ",l," skipped - not found."))
@@ -438,85 +438,83 @@ for(boot in c(TRUE)){
     }
 
     ## Asym Alternative Bad Leverage ----
-    # function definition
-    plot_alternative_asym_badleverage <- function(sum_tab,
-                                                  lambda = 2){
-
-      datalt <- sum_tab[sum_tab$bootstrap == FALSE &
-                          sum_tab$sample > 50 &
-                          sum_tab$bad_leverage & sum_tab$test.lev == 0.05 &
-                          sum_tab$lambda == lambda,]
-
-
-
-      datalt$specfam <- 0
-      datalt$specfam[datalt$test.lev==0.05 &
-                       datalt$p_alpha==0.05 &
-                       datalt$ar==0 &
-                       datalt$lambda==lambda &
-                       datalt$dist=="norm" &
-                       datalt$boot.pval.scale == 1] <- 1
-
-
-      col.asym <- "gray55"
-      col.bootfull <- "#ff7f00"
-      col.bootclean <- "#1f78b4"
-
-      #datalt[datalt$specfam == 1,]
-
-      plot(datalt$sample[datalt$specfam==1], datalt$rej.L2.boot[datalt$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-           xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
-           main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
-      #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
-      lines(datalt$sample[datalt$specfam==1], datalt$rej[datalt$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
-
-
-      abline(h=0.05, col=col.asym)
-      text(x=50, y=0.017, label="0.05", col=col.asym)
-
-      legend(50, 0.7, c("Asymp"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1), col=c(col.asym), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
-
-
-      ### AR ###
-
-      datalt$specfam[datalt$test.lev==0.05 &
-                       datalt$p_alpha==0.05 &
-                       datalt$ar==0.5 &
-                       datalt$lambda==lambda &
-                       datalt$dist=="norm" &
-                       datalt$boot.pval.scale == 1] <- 4
-
-      col.asym <- "gray55"
-
-      #datalt[datalt$specfam == 1,]
-
-      plot(datalt$sample[datalt$specfam==4], datalt$rej.L2.boot[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
-           xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
-           main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
-      #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
-      lines(datalt$sample[datalt$specfam==4], datalt$rej[datalt$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
-
-      abline(h=0.05, col=col.asym)
-      text(x=50, y=0.017, label="0.05", col=col.asym)
-
-    }
-
-
-
-    pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage.pdf")), width=7, height=10)
-
-    par(mfrow=c(4,2))
-
-    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 2)
-    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 3)
-    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 4)
-    plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 6)
-
-
-    dev.off()
-
-
+    # # function definition
+    # plot_alternative_asym_badleverage <- function(sum_tab,
+    #                                               lambda = 2){
+    #
+    #   datalt <- sum_tab[sum_tab$bootstrap == FALSE &
+    #                       sum_tab$sample > 50 &
+    #                       sum_tab$bad_leverage & sum_tab$test.lev == 0.05 &
+    #                       sum_tab$lambda == lambda,]
+    #
+    #
+    #
+    #   datalt$specfam <- 0
+    #   datalt$specfam[datalt$test.lev==0.05 &
+    #                    datalt$p_alpha==0.05 &
+    #                    datalt$ar==0 &
+    #                    datalt$lambda==lambda &
+    #                    datalt$dist=="norm" &
+    #                    datalt$boot.pval.scale == 1] <- 1
+    #
+    #
+    #   col.asym <- "gray55"
+    #   col.bootfull <- "#ff7f00"
+    #   col.bootclean <- "#1f78b4"
+    #
+    #   #datalt[datalt$specfam == 1,]
+    #
+    #   plot(datalt$sample[datalt$specfam==1], datalt$rej.L2.boot[datalt$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+    #        xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+    #        main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
+    #   #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
+    #   lines(datalt$sample[datalt$specfam==1], datalt$rej[datalt$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
+    #
+    #
+    #   abline(h=0.05, col=col.asym)
+    #   text(x=50, y=0.017, label="0.05", col=col.asym)
+    #
+    #   legend(50, 0.7, c("Asymp"),  bg=NA, bty = "n", title.adj=-0.03,
+    #          lty=c(1, 1, 1), col=c(col.asym), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+    #
+    #
+    #   ### AR ###
+    #
+    #   datalt$specfam[datalt$test.lev==0.05 &
+    #                    datalt$p_alpha==0.05 &
+    #                    datalt$ar==0.5 &
+    #                    datalt$lambda==lambda &
+    #                    datalt$dist=="norm" &
+    #                    datalt$boot.pval.scale == 1] <- 4
+    #
+    #   col.asym <- "gray55"
+    #
+    #   #datalt[datalt$specfam == 1,]
+    #
+    #   plot(datalt$sample[datalt$specfam==4], datalt$rej.L2.boot[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
+    #        xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+    #        main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
+    #   #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
+    #   lines(datalt$sample[datalt$specfam==4], datalt$rej[datalt$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
+    #
+    #   abline(h=0.05, col=col.asym)
+    #   text(x=50, y=0.017, label="0.05", col=col.asym)
+    #
+    # }
+    #
+    #
+    #
+    # pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage.pdf")), width=7, height=10)
+    #
+    # par(mfrow=c(4,2))
+    #
+    # plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 2)
+    # plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 3)
+    # plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 4)
+    # plot_alternative_asym_badleverage(sum_tab = sum_tab, lambda = 6)
+    #
+    #
+    # dev.off()
 
 
     plot_alternative_asym_badleverage <- function(sum_tab, ar = 0){
@@ -542,11 +540,12 @@ for(boot in c(TRUE)){
       col.lam8 <- "gray25"
 
       #### against sample size (for different lambda)
-      main_title = paste0("Power (Varying Lambda, p-alpha = 0.05, level = 0.05, ar = ",ar,
-                          "\nDist = Norm, Out Prop = 0.05)")
+      #main_title = paste0("Power (Varying Lambda, p-alpha = 0.05, level = 0.05, ar = ",ar,"\nDist = Norm, Out Prop = 0.05)")
+
+      main_title = bquote(atop(Power~(rho~"="~.(ar)~", Outl. Prop. = 0.1")))
 
       plot(datalt$sample[datalt$specfam==1], datalt$rej[datalt$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-           xlim=c(50, 520), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           xlim=c(50, 520), col=col.lam1, ylab="Null Rejection Frequency", xlab=bquote("Sample Size "~n),
            main=main_title)
       lines(datalt$sample[datalt$specfam==2], datalt$rej[datalt$specfam==2], lty=1, type="b",   col=col.lam2)
       lines(datalt$sample[datalt$specfam==3], datalt$rej[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
@@ -555,8 +554,12 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray55")
       text(x=50, y=0.017, label="0.05", col="gray55")
 
-      legend(50, 0.9, c("lambda=2", "lambda=3", "lambda=4", "lambda=6"),  bg=NA, bty = "n", title.adj=-0.03,
-             lty=c(1, 1, 1), col=c(col.lam1, col.lam2, col.lam4, col.lam6), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+      legend(50, 0.9, c(as.expression(bquote(lambda~"="~2)),
+                        as.expression(bquote(lambda~"="~3)),
+                        as.expression(bquote(lambda~"="~4)),
+                        as.expression(bquote(lambda~"="~6))),
+             bg=NA, bty = "n", title.adj=-0.03,lty=c(1, 1, 1),
+             col=c(col.lam1, col.lam2, col.lam4, col.lam6), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 
       ####fixed sample against lambda
@@ -572,7 +575,7 @@ for(boot in c(TRUE)){
       #datalt[datalt$specfam==4,]
       plot(datalt$lambda[datalt$specfam==4], datalt$rej[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
            xlim=c(2, 6), col=col.lam1,
-           ylab="Null Rejection Frequency", xlab=expression("Outlier Magnitude, Lambda"),
+           ylab="Null Rejection Frequency", xlab=bquote("Outlier Magnitude, "~lambda),
            main=main_title)
       lines(datalt$lambda[datalt$specfam==5], datalt$rej[datalt$specfam==5], lty=1, type="b",   col=col.lam2)
       lines(datalt$lambda[datalt$specfam==6], datalt$rej[datalt$specfam==6], lty=1, type="b",   col=col.lam4)
@@ -580,7 +583,11 @@ for(boot in c(TRUE)){
       lines(datalt$lambda[datalt$specfam==8], datalt$rej[datalt$specfam==8], lty=1, type="b",   col=col.lam8)
 
 
-      legend(2, 0.9, c("n=100", "n=200", "n=300", "n=400", "n=500"),
+      legend(2, 0.9, c(as.expression(bquote(n~"="~100)),
+                       as.expression(bquote(n~"="~200)),
+                       as.expression(bquote(n~"="~300)),
+                       as.expression(bquote(n~"="~400)),
+                       as.expression(bquote(n~"="~500))),
              bg=NA, bty = "n", title.adj=-0.03,
              lty=c(1, 1, 1, 1, 1),
              col=c(col.lam1, col.lam2, col.lam4, col.lam6, col.lam8),
@@ -601,7 +608,11 @@ for(boot in c(TRUE)){
       lines(datalt$is.euclid.sc[datalt$specfam==7], datalt$rej[datalt$specfam==7], lty=1, type="b",   col=col.lam6)
       lines(datalt$is.euclid.sc[datalt$specfam==8], datalt$rej[datalt$specfam==8], lty=1, type="b",   col=col.lam8)
 
-      legend(0.0, 0.9, c("n=100", "n=200", "n=300", "n=400", "n=500"),  bg=NA, bty = "n", title.adj=-0.03,
+      legend(0.0, 0.9, c(as.expression(bquote(n~"="~100)),
+                         as.expression(bquote(n~"="~200)),
+                         as.expression(bquote(n~"="~300)),
+                         as.expression(bquote(n~"="~400)),
+                         as.expression(bquote(n~"="~500))),  bg=NA, bty = "n", title.adj=-0.03,
              lty=c(1, 1, 1, 1, 1),
              col=c(col.lam1, col.lam2, col.lam4, col.lam6, col.lam8),
              lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
@@ -611,7 +622,7 @@ for(boot in c(TRUE)){
       #datalt[datalt$specfam==4,]
     }
 
-    pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage_new.pdf")), width=7, height=9)
+    pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage.pdf")), width=9, height=11)
 
     par(mfrow=c(2,3))
     plot_alternative_asym_badleverage(sum_tab = sum_tab, ar = 0)
@@ -665,7 +676,10 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="Correct Reference Distribution (Normal)\niid")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           #main="Correct Reference Distribution (Normal)\niid"
+           main = bquote(atop("Correct Reference Distribution ("*N[mu*sigma]*")",rho~"= 0"))
+           )
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -683,7 +697,10 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="Incorrect Reference Distribution (t3)\niid")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           #main="Incorrect Reference Distribution (t3)\niid"
+           main=bquote(atop("Incorrect Reference Distribution ("*t[3]*")",rho~"= 0"))
+           )
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -721,7 +738,10 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="Correct Reference Distribution (Normal)\nAR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           #main="Correct Reference Distribution (Normal)\nAR = 0.5"
+           main = bquote(atop("Correct Reference Distribution ("*N[mu*sigma]*")",rho~"= 0.5"))
+           )
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=3, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -738,7 +758,10 @@ for(boot in c(TRUE)){
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="Incorrect Reference Distribution (t3)\nAR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           #main="Incorrect Reference Distribution (t3)\nAR = 0.5"
+           main=bquote(atop("Incorrect Reference Distribution ("*t[3]*")",rho~"= 0.5"))
+           )
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=3, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=3, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -788,7 +811,7 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\niid")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main=bquote(atop("Correct Reference Distribution ("*N[mu*sigma]~")",rho~"= 0")))
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -798,13 +821,13 @@ for(boot in c(TRUE)){
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
 
-      legend(50, 0.8, c("Asym", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
+      legend(50, 0.8, c("Asym", "Clean Data (L2)"),  bg=NA, bty = "n", title.adj=-0.03,
              lty=c(1, 1, 1, 1), col=c(col.asym, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
 
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\niid")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main=bquote(atop("Incorrect Reference Distribution ("*t[3]*")",rho~"= 0")))
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -845,7 +868,7 @@ for(boot in c(TRUE)){
       # datnull$specfam[datnull$test.lev==0.05 & datnull$p_alpha==0.05 & datnull$nreg==5 & datnull$ar==0] <- 4
 
 
-      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Correct Reference Distribution (Normal)\nAR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej[dat.sub$specfam==2 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main=bquote(atop("Correct Reference Distribution ("~N[mu*sigma]~")",rho~"= 0.5")))
       lines(dat.sub$sample[dat.sub$specfam==1], dat.sub$rej.L2.boot[dat.sub$specfam==1 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==2], dat.sub$rej.L2.boot[dat.sub$specfam==2 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -855,13 +878,13 @@ for(boot in c(TRUE)){
       # lines(dat.sub$sample[dat.sub$specfam==3], dat.sub$rej.L2.boot[dat.sub$specfam==3 ], lty=2, type="b",   col=col.bootvar, lwd=2)
 
 
-      legend(50, 0.8, c("Asym","Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
+      legend(50, 0.8, c("Asym","Clean Data (L2)"),  bg=NA, bty = "n", title.adj=-0.03,
              lty=c(1, 1, 1, 1), col=c(col.asym, col.bootclean), lwd=2,  cex=0.9, seg.len=0.5, pt.cex=0.1,  x.intersp=0.2,  y.intersp=1)
 
       abline(h=0.05, col="gray12")
       text(x=55, y=0.07, label="0.05", col="gray12")
 
-      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main="L2: Incorrect Reference Distribution (t3)\nAR = 0.5")
+      plot(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej[dat.sub$specfam==5 ] , lty=1, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.asym, ylab="Null Rejection Frequency", xlab="Sample Size n", main=bquote(atop("Incorrect Reference Distribution ("*t[3]*")",rho~"= 0.5")))
       lines(dat.sub$sample[dat.sub$specfam==4], dat.sub$rej.L2.boot[dat.sub$specfam==4 ], lty=1, type="b",   col=col.bootfull, lwd=2)
       lines(dat.sub$sample[dat.sub$specfam==5], dat.sub$rej.L2.boot[dat.sub$specfam==5 ], lty=1, type="b",   col=col.bootclean, lwd=2)
       # variance
@@ -963,7 +986,7 @@ for(boot in c(TRUE)){
 
         #plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=paste0("Norm, Lambda = ",lambda,"\niid"), lwd = 2)
         #plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop("N,"~lambda~"="~.(lambda),rho~"=0")), lwd = 2)
-        plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu]~lambda~"="~.(lambda),rho~"= 0")), lwd = 2)
+        plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu*sigma]~","~lambda~"="~.(lambda),rho~"= 0, Outl. Prop = 0.1")), lwd = 2)
         lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.bootclean, lwd = 2)
         #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
         lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
@@ -992,7 +1015,7 @@ for(boot in c(TRUE)){
                                 datalt.boot$clean.sample == FALSE] <- 4
 
 
-          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~lambda~"="~.(lambda),rho~"= 0")), lwd = 2)
+          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~","~lambda~"="~.(lambda),rho~"= 0, Outl. Prop = 0.1")), lwd = 2)
           #paste0("t3, Lambda = ",lambda,"\niid"), lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
@@ -1031,7 +1054,7 @@ for(boot in c(TRUE)){
                               datalt.boot$boot.pval.scale == 1 &
                               datalt.boot$clean.sample == TRUE] <- 2
 
-        plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu]~lambda~"="~.(lambda),rho~"= 0.5")),  lwd = 2)
+        plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu*sigma]~","~lambda~"="~.(lambda),rho~"= 0.5, Outl. Prop = 0.1")),  lwd = 2)
         #paste0("Norm, Lambda = ",lambda,"\nAR = 0.5"),
 
         lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.bootclean, lwd = 2)
@@ -1060,7 +1083,7 @@ for(boot in c(TRUE)){
                                 datalt.boot$boot.pval.scale == 1 &
                                 datalt.boot$clean.sample == FALSE] <- 4
 
-          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4], lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~lambda~"="~.(lambda),rho~"= 0.5"~"Outl. Prop. = 0.1")), lwd = 2)
+          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4], lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~","~lambda~"="~.(lambda),rho~"= 0.5,"~"Outl. Prop. = 0.1")), lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
           lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
@@ -1147,7 +1170,9 @@ plot_alternative_boot_badleverage <- function(sum_tab,
 
   #datalt.boot[datalt.boot$specfam == 1,]
 
-  plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu]~lambda~"="~.(lambda),rho~"= 0"~"Outl. Prop. = 0.05")), lwd = 2)
+  plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
+       main=bquote(atop(N[mu*sigma]*", "*lambda~"="~.(lambda),rho~"= 0,"~"Outl. Prop. = 0.05")
+                   ), lwd = 2)
   lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.bootclean, lwd = 2)
   #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
   lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
