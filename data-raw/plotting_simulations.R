@@ -334,8 +334,6 @@ for(boot in c(TRUE)){
 
 
     ## Asym - Alternative  --------------------------------------------------------------
-
-
     if(!boot & hypo == "alternative"){
       plot_specs <- plot_specs_overall[plot_specs_overall$bootstrap==FALSE&plot_specs_overall$hypothesis=="alternative",]
       plot_specs <- dplyr::distinct(plot_specs,dist,out_prop, p_alpha, ar,nreg)
@@ -442,35 +440,35 @@ for(boot in c(TRUE)){
     ## Asym Alternative Bad Leverage ----
     # function definition
     plot_alternative_asym_badleverage <- function(sum_tab,
-                                              lambda = 2){
+                                                  lambda = 2){
 
-      datalt.boot <- sum_tab[sum_tab$bootstrap == FALSE &
-                               sum_tab$sample > 50 &
-                               sum_tab$bad_leverage & sum_tab$test.lev == 0.05 &
-                               sum_tab$lambda == lambda,]
+      datalt <- sum_tab[sum_tab$bootstrap == FALSE &
+                          sum_tab$sample > 50 &
+                          sum_tab$bad_leverage & sum_tab$test.lev == 0.05 &
+                          sum_tab$lambda == lambda,]
 
 
 
-      datalt.boot$specfam <- 0
-      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-                            datalt.boot$p_alpha==0.05 &
-                            datalt.boot$ar==0 &
-                            datalt.boot$lambda==lambda &
-                            datalt.boot$dist=="norm" &
-                            datalt.boot$boot.pval.scale == 1] <- 1
+      datalt$specfam <- 0
+      datalt$specfam[datalt$test.lev==0.05 &
+                       datalt$p_alpha==0.05 &
+                       datalt$ar==0 &
+                       datalt$lambda==lambda &
+                       datalt$dist=="norm" &
+                       datalt$boot.pval.scale == 1] <- 1
 
 
       col.asym <- "gray55"
       col.bootfull <- "#ff7f00"
       col.bootclean <- "#1f78b4"
 
-      #datalt.boot[datalt.boot$specfam == 1,]
+      #datalt[datalt$specfam == 1,]
 
-      plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+      plot(datalt$sample[datalt$specfam==1], datalt$rej.L2.boot[datalt$specfam==1] , lty=1, type="b", ylim=c(0, 1),
            xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
            main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
-      #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-      lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
+      #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt$sample[datalt$specfam==1], datalt$rej[datalt$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
 
 
       abline(h=0.05, col=col.asym)
@@ -482,28 +480,28 @@ for(boot in c(TRUE)){
 
       ### AR ###
 
-      datalt.boot$specfam[datalt.boot$test.lev==0.05 &
-                            datalt.boot$p_alpha==0.05 &
-                            datalt.boot$ar==0.5 &
-                            datalt.boot$lambda==lambda &
-                            datalt.boot$dist=="norm" &
-                            datalt.boot$boot.pval.scale == 1] <- 4
+      datalt$specfam[datalt$test.lev==0.05 &
+                       datalt$p_alpha==0.05 &
+                       datalt$ar==0.5 &
+                       datalt$lambda==lambda &
+                       datalt$dist=="norm" &
+                       datalt$boot.pval.scale == 1] <- 4
 
       col.asym <- "gray55"
 
-      #datalt.boot[datalt.boot$specfam == 1,]
+      #datalt[datalt$specfam == 1,]
 
-      plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] , lty=1, type="b", ylim=c(0, 1),
+      plot(datalt$sample[datalt$specfam==4], datalt$rej.L2.boot[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
            xlim=c(50, 520), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
            main=paste0("Norm, Lambda = ",lambda,", L2\nAR = 0.5"), lwd = 2)
-      #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
-      lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
+      #lines(datalt$sample[datalt$specfam==3], datalt$rej.L2.boot[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt$sample[datalt$specfam==4], datalt$rej[datalt$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
 
       abline(h=0.05, col=col.asym)
       text(x=50, y=0.017, label="0.05", col=col.asym)
 
-
     }
+
 
 
     pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage.pdf")), width=7, height=10)
@@ -521,8 +519,105 @@ for(boot in c(TRUE)){
 
 
 
+    plot_alternative_asym_badleverage <- function(sum_tab, ar = 0){
+
+      datalt <- sum_tab[sum_tab$bootstrap == FALSE &
+                          sum_tab$sample > 50 &
+                          sum_tab$bad_leverage &
+                          sum_tab$test.lev == 0.05 &
+                          sum_tab$ar == ar,]
 
 
+      datalt$specfam <- 0
+      datalt$specfam[datalt$lambda==2] <- 1
+      datalt$specfam[datalt$lambda==3] <- 2
+      datalt$specfam[datalt$lambda==4] <- 3
+      datalt$specfam[datalt$lambda==6] <- 4
+
+
+      col.lam1 <- "#fcbba1"
+      col.lam2 <- "#fb6a4a"
+      col.lam4 <- "#99000d"
+      col.lam6 <- "#67000d"
+      col.lam8 <- "gray25"
+
+      #### against sample size (for different lambda)
+      main_title = paste0("Power (Varying Lambda, p-alpha = 0.05, level = 0.05, ar = ",ar,
+                          "\nDist = Norm, Out Prop = 0.05)")
+
+      plot(datalt$sample[datalt$specfam==1], datalt$rej[datalt$specfam==1] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(50, 520), col=col.lam1, ylab="Null Rejection Frequency", xlab="Sample Size n",
+           main=main_title)
+      lines(datalt$sample[datalt$specfam==2], datalt$rej[datalt$specfam==2], lty=1, type="b",   col=col.lam2)
+      lines(datalt$sample[datalt$specfam==3], datalt$rej[datalt$specfam==3], lty=1, type="b",   col=col.lam4)
+      lines(datalt$sample[datalt$specfam==4], datalt$rej[datalt$specfam==4], lty=1, type="b",   col=col.lam6)
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+
+      legend(50, 0.9, c("lambda=2", "lambda=3", "lambda=4", "lambda=6"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1), col=c(col.lam1, col.lam2, col.lam4, col.lam6), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+
+      ####fixed sample against lambda
+
+      datalt$specfam <- 0
+      datalt$specfam[datalt$sample==100] <- 4
+      datalt$specfam[datalt$sample==200] <- 5
+      datalt$specfam[datalt$sample==300] <- 6
+      datalt$specfam[datalt$sample==400] <- 7
+      datalt$specfam[datalt$sample==500] <- 8
+
+
+      #datalt[datalt$specfam==4,]
+      plot(datalt$lambda[datalt$specfam==4], datalt$rej[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(2, 6), col=col.lam1,
+           ylab="Null Rejection Frequency", xlab=expression("Outlier Magnitude, Lambda"),
+           main=main_title)
+      lines(datalt$lambda[datalt$specfam==5], datalt$rej[datalt$specfam==5], lty=1, type="b",   col=col.lam2)
+      lines(datalt$lambda[datalt$specfam==6], datalt$rej[datalt$specfam==6], lty=1, type="b",   col=col.lam4)
+      lines(datalt$lambda[datalt$specfam==7], datalt$rej[datalt$specfam==7], lty=1, type="b",   col=col.lam6)
+      lines(datalt$lambda[datalt$specfam==8], datalt$rej[datalt$specfam==8], lty=1, type="b",   col=col.lam8)
+
+
+      legend(2, 0.9, c("n=100", "n=200", "n=300", "n=400", "n=500"),
+             bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1, 1, 1),
+             col=c(col.lam1, col.lam2, col.lam4, col.lam6, col.lam8),
+             lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+      #### against euclidian distance of coefficients
+      datalt$is.euclid.sc <- datalt$is.euclid/max(datalt$is.euclid)
+
+      plot(datalt$is.euclid.sc[datalt$specfam==4], datalt$rej[datalt$specfam==4] , lty=1, type="b", ylim=c(0, 1),
+           xlim=c(0,1), col=col.lam1, ylab="Null Rejection Frequency",
+           xlab="Scaled Euclidian Distance of Coefficients:\nd/max(d)",
+           main=main_title)
+
+      lines(datalt$is.euclid.sc[datalt$specfam==5], datalt$rej[datalt$specfam==5], lty=1, type="b",   col=col.lam2)
+      lines(datalt$is.euclid.sc[datalt$specfam==6], datalt$rej[datalt$specfam==6], lty=1, type="b",   col=col.lam4)
+      lines(datalt$is.euclid.sc[datalt$specfam==7], datalt$rej[datalt$specfam==7], lty=1, type="b",   col=col.lam6)
+      lines(datalt$is.euclid.sc[datalt$specfam==8], datalt$rej[datalt$specfam==8], lty=1, type="b",   col=col.lam8)
+
+      legend(0.0, 0.9, c("n=100", "n=200", "n=300", "n=400", "n=500"),  bg=NA, bty = "n", title.adj=-0.03,
+             lty=c(1, 1, 1, 1, 1),
+             col=c(col.lam1, col.lam2, col.lam4, col.lam6, col.lam8),
+             lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+
+      abline(h=0.05, col="gray55")
+      text(x=50, y=0.017, label="0.05", col="gray55")
+      #datalt[datalt$specfam==4,]
+    }
+
+    pdf(here(paste0("data-raw/figures/rr2207/asymp_alt_badleverage_new.pdf")), width=7, height=9)
+
+    par(mfrow=c(2,3))
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, ar = 0)
+    plot_alternative_asym_badleverage(sum_tab = sum_tab, ar = 0.5)
+
+    dev.off()
 
     # Bootstraps --------------------------------------------------------------
 
@@ -860,7 +955,7 @@ for(boot in c(TRUE)){
                               datalt.boot$clean.sample == TRUE] <- 2
 
 
-          col.asym <- "gray55"
+        col.asym <- "gray55"
         col.bootfull <- "#ff7f00"
         col.bootclean <- "#1f78b4"
 
@@ -898,7 +993,7 @@ for(boot in c(TRUE)){
 
 
           plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4] ,lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~lambda~"="~.(lambda),rho~"= 0")), lwd = 2)
-                 #paste0("t3, Lambda = ",lambda,"\niid"), lwd = 2)
+          #paste0("t3, Lambda = ",lambda,"\niid"), lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
           lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
@@ -937,7 +1032,7 @@ for(boot in c(TRUE)){
                               datalt.boot$clean.sample == TRUE] <- 2
 
         plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu]~lambda~"="~.(lambda),rho~"= 0.5")),  lwd = 2)
-             #paste0("Norm, Lambda = ",lambda,"\nAR = 0.5"),
+        #paste0("Norm, Lambda = ",lambda,"\nAR = 0.5"),
 
         lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.bootclean, lwd = 2)
         #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
@@ -965,7 +1060,7 @@ for(boot in c(TRUE)){
                                 datalt.boot$boot.pval.scale == 1 &
                                 datalt.boot$clean.sample == FALSE] <- 4
 
-          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4], lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~lambda~"="~.(lambda),rho~"= 0.5")), lwd = 2)
+          plot(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej.L2.boot[datalt.boot$specfam==4], lty=3, type="b", ylim=c(0, 1), xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency",xlab="Sample Size n", main=bquote(atop(t[3]~lambda~"="~.(lambda),rho~"= 0.5"~"Outl. Prop. = 0.1")), lwd = 2)
           #lines(datalt.boot$sample[datalt.boot$specfam==5], datalt.boot$rej.L2.boot[datalt.boot$specfam==5], lty=1, type="b",   col=col.bootclean)
           #lines(datalt.boot$sample[datalt.boot$specfam==6], datalt.boot$rej.L2.boot[datalt.boot$specfam==6], lty=1, type="b",   col=col.lam4)
           lines(datalt.boot$sample[datalt.boot$specfam==4], datalt.boot$rej[datalt.boot$specfam==4], lty=1, type="b",   col=col.asym, lwd = 2)
@@ -1008,6 +1103,7 @@ for(boot in c(TRUE)){
       #
       # dev.off()
 
+
     }
   }
 }
@@ -1019,7 +1115,7 @@ for(boot in c(TRUE)){
 
 # function definition
 plot_alternative_boot_badleverage <- function(sum_tab,
-                                  lambda = 2){
+                                              lambda = 2){
 
   datalt.boot <- sum_tab[sum_tab$bootstrap == TRUE & sum_tab$hypothesis == "alternative" &
                            sum_tab$sample > 50 &
@@ -1051,21 +1147,19 @@ plot_alternative_boot_badleverage <- function(sum_tab,
 
   #datalt.boot[datalt.boot$specfam == 1,]
 
-  plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=1, type="b", ylim=c(0, 1),
-       xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",
-       main=paste0("Norm, Lambda = ",lambda,", L2\niid"), lwd = 2)
-  lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=1, type="b",   col=col.bootclean, lwd = 2)
+  plot(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.L2.boot[datalt.boot$specfam==1] , lty=3, type="b", ylim=c(0, 1),xlim=c(50, 420), col=col.bootfull, ylab="Null Rejection Frequency", xlab="Sample Size n",main=bquote(atop(N[mu]~lambda~"="~.(lambda),rho~"= 0"~"Outl. Prop. = 0.05")), lwd = 2)
+  lines(datalt.boot$sample[datalt.boot$specfam==2], datalt.boot$rej.L2.boot[datalt.boot$specfam==2], lty=3, type="b",   col=col.bootclean, lwd = 2)
   #lines(datalt.boot$sample[datalt.boot$specfam==3], datalt.boot$rej.L2.boot[datalt.boot$specfam==3], lty=1, type="b",   col=col.lam4)
   lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej[datalt.boot$specfam==1], lty=1, type="b",   col=col.asym, lwd = 2)
   # Variance
-  lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==1], lty=3, type="b",  col=col.bootfull, lwd = 2)
+  lines(datalt.boot$sample[datalt.boot$specfam==1], datalt.boot$rej.var.boot[datalt.boot$specfam==1], lty=1, type="b",  col=col.bootfull, lwd = 2)
 
 
   abline(h=0.05, col=col.asym)
-  text(x=50, y=0.017, label="0.05", col=col.asym)
+  text(x=60, y=0.017, label="0.05", col=col.asym)
 
-  legend(50, 0.7, c("Asymp", "Full Data", "Clean Data"),  bg=NA, bty = "n", title.adj=-0.03,
-         lty=c(1, 1, 1), col=c(col.asym, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
+  legend(50, 0.7, c("Asymp", "Full Data (Variance)", "Full Data (L2)", "Clean Data (L2)"),  bg=NA, bty = "n", title.adj=-0.03,
+         lty=c(1, 1, 3, 3), col=c(col.asym, col.bootfull, col.bootfull, col.bootclean), lwd=2,  cex=1.1, pt.cex=1.1,  x.intersp=0.5,  y.intersp=1)
 
 }
 
@@ -1080,3 +1174,7 @@ plot_alternative_boot_badleverage(sum_tab = sum_tab, lambda = 6)
 
 
 dev.off()
+
+
+
+
