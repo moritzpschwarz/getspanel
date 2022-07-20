@@ -2,7 +2,6 @@
 title: "R Notebook"
 output:
   pdf_document: default
-  html_notebook: default
 editor_options:
   chunk_output_type: console
 ---
@@ -197,7 +196,7 @@ sum_tab
 
 
 ```{r}
-sum_tab
+head(sum_tab, 30)
 ```
 
 
@@ -283,13 +282,15 @@ column_tables <- function(table_list, tex_alone = FALSE, caption = "", label = "
 \begin{document}
 
 
-\include{table_null}
+\include{table_asym_badleverage}
 
-\include{table_alternative}
+\include{table_boot_null_nonparam}
+\include{table_boot_null_param}
 
-\include{table_boot_null}
+\include{table_boot_alternative_nonparam}
+\include{table_boot_alternative_param}
+\include{table_boot_alternative_BadLeverage}
 
-\include{table_boot_alternative}
 
 \end{document}
 
@@ -602,7 +603,7 @@ datnull %>%
   # mutate(rej_Cleaned = ifelse(is.na(rej_Cleaned) & !is.na(rej_Raw), 
   #                             rej_Raw, 
   #                             rej_Cleaned)) %>% 
-
+  
   select(dist:parametric, 
          # asym
          rej_Cleaned, 
@@ -618,7 +619,7 @@ datnull %>%
   
   select(-dist) %>% 
   kable(
-    #format = "latex", booktabs = TRUE, 
+    format = "latex", booktabs = TRUE, 
     col.names = c("n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$","Parametric", " ",
                   rep(c("$L_1$","$L_2$", "Variance"),1)), 
     escape = FALSE
@@ -646,65 +647,221 @@ cat(tab_boot_null_param, file = here("data-raw/text/v8/rr2203/table_boot_null_pa
 
 ## Alternative
 
+### Parametric
 
 ```{r}
-table_list_boot_alt <- ""
-for(i in c(2,3, 4, 6)){
-  
+table_list_boot_alt_param <- ""
+for(i in c(2, 4, 6)){
   sum_tab %>% 
     filter(bootstrap==TRUE, 
            hypothesis=="alternative",
-           lambda == i) %>% 
+           lambda == i,
+           !bad_leverage,
+           parametric == TRUE) %>% 
     select(dist, lambda, sample, clean.sample, nreg, ar,
-           test.lev, p_alpha, boot.pval.scale, rej, 
-           rej.L1.boot, rej.L2.boot) %>% 
+           test.lev, p_alpha, parametric, rej, 
+           rej.L1.boot, rej.L2.boot, rej.var.boot) %>% 
     arrange(dist, test.lev, sample) %>% 
     
-    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw")) %>% 
+    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw"), 
+           parametric = ifelse(parametric, "Parametric","Non-Parametric")) %>% 
     
-    pivot_wider(id_cols = c(dist, lambda, sample, nreg, ar, test.lev, p_alpha),
-                names_from = c(clean.sample, boot.pval.scale),
-                values_from = c(rej, rej.L1.boot, rej.L2.boot)) %>% 
+    pivot_wider(id_cols = c(dist, lambda, sample, nreg, ar, 
+                            test.lev, p_alpha, parametric),
+                names_from = c(clean.sample),
+                values_from = c(rej, rej.L1.boot, rej.L2.boot, rej.var.boot)) %>% 
     
     mutate(across( c(contains("rej")) , ~format(round(.,3),nsmall = 3))) %>% 
     
-    select(dist:p_alpha, 
+    select(dist:parametric, 
            # asym
-           rej_Cleaned_1, 
+           rej_Cleaned, 
            # raw
-           rej.L1.boot_Raw_1, 
-           rej.L2.boot_Raw_1, 
+           any_of(c("rej.L1.boot_Raw", 
+                    "rej.L2.boot_Raw",
+                    "rej.var.boot_Raw")),
            # cleaned
-           rej.L1.boot_Cleaned_1, 
-           rej.L2.boot_Cleaned_1, 
-           # cleaned scaled
-           rej.L1.boot_Cleaned_5, 
-           rej.L2.boot_Cleaned_5) %>% 
+           rej.L1.boot_Cleaned, 
+           rej.L2.boot_Cleaned,
+           rej.var.boot_Cleaned) %>% 
     
     select(-dist) %>% 
+    arrange(ar, test.lev, sample) %>% 
     kable(
       format = "latex", booktabs = TRUE, 
-      col.names = c("$\\lambda$", "n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$"," ",
-                    rep(c("$L_1$","$L_2$"),3)), 
+      col.names = c("$\\lambda$", "n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$","Parametric"," ",  rep(c("$L_1$","$L_2$", "Variance"),1)), 
       escape = FALSE
     ) %>% 
     kable_paper() %>% 
-    add_header_above(c(" " = 6, "Asymp." = 1, "Raw" = 2, "Clean" = 2, "Clean Scaled" = 2)) %>% 
-    add_header_above(c(" " = 6, "Rejection Frequency" = 7)) %>% 
+    add_header_above(c(" " = 7, "Asymp." = 1, "Clean" = 3)) %>% 
+    add_header_above(c(" " = 7, "Rejection Frequency" = 4)) %>% 
     
-    pack_rows("Normal Distribution",1, 8) %>%
-    pack_rows("$t_3$ Distribution", 9, 16, escape = FALSE) -> tab_boot_alt_intermed
+    pack_rows("Normal Distribution",1, 16) %>%
+    #pack_rows("$t_3$ Distribution", 9, 16, escape = FALSE) %>% 
+    return() -> tab_boot_alt_intermed
   
   
   column_tables(list(tab_boot_alt_intermed), 
-                caption = paste("Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test (for outlier magnitude of ",i,"SD of the error term)."), 
-                label = paste0("fig_out_sim_alt_boot_table",i), resize = TRUE) %>% 
+                caption = paste("Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test (for outlier magnitude of ",i,"SD of the error term) using Parametric Bootstraps."), 
+                label = paste0("fig_out_sim_alt_boot_table_param",i), resize = TRUE) %>% 
     
-    paste0(table_list_boot_alt, ., sep = "\n") -> table_list_boot_alt
+    paste0(table_list_boot_alt_param, ., sep = "\n") -> table_list_boot_alt_param
   
 }
 ```
 
 ```{r}
-cat(table_list_boot_alt, file = here("data-raw/text/v8/rr2203/table_boot_alternative.tex"))
+cat(table_list_boot_alt_param, file = here("data-raw/text/v8/rr2203/table_boot_alternative_param.tex"))
+```
+
+
+### Non-Parametric
+
+```{r}
+table_list_boot_alt_nonparam <- ""
+for(i in c(2, 4, 6)){
+  sum_tab %>% 
+    filter(bootstrap==TRUE, 
+           hypothesis=="alternative",
+           lambda == i,
+           !bad_leverage,
+           parametric == FALSE) %>% 
+    select(dist, lambda, sample, clean.sample, nreg, ar,
+           test.lev, p_alpha, parametric, rej, 
+           rej.L1.boot, rej.L2.boot, rej.var.boot) %>% 
+    arrange(dist, test.lev, sample) %>% 
+    
+    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw"), 
+           parametric = ifelse(parametric, "Parametric","Non-Parametric")) %>% 
+    
+    # copy the value for rej for t3 because we never ran a clean run
+    
+    pivot_wider(id_cols = c(dist, lambda, sample, nreg, ar, 
+                            test.lev, p_alpha, parametric),
+                names_from = c(clean.sample),
+                values_from = c(rej, rej.L1.boot, rej.L2.boot, rej.var.boot)) %>% 
+    
+    mutate(rej_Cleaned = ifelse(is.na(rej_Cleaned) & !is.na(rej_Raw), 
+                                rej_Raw, 
+                                rej_Cleaned)) %>% 
+    
+    mutate(across( c(contains("rej")) , ~format(round(.,3),nsmall = 3))) %>% 
+    
+    select(dist:parametric, 
+           # asym
+           rej_Cleaned, 
+           # raw
+           any_of(c("rej.L1.boot_Raw", 
+                    "rej.L2.boot_Raw",
+                    "rej.var.boot_Raw")),
+           # cleaned
+           rej.L1.boot_Cleaned, 
+           rej.L2.boot_Cleaned,
+           rej.var.boot_Cleaned) %>% 
+    
+    arrange(dist, ar, test.lev, sample) %>% 
+    select(-dist) %>% 
+    
+    kable(
+      format = "latex", booktabs = TRUE, 
+      col.names = c("$\\lambda$", "n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$","Parametric"," ",  rep(c("$L_1$","$L_2$", "Variance"),2)), 
+      escape = FALSE
+    ) %>% 
+    kable_paper() %>% 
+    add_header_above(c(" " = 7, "Asymp." = 1, "Raw" = 3, "Clean" = 3)) %>% 
+    add_header_above(c(" " = 7, "Rejection Frequency" = 7)) %>% 
+    
+    pack_rows("Normal Distribution",1, 16) %>%
+    pack_rows("$t_3$ Distribution", 17, 32, escape = FALSE) %>% 
+    return() -> tab_boot_alt_intermed
+  
+  
+  column_tables(list(tab_boot_alt_intermed), 
+                caption = paste("Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test (for outlier magnitude of ",i,"SD of the error term) using Non-Parametric Bootstraps."), 
+                label = paste0("fig_out_sim_alt_boot_table_nonparam",i), resize = TRUE) %>% 
+    
+    paste0(table_list_boot_alt_nonparam, ., sep = "\n") -> table_list_boot_alt_nonparam
+  
+}
+```
+
+```{r}
+cat(table_list_boot_alt_nonparam, file = here("data-raw/text/v8/rr2203/table_boot_alternative_nonparam.tex"))
+```
+
+
+### Bad Leverage
+
+
+```{r}
+table_list_boot_alt_BL <- ""
+for(i in c(2, 4, 6)){
+  sum_tab %>% 
+    filter(bootstrap==TRUE, 
+           hypothesis=="alternative",
+           lambda == i,
+           bad_leverage,
+           parametric == FALSE) %>% 
+    select(dist, lambda, sample, clean.sample, nreg, ar,
+           test.lev, p_alpha, parametric, rej, 
+           rej.L1.boot, rej.L2.boot, rej.var.boot) %>% 
+    arrange(dist, test.lev, sample) %>% 
+    
+    mutate(clean.sample = ifelse(clean.sample, "Cleaned","Raw"), 
+           parametric = ifelse(parametric, "Parametric","Non-Parametric")) %>% 
+    
+    # copy the value for rej for t3 because we never ran a clean run
+    
+    pivot_wider(id_cols = c(dist, lambda, sample, nreg, ar, 
+                            test.lev, p_alpha, parametric),
+                names_from = c(clean.sample),
+                values_from = c(rej, rej.L1.boot, rej.L2.boot, rej.var.boot)) %>% 
+    
+    mutate(rej_Cleaned = ifelse(is.na(rej_Cleaned) & !is.na(rej_Raw), 
+                                rej_Raw, 
+                                rej_Cleaned)) %>% 
+    
+    mutate(across( c(contains("rej")) , ~format(round(.,3),nsmall = 3))) %>% 
+    
+    select(dist:parametric, 
+           # asym
+           rej_Cleaned, 
+           # raw
+           any_of(c("rej.L1.boot_Raw", 
+                    "rej.L2.boot_Raw",
+                    "rej.var.boot_Raw")),
+           # cleaned
+           rej.L1.boot_Cleaned, 
+           rej.L2.boot_Cleaned,
+           rej.var.boot_Cleaned) %>% 
+    
+    arrange(dist, ar, test.lev, sample) %>% 
+    select(-dist) %>% 
+    
+    kable(
+      format = "latex", booktabs = TRUE, 
+      col.names = c("$\\lambda$", "n","\\# Regressors", "$\\rho$", "Level","$\\gamma_c$","Parametric"," ",  rep(c("$L_1$","$L_2$", "Variance"),2)), 
+      escape = FALSE
+    ) %>% 
+    kable_paper() %>% 
+    add_header_above(c(" " = 7, "Asymp." = 1, "Raw" = 3, "Clean" = 3)) %>% 
+    add_header_above(c(" " = 7, "Rejection Frequency" = 7)) %>% 
+    
+    pack_rows("Normal Distribution",1, 8) %>%
+    #pack_rows("$t_3$ Distribution", 17, 32, escape = FALSE) %>% 
+    return() -> tab_boot_alt_intermed
+  
+  
+  column_tables(list(tab_boot_alt_intermed), 
+                caption = paste("Simulation performance under the alternative for varying sample sizes when using the bootstrap implementations of our test for a Bad Leverage Point (outlier magnitude of ",i,"SD of the error term) using Non-Parametric Bootstraps."), 
+                label = paste0("fig_out_sim_alt_boot_table_BadLeverage",i), 
+                resize = TRUE) %>% 
+    
+    paste0(table_list_boot_alt_BL, ., sep = "\n") -> table_list_boot_alt_BL
+  
+}
+```
+
+```{r}
+cat(table_list_boot_alt_BL, file = here("data-raw/text/v8/rr2203/table_boot_alternative_BadLeverage.tex"))
 ```

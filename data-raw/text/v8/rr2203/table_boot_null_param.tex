@@ -1,0 +1,38 @@
+\begin{table}
+\small
+\caption{Simulation performance of the bootstrap tests under the null of no distortion when the reference distribution does and does not match the error distribution in the DGP using non-parametric bootstrapping. \vspace{0.1cm}}
+\label{fig_boot_sim_null_table_nonparam}
+ \parbox{0.99\textwidth}{\resizebox{0.99\textwidth}{!}{
+\centering
+\begin{tabular}{rrrrrlllll}
+\toprule
+\multicolumn{6}{c}{ } & \multicolumn{4}{c}{Rejection Frequency} \\
+\cmidrule(l{3pt}r{3pt}){7-10}
+\multicolumn{6}{c}{ } & \multicolumn{1}{c}{Asymp.} & \multicolumn{3}{c}{Clean} \\
+\cmidrule(l{3pt}r{3pt}){7-7} \cmidrule(l{3pt}r{3pt}){8-10}
+n & \# Regressors & $\rho$ & Level & $\gamma_c$ & Parametric &   & $L_1$ & $L_2$ & Variance\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{10}{l}{\textbf{Normal Distribution}}\\
+\hspace{1em}50 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.397 & 0.178 & 0.184 & 0.344\\
+\hspace{1em}100 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.128 & 0.186 & 0.195 & 0.315\\
+\hspace{1em}200 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.074 & 0.179 & 0.193 & 0.273\\
+\hspace{1em}400 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.053 & 0.147 & 0.166 & 0.234\\
+\hspace{1em}50 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.441 & 0.207 & 0.222 & 0.395\\
+\hspace{1em}100 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.124 & 0.182 & 0.180 & 0.317\\
+\hspace{1em}200 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.082 & 0.174 & 0.179 & 0.284\\
+\hspace{1em}400 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.057 & 0.149 & 0.148 & 0.223\\
+\addlinespace[0.3em]
+\multicolumn{10}{l}{\textbf{$t_3$ Distribution}}\\
+\hspace{1em}50 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.722 & 0.447 & 0.452 & 0.624\\
+\hspace{1em}100 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.617 & 0.556 & 0.576 & 0.702\\
+\hspace{1em}200 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.590 & 0.563 & 0.587 & 0.688\\
+\hspace{1em}400 & 5 & 0.0 & 0.05 & 0.05 & Parametric & 0.603 & 0.577 & 0.601 & 0.685\\
+\hspace{1em}50 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.730 & 0.467 & 0.488 & 0.632\\
+\hspace{1em}100 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.646 & 0.551 & 0.584 & 0.704\\
+\hspace{1em}200 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.633 & 0.565 & 0.583 & 0.691\\
+\hspace{1em}400 & 5 & 0.5 & 0.05 & 0.05 & Parametric & 0.666 & 0.589 & 0.626 & 0.716\\
+\bottomrule
+\end{tabular}
+}}
+ \end{table}

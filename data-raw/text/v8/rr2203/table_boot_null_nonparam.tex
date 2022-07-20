@@ -1,0 +1,41 @@
+\begin{table}
+\small
+\caption{Simulation performance of the bootstrap tests under the null of no distortion when the reference distribution does and does not match the error distribution in the DGP using non-parametric bootstrapping. \vspace{0.1cm}}
+\label{fig_boot_sim_null_table_nonparam}
+ \parbox{0.99\textwidth}{\resizebox{0.99\textwidth}{!}{
+\centering
+\begin{tabular}{rrrrrllllllll}
+\toprule
+\multicolumn{6}{c}{ } & \multicolumn{7}{c}{Rejection Frequency} \\
+\cmidrule(l{3pt}r{3pt}){7-13}
+\multicolumn{6}{c}{ } & \multicolumn{1}{c}{Asymp.} & \multicolumn{3}{c}{Raw} & \multicolumn{3}{c}{Clean} \\
+\cmidrule(l{3pt}r{3pt}){7-7} \cmidrule(l{3pt}r{3pt}){8-10} \cmidrule(l{3pt}r{3pt}){11-13}
+n & \# Regressors & $\rho$ & Level & $\gamma_c$ & Parametric &   & $L_1$ & $L_2$ & Variance & $L_1$ & $L_2$ & Variance\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{13}{l}{\textbf{Normal Distribution}}\\
+\hspace{1em}50 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.433 & 0.001 & 0.002 & 0.002 & 0.029 & 0.026 & 0.175\\
+\hspace{1em}100 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.121 & 0.001 & 0.001 & 0.009 & 0.030 & 0.030 & 0.409\\
+\hspace{1em}200 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.053 & 0.000 & 0.000 & 0.012 & 0.026 & 0.025 & 0.413\\
+\hspace{1em}400 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.063 & 0.000 & 0.000 & 0.028 & 0.033 & 0.036 & 0.334\\
+\hspace{1em}50 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.459 & 0.002 & 0.002 & 0.004 & 0.004 & 0.003 & 0.009\\
+\hspace{1em}100 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.142 & 0.001 & 0.001 & 0.004 & 0.000 & 0.000 & 0.012\\
+\hspace{1em}200 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.071 & 0.000 & 0.000 & 0.023 & 0.000 & 0.000 & 0.029\\
+\hspace{1em}400 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.054 & 0.000 & 0.000 & 0.033 & 0.000 & 0.000 & 0.041\\
+\addlinespace[0.3em]
+\multicolumn{13}{l}{\textbf{$t_3$ Distribution}}\\
+\hspace{1em}50 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.725 & 0.000 & 0.000 & 0.001 & 0.139 & 0.143 & 0.451\\
+\hspace{1em}100 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.614 & 0.000 & 0.000 & 0.011 & 0.268 & 0.279 & 0.721\\
+\hspace{1em}200 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.608 & 0.000 & 0.000 & 0.055 & 0.271 & 0.281 & 0.731\\
+\hspace{1em}400 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 0.650 & 0.000 & 0.000 & 0.070 & 0.293 & 0.318 & 0.731\\
+\hspace{1em}50 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.758 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.014\\
+\hspace{1em}100 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.605 & 0.000 & 0.000 & 0.023 & 0.002 & 0.003 & 0.056\\
+\hspace{1em}200 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.614 & 0.000 & 0.000 & 0.084 & 0.001 & 0.001 & 0.108\\
+\hspace{1em}400 & 5 & 0.5 & 0.05 & 0.05 & Non-Parametric & 0.667 & 0.000 & 0.000 & 0.091 & 0.001 & 0.001 & 0.104\\
+\addlinespace[0.3em]
+\multicolumn{13}{l}{\textbf{Log-normal Distribution}}\\
+\hspace{1em}400 & 5 & 0.0 & 0.05 & 0.05 & Non-Parametric & 1.000 & 0.000 & 0.000 & 0.992 & NA & NA & NA\\
+\bottomrule
+\end{tabular}
+}}
+ \end{table}
