@@ -29,9 +29,23 @@ select <- dplyr::select
 ```
 
 
+# CHECK MODELSUMMARY VERSION
+
+This does not work with the most recent modelsummary version. 
+We need version 0.9.6
+
 ```{r}
-lapply(list.files(here("data-raw/projections"),
-                  pattern = ".RData", full.names = TRUE), load, envir=.GlobalEnv)
+if(packageVersion("modelsummary") != "0.9.6"){stop("STOP!! Modelsummary Version must be 0.9.6 for this to work.")}
+```
+
+
+
+```{r}
+file_list <- list.files(here("data-raw/projections"),pattern = ".RData", full.names = TRUE)
+
+file_list <- file_list[!grepl("0.0",file_list)]
+
+lapply(file_list, load, envir=.GlobalEnv)
 ```
 
 
@@ -281,19 +295,49 @@ modelsummary(intermediate_list_modified,
 
 # insert caption
 tab <- gsub("\\begin{table}",
-     "\\begin{table}
+     "\\begin{table}[H]
 \\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.}
 \\label{tab_app1_estimates}", tab, fixed = TRUE)
 
 # fixing the header
 tab <- gsub("\\begin{tabular}[t]{lcc|>{}c|cc|>{}c|}",
             "\\resizebox{\\textwidth}{!}{\\begin{tabular}[t]{|L{5cm}cc|>{}C{2.5cm}|cc|>{}C{2.5cm}|}",tab, fixed = TRUE)
-# fixiing the footer
+# fixing the footer
 tab <- gsub("\\end{tabular}",
             "\\end{tabular}}",tab, fixed = TRUE)
 
 cat(tab, file = here("data-raw/projections/out/application_main_table.tex"))
 cat(tab, file = here("data-raw/text/v7 edit/application_main_table.tex"))
+```
+
+## Testing Tables
+
+Make sure to include all of this header!
+
+```{tex, eval = FALSE}
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+
+\newcommand{\ignore}[1]{}
+% left fixed width:
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+ % center fixed width:
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+ % flush right fixed width:
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+
+\begin{document}
+
+\include{application_main_table}
+
+\end{document}
 ```
 
 
@@ -339,22 +383,6 @@ modelsummary(intermediate_list_modified,
 
 
 ```
-
-```{r}
-test <- "$\\chi^2 a^2$"
-test <- "$\\chi^2_{df = 2}$ = 111.27"
-#test <- kableExtra:::sim_double_escape(test)
-
-
-
-tab <- kable("$a^2$")
-tab
-save_kable(tab, file = "test.jpg")
-
-tab <- kable("$a^2$", escape = TRUE)
-tab <- kable("$a^2$", escape = FALSE)
-```
-
 
 
 
