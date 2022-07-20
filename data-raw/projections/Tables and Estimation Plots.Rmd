@@ -277,6 +277,7 @@ intermediate_list_modified$`Adaptation Outlier Distortion Test`$glance$outlier_p
 
 
 ```{r}
+options("modelsummary_format_numeric_latex" = "plain")
 modelsummary(intermediate_list_modified, 
              statistic = "{std.error}",
              coef_rename = name_vec_tex,
@@ -289,13 +290,15 @@ modelsummary(intermediate_list_modified,
              add_rows = data.frame("Fixed Effects", "Country \\& Year","Country \\& Year","",
                                    "Country \\& Year","Country \\& Year",""),
              #output = here("data-raw/projections/out/models.tex"),
-             notes = "(Standard Errors) and [p-values]\nPlease note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus, its outlier distortion test statistics is not zero.") %>% 
+             notes = c("(Standard Errors) and [p-values]",
+                       "its outlier distortion test statistics is not zero.",
+                       "Please note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus,")) %>% 
   
   column_spec(column = c(4,7), border_left = TRUE, border_right = TRUE) -> tab
 
 # insert caption
 tab <- gsub("\\begin{table}",
-     "\\begin{table}[H]
+            "\\begin{table}[H]
 \\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.}
 \\label{tab_app1_estimates}", tab, fixed = TRUE)
 
@@ -314,31 +317,32 @@ cat(tab, file = here("data-raw/text/v7 edit/application_main_table.tex"))
 
 Make sure to include all of this header!
 
-```{tex, eval = FALSE}
-\documentclass{article}
 
-\usepackage{graphicx}
-\usepackage{caption}
-\usepackage{float}
-\usepackage{xcolor}
-\usepackage{array}
-\usepackage{booktabs}
+<!-- \documentclass{article} -->
 
-\newcommand{\ignore}[1]{}
-% left fixed width:
-\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
- % center fixed width:
-\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
- % flush right fixed width:
-\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+<!-- \usepackage{graphicx} -->
+<!-- \usepackage{caption} -->
+<!-- \usepackage{float} -->
+<!-- \usepackage{xcolor} -->
+<!-- \usepackage{array} -->
+<!-- \usepackage{booktabs} -->
+
+<!-- \newcommand{\ignore}[1]{} -->
+<!-- % left fixed width: -->
+<!-- \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} -->
+<!-- % center fixed width: -->
+<!-- \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} -->
+<!-- % flush right fixed width: -->
+<!-- \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}} -->
 
 
-\begin{document}
+<!-- \begin{document} -->
 
-\include{application_main_table}
+<!-- \include{application_main_table} -->
 
-\end{document}
-```
+<!-- \end{document} -->
+
+           
 
 
 ```{r}
