@@ -31,15 +31,16 @@ if(packageVersion("modelsummary") != "0.9.6"){stop("STOP!! Modelsummary Version 
 #'
 #'
 
-file_list <- list.files(here("data-raw/projections"),pattern = ".RData", full.names = TRUE)
+
 
 for(sig_level in c(0.01, 0.05, 0.001)){
   print(sig_level)
-
+  file_list <- list.files(here("data-raw/projections"),pattern = ".RData", full.names = TRUE)
   file_list <- c(here("data-raw/projections/m2.RData"),
                  here("data-raw/projections/am2.RData"),
                  here("data-raw/projections/am2_L1.RData"),
                  file_list[grepl(sig_level,file_list)])
+  if(exists("m2")){rm(m2,am2,am2_L1,am2.isat,m2.isat, am2.isat_L1)}
   lapply(file_list, load, envir=.GlobalEnv)
 
 
@@ -270,7 +271,7 @@ for(sig_level in c(0.01, 0.05, 0.001)){
   # insert caption
   tab <- gsub("\\begin{table}",
               paste0("\\begin{table}[H]
-\\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted.}
+\\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted. IIS selection was carried out at $t = ",sig_level,"$.}
 \\label{tab_app1_estimates",sig_level,"}"), tab, fixed = TRUE)
 
   # fixing the header
@@ -377,6 +378,27 @@ for(sig_level in c(0.01, 0.05, 0.001)){
 
   intermediate_list_modified <- modify_brackets(intermediate_list)
 
+  teststat_lagged <- intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_teststat
+  testpval_lagged <- intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_pval
+
+  ## Add Chi-sq sign to the line
+  intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_teststat <- paste0("$\\chi^2_{",overall_test_adapt_L1$df,"}$ = ",round(teststat_lagged, 2))
+
+  # Format outlier test stat p value
+  intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_pval <- paste0("[", ifelse(
+    format(round(testpval_lagged, 3), nsmall = 3) == "0.000",
+    "$<$0.001",
+    format(round(testpval_lagged, 3), nsmall = 3)), "]")
+
+
+  #Put both outlier test stat and p-value in the same cell
+  intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_teststat <-
+    paste0(intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_teststat,"\n",intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_pval)
+
+  # Delete the pvalue information
+  intermediate_list_modified$`Lagged Adaptation Outlier Distortion Test`$glance$outlier_pval <- NULL
+
+
 
   modelsummary(intermediate_list_modified,
                statistic = "{std.error}",
@@ -387,10 +409,30 @@ for(sig_level in c(0.01, 0.05, 0.001)){
                coef_omit = "time|year|iso|iis",
                escape = FALSE,
                add_rows = data.frame("Two Way Fixed Effects", "Yes","Yes",""),
-               output = here(paste0("data-raw/projections/out/tables/",sig_level,"_models-Appendix.tex")),
+               output = "latex",
+               #output = here(paste0("data-raw/projections/out/tables/",sig_level,"_models-Appendix.tex")),
                notes = c("(Standard Errors) and [p-values]",
-                         "its outlier distortion test statistics is not zero.",
-                         "Please note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus,"))
+                         "not exactly equal in the lagged model. Thus, its outlier distortion test statistics is not zero.",
+                         "Please note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but ")) %>%
+
+  column_spec(column = c(1,4), border_left = TRUE, border_right = FALSE) -> tab
+
+  # insert caption
+  tab <- gsub("\\begin{table}",
+              paste0("\\begin{table}[H]
+\\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted. IIS selection was carried out at $t = ",sig_level,"$.}
+\\label{tab_app1_estimates_appendix_",sig_level,"}"), tab, fixed = TRUE)
+
+  # fixing the header
+  tab <- gsub("\\begin{tabular}[t]{|>{}lcc|>{}c}",
+              "\\resizebox{\\textwidth}{!}{\\begin{tabular}[t]{|L{5cm}cc|>{}C{2.5cm}|}",tab, fixed = TRUE)
+  # fixing the footer
+  tab <- gsub("\\end{tabular}",
+              "\\end{tabular}}",tab, fixed = TRUE)
+
+  cat(tab, file = here(paste0("data-raw/projections/out/tables/",sig_level,"_models-Appendix.tex")))
+  #cat(tab, file = here("data-raw/text/v7 edit/application_main_table.tex"))
+
 
 
 
