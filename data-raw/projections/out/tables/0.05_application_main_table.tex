@@ -1,0 +1,40 @@
+\begin{table}[H]
+\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted. IIS selection was carried out at $t = 0.05$.}
+\label{tab_app1_estimates0.05}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{|L{5cm}cc|>{}C{2.5cm}|cc|>{}C{2.5cm}|}
+\toprule
+  & Base & Base IIS & Base Outlier Distortion Test & Adaptation & Adaptation IIS & Adaptation Outlier Distortion Test\\
+\midrule
+Temperature & 0.01734*** & 0.00934*** & 50.91 & -0.06224*** & -0.03506*** & 59.99\\
+ & (0.00348) & (0.00211) & {}[$<$0.001] & (0.01041) & (0.00661) & {}[$<$0.001]\\
+Temperature\textsuperscript{2} & -0.00059*** & -0.00034*** & 52.34 & 0.00070 & 0.00003 & 28.78\\
+ & (0.0001) & (0.00006) & {}[$<$0.001] & (0.00037) & (0.00024) & {}[$<$0.001]\\
+Precipitation & 0.00043 & 0.00098 & 2.39 & 0.01018 & 0.01554*** & 8.47\\
+ & (0.00111) & (0.00067) & {}[0.122] & (0.00563) & (0.00347) & {}[0.004]\\
+Precipitation\textsuperscript{2} & -0.00004 & -0.00004* & 0.17 & -0.00019 & -0.00038** & 8.92\\
+ & (0.00003) & (0.00002) & {}[0.680] & (0.00019) & (0.00012) & {}[0.003]\\
+Temperature x GDP\textsubscript{pc} &  &  &  & 0.00811*** & 0.00420*** & 109.42\\
+ &  &  &  & (0.00111) & (0.0007) & {}[$<$0.001]\\
+Temperature\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & -0.00012** & -0.00002 & 52.95\\
+ &  &  &  & (0.00004) & (0.00003) & {}[$<$0.001]\\
+Precipitation x GDP\textsubscript{pc} &  &  &  & -0.00121 & -0.00179*** & 6.99\\
+ &  &  &  & (0.00066) & (0.00041) & {}[0.008]\\
+Precipitation\textsuperscript{2} x GDP\textsubscript{pc} &  &  &  & 0.00002 & 0.00004** & 8.3\\
+ &  &  &  & (0.00002) & (0.00001) & {}[0.004]\\
+\midrule
+Num. Outliers &  &  & 299 &  &  & 306\\
+Outlier Distortion test statistic for Temp. Variables &  &  & $\chi^2_{2}$ = 54.8
+[$<$0.001] &  &  & $\chi^2_{4}$ = 272.56
+[$<$0.001]\\
+Num.Obs. & 7716 & 7716 &  & 7716 & 7716 & \\
+BIC & -18483.2 & -24137.8 &  & -18801.4 & -24346.8 & \\
+Log.Lik. & 11774.742 & 15940.230 &  & 11951.758 & 16093.982 & \\
+Fixed Effects & Country \& Year & Country \& Year &  & Country \& Year & Country \& Year & \\
+\bottomrule
+\multicolumn{7}{l}{\rule{0pt}{1em}Please note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but not exactly equal in the base model. Thus,}\\
+\multicolumn{7}{l}{\rule{0pt}{1em}its outlier distortion test statistics is not zero.}\\
+\multicolumn{7}{l}{\rule{0pt}{1em}(Standard Errors) and [p-values]}\\
+\multicolumn{7}{l}{\rule{0pt}{1em}* p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\end{tabular}}
+\end{table}

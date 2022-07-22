@@ -1,0 +1,39 @@
+\begin{table}[H]
+\caption{OLS and IIS Panel Regression Results together with their difference in coefficients and the resulting outlier distortion test statistic. Coefficients on control variables are omitted. IIS selection was carried out at $t = 0.001$.}
+\label{tab_app1_estimates_appendix_0.001}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{|L{5cm}cc|>{}C{2.5cm}|}
+\toprule
+  & Lagged Adaptation & Lagged Adaptation IIS & Lagged Adaptation Outlier Distortion Test\\
+\midrule
+Temperature & 0.14234*** & 0.09848*** & 1409.44\\
+ & (0.01003) & (0.0074) & {}[$<$0.001]\\
+Temperature\textsuperscript{2} & -0.00335*** & -0.00222*** & 830.53\\
+ & (0.00036) & (0.00026) & {}[$<$0.001]\\
+Precipitation & -0.00212 & 0.01137** & 22.93\\
+ & (0.00551) & (0.00404) & {}[$<$0.001]\\
+Precipitation\textsuperscript{2} & -0.00004 & -0.00035* & 31.23\\
+ & (0.00019) & (0.00014) & {}[$<$0.001]\\
+Temperature x Lag(GDP\textsubscript{pc}) & -0.01339*** & -0.00928*** & 2080.06\\
+ & (0.00107) & (0.00079) & {}[$<$0.001]\\
+Temperature\textsuperscript{2} x Lag(GDP\textsubscript{pc}) & 0.00030*** & 0.00020*** & 1143.24\\
+ & (0.00004) & (0.00003) & {}[$<$0.001]\\
+Precipitation x Lag(GDP\textsubscript{pc}) & 0.00035 & -0.00125** & 12.82\\
+ & (0.00065) & (0.00048) & {}[$<$0.001]\\
+Precipitation\textsuperscript{2} x Lag(GDP\textsubscript{pc}) & 0.00000 & 0.00004* & 25.11\\
+ & (0.00002) & (0.00002) & {}[$<$0.001]\\
+\midrule
+Num. Outliers &  &  & 103\\
+Outlier Distortion test statistic for Temp. Variables &  &  & $\chi^2_{4}$ = 4778.56
+[$<$0.001]\\
+Num.Obs. & 7716 & 7716 & \\
+BIC & -19066.8 & -23267.9 & \\
+Log.Lik. & 12084.427 & 14645.982 & \\
+Two Way Fixed Effects & Yes & Yes & \\
+\bottomrule
+\multicolumn{4}{l}{\rule{0pt}{1em}Please note that the estimated coefficients on Precipitation$^{2}$ by OLS and IIS are very close but }\\
+\multicolumn{4}{l}{\rule{0pt}{1em}not exactly equal in the lagged model. Thus, its outlier distortion test statistics is not zero.}\\
+\multicolumn{4}{l}{\rule{0pt}{1em}(Standard Errors) and [p-values]}\\
+\multicolumn{4}{l}{\rule{0pt}{1em}* p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\end{tabular}}
+\end{table}
