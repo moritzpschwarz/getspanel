@@ -14,7 +14,7 @@ execute_isat <- TRUE
 
 dat <- vroom(file = here("data-raw/projections/damage_curve_country_dataset_timetrends_updated02-19.csv"))
 
-for(target_pval in c(0.01)){
+for(target_pval in c(0.05, 0.01, 0.001)){
 
   # No Adaptation -----------------------------------------------------------
 
@@ -73,6 +73,7 @@ for(target_pval in c(0.01)){
   } else {
     load(file = here("data-raw","projections",paste0("m2.isat.",target_pval,"RData")))
   }
+
 
 
   # Adaptation --------------------------------------------------------------
@@ -143,13 +144,13 @@ for(target_pval in c(0.01)){
   if(execute_isat){
     am2.isat <- isat(
       y = am2_data %>% pull(diff.ln_gdp_cap),
-      mxreg = am2_data %>% select(-c(diff.ln_gdp_cap,iso,year)) %>% as.matrix,
+      mxreg = am2_data %>% select(-c(diff.ln_gdp_cap,iso,year, ln_gdp_cap)) %>% as.matrix,
       mc = FALSE,
       iis = TRUE,
       t.pval = target_pval,
       sis = FALSE,
       max.block.size = 2,
-      parallel.options = parallel::detectCores()-2,
+      parallel.options = parallel::detectCores()-1,
       print.searchinfo = TRUE
     )
 
@@ -158,13 +159,13 @@ for(target_pval in c(0.01)){
 
     am2.isat_L1 <- isat(
       y = am2_L1_data %>% pull(diff.ln_gdp_cap),
-      mxreg = am2_L1_data %>% select(-c(diff.ln_gdp_cap,iso,year)) %>% as.matrix,
+      mxreg = am2_L1_data %>% select(-c(diff.ln_gdp_cap,iso,year, L1.ln_gdp_cap)) %>% as.matrix,
       mc = FALSE,
       iis = TRUE,
       t.pval = target_pval,
       sis = FALSE,
       max.block.size = 2,
-      parallel.options = parallel::detectCores()-2,
+      parallel.options = parallel::detectCores()-1,
       print.searchinfo = TRUE
     )
     save(am2.isat_L1, file = here("data-raw","projections",paste0("am2.isat_L1.",target_pval,"RData")))

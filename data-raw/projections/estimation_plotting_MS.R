@@ -410,7 +410,7 @@ for(est_version in c(0.05, 0.01,0.001)){
   isdat1.adapt <- isatdates(am2.isat)
   ctry_index.com.adapt$iis[ctry_index.com.adapt$is.index %in% isdat1.adapt$iis$index] <- 1
 
-  ctry_index.com.adapt$iis_sign[ctry_index.com.adapt$is.index %in% isdat1$iis$index] <- 1
+  ctry_index.com.adapt$iis_sign[ctry_index.com.adapt$is.index %in% isdat1.adapt$iis$index] <- 1
   ctry_index.com.adapt$iis_sign[isdat1.adapt$iis$index] <- isdat1.adapt$iis$coef/abs(isdat1.adapt$iis$coef)
 
   ctry_index.com.adapt$iis_lev <- 0
@@ -421,7 +421,7 @@ for(est_version in c(0.05, 0.01,0.001)){
   isdat1.adapt.L1 <- isatdates(am2.isat_L1)
   ctry_index.com.adapt.L1$iis[ctry_index.com.adapt.L1$is.index %in% isdat1.adapt.L1$iis$index] <- 1
 
-  ctry_index.com.adapt.L1$iis_sign[ctry_index.com.adapt.L1$is.index %in% isdat1$iis$index] <- 1
+  ctry_index.com.adapt.L1$iis_sign[ctry_index.com.adapt.L1$is.index %in% isdat1.adapt.L1$iis$index] <- 1
   ctry_index.com.adapt.L1$iis_sign[isdat1.adapt.L1$iis$index] <- isdat1.adapt.L1$iis$coef/abs(isdat1.adapt.L1$iis$coef)
 
   ctry_index.com.adapt.L1$iis_lev <- 0
@@ -429,7 +429,7 @@ for(est_version in c(0.05, 0.01,0.001)){
   ctry_index.com.adapt.L1$iis_lev[isdat1.adapt.L1$iis$index] <- isdat1.adapt.L1$iis$coef
 
 
-  ######
+  ####
 
   ctry_outl <- aggregate(ctry_index.com$iis, by=list(ctry_index.com$iso), FUN=sum)
   names(ctry_outl) <- c("iso", "outl")
@@ -440,6 +440,12 @@ for(est_version in c(0.05, 0.01,0.001)){
   names(ctry_outl.adapt) <- c("iso", "outl")
   year_outl.adapt <- aggregate(ctry_index.com.adapt$iis, by=list(ctry_index.com.adapt$year), FUN=sum)
   names(year_outl.adapt) <- c("year", "outl")
+
+
+  # # Testing
+  # library(tidyverse)
+  # tibble(iis = ctry_index.com.adapt$iis, iso =ctry_index.com.adapt$iso) %>%
+  #   filter(iso == "IRQ") %>% View
 
 
   ctry_outl.adapt.L1 <- aggregate(ctry_index.com.adapt.L1$iis, by=list(ctry_index.com.adapt.L1$iso), FUN=sum)
@@ -572,51 +578,61 @@ for(est_version in c(0.05, 0.01,0.001)){
   pdf(here(paste0("data-raw/projections/out/",est_version,"ctry_map.pdf")), height=4, width=7)
 
   scale <- 0:max(unique(spdf$outl)[!is.na(unique(spdf$outl))])
-  cur_cols <- col_fun(length(0:max(unique(spdf$outl)[!is.na(unique(spdf$outl))]))-1)
+  #cur_cols <- col_fun(length(0:max(unique(spdf$outl)[!is.na(unique(spdf$outl))]))-1)
+  cur_cols <- col_fun(max(spdf$outl, na.rm = TRUE)+1)
+  spdf$outl.factor <- factor(spdf$outl, levels = c(0:max(spdf$outl, na.rm = TRUE)))
 
   map1 <- mapCountryData(spdf[spdf$SOV_A3 != "ATA",],
-                         nameColumnToPlot="outl",
+                         nameColumnToPlot="outl.factor",
                          addLegend=FALSE,
                          #catMethod=c(0,  2, 4, 6, 8, 10, 12),
-                         catMethod=scale,
+                         #catMethod=scale,
                          colourPalette=cur_cols,
+                         catMethod = "categorical",
+                         numCats = max(spdf$outl, na.rm = TRUE)+1,
                          mapTitle = "")
 
-  do.call(addMapLegend
-          ,c(map1
-             ,legendLabels="all"
-             ,horizontal=TRUE
-             ,legendWidth=0.5
-             ,legendIntervals="data"
-             , legendMar = 4))
+  do.call(addMapLegend, c(
+    map1,
+    legendLabels = "all",
+    horizontal = TRUE,
+    legendWidth = 0.5,
+    labelFontSize = 0.75,
+    legendIntervals="page",
+    legendMar = 4
+  ))
 
 
   dev.off()
 
 
-
-
-
   #pdf("C:/Users/Felix/OneDrive/Documents/Projects/IS beta testing/application/adaptation damage/ctry_map_lag.pdf", height=10, width=11)
   pdf(here(paste0("data-raw/projections/out/",est_version,"ctry_map_adapt.pdf")), height=4, width=7)
 
-  scale <- 0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))])
-  cur_cols <- col_fun(length(0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))]))-1)
+  #scale <- 0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))])
+  #cur_cols <- col_fun(length(0:max(unique(spdf.adapt$outl)[!is.na(unique(spdf.adapt$outl))]))-1)
+  cur_cols <- col_fun(max(spdf.adapt$outl, na.rm = TRUE)+1)
+  spdf.adapt$outl.factor <- factor(spdf.adapt$outl, levels = c(0:max(spdf.adapt$outl, na.rm = TRUE)))
 
   map1 <- mapCountryData(spdf.adapt[spdf.adapt$SOV_A3 != "ATA",],
-                         nameColumnToPlot="outl",
+                         nameColumnToPlot="outl.factor",
                          addLegend=FALSE,
                          #catMethod=c(0,  2, 4, 6, 8, 10, 12),
-                         catMethod=scale,
+                         #catMethod=scale,
                          colourPalette=cur_cols,
+                         catMethod = "categorical",
+                         numCats = max(spdf.adapt$outl, na.rm = TRUE)+1,
                          mapTitle = "")
-  do.call(addMapLegend
-          ,c(map1
-             ,legendLabels="all"
-             ,horizontal=TRUE
-             ,legendWidth=0.5
-             ,legendIntervals="data"
-             , legendMar = 4))
+
+  do.call(addMapLegend, c(
+    map1,
+    legendLabels = "all",
+    horizontal = TRUE,
+    legendWidth = 0.5,
+    labelFontSize = 0.75,
+    legendIntervals="page",
+    legendMar = 4
+  ))
 
 
   dev.off()
@@ -625,22 +641,30 @@ for(est_version in c(0.05, 0.01,0.001)){
   pdf(here(paste0("data-raw/projections/out/",est_version,"ctry_map_adapt.L1.pdf")), height=4, width=7)
 
   scale <- 0:max(unique(spdf.adapt.L1$outl)[!is.na(unique(spdf.adapt.L1$outl))])
-  cur_cols <- col_fun(length(0:max(unique(spdf.adapt.L1$outl)[!is.na(unique(spdf.adapt.L1$outl))]))-1)
+  #cur_cols <- col_fun(length(0:max(unique(spdf.adapt.L1$outl)[!is.na(unique(spdf.adapt.L1$outl))]))-1)
+  cur_cols <- col_fun(max(spdf.adapt.L1$outl, na.rm = TRUE)+1)
+
+  spdf.adapt.L1$outl.factor <- factor(spdf.adapt.L1$outl, levels = c(0:max(spdf.adapt.L1$outl, na.rm = TRUE)))
 
   map1 <- mapCountryData(spdf.adapt.L1[spdf.adapt.L1$SOV_A3 != "ATA",],
-                         nameColumnToPlot="outl",
+                         nameColumnToPlot="outl.factor",
                          addLegend=FALSE,
                          #catMethod=c(0,  2, 4, 6, 8, 10, 12),
-                         catMethod=scale,
+                         #catMethod=scale,
                          colourPalette=cur_cols,
+                         catMethod = "categorical",
+                         numCats = max(spdf.adapt.L1$outl, na.rm = TRUE)+1,
                          mapTitle = "")
-  do.call(addMapLegend
-          ,c(map1
-             ,legendLabels="all"
-             ,horizontal=TRUE
-             ,legendWidth=0.5
-             ,legendIntervals="data"
-             , legendMar = 4))
+
+  do.call(addMapLegend, c(
+    map1,
+    legendLabels = "all",
+    horizontal = TRUE,
+    legendWidth = 0.5,
+    labelFontSize = 0.75,
+    legendIntervals="page",
+    legendMar = 4
+  ))
 
 
   dev.off()
@@ -735,7 +759,7 @@ for(est_version in c(0.05, 0.01,0.001)){
           rect_gp = gpar(col = "white", lwd = 1.3),
           column_names_gp = gpar(fontsize = 7),
           name = "Outliers",
-          column_title = "Detected Outliers (IIS, p=0.01)")
+          column_title = paste0("Detected Outliers (IIS, p=",est_version,")"))
 
   dev.off()
 
@@ -782,11 +806,6 @@ for(est_version in c(0.05, 0.01,0.001)){
 
   heatmap(ctry_index_wide.mat.adapt, scale="none", Rowv=NA, Colv = NA, col=c("blue", "gray85",  "red"))
 
-
-
-
-
-
   colors_lev = c("blue", "gray78", "red")
   colors = structure(c("blue", "gray78", "red"), names = c("-1", "0", "1"))
 
@@ -807,7 +826,7 @@ for(est_version in c(0.05, 0.01,0.001)){
           rect_gp = gpar(col = "white", lwd = 1.3),
           column_names_gp = gpar(fontsize = 7),
           name = "Outliers",
-          column_title = "Detected Outliers (IIS, p=0.01)")
+          column_title = paste0("Detected Outliers (IIS, p=",est_version,")"))
 
   dev.off()
 
@@ -866,12 +885,12 @@ for(est_version in c(0.05, 0.01,0.001)){
           rect_gp = gpar(col = "white", lwd = 1.3),
           column_names_gp = gpar(fontsize = 7),
           name = "Outliers",
-          column_title = "Detected Outliers (IIS, p=0.01)")
+          column_title = paste0("Detected Outliers (IIS, p=",est_version,")"))
 
   dev.off()
 
 
-  ##### Compare Projected Impacts
+  # Compare Projected Impacts -----
 
   coef_m2 <- coefficients(m2)
   coef_m2.isat <- coefficients(m2.isat)
@@ -1099,7 +1118,7 @@ for(est_version in c(0.05, 0.01,0.001)){
   dev.off()
 
 
-  ##########################################
+  ###
   ####### Comparing Coefficients ##############
 
   ############## Plot Different Coefficients
