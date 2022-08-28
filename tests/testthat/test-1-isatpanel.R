@@ -32,6 +32,19 @@ test_that("Initial Tests Isatpanel on simulated data",{
 })
 
 
+
+test_that("Isatpanel Test that missing values are removed",{
+  data_w_missing <- pandata_simulated
+  data_w_missing$temp <- ifelse(data_w_missing$country == 2, NA, data_w_missing$temp)
+
+  expect_message(a <- isatpanel(data = data_w_missing,formula = gdp~temp,
+                               index = c("country","year"),fesis = TRUE))
+  expect_output(print(a))
+  expect_true(a$isatpanel.result$n==63) # 63 because 3 * 21
+})
+
+
+
 test_that("Test the cfesis and csis arguments",{
 
   expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1))
