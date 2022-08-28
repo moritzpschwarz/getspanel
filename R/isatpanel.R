@@ -121,7 +121,7 @@ isatpanel <- function(
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data"), names(mf), 0L)
     mf <- mf[c(1L, m)]
-    mf$drop.unused.levels <- TRUE
+    mf$drop.unused.levels <- FALSE
     mf$na.action <- "na.pass"
     mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
