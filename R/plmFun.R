@@ -60,6 +60,33 @@ plmFun <- function(y, x, time, id, cluster, effect, model = "pooling", ...){
     out$vcov <- NULL
     out$logl <- sum(dnorm(y, sd = sqrt(var(y)), log = TRUE))
   }
+
+
+  # # Adapt mXnames in arx when felm removes collinearity
+  if(ncol(x) > length(out$coefficients)){
+    original <- data.frame(term = colnames(x),
+                           index = 1:length(colnames(x)), row.names = NULL)
+    outcome <- data.frame(term = names(coef(tmp)),
+                          coef = coef(tmp),
+                          row.names = NULL)
+    merged <- merge(original, outcome, by = "term", all = TRUE, sort = FALSE)
+    index_kept <- order(merged$index)
+    merged <- merged[index_kept,]
+
+    out$coefficients <- merged$coef
+
+    vcov_mat_orig <- matrix(nrow = length(colnames(x)), ncol = length(colnames(x)), NA,
+                            dimnames = list(colnames(x), colnames(x)))
+
+    vcov_mat_orig[rownames(vcov_mat_orig) %in% rownames(out$vcov),
+                  colnames(vcov_mat_orig) %in% colnames(out$vcov)] <-
+      out$vcov[rownames(out$vcov) %in% rownames(vcov_mat_orig),
+               colnames(out$vcov) %in% colnames(vcov_mat_orig)]
+
+    out$vcov <- vcov_mat_orig
+
+  }
+
   ##return result:
   return(out)
 }
