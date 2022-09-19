@@ -41,5 +41,5 @@ Imports:
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown
-Remotes: gsucarrat/gets/gets@removing_call
+Remotes: gsucarrat/gets/gets
 Config/testthat/edition: 3
