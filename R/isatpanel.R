@@ -134,8 +134,8 @@ isatpanel <- function(
 
     x <- model.matrix(mt, mf)
 
-    id <- factor(data[,index[1]])
-    time <- data[,index[2]]
+    id <- factor(data[,index[1], drop = TRUE])
+    time <- data[,index[2], drop = TRUE]
     mxreg <- x
 
     if(missing(csis_var)){csis_var <- colnames(mxreg)}
