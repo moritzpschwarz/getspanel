@@ -13,7 +13,6 @@ plot_grid <- function(x, title = NULL, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
 
-
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
@@ -79,8 +78,7 @@ plot_grid <- function(x, title = NULL, ...){
 
     indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
 
-
-    indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), sum)
+    indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), function(x){sum(x,na.rm = TRUE)})
     names(indicators_toplot) <- c("time","id","facet","effect")
     indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
 
