@@ -67,7 +67,8 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
     tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes=FALSE)
 
-    out$coefficients <- coef(tmp)
+    #out$coefficients <- coef(tmp)
+    out$coefficients <- tmp$coefficients
     out$vcov <- if (cluster == "none" || is.null(cluster) || cluster == "0") {
       vcov(tmp, se = "standard")
     } else if (cluster == "twoway" || cluster == "twoways") {

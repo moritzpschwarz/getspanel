@@ -10,7 +10,7 @@ data("pandata_simulated")
 # plot(pandata_simulated$gdp[pandata_simulated$country==3], type="l", main="Country 3 (No Break)")
 # plot(pandata_simulated$gdp[pandata_simulated$country==4], type="l", main="Country 4 (No Break)")
 
-#pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
+pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
 
 # Normal testing
 
@@ -28,7 +28,7 @@ test_that("Initial Tests Isatpanel on simulated data",{
   #newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
 
   expect_silent(newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
-                                           index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo = FALSE))
+                                          index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo = FALSE))
 
 })
 
@@ -40,7 +40,7 @@ test_that("Isatpanel Test that missing values are removed",{
   data_w_missing$temp <- ifelse(data_w_missing$country == 2, NA, data_w_missing$temp)
 
   expect_silent(a <- isatpanel(data = data_w_missing,formula = gdp~temp,
-                                index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
+                               index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
   expect_output(print(a))
   expect_true(a$isatpanel.result$n==63) # 63 because 3 * 21
 })
@@ -160,24 +160,23 @@ test_that("Simple Default Test with AR1",{
 
 
 test_that("Test that estimates of IIS are equal across methods and including perfectly linear terms", {
-  data("pandata_simulated")
-  pandata_simulated$int_rate <- rep(rnorm(100),4)
+  pandata_simulated$int_rate <- rep(rnorm(21),4)
   pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
 
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
+                  index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
 
   bb <- isatpanel(data = pandata_simulated,formula = gdp~temp + int_rate,
-                 index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
+                  index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
 
   cc <- isatpanel(data = pandata_simulated,formula = gdp~temp + int_rate,
-                 index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "fixest", print.searchinfo = FALSE)
+                  index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "fixest", print.searchinfo = FALSE)
 
   dd <- isatpanel(data = pandata_simulated,formula = gdp~temp + int_rate,
-                 index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "felm", print.searchinfo = FALSE)
+                  index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "felm", print.searchinfo = FALSE)
 
   ee <- isatpanel(data = pandata_simulated,formula = gdp~temp + int_rate,
-                 index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "plm", print.searchinfo = FALSE)
+                  index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), engine = "plm", print.searchinfo = FALSE)
 
   expect_true(identical(round(coef(aa$isatpanel.result)["temp"],7),
                         round(coef(bb$isatpanel.result)["temp"],7),
@@ -193,16 +192,16 @@ test_that("Test that estimates of FESIS are equal across methods", {
   data("pandata_simulated")
 
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
 
   bb <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "fixest", print.searchinfo = FALSE)
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "fixest", print.searchinfo = FALSE)
 
   cc <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "felm", print.searchinfo = FALSE)
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "felm", print.searchinfo = FALSE)
 
   dd <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "plm", print.searchinfo = FALSE)
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), engine = "plm", print.searchinfo = FALSE)
 
   expect_true(identical(round(coef(aa$isatpanel.result)["temp"],7),
                         round(coef(bb$isatpanel.result)["temp"],7),
@@ -217,10 +216,10 @@ test_that("Test that estimates of FESIS are equal across methods", {
   pandata_simulated <- tidyr::as_tibble(pandata_simulated)
   pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
 
   bb <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                 index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE, engine = "fixest")
+                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE, engine = "fixest")
 
   expect_true(identical(round(coef(aa$isatpanel.result)["temp"],7),
                         round(coef(bb$isatpanel.result)["temp"],7)))

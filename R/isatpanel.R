@@ -523,15 +523,13 @@ isatpanel <- function(
   out$arguments$effect <- effect
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
+  class(out) <- "isatpanel"
 
   try(
     if(plot == TRUE){
-      plot.isatpanel(ispan)
+      plot(out, zero_line = FALSE)
     }
   )
-
-
-  class(out) <- "isatpanel"
 
   return(out)
 
