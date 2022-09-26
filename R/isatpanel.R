@@ -282,7 +282,7 @@ isatpanel <- function(
     fesis_names_mintime <- aggregate(df$time, by = list(df$id), min)
     names(fesis_names_mintime) <- c("id","mintime")
     # remove the mintime for each id
-    fesis_names_merged <- merge(df_balanced, fesis_names_mintime, by = "id")
+    fesis_names_merged <- merge(df_balanced, fesis_names_mintime, by = "id", sort = FALSE)
     fesis_names_intermed <- fesis_names_merged[fesis_names_merged$time != fesis_names_merged$mintime,c("id","time")]
 
     fesis_names <- paste0("fesis",fesis_names_intermed$id,".",fesis_names_intermed$time)
