@@ -18,8 +18,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
   out$n <- length(y)
   if (is.null(x)) {
     out$k <- 0
-  }
-  else {
+  }  else {
     out$k <- NCOL(x)
   }
   out$df <- out$n - out$k
@@ -39,7 +38,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     # fixest always uses the first FE to cluster the standard errors. When twoways, we need to arrange them in the right order to match
     # the cluster argument
     parse_FE <- if(effect == "twoways") {
-      if (cluster == "individual") {
+      if (cluster != "time") {
         "| individual + time"
       } else {
         "| time + individual"
@@ -62,7 +61,6 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     if(!cluster %in% c("individual","time", "none")){
       stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
     }
-
     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),parse_FE))
 
     tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes=FALSE)
@@ -79,7 +77,8 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       vcov(tmp, se = "cluster", cluster = est_df[, cluster])
     }
     out$fit <- tmp$fitted.values
-    out$logl <- logLik(tmp)
+    #out$logl <- logLik(tmp)
+    out$logl <- -tmp$nobs * log(2 * tmp$sigma2 * pi)/2 - sum(tmp$residuals^2)/(2 * tmp$sigma2)
   }
   else {
     out$fit <- rep(0, out$n)
@@ -87,7 +86,8 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
   out$residuals <- y - out$fit
   out$residuals2 <- out$residuals^2
   out$rss <- sum(out$residuals2)
-  out$sigma2 <- out$rss/out$df
+  #out$sigma2 <- out$rss/out$df
+  out$sigma2 <- tmp$sigma2
 
 
   # # Adapt mXnames in arx when fixest removes collinearity
