@@ -21,7 +21,7 @@
 
 #' CO2 Data for EU Road Emissions
 #'
-#'@format A data frame with 400 rows and 9 variables:
+#'@format A data frame with 1550 rows and 13 variables:
 #' \describe{
 #'   \item{X}{Index}
 #'   \item{country}{Country}
@@ -37,7 +37,26 @@
 #'   \item{L1.lgdp}{Lag 1 Log GDP}
 #'   \item{L1.lpop}{Lag 1 Log Population}
 #' }
-#' @source \url{https://github.com/moritzpschwarz/getspanel/}
+#' @source EDGAR
 #'
 
 "EU_emissions_road"
+
+
+
+#' CO2 Data for the EU Residential Sector
+#'
+#'@format A data frame with 899 rows and 8 variables:
+#' \describe{
+#'   \item{country}{Country}
+#'   \item{year}{Year}
+#'   \item{lgdp}{Lagged Gross Domestic Product}
+#'   \item{lhdd}{Logged Heating Degree Days}
+#'   \item{lcdd}{Logged Cooling Degree Days}
+#'   \item{urban}{Urban Share}
+#'   \item{av.rate}{Interest Rate}
+#' }
+#' @source IEA
+#'
+
+"EUCO2residential"

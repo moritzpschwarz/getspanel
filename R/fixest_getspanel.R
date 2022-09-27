@@ -13,22 +13,17 @@
 
 
 
-fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
+fixestFun <- function(y, x, effect, time, id, cluster = "individual", ...){
   out <- list()
   out$n <- length(y)
-  if (is.null(x)) {
-    out$k <- 0
-  }  else {
-    out$k <- NCOL(x)
-  }
-  out$df <- out$n - out$k
-  if (out$k > 0) {
+
+  if (ncol(x) > 0) {
     # in arx, all column names of a matrix are removed - here we use a generic x_ because we only use the coefficient positions anyway
-    if(is.null(colnames(x)) && dim(x)[2]>1){
+    if (is.null(colnames(x)) && dim(x)[2] > 1) {
       x <- as.matrix(x)
       colnames(x) <- paste0("x_",1:dim(x)[2])}
     # in case there is only one regressor left, R converts it to a nameless matrix - so colnames would be NULL
-    if(is.null(colnames(x)) && dim(x)[2]==1){
+    if (is.null(colnames(x)) && dim(x)[2] == 1) {
       x <- as.matrix(x)
       colnames(x) <- "x"}
 
@@ -37,13 +32,13 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
     # fixest always uses the first FE to cluster the standard errors. When twoways, we need to arrange them in the right order to match
     # the cluster argument
-    parse_FE <- if(effect == "twoways") {
+    parse_FE <- if (effect == "twoways") {
       if (cluster != "time") {
         "| individual + time"
       } else {
         "| time + individual"
       }
-    } else if (effect == "time") {
+    } else if (effect == "time")  {
       "| time"
     } else if (effect == "individual") {
       "| individual"
@@ -58,14 +53,16 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     #if((!cluster=="twoway" ||!cluster=="twoways") && !grepl(cluster,parse_FE)){
     #  stop("The cluster variable is not selected as a Fixed Effect. This is currently not recommended.")
     #}
-    if(!cluster %in% c("individual","time", "none")){
+    if (!cluster %in% c("individual","time", "none")) {
       stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
     }
     parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),parse_FE))
 
-    tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes=FALSE)
+    tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes = FALSE)
 
     #out$coefficients <- coef(tmp)
+    out$k <- tmp$nparams
+    out$df <- out$n - out$k
     out$coefficients <- tmp$coefficients
     out$vcov <- if (cluster == "none" || is.null(cluster) || cluster == "0") {
       vcov(tmp, se = "standard")
@@ -79,9 +76,9 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     out$fit <- tmp$fitted.values
     #out$logl <- logLik(tmp)
     out$logl <- -tmp$nobs * log(2 * tmp$sigma2 * pi)/2 - sum(tmp$residuals^2)/(2 * tmp$sigma2)
-  }
-  else {
+  } else {
     out$fit <- rep(0, out$n)
+    out$k <- 0
   }
   out$residuals <- y - out$fit
   out$residuals2 <- out$residuals^2
@@ -92,7 +89,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
 
   # # Adapt mXnames in arx when fixest removes collinearity
   # This is what I had tried using the <<- operator, but this didn't work either
-  if(ncol(x) > length(out$coefficients)){
+  if (ncol(x) > length(out$coefficients)) {
     original <- data.frame(term = colnames(x),
                            index = 1:length(colnames(x)), row.names = NULL)
     outcome <- data.frame(term = names(coef(tmp)),
@@ -105,7 +102,7 @@ fixestFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
     out$coefficients <- merged$coef
 
     vcov_mat_orig <- matrix(nrow = length(colnames(x)), ncol = length(colnames(x)), NA,
-           dimnames = list(colnames(x), colnames(x)))
+                            dimnames = list(colnames(x), colnames(x)))
 
     vcov_mat_orig[rownames(vcov_mat_orig) %in% rownames(out$vcov),
                   colnames(vcov_mat_orig) %in% colnames(out$vcov)] <-

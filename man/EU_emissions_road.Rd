@@ -5,7 +5,7 @@
 \alias{EU_emissions_road}
 \title{CO2 Data for EU Road Emissions}
 \format{
-A data frame with 400 rows and 9 variables:
+A data frame with 1550 rows and 13 variables:
 \describe{
 \item{X}{Index}
 \item{country}{Country}
@@ -23,7 +23,7 @@ A data frame with 400 rows and 9 variables:
 }
 }
 \source{
-\url{https://github.com/moritzpschwarz/getspanel/}
+EDGAR
 }
 \usage{
 EU_emissions_road
