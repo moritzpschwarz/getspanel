@@ -9,12 +9,15 @@ plot_residuals(isatpanelobject)
 \arguments{
 \item{isatpanelobject}{An output from the 'isatpanel' function}
 }
+\value{
+A ggplot2 plot that plots an 'isatpanel' object and shows the residuals over time in comparison to an OLS model.
+}
 \description{
 Plot Residuals from 'isatpanel' against OLS
 }
 \examples{
 
-\dontrun{
+\donttest{
 data <- pandata_simulated
 outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
 effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")

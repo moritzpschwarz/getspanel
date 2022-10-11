@@ -13,6 +13,9 @@ plot_grid(x, title = NULL, ...)
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }
+\value{
+A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
+}
 \description{
 Plotting an isatpanel object
 }

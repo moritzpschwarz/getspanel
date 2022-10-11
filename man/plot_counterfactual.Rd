@@ -23,6 +23,9 @@ plot_counterfactual(
 
 \item{zero_line}{Plot a horizontal line at y = 0. Default is TRUE.}
 }
+\value{
+A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
+}
 \description{
 Plot the Counterfactual Path
 }

@@ -1,7 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-- Added more information and a reference to the Description field in the DESCRIPTION as requested.
+- Added \value to all exported functions where this has been missing before
+- Changed all \dontrun{} to \donttest{} as all of these can be run but just take longer than 5 seconds
+- Removed all par() in the test files in order not to change a users' options()
 
 ## R CMD Checks
 
@@ -19,4 +21,4 @@ This is expected as this is the first submission of this package.
      Schwarz (15:303)
      operationalising (15:224)
      
-The first two are Names of the Authors. Both are correct. The final one was confirmed to be correct using the Oxford Dictionary and using British English.
+The first two are names of the authors. Both are correct. The final one was confirmed to be correct using the Oxford Dictionary and using British English.

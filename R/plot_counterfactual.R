@@ -6,6 +6,7 @@
 #' @param title Plot title. Must be a character vector.
 #' @param zero_line Plot a horizontal line at y = 0. Default is TRUE.
 #'
+#' @return A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
 #' @export
 #'
 #' @importFrom ggplot2 geom_ribbon guides geom_rect

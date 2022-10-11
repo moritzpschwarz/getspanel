@@ -13,7 +13,7 @@ A data frame with 899 rows and 8 variables:
 \item{lhdd}{Logged Heating Degree Days}
 \item{lcdd}{Logged Cooling Degree Days}
 \item{urban}{Urban Share}
-\item{av.rate}{Interest Rate}
+\item{av.rate}{EU Interest Rate}
 }
 }
 \source{

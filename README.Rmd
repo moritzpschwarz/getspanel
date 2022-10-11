@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R build status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.svg)](https://github.com/moritzpschwarz/getspanel/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
 <!-- badges: end -->
 
 The package is a panel adaptation of the gets package see [see here](https://CRAN.R-project.org/package=gets).

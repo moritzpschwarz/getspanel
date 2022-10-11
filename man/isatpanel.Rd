@@ -90,13 +90,13 @@ isatpanel(
 \item{...}{Further arguments to gets::isat()}
 }
 \value{
-an isatpanel object
+A list with class 'isatpanel'.
 }
 \description{
 Panel isat function
 }
 \examples{
-\dontrun{
+\donttest{
 data <- pandata_simulated
 
 is1 <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),

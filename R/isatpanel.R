@@ -32,14 +32,14 @@
 #' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is FALSE.
 #'
-#' @return an isatpanel object
+#' @return A list with class 'isatpanel'.
 #' @export
 #' @importFrom fastDummies dummy_cols
 #'
 #' @references Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data <- pandata_simulated
 #'
 #' is1 <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
@@ -54,70 +54,70 @@
 #'
 
 isatpanel <- function(
-  data=NULL,
-  formula=NULL,
-  index=NULL,
-  effect = c("individual"),
+    data=NULL,
+    formula=NULL,
+    index=NULL,
+    effect = c("individual"),
 
-  na.remove = TRUE,
-  engine = NULL,
-  user.estimator = NULL,
-  cluster = "none",
+    na.remove = TRUE,
+    engine = NULL,
+    user.estimator = NULL,
+    cluster = "none",
 
-  ar=0,
-  iis = FALSE,
-  sis = FALSE,
-  jiis = FALSE,
-  jsis = FALSE,
-  fesis = FALSE,
-  csis = FALSE,
-  cfesis = FALSE,
-  csis_var = colnames(mxreg),
-  fesis_id = NULL,
-  cfesis_var = colnames(mxreg),
-  cfesis_id = NULL,
+    ar=0,
+    iis = FALSE,
+    sis = FALSE,
+    jiis = FALSE,
+    jsis = FALSE,
+    fesis = FALSE,
+    csis = FALSE,
+    cfesis = FALSE,
+    csis_var = colnames(mxreg),
+    fesis_id = NULL,
+    cfesis_var = colnames(mxreg),
+    cfesis_id = NULL,
 
-  plot = FALSE,
-  plm_model = "within",
+    plot = FALSE,
+    plm_model = "within",
 
-  y=NULL,
-  id=NULL,
-  time=NULL,
-  mxreg=NULL,
-  ...
-)
-{
+    y=NULL,
+    id=NULL,
+    time=NULL,
+    mxreg=NULL,
+    ...
+){
+  requireNamespace("gets")
+
   # Error checks
-  if(! effect %in% c("twoways", "individual", "time","none")){stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
+  if (!effect %in% c("twoways", "individual", "time","none")) {stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
 
+  if ((effect == "both" | effect == "time") & jiis == TRUE) {stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
 
-  if((effect == "both" | effect == "time") & jiis == TRUE){stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
-
-  if(!is.numeric(ar)){stop("The ar argument must be numeric.")}
-  if(ar<0){stop("The ar argument must be greater than or equal to 0.")}
-  if(!ar%%1==0){stop("The ar argument must be an integer.")} # check if the numeric value of ar is an integer - the is.integer checks the type
+  if (!is.numeric(ar)) {stop("The ar argument must be numeric.")}
+  if (ar < 0) {stop("The ar argument must be greater than or equal to 0.")}
+  if (!ar %% 1 == 0) {stop("The ar argument must be an integer.")} # check if the numeric value of ar is an integer - the is.integer checks the type
 
   # Transformations (to do: time, country and mxbreak as grepl character vectors)
-  if(is.data.frame(mxreg)){mxreg <- as.matrix(mxreg)}
+  if (is.data.frame(mxreg)) {mxreg <- as.matrix(mxreg)}
 
   # Formula, Index and Data arguments
-  if((!is.null(y) | !is.null(mxreg) | !is.null(time) | !is.null(id)) & (!is.null(formula) | !is.null(data))){
+  if ((!is.null(y) | !is.null(mxreg) | !is.null(time) | !is.null(id)) & (!is.null(formula) | !is.null(data))) {
     stop("Either specify your model using the data, formula, and index arguments or through y, id, time, and mxreg. Specifying both is not allowed.")
   }
 
-  if(is.null(engine) & cluster != "none"){stop("Cluster specifications are currently only implemented for engine = 'fixest'. Either select cluster = 'none' or engine = 'fixest'.")}
+  if (is.null(engine) & cluster != "none") {stop("Cluster specifications are currently only implemented for engine = 'fixest'. Either select cluster = 'none' or engine = 'fixest'.")}
 
-  if(sis & (effect == "twoways" | effect == "time")){warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
+  if (sis & (effect == "twoways" | effect == "time")) {warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
 
   # csis and cfesis
-  if(csis == FALSE & (!missing(csis_var))){stop("You cannot specify csis_var when csis = FALSE.")}
-  if(cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))){stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
-  if(fesis == FALSE & (!missing(fesis_id))){stop("You cannot specify fesis_id when fesis = FALSE.")}
+  if (csis == FALSE & (!missing(csis_var))) {stop("You cannot specify csis_var when csis = FALSE.")}
+  if (cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))) {stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
+  if (fesis == FALSE & (!missing(fesis_id))) {stop("You cannot specify fesis_id when fesis = FALSE.")}
 
 
-  if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)){stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
+  if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
 
-  if(is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))){
+  if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))) {
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data"), names(mf), 0L)
     mf <- mf[c(1L, m)]
@@ -138,8 +138,8 @@ isatpanel <- function(
     time <- data[,index[2], drop = TRUE]
     mxreg <- x
 
-    if(missing(csis_var)){csis_var <- colnames(mxreg)}
-    if(missing(cfesis_var)){cfesis_var <- colnames(mxreg)}
+    if (missing(csis_var)) {csis_var <- colnames(mxreg)}
+    if (missing(cfesis_var)) {cfesis_var <- colnames(mxreg)}
 
   }
 
@@ -152,21 +152,21 @@ isatpanel <- function(
 
 
   # Some more checks
-  if(csis & !is.vector(csis_var)){stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
-  if(cfesis & !is.vector(cfesis_var)){stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
+  if (csis & !is.vector(csis_var)) {stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
+  if (cfesis & !is.vector(cfesis_var)) {stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
 
   # If the coefficient based methods are not specified for a group subset, they will be applied to all id's.
   # An example would be: test for separate coefficient estimates for post-soviet countries
-  if(is.null(fesis_id)){fesis_id <- unique(id)}
-  if(is.null(cfesis_id)){cfesis_id <- unique(id)}
+  if (is.null(fesis_id)) {fesis_id <- unique(id)}
+  if (is.null(cfesis_id)) {cfesis_id <- unique(id)}
 
   mxnames <- colnames(mxreg)
-  if (!is.null(mxreg)){
+  if (!is.null(mxreg)) {
     mxreg <- as.matrix(mxreg)
 
     # if the mxreg does not have column names, they get x1, x2, etc. below
     if (is.null(mxnames)) {
-      mxnames <- paste("x", seq_len(NCOL(mxreg)), sep="")
+      mxnames <- paste("x", seq_len(NCOL(mxreg)), sep = "")
     }
   } else {
     mxnames <- NULL
@@ -188,7 +188,7 @@ isatpanel <- function(
 
     if (any(!complete.cases(rel.xy)))  {
 
-      remove <- which(!complete.cases(rel.xy)==TRUE)
+      remove <- which(!complete.cases(rel.xy) == TRUE)
 
       y <- y[-remove]
       # mx <- mx[-remove,]
@@ -207,23 +207,23 @@ isatpanel <- function(
   df <- data.frame(id,time)
 
   # Autoregressive Term
-  if(ar>0){
+  if (ar > 0) {
     ar_df <- cbind(cbind(df,y),mxreg)
-    ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x){
+    ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x) {
       y = x$y
-      gets::regressorsMean(y=y, mxreg = mxreg,ar = c(1:ar),return.as.zoo = FALSE)
+      gets::regressorsMean(y = y, mxreg = mxreg,ar = c(1:ar),return.as.zoo = FALSE)
     })
     ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)))
 
     # get data back out
     y <- ar_df_processed$y
     mxreg <- ar_df_processed[,!names(ar_df_processed) %in% c("y")]
-    Tsample <- Tsample-ar
+    Tsample <- Tsample - ar
 
     # Adjust the time and id vectors
     # The code below removes the minimum time period for each group as many times as the AR term sets out
-    for(a in 1:max(ar)){
-      df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x){x[!x$time == min(x$time),]})),row.names = NULL)
+    for (a in 1:max(ar)) {
+      df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x) {x[!x$time == min(x$time),]})),row.names = NULL)
     }
 
     time <- df$time
@@ -240,41 +240,41 @@ isatpanel <- function(
   BreakList <- list()
 
   # jsis = TRUE
-  if(jsis){
+  if (jsis) {
     jsis_df <- as.data.frame(cbind(time = unique(time),gets::sim(Tsample)))
 
     # merge with df to ensure order is correct
-    current <- merge(df,jsis_df, by="time", all.x = TRUE,sort=FALSE)
+    current <- merge(df,jsis_df, by = "time", all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
     drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
-    if(!identical(drop,integer(0))){
+    if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
     # Add to Breaklist (uis list)
-    BreakList <- c(BreakList,list(jsis=as.matrix(current[,!names(current) %in% c("id","time")])))
+    BreakList <- c(BreakList,list(jsis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   #jiis = TRUE - This is just like a time FE
-  if(jiis){
+  if (jiis) {
     jiis_df <- as.data.frame(cbind(time = unique(time),gets::iim(Tsample)))
 
     # merge with df to ensure order is correct
-    current <- merge(df,jiis_df, by="time", all.x = TRUE,sort=FALSE)
+    current <- merge(df,jiis_df, by = "time", all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
     drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
-    if(!identical(drop,integer(0))){
+    if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
     # Add to Breaklist (uis list)
-    BreakList <- c(BreakList,list(jiis=as.matrix(current[,!names(current) %in% c("id","time")])))
+    BreakList <- c(BreakList,list(jiis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # fesis = TRUE
-  if(fesis){
+  if (fesis) {
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
@@ -297,28 +297,28 @@ isatpanel <- function(
     fesis_df[!fesis_df$id %in% fesis_id,!names(fesis_df) %in% c("id","time")] <- 0
 
     # merge with df to ensure order is correct
-    current <- merge(df,fesis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    current <- merge(df,fesis_df,by = c("id","time"),all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
     drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
-    if(!identical(drop,integer(0))){
+    if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
 
 
     # Add to Breaklist (uis list)
-    BreakList <- c(BreakList,list(fesis=as.matrix(current[,!names(current) %in% c("id","time")])))
+    BreakList <- c(BreakList,list(fesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # csis = TRUE
-  if(csis){
+  if (csis) {
     csis_init <- cbind(time = unique(time),gets::sim(Tsample))
     names(csis_init) <- c("time",paste0("csis",unique(time)[-1]))
-    csis_init <- merge(df_base,csis_init,by="time",sort=FALSE)
+    csis_init <- merge(df_base,csis_init,by = "time",sort = FALSE)
     csis_df <- csis_init[,c("id","time")]
 
-    for(i in csis_var){
+    for (i in csis_var) {
       csis_intermed <- csis_init[,!names(csis_init) %in% c("id","time")] * mxreg[,i]
       names(csis_intermed) <- paste0(i,".",names(csis_intermed))
 
@@ -327,20 +327,20 @@ isatpanel <- function(
 
 
     # merge with df to ensure order is correct
-    current <- merge(df,csis_df,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    current <- merge(df,csis_df,by = c("id","time"),all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
     drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
-    if(!identical(drop,integer(0))){
+    if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
     # Add to Breaklist (uis list)
-    BreakList <- c(BreakList,list(csis=as.matrix(current[,!names(current) %in% c("id","time")])))
+    BreakList <- c(BreakList,list(csis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
   # cfesis=TRUE
-  if(cfesis){
+  if (cfesis) {
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
     # Extract the names for the balanced data.frame
@@ -360,7 +360,7 @@ isatpanel <- function(
     cfesis_df <- cbind(df_balanced,cfesis_df)
     cfesis_out <- df_balanced
 
-    for(i in cfesis_var){
+    for (i in cfesis_var) {
       cfesis_intermed <- cfesis_df[,!names(cfesis_df) %in% c("id","time")]*mxreg[,i]
       names(cfesis_intermed) <- paste0(i,".",names(cfesis_intermed))
       cfesis_out <- cbind(cfesis_out,cfesis_intermed)
@@ -371,20 +371,20 @@ isatpanel <- function(
 
 
     # merge with df to ensure order is correct
-    current <- merge(df,cfesis_out,by = c("id","time"),all.x=TRUE,sort=FALSE)
+    current <- merge(df,cfesis_out,by = c("id","time"),all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
     current <- current[, colSums(current != 0) > 0]
     # remove any duplicate columns
     drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
-    if(!identical(drop,integer(0))){
+    if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
     # Add to Breaklist (uis list)
-    BreakList <- c(BreakList,list(cfesis=as.matrix(current[,!names(current) %in% c("id","time")])))
+    BreakList <- c(BreakList,list(cfesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
 
-  if(any(fesis,jsis,jiis,csis,cfesis)){
+  if (any(fesis,jsis,jiis,csis,cfesis)) {
     sispanx <- BreakList
   } else {
     sispanx = FALSE
@@ -392,22 +392,22 @@ isatpanel <- function(
 
 
 
-  if(is.null(engine) && effect != "none"){
+  if (is.null(engine) && effect != "none") {
 
     ####
     # Generating Fixed effects ------------------------------------------------
     ####
     FE <- vector()
-    if(effect %in% c("individual", "twoways")){FE <- append(FE,"id")}
-    if(effect %in% c("time", "twoways")){FE <- append(FE,"time")}
+    if (effect %in% c("individual", "twoways")) {FE <- append(FE,"id")}
+    if (effect %in% c("time", "twoways")) {FE <- append(FE,"time")}
 
     dummies <- dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
-    dummies <- dummies[,!names(dummies)%in%c("id","time")]
+    dummies <- dummies[,!names(dummies) %in% c("id","time")]
     names(dummies) <- gsub("_","",names(dummies))
 
-    if(effect == "twoways"){
+    if (effect == "twoways") {
       mx <- cbind(mxreg,dummies[-1])
-    } else if(effect=="individual"|effect=="time"){
+    } else if (effect == "individual"|effect == "time") {
       mx <- cbind(mxreg,dummies)
     }
 
@@ -422,11 +422,11 @@ isatpanel <- function(
   #############################
   ####### Set Engine
   ###############################
-  if(is.null(user.estimator) && !is.null(engine)){
-    if(!engine %in% c("felm","fixest","plm")){
+  if (is.null(user.estimator) && !is.null(engine)) {
+    if (!engine %in% c("felm","fixest","plm")) {
       stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
     }
-    if(engine == "felm"){
+    if (engine == "felm") {
       #require(lfe, quietly = TRUE)
       user.estimator <- list(
         name = felmFun,
@@ -437,7 +437,7 @@ isatpanel <- function(
       )
       mc = FALSE
     }
-    if(engine == "fixest"){
+    if (engine == "fixest") {
       #require(fixest, quietly = TRUE)
       user.estimator <- list(
         name = fixestFun,
@@ -449,7 +449,7 @@ isatpanel <- function(
       )
       mc = FALSE
     }
-    if(engine == "plm"){
+    if (engine == "plm") {
       #require(plm, quietly = TRUE)
       # alternatively use requireNamespace
       user.estimator <- list(
@@ -465,11 +465,11 @@ isatpanel <- function(
 
   }
 
-  if(is.null(engine)){
+  if (is.null(engine)) {
     user.estimator <- NULL
   }
   estimateddata <- data.frame(id,time,y)
-  if(is.null(engine)){
+  if (is.null(engine)) {
     # if FE are manually created we only use mxreg (which is with the id and time column but not the FE)
     estimateddata <- cbind(estimateddata,mxreg)
   } else {
@@ -480,7 +480,7 @@ isatpanel <- function(
   out$estimateddata <- estimateddata
 
   # add a manual intercept if no FE selected
-  if(effect == "none"){mx <- cbind(mconst = 1, mx)}
+  if (effect == "none") {mx <- cbind(mconst = 1, mx)}
 
   #############################
   ####### Estimate
@@ -490,7 +490,7 @@ isatpanel <- function(
   tmpmc <- getOption("mc.warning")
   options(mc.warning = FALSE)
 
-  ispan <- gets::isat(y, mxreg = mx, iis=iis, sis=sis, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = sis, uis = sispanx, user.estimator = user.estimator, mc = FALSE, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   # Set the old arx mc warning again
@@ -506,8 +506,8 @@ isatpanel <- function(
 
   # Create a final data object
   indicators <- out$isatpanel.result$aux$mX
-  if(is.null(engine)){
-    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),if(exists("dummies")){names(dummies)}else{NULL})]
+  if (is.null(engine)) {
+    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),if (exists("dummies")) {names(dummies)}else{NULL})]
   } else {
     indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
   }
@@ -526,7 +526,7 @@ isatpanel <- function(
   class(out) <- "isatpanel"
 
   try(
-    if(plot == TRUE){
+    if (plot == TRUE) {
       plot(out, zero_line = FALSE)
     }
   )

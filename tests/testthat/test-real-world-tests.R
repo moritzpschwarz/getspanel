@@ -1,8 +1,6 @@
 
 test_that("Complicated example making sure that isatpanel and fixest are producing the same results",{
 
-  library(tidyverse)
-
   data("EUCO2residential")
   data <- EUCO2residential
   data$lgdp_sq <- data$lgdp^2
@@ -58,7 +56,7 @@ test_that("Complicated example making sure that isatpanel and fixest are produci
   p.value <- 0.01
 
   # IIS and FESIS
-
+start <- Sys.time()
   a1 <- isatpanel(
     data = dat,
     formula = ifelse(
@@ -76,7 +74,31 @@ test_that("Complicated example making sure that isatpanel and fixest are produci
     plot = FALSE,
     t.pval = p.value
   )
+  end <- Sys.time()
+  end - start
 
+
+  start <- Sys.time()
+  a1 <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban "),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = TRUE,
+    fesis = TRUE,
+    #engine = "fixest",
+    plot = FALSE,
+    t.pval = p.value,
+    turbo = TRUE
+  )
+  end <- Sys.time()
+  end - start
 
   b1 <- isatpanel(
     data = dat,
@@ -215,6 +237,176 @@ test_that("Complicated example making sure that isatpanel and fixest are produci
 
 
 
+})
+
+test_that("Check the turbo and parallel options",{
+
+  options(print.searchinfo = FALSE)
+
+  a3.default <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    #engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value
+  )
+
+  a3.turbo <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    #engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    turbo = TRUE
+  )
+
+  a3.parallel <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    #engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    parallel.options = 2
+  )
+
+
+  a3.parallel.turbo <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    #engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    parallel.options = 2,
+    turbo = TRUE
+  )
+  expect_identical(a3.default$isatpanel.result$coefficients,
+                   a3.turbo$isatpanel.result$coefficients,
+                   a3.parallel$isatpanel.result$coefficients,
+                   a3.parallel.turbo$isatpanel.result$coefficients)
+
+
+  # with fixest
+
+  b3.default <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value
+  )
+
+  b3.turbo <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    turbo = TRUE
+  )
+
+  b3.parallel <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    parallel.options = 2
+  )
+
+
+  b3.parallel.turbo <- isatpanel(
+    data = dat,
+    formula = ifelse(
+      group == 1, paste0("lagg.directem_pc ~ lgdp + lgdp_sq + lhdd + lcdd + urban + av.rate"),
+      paste0(
+        "lagg.directem_pc ~ ",
+        paste(base.int, collapse = " + ")
+      )
+    ) %>% as.formula,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = FALSE,
+    fesis = TRUE,
+    engine = "fixest",
+    plot = FALSE,
+    t.pval=p.value,
+    parallel.options = 2,
+    turbo = TRUE
+  )
+  expect_identical(b3.default$isatpanel.result$coefficients,
+                   b3.turbo$isatpanel.result$coefficients,
+                   b3.parallel$isatpanel.result$coefficients,
+                   b3.parallel.turbo$isatpanel.result$coefficients)
 
 
 })

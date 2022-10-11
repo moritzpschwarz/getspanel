@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments passed to print}
 }
+\value{
+Print output of the 'isatpanel.result' list element of the 'isatpanel' object.
+}
 \description{
 Printing isatpanel results
 }

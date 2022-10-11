@@ -54,7 +54,7 @@
 #'   \item{lhdd}{Logged Heating Degree Days}
 #'   \item{lcdd}{Logged Cooling Degree Days}
 #'   \item{urban}{Urban Share}
-#'   \item{av.rate}{Interest Rate}
+#'   \item{av.rate}{EU Interest Rate}
 #' }
 #' @source IEA
 #'

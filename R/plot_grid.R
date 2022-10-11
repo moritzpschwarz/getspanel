@@ -4,6 +4,7 @@
 #' @param title Plot title. Must be a character vector.
 #' @param ... Further arguments to be passed to ggplot2.
 #'
+#' @return A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2

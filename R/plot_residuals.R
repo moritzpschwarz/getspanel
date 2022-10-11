@@ -2,11 +2,12 @@
 #'
 #' @param isatpanelobject An output from the 'isatpanel' function
 #'
+#' @return A ggplot2 plot that plots an 'isatpanel' object and shows the residuals over time in comparison to an OLS model.
 #' @export
 #'
 #' @examples
 #'
-#'\dontrun{
+#'\donttest{
 #' data <- pandata_simulated
 #' outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
 #' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")

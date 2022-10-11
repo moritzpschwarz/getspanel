@@ -7,6 +7,8 @@
 
 [![R build
 status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.svg)](https://github.com/moritzpschwarz/getspanel/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
 <!-- badges: end -->
 
 The package is a panel adaptation of the gets package see [see
@@ -58,7 +60,7 @@ is1 <- isatpanel(data = EU_emissions_road,
 ``` r
 is1
 
-Date: Mon Feb 14 22:49:38 2022 
+Date: Tue Oct 11 22:22:54 2022 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -134,20 +136,20 @@ time2017                193936.6   79016.4  2.4544 0.0143778 *
 time2018                193549.0   79030.9  2.4490 0.0145913 *  
 fesisAustria.1987        -5813.0    1429.7 -4.0658 5.382e-05 ***
 fesisBelgium.1989        -5272.4    1400.4 -3.7650 0.0001819 ***
-fesisDenmark.1978        20291.0    2180.3  9.3067 < 2.2e-16 ***
-fesisDenmark.1987        29019.1    1860.1 15.6008 < 2.2e-16 ***
-fesisDenmark.2003       -12626.6    1565.9 -8.0634 3.658e-15 ***
-fesisFinland.1988       -11190.2    1436.9 -7.7878 2.756e-14 ***
-fesisFrance.1993         20950.9    1822.2 11.4978 < 2.2e-16 ***
-fesisFrance.2001         16109.9    1841.2  8.7498 < 2.2e-16 ***
-fesisGermany.1991       -10796.4    1346.2 -8.0200 5.045e-15 ***
-fesisGreece.1988         25862.9    1454.3 17.7840 < 2.2e-16 ***
-fesisIreland.1987        23772.3    1429.0 16.6354 < 2.2e-16 ***
-fesisItaly.1987          -6852.9    1590.3 -4.3090 1.898e-05 ***
-fesisNetherlands.1981    12187.4    3320.0  3.6709 0.0002618 ***
-fesisNetherlands.1983    20029.1    3169.2  6.3199 4.906e-10 ***
-fesisPortugal.1987       -7330.2    1503.7 -4.8749 1.375e-06 ***
-fesisUnitedKingdom.1990 -10435.0    1394.6 -7.4826 2.416e-13 ***
+fesisGermany.1978        20291.0    2180.3  9.3067 < 2.2e-16 ***
+fesisGermany.1987        29019.1    1860.1 15.6008 < 2.2e-16 ***
+fesisGermany.2003       -12626.6    1565.9 -8.0634 3.658e-15 ***
+fesisDenmark.1988       -11190.2    1436.9 -7.7878 2.756e-14 ***
+fesisSpain.1993          20950.9    1822.2 11.4978 < 2.2e-16 ***
+fesisSpain.2001          16109.9    1841.2  8.7498 < 2.2e-16 ***
+fesisFinland.1991       -10796.4    1346.2 -8.0200 5.045e-15 ***
+fesisFrance.1988         25862.9    1454.3 17.7840 < 2.2e-16 ***
+fesisUnitedKingdom.1987  23772.3    1429.0 16.6354 < 2.2e-16 ***
+fesisGreece.1987         -6852.9    1590.3 -4.3090 1.898e-05 ***
+fesisItaly.1981          12187.4    3320.0  3.6709 0.0002618 ***
+fesisItaly.1983          20029.1    3169.2  6.3199 4.906e-10 ***
+fesisLuxembourg.1987     -7330.2    1503.7 -4.8749 1.375e-06 ***
+fesisSweden.1990        -10435.0    1394.6 -7.4826 2.416e-13 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -211,7 +213,7 @@ is2 <- isatpanel(data = EU_emissions_road,
 ``` r
 is2     
 
-Date: Mon Feb 14 22:52:59 2022 
+Date: Tue Oct 11 22:26:05 2022 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 

@@ -4,9 +4,19 @@
 #' @param m Maximum range of interval (default is 15 time periods).
 #' @param interval Approximate level of interval. CI level will be at least > interval. Default 0.99 is a 99% CI, so the time interval will always be the integer that results in at least > 99% coverage.
 #'
+#' @return A data.frame that indicates the uncertainty for each FESIS break. The time interval is given by the estimated date in the 'time' column with a confidence interval of +/- the interval in the tci column.
 #' @export
 #'
 #' @importFrom mvtnorm pmvnorm
+#'
+#' @examples
+#' \donttest{
+#' data <- pandata_simulated
+#'
+#' is1 <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
+#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01)
+#' break_uncertainty(is1)
+#' }
 
 break_uncertainty <- function(x, m = 15, interval = 0.99){
 

@@ -26,6 +26,9 @@
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }
+\value{
+A ggplot2 plot that plots an 'isatpanel' object and shows observed data, the fitted values, and all identified breaks and impulses.
+}
 \description{
 Plotting an isatpanel object
 }
