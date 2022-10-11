@@ -38,7 +38,7 @@ plmFun <- function(y, x, time, id, cluster, effect, model = "pooling", ...){
     est_df <- cbind(est_df,x)
     est_df <- plm::pdata.frame(est_df,index = c("individual","time"))
 
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),""))
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(paste0("`",colnames(x),"`"),collapse = " + "),""))
     tmp <- plm::plm(formula = parsed_formula,data = est_df, effect = effect, model = model)
 
     #tmp_clustered <- coeftest(tmp, vcov=vcovHC(tmp,type="HC0",cluster=if(cluster=="individual"){"group"}else{cluster}))

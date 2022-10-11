@@ -71,7 +71,7 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
            This is currently not recommended.")
     }
 
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(paste0("`",colnames(x),"`"),collapse = " + "),
                                         ifelse(effect == "none","-1",""),
                                         "|",parse_FE,"| 0 |",cluster))
 

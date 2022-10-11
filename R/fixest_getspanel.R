@@ -56,7 +56,8 @@ fixestFun <- function(y, x, effect, time, id, cluster = "individual", ...){
     if (!cluster %in% c("individual","time", "none")) {
       stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
     }
-    parsed_formula <- as.formula(paste0("y ~ ",paste0(colnames(x),collapse = " + "),parse_FE))
+
+    parsed_formula <- as.formula(paste0("y ~ ",paste0(paste0("`",colnames(x),"`"),collapse = " + "),parse_FE))
 
     tmp <- fixest::feols(fml = parsed_formula,data = est_df, notes = FALSE)
 
