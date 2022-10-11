@@ -8,8 +8,8 @@
 <meta name="description" content="getspanel">
 <title>getspanel: Getting Started • getspanel</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="getspanel: Getting Started">
 <meta property="og:description" content="getspanel">
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
 
 
 <script src="introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <main id="main"><div class="page-header">
+  <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>getspanel: Getting Started</h1>
             
       
@@ -81,11 +81,11 @@
     
 <p>The <code>getspanel</code> package can be downloaded and installed from <a href="https://github.com/moritzpschwarz/getspanel" class="external-link">GitHub</a>.</p>
 <p>The package can be installed using:</p>
-<pre><code><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"moritzpschwarz/getspanel"</span><span class="op">)</span></code></pre>
+<pre><code><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"moritzpschwarz/getspanel"</span><span class="op">)</span></span></code></pre>
 <p>Once installed we need to load the library:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/moritzpschwarz/getspanel" class="external-link">getspanel</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/moritzpschwarz/getspanel" class="external-link">getspanel</a></span><span class="op">)</span></span></code></pre></div>
 <p>Currently the package is called <strong>getspanel</strong> to align with the <strong>gets</strong> package, but it’s main function of course remains the <strong>isatpanel</strong> function.</p>
 <p><strong>A quick overview over what has changed:</strong></p>
 <ul>
@@ -106,22 +106,22 @@
 </h2>
 <p>We first load the artificially created data<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;This is based on the data created in the R code file “panel_demonstration_v5_shared.R”.&lt;/p&gt;"><sup>1</sup></a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pandata_simulated"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pandata_simulated</span><span class="op">)</span>
-<span class="co">#&gt;   year country      gdp       temp country_1 country_2 country_3 country_4</span>
-<span class="co">#&gt; 1 1901       1 3.359053  0.7929343         1         0         0         0</span>
-<span class="co">#&gt; 2 1902       1 7.591011  2.2774292         1         0         0         0</span>
-<span class="co">#&gt; 3 1903       1 8.747489  3.0844412         1         0         0         0</span>
-<span class="co">#&gt; 4 1904       1 1.409240 -0.3456977         1         0         0         0</span>
-<span class="co">#&gt; 5 1905       1 8.275691  2.4291247         1         0         0         0</span>
-<span class="co">#&gt; 6 1906       1 8.165557  2.5060559         1         0         0         0</span>
-<span class="co">#&gt;   const</span>
-<span class="co">#&gt; 1     1</span>
-<span class="co">#&gt; 2     1</span>
-<span class="co">#&gt; 3     1</span>
-<span class="co">#&gt; 4     1</span>
-<span class="co">#&gt; 5     1</span>
-<span class="co">#&gt; 6     1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pandata_simulated"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pandata_simulated</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   year country      gdp       temp country_1 country_2 country_3 country_4</span></span>
+<span><span class="co">#&gt; 1 1901       1 3.359053  0.7929343         1         0         0         0</span></span>
+<span><span class="co">#&gt; 2 1902       1 7.591011  2.2774292         1         0         0         0</span></span>
+<span><span class="co">#&gt; 3 1903       1 8.747489  3.0844412         1         0         0         0</span></span>
+<span><span class="co">#&gt; 4 1904       1 1.409240 -0.3456977         1         0         0         0</span></span>
+<span><span class="co">#&gt; 5 1905       1 8.275691  2.4291247         1         0         0         0</span></span>
+<span><span class="co">#&gt; 6 1906       1 8.165557  2.5060559         1         0         0         0</span></span>
+<span><span class="co">#&gt;   const</span></span>
+<span><span class="co">#&gt; 1     1</span></span>
+<span><span class="co">#&gt; 2     1</span></span>
+<span><span class="co">#&gt; 3     1</span></span>
+<span><span class="co">#&gt; 4     1</span></span>
+<span><span class="co">#&gt; 5     1</span></span>
+<span><span class="co">#&gt; 6     1</span></span></code></pre></div>
 <p>Let’s look at how we input what we want to model. Each <code>isatpanel</code> command takes:</p>
 <div class="section level3">
 <h3 id="basics">Basics<a class="anchor" aria-label="anchor" href="#basics"></a>
@@ -139,23 +139,23 @@
 <p>This already means that the following two commands will give the same result:</p>
 <p>Using the new method</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                   formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>, 
-                   index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-                   
-                   effect <span class="op">=</span> <span class="st">"twoways"</span>,
-                   
-                   fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                   formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>, </span>
+<span>                   index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                   </span>
+<span>                   effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span>                   </span>
+<span>                   fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Using the traditional method</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is_gets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">gdp</span>,
-                     mxreg <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">temp</span>,
-                     time <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">year</span>,
-                     id <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">country</span>,
-
-                     effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                     fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is_gets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">gdp</span>,</span>
+<span>                     mxreg <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">temp</span>,</span>
+<span>                     time <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">year</span>,</span>
+<span>                     id <span class="op">=</span> <span class="va">pandata_simulated</span><span class="op">$</span><span class="va">country</span>,</span>
+<span></span>
+<span>                     effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                     fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <!-- Let's check if those yield the same outcome: -->
 <!-- ```{r} -->
 <!-- head(is_lm$isatpanel.result$mean.results) -->
@@ -171,14 +171,14 @@
 </h3>
 <p>We can plot these simply using the default plotting methods (rely on the <strong>ggplot2</strong> package):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span>
-<span class="co">#&gt; Error in data.frame(name = names(coef(x$isatpanel.result)), coef = coef(x$isatpanel.result)): arguments imply differing number of rows: 0, 107</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in data.frame(name = names(coef(x$isatpanel.result)), coef = coef(x$isatpanel.result)): arguments imply differing number of rows: 0, 107</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span>
-<span class="co">#&gt; Error in UseMethod("vcov"): no applicable method for 'vcov' applied to an object of class "isat"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in UseMethod("vcov"): no applicable method for 'vcov' applied to an object of class "isat"</span></span></code></pre></div>
 <!-- ![](getspanel_plot.png) -->
 </div>
 <div class="section level3">
@@ -190,15 +190,15 @@
 <p>This argument works just as in the <strong>gets</strong> package. The method simply adds a <code>0</code> and <code>1</code> dummy for each observation.</p>
 <p>Simply set <code>iis = TRUE</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">iis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                         formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,
-                         index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                         effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                         iis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">iis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                         formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,</span>
+<span>                         index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                         effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                         iis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iis_example</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
 </div>
 <div class="section level4">
@@ -212,17 +212,17 @@
 <p>It is possible, however, to consider Step Indicator Saturation with common breaks across individuals. Such indicators would be collinear, if <code>effects = c("twoways")</code> or <code>effects = c("time")</code> i.e. if Time Fixed Effects are included.</p>
 <p>If, however, <code>effect = "individual"</code> then we can use <code>jsis = TRUE</code> to select over all individual time fixed effects.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">jsis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                          formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,
-                          index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                          effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                          jsis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">jsis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                          formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,</span>
+<span>                          index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                          effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                          jsis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jsis_example</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `FUN()`:</span></span>
-<span class="co">#&gt; <span style="color: #BBBB00;">!</span> Aesthetic must be a one-sided formula, call, name, or constant.</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jsis_example</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `FUN()`:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Aesthetic must be a one-sided formula, call, name, or constant.</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="coefficient-step-indicator-saturation">Coefficient Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#coefficient-step-indicator-saturation"></a>
@@ -231,54 +231,54 @@
 <p>This method allows detection of coefficient breaks that are common across all groups. It is the interaction between <code>jsis</code> and the relevant coefficient.</p>
 <p>To illustrate this, as well as the advantages of using the <code>lm</code> approach, we include a non-linear term of the temperature variable using <code>I(temp^2)</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">csis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                          formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                          index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                          effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                          csis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">csis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                          formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                          index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                          effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                          csis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">csis_example</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">csis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
 <p>By default, all coefficients will be interacted and added to the indicator list - but his can be controlled using the <code>csis_var</code>, which takes a character vector of column names i.e. <code>csis_var = "temp"</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">csis_example2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                           effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                           csis <span class="op">=</span> <span class="cn">TRUE</span>,
-                           csis_var <span class="op">=</span> <span class="st">"temp"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">csis_example2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                           effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                           csis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                           csis_var <span class="op">=</span> <span class="st">"temp"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="fixed-effect-step-indicator-saturation">Fixed Effect Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#fixed-effect-step-indicator-saturation"></a>
 </h4>
 <p>This is equivalent to supplying a constant to the mxbreak argument in the old method. This essentially breaks the group-specific intercept i.e. the individual fixed effect.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fesis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                           effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                           fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fesis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                           effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-30-1.png" width="672"></p>
 <p>Similar to the <code>csis_var</code> idea, we can specify the <code>fesis</code> method for a subset of individuals as well using the <code>fesis_id</code> variable, which takes a character vector of individuals. In this case we can use e.g. <code>fesis_id = c("2","3")</code>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fesis_example2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                           effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                           fesis <span class="op">=</span> <span class="cn">TRUE</span>,
-                           fesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>,<span class="st">"3"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fesis_example2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                           formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                           effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                           fesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>,<span class="st">"3"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-34-1.png" width="672"></p>
 </div>
 <div class="section level4">
@@ -287,17 +287,17 @@
 <p>This method combines the <code>csis</code> and the <code>fesis</code> approach and detects whether coefficients for individual units break over time.</p>
 <p>This means we can also combine the subsetting in both the variable and in the individual units using <code>cfesis_id</code> and <code>cfesis_var</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cfesis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                            formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                            index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                            effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                            cfesis <span class="op">=</span> <span class="cn">TRUE</span>,
-                            cfesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>,<span class="st">"3"</span><span class="op">)</span>,
-                            cfesis_var <span class="op">=</span> <span class="st">"temp"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cfesis_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                            formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                            index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                            effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                            cfesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                            cfesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>,<span class="st">"3"</span><span class="op">)</span>,</span>
+<span>                            cfesis_var <span class="op">=</span> <span class="st">"temp"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cfesis_example</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cfesis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-38-1.png" width="672"></p>
 </div>
 </div>
@@ -306,66 +306,66 @@
 </h3>
 <p>It is now possible to specify an argument to include autoregressive coefficients, using the <code>ar</code> argument.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fesis_ar1_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                               formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                               index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                               effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                               fesis <span class="op">=</span> <span class="cn">TRUE</span>,
-
-                               ar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fesis_ar1_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                               formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                               index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                               effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                               fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span></span>
+<span>                               ar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="post-selection-robustness">Post-selection robustness<a class="anchor" aria-label="anchor" href="#post-selection-robustness"></a>
 </h3>
 <p>The options for the <code>robust.isatpanel</code> are to use HAC Standard Errors, use a standard White Standard Error Correction (with the option of clustering the S.E. within groups or time):</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/robust.isatpanel.html">robust.isatpanel</a></span><span class="op">(</span><span class="va">fesis_ar1_example</span>, HAC <span class="op">=</span> <span class="cn">TRUE</span>, robust <span class="op">=</span> <span class="cn">TRUE</span>, cluster <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>
-<span class="co">#&gt; $plm_object</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Model Formula: y ~ ar1 + temp + I.temp.2. + fesis1.1903 + fesis1.1904 + fesis1.1955 + </span>
-<span class="co">#&gt;     fesis2.1945</span>
-<span class="co">#&gt; &lt;environment: 0x55f52039fd60&gt;</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Coefficients:</span>
-<span class="co">#&gt;         ar1 fesis1.1903 fesis1.1904 fesis1.1955 fesis2.1945 </span>
-<span class="co">#&gt;    0.076009    0.890032   -2.672392    5.230385    3.397009 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $robust</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; t test of coefficients:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;              Estimate Std. Error t value  Pr(&gt;|t|)    </span>
-<span class="co">#&gt; ar1          0.076009   0.028275  2.6882  0.007601 ** </span>
-<span class="co">#&gt; fesis1.1903  0.890032   1.585091  0.5615  0.574890    </span>
-<span class="co">#&gt; fesis1.1904 -2.672392   0.494597 -5.4032  1.37e-07 ***</span>
-<span class="co">#&gt; fesis1.1955  5.230385   0.102109 51.2235 &lt; 2.2e-16 ***</span>
-<span class="co">#&gt; fesis2.1945  3.397009   0.078524 43.2607 &lt; 2.2e-16 ***</span>
-<span class="co">#&gt; ---</span>
-<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $HAC</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; t test of coefficients:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;               Estimate Std. Error t value  Pr(&gt;|t|)    </span>
-<span class="co">#&gt; id1         15.2620433 11.6507961  1.3100 0.1909934    </span>
-<span class="co">#&gt; id2         15.5447517 11.7224824  1.3261 0.1856070    </span>
-<span class="co">#&gt; id3         16.8465972 11.9668886  1.4078 0.1600089    </span>
-<span class="co">#&gt; id4         16.6462774 11.9167799  1.3969 0.1632573    </span>
-<span class="co">#&gt; time        -0.0051529  0.0061259 -0.8412 0.4007831    </span>
-<span class="co">#&gt; ar1          0.1053763  0.0506036  2.0824 0.0379687 *  </span>
-<span class="co">#&gt; temp         0.7636035  0.5601232  1.3633 0.1735937    </span>
-<span class="co">#&gt; I.temp.2.    0.0070783  0.1335916  0.0530 0.9577715    </span>
-<span class="co">#&gt; fesis1.1903  0.0688169  0.3059775  0.2249 0.8221701    </span>
-<span class="co">#&gt; fesis1.1904 -0.4730760  0.4728207 -1.0005 0.3176793    </span>
-<span class="co">#&gt; fesis1.1955  4.3570763  0.6884788  6.3286 6.904e-10 ***</span>
-<span class="co">#&gt; fesis2.1945  3.0348028  0.8779180  3.4568 0.0006077 ***</span>
-<span class="co">#&gt; ---</span>
-<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/robust.isatpanel.html">robust.isatpanel</a></span><span class="op">(</span><span class="va">fesis_ar1_example</span>, HAC <span class="op">=</span> <span class="cn">TRUE</span>, robust <span class="op">=</span> <span class="cn">TRUE</span>, cluster <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $plm_object</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model Formula: y ~ ar1 + temp + I.temp.2. + fesis1.1903 + fesis1.1904 + fesis1.1955 + </span></span>
+<span><span class="co">#&gt;     fesis2.1945</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x55f43685b9d8&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;         ar1 fesis1.1903 fesis1.1904 fesis1.1955 fesis2.1945 </span></span>
+<span><span class="co">#&gt;    0.076009    0.890032   -2.672392    5.230385    3.397009 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $robust</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; t test of coefficients:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;              Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; ar1          0.076009   0.028275  2.6882  0.007601 ** </span></span>
+<span><span class="co">#&gt; fesis1.1903  0.890032   1.585091  0.5615  0.574890    </span></span>
+<span><span class="co">#&gt; fesis1.1904 -2.672392   0.494597 -5.4032  1.37e-07 ***</span></span>
+<span><span class="co">#&gt; fesis1.1955  5.230385   0.102109 51.2235 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">#&gt; fesis2.1945  3.397009   0.078524 43.2607 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $HAC</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; t test of coefficients:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;               Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; id1         15.2620433 11.6507961  1.3100 0.1909934    </span></span>
+<span><span class="co">#&gt; id2         15.5447517 11.7224824  1.3261 0.1856070    </span></span>
+<span><span class="co">#&gt; id3         16.8465972 11.9668886  1.4078 0.1600089    </span></span>
+<span><span class="co">#&gt; id4         16.6462774 11.9167799  1.3969 0.1632573    </span></span>
+<span><span class="co">#&gt; time        -0.0051529  0.0061259 -0.8412 0.4007831    </span></span>
+<span><span class="co">#&gt; ar1          0.1053763  0.0506036  2.0824 0.0379687 *  </span></span>
+<span><span class="co">#&gt; temp         0.7636035  0.5601232  1.3633 0.1735937    </span></span>
+<span><span class="co">#&gt; I.temp.2.    0.0070783  0.1335916  0.0530 0.9577715    </span></span>
+<span><span class="co">#&gt; fesis1.1903  0.0688169  0.3059775  0.2249 0.8221701    </span></span>
+<span><span class="co">#&gt; fesis1.1904 -0.4730760  0.4728207 -1.0005 0.3176793    </span></span>
+<span><span class="co">#&gt; fesis1.1955  4.3570763  0.6884788  6.3286 6.904e-10 ***</span></span>
+<span><span class="co">#&gt; fesis2.1945  3.0348028  0.8779180  3.4568 0.0006077 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="the-engine-argument">The <code>engine</code> argument<a class="anchor" aria-label="anchor" href="#the-engine-argument"></a>
@@ -373,36 +373,36 @@
 <p>Another new argument is also the <code>engine</code> argument. This allows us to use an external package to estimate our models. At this stage, the <strong>fixest</strong> package can be used.</p>
 <p>This also means that we can now use an argument to cluster Standard Errors using <code>cluster</code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fixest_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                            formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,
-                            index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                            effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                            fesis <span class="op">=</span> <span class="cn">TRUE</span>,
-
-                            engine <span class="op">=</span> <span class="st">"fixest"</span>,
-                            cluster <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fixest_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                            formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span>,</span>
+<span>                            index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                            effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                            fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span></span>
+<span>                            engine <span class="op">=</span> <span class="st">"fixest"</span>,</span>
+<span>                            cluster <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p>We can verify that, using no clustering of Standard Errors at all, using the <strong>fixest</strong> package does not change our estimates:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fixest_example</span><span class="op">$</span><span class="va">isatpanel.result</span><span class="op">$</span><span class="va">mean.results</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fixest_example</span><span class="op">$</span><span class="va">isatpanel.result</span><span class="op">$</span><span class="va">mean.results</span><span class="op">)</span></span></code></pre></div>
 <p>Compared to the default estimator:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">$</span><span class="va">isatpanel.result</span><span class="op">$</span><span class="va">mean.results</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">$</span><span class="va">isatpanel.result</span><span class="op">$</span><span class="va">mean.results</span><span class="op">)</span></span></code></pre></div>
 <p>However, changing the <code>cluster</code> specification of course does. <strong>The Standard Error correction with it’s current implementation is not valid, so allows for many more indicators than true - therefore clustering is therefore not recommended.</strong></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fixest_example_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,
-                                    formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,
-                                    index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-
-                                    effect <span class="op">=</span> <span class="st">"twoways"</span>,
-
-                                    fesis <span class="op">=</span> <span class="cn">TRUE</span>,
-
-                                    engine <span class="op">=</span> <span class="st">"fixest"</span>,
-                                    cluster <span class="op">=</span> <span class="st">"individual"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fixest_example_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pandata_simulated</span>,</span>
+<span>                                    formula <span class="op">=</span> <span class="va">gdp</span> <span class="op">~</span> <span class="va">temp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>                                    index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                                    effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span></span>
+<span>                                    fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span></span>
+<span>                                    engine <span class="op">=</span> <span class="st">"fixest"</span>,</span>
+<span>                                    cluster <span class="op">=</span> <span class="st">"individual"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fixest_example_cluster</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fixest_example_cluster</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 
@@ -419,7 +419,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer>

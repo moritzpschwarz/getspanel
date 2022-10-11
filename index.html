@@ -8,8 +8,8 @@
 <meta name="description" content="Uses several types of indicator saturation and automated General-to-Specific (GETS) modelling from the gets package and applies it to panel data. This allows the detection of structural breaks in panel data, operationalising a reverse causal approach of causal inference, see Pretis and Schwarz (2022) &lt;doi:10.2139/ssrn.4022745&gt;.">
 <title>General-to-Specific Modelling of Panel Data • getspanel</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="General-to-Specific Modelling of Panel Data">
 <meta property="og:description" content="Uses several types of indicator saturation and automated General-to-Specific (GETS) modelling from the gets package and applies it to panel data. This allows the detection of structural breaks in panel data, operationalising a reverse causal approach of causal inference, see Pretis and Schwarz (2022) &lt;doi:10.2139/ssrn.4022745&gt;.">
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,6 @@
 <div class="page-header"><h1 id="getspanel">getspanel<a class="anchor" aria-label="anchor" href="#getspanel"></a>
 </h1></div>
 <!-- badges: start -->
-
 <p>The package is a panel adaptation of the gets package see <a href="https://CRAN.R-project.org/package=gets" class="external-link">see here</a>.</p>
 <p>This code is being developed by Felix Pretis and Moritz Schwarz. The associated working paper is published under “Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers” by Pretis and Schwarz, which is available at SSRN <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745" class="external-link">here</a>.</p>
 <div class="section level2">
@@ -78,35 +77,35 @@
 </h2>
 <p>You can install the released version of getspanel from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"getspanel"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"getspanel"</span><span class="op">)</span></span></code></pre></div>
 <p>And the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"moritzpschwarz/getspanel"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"moritzpschwarz/getspanel"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/moritzpschwarz/getspanel" class="external-link">getspanel</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"EU_emissions_road"</span><span class="op">)</span>
-<span class="va">subset_EU15</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Austria"</span>, <span class="st">"Belgium"</span>, <span class="st">"Germany"</span>, <span class="st">"Denmark"</span>, <span class="st">"Spain"</span>, <span class="st">"Finland"</span>, 
-                 <span class="st">"France"</span>,  <span class="st">"Greece"</span>, <span class="st">"Ireland"</span>, <span class="st">"Italy"</span>, <span class="st">"Luxembourg"</span>, <span class="st">"Netherlands"</span>,<span class="st">"Portugal"</span>,  <span class="st">"Sweden"</span>, <span class="st">"United Kingdom"</span><span class="op">)</span>
-
-<span class="va">EU_emissions_road</span> <span class="op">&lt;-</span> <span class="va">EU_emissions_road</span><span class="op">[</span><span class="va">EU_emissions_road</span><span class="op">$</span><span class="va">country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">subset_EU15</span>, <span class="op">]</span>
-
-<span class="va">is1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,
-                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, 
-                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-                 effect <span class="op">=</span> <span class="st">"twoways"</span>,
-                 fesis <span class="op">=</span> <span class="cn">TRUE</span>,
-                 
-                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/moritzpschwarz/getspanel" class="external-link">getspanel</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"EU_emissions_road"</span><span class="op">)</span></span>
+<span><span class="va">subset_EU15</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Austria"</span>, <span class="st">"Belgium"</span>, <span class="st">"Germany"</span>, <span class="st">"Denmark"</span>, <span class="st">"Spain"</span>, <span class="st">"Finland"</span>, </span>
+<span>                 <span class="st">"France"</span>,  <span class="st">"Greece"</span>, <span class="st">"Ireland"</span>, <span class="st">"Italy"</span>, <span class="st">"Luxembourg"</span>, <span class="st">"Netherlands"</span>,<span class="st">"Portugal"</span>,  <span class="st">"Sweden"</span>, <span class="st">"United Kingdom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">EU_emissions_road</span> <span class="op">&lt;-</span> <span class="va">EU_emissions_road</span><span class="op">[</span><span class="va">EU_emissions_road</span><span class="op">$</span><span class="va">country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">subset_EU15</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="va">is1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,</span>
+<span>                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, </span>
+<span>                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                 effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span>                 fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                 </span>
+<span>                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>is1</span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a>Date<span class="op">:</span><span class="st"> </span>Mon Feb <span class="dv">14</span> <span class="dv">22</span><span class="op">:</span><span class="dv">49</span><span class="op">:</span><span class="dv">38</span> <span class="dv">2022</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>Date<span class="op">:</span><span class="st"> </span>Tue Oct <span class="dv">11</span> <span class="dv">22</span><span class="op">:</span><span class="dv">22</span><span class="op">:</span><span class="dv">54</span> <span class="dv">2022</span> </span>
 <span id="cb4-4"><a href="#cb4-4"></a>Dependent var.<span class="op">:</span><span class="st"> </span>y </span>
 <span id="cb4-5"><a href="#cb4-5"></a>Method<span class="op">:</span><span class="st"> </span>Ordinary Least <span class="kw">Squares</span> (OLS)</span>
 <span id="cb4-6"><a href="#cb4-6"></a>Variance<span class="op">-</span>Covariance<span class="op">:</span><span class="st"> </span>Ordinary </span>
@@ -182,20 +181,20 @@
 <span id="cb4-76"><a href="#cb4-76"></a>time2018                <span class="fl">193549.0</span>   <span class="fl">79030.9</span>  <span class="fl">2.4490</span> <span class="fl">0.0145913</span> <span class="op">*</span><span class="st">  </span></span>
 <span id="cb4-77"><a href="#cb4-77"></a>fesisAustria<span class="fl">.1987</span>        <span class="fl">-5813.0</span>    <span class="fl">1429.7</span> <span class="fl">-4.0658</span> <span class="fl">5.382e-05</span> <span class="op">**</span><span class="er">*</span></span>
 <span id="cb4-78"><a href="#cb4-78"></a>fesisBelgium<span class="fl">.1989</span>        <span class="fl">-5272.4</span>    <span class="fl">1400.4</span> <span class="fl">-3.7650</span> <span class="fl">0.0001819</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-79"><a href="#cb4-79"></a>fesisDenmark<span class="fl">.1978</span>        <span class="fl">20291.0</span>    <span class="fl">2180.3</span>  <span class="fl">9.3067</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-80"><a href="#cb4-80"></a>fesisDenmark<span class="fl">.1987</span>        <span class="fl">29019.1</span>    <span class="fl">1860.1</span> <span class="fl">15.6008</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-81"><a href="#cb4-81"></a>fesisDenmark<span class="fl">.2003</span>       <span class="fl">-12626.6</span>    <span class="fl">1565.9</span> <span class="fl">-8.0634</span> <span class="fl">3.658e-15</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-82"><a href="#cb4-82"></a>fesisFinland<span class="fl">.1988</span>       <span class="fl">-11190.2</span>    <span class="fl">1436.9</span> <span class="fl">-7.7878</span> <span class="fl">2.756e-14</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-83"><a href="#cb4-83"></a>fesisFrance<span class="fl">.1993</span>         <span class="fl">20950.9</span>    <span class="fl">1822.2</span> <span class="fl">11.4978</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-84"><a href="#cb4-84"></a>fesisFrance<span class="fl">.2001</span>         <span class="fl">16109.9</span>    <span class="fl">1841.2</span>  <span class="fl">8.7498</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-85"><a href="#cb4-85"></a>fesisGermany<span class="fl">.1991</span>       <span class="fl">-10796.4</span>    <span class="fl">1346.2</span> <span class="fl">-8.0200</span> <span class="fl">5.045e-15</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-86"><a href="#cb4-86"></a>fesisGreece<span class="fl">.1988</span>         <span class="fl">25862.9</span>    <span class="fl">1454.3</span> <span class="fl">17.7840</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-87"><a href="#cb4-87"></a>fesisIreland<span class="fl">.1987</span>        <span class="fl">23772.3</span>    <span class="fl">1429.0</span> <span class="fl">16.6354</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-88"><a href="#cb4-88"></a>fesisItaly<span class="fl">.1987</span>          <span class="fl">-6852.9</span>    <span class="fl">1590.3</span> <span class="fl">-4.3090</span> <span class="fl">1.898e-05</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-89"><a href="#cb4-89"></a>fesisNetherlands<span class="fl">.1981</span>    <span class="fl">12187.4</span>    <span class="fl">3320.0</span>  <span class="fl">3.6709</span> <span class="fl">0.0002618</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-90"><a href="#cb4-90"></a>fesisNetherlands<span class="fl">.1983</span>    <span class="fl">20029.1</span>    <span class="fl">3169.2</span>  <span class="fl">6.3199</span> <span class="fl">4.906e-10</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-91"><a href="#cb4-91"></a>fesisPortugal<span class="fl">.1987</span>       <span class="fl">-7330.2</span>    <span class="fl">1503.7</span> <span class="fl">-4.8749</span> <span class="fl">1.375e-06</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb4-92"><a href="#cb4-92"></a>fesisUnitedKingdom<span class="fl">.1990</span> <span class="fl">-10435.0</span>    <span class="fl">1394.6</span> <span class="fl">-7.4826</span> <span class="fl">2.416e-13</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-79"><a href="#cb4-79"></a>fesisGermany<span class="fl">.1978</span>        <span class="fl">20291.0</span>    <span class="fl">2180.3</span>  <span class="fl">9.3067</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-80"><a href="#cb4-80"></a>fesisGermany<span class="fl">.1987</span>        <span class="fl">29019.1</span>    <span class="fl">1860.1</span> <span class="fl">15.6008</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-81"><a href="#cb4-81"></a>fesisGermany<span class="fl">.2003</span>       <span class="fl">-12626.6</span>    <span class="fl">1565.9</span> <span class="fl">-8.0634</span> <span class="fl">3.658e-15</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-82"><a href="#cb4-82"></a>fesisDenmark<span class="fl">.1988</span>       <span class="fl">-11190.2</span>    <span class="fl">1436.9</span> <span class="fl">-7.7878</span> <span class="fl">2.756e-14</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-83"><a href="#cb4-83"></a>fesisSpain<span class="fl">.1993</span>          <span class="fl">20950.9</span>    <span class="fl">1822.2</span> <span class="fl">11.4978</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-84"><a href="#cb4-84"></a>fesisSpain<span class="fl">.2001</span>          <span class="fl">16109.9</span>    <span class="fl">1841.2</span>  <span class="fl">8.7498</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-85"><a href="#cb4-85"></a>fesisFinland<span class="fl">.1991</span>       <span class="fl">-10796.4</span>    <span class="fl">1346.2</span> <span class="fl">-8.0200</span> <span class="fl">5.045e-15</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-86"><a href="#cb4-86"></a>fesisFrance<span class="fl">.1988</span>         <span class="fl">25862.9</span>    <span class="fl">1454.3</span> <span class="fl">17.7840</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-87"><a href="#cb4-87"></a>fesisUnitedKingdom<span class="fl">.1987</span>  <span class="fl">23772.3</span>    <span class="fl">1429.0</span> <span class="fl">16.6354</span> <span class="op">&lt;</span><span class="st"> </span><span class="fl">2.2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-88"><a href="#cb4-88"></a>fesisGreece<span class="fl">.1987</span>         <span class="fl">-6852.9</span>    <span class="fl">1590.3</span> <span class="fl">-4.3090</span> <span class="fl">1.898e-05</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-89"><a href="#cb4-89"></a>fesisItaly<span class="fl">.1981</span>          <span class="fl">12187.4</span>    <span class="fl">3320.0</span>  <span class="fl">3.6709</span> <span class="fl">0.0002618</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-90"><a href="#cb4-90"></a>fesisItaly<span class="fl">.1983</span>          <span class="fl">20029.1</span>    <span class="fl">3169.2</span>  <span class="fl">6.3199</span> <span class="fl">4.906e-10</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-91"><a href="#cb4-91"></a>fesisLuxembourg<span class="fl">.1987</span>     <span class="fl">-7330.2</span>    <span class="fl">1503.7</span> <span class="fl">-4.8749</span> <span class="fl">1.375e-06</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-92"><a href="#cb4-92"></a>fesisSweden<span class="fl">.1990</span>        <span class="fl">-10435.0</span>    <span class="fl">1394.6</span> <span class="fl">-7.4826</span> <span class="fl">2.416e-13</span> <span class="op">**</span><span class="er">*</span></span>
 <span id="cb4-93"><a href="#cb4-93"></a><span class="op">---</span></span>
 <span id="cb4-94"><a href="#cb4-94"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">'***'</span> <span class="fl">0.001</span> <span class="st">'**'</span> <span class="fl">0.01</span> <span class="st">'*'</span> <span class="fl">0.05</span> <span class="st">'.'</span> <span class="fl">0.1</span> <span class="st">' '</span> <span class="dv">1</span></span>
 <span id="cb4-95"><a href="#cb4-95"></a></span>
@@ -211,33 +210,33 @@
 <span id="cb4-105"><a href="#cb4-105"></a>R<span class="op">-</span>squared            <span class="fl">0.99245</span></span>
 <span id="cb4-106"><a href="#cb4-106"></a>Log<span class="op">-</span><span class="kw">lik.</span>(<span class="dt">n=</span><span class="dv">720</span>)  <span class="fl">-6976.66946</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-example_plot-1.png" width="100%"></p>
 <p>Let’s explore the other plots that we can use:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 <p>We can plot the counterfactual aspects compared</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 <p>We can plot the residuals against an OLS model:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plot_residuals.html">plot_residuals</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_residuals.html">plot_residuals</a></span><span class="op">(</span><span class="va">is1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 <p>An example using coefficient step indicator saturation and impulse indicator saturation:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,
-                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, 
-                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-                 effect <span class="op">=</span> <span class="st">"twoways"</span>,
-                 csis <span class="op">=</span> <span class="cn">TRUE</span>, 
-                 iis <span class="op">=</span> <span class="cn">TRUE</span>,  
-                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,</span>
+<span>                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, </span>
+<span>                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                 effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span>                 csis <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                 iis <span class="op">=</span> <span class="cn">TRUE</span>,  </span>
+<span>                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>is2     </span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>
-<span id="cb10-3"><a href="#cb10-3"></a>Date<span class="op">:</span><span class="st"> </span>Mon Feb <span class="dv">14</span> <span class="dv">22</span><span class="op">:</span><span class="dv">52</span><span class="op">:</span><span class="dv">59</span> <span class="dv">2022</span> </span>
+<span id="cb10-3"><a href="#cb10-3"></a>Date<span class="op">:</span><span class="st"> </span>Tue Oct <span class="dv">11</span> <span class="dv">22</span><span class="op">:</span><span class="dv">26</span><span class="op">:</span><span class="dv">05</span> <span class="dv">2022</span> </span>
 <span id="cb10-4"><a href="#cb10-4"></a>Dependent var.<span class="op">:</span><span class="st"> </span>y </span>
 <span id="cb10-5"><a href="#cb10-5"></a>Method<span class="op">:</span><span class="st"> </span>Ordinary Least <span class="kw">Squares</span> (OLS)</span>
 <span id="cb10-6"><a href="#cb10-6"></a>Variance<span class="op">-</span>Covariance<span class="op">:</span><span class="st"> </span>Ordinary </span>
@@ -337,33 +336,33 @@
 <span id="cb10-100"><a href="#cb10-100"></a><span class="kw">plot</span>(is2)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
 <p>and an example of Coefficient Fixed-Effect Step indicator saturation:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,
-                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, 
-                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-                 effect <span class="op">=</span> <span class="st">"twoways"</span>,
-                 cfesis <span class="op">=</span> <span class="cn">TRUE</span>, 
-                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,</span>
+<span>                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, </span>
+<span>                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                 effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span>                 cfesis <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is3</span>    
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is3</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is3</span>    </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"></p>
 <p>We can also use e.g. the <code>fixest</code> package to estimate our models:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">is4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,
-                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, 
-                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,
-                 effect <span class="op">=</span> <span class="st">"twoways"</span>,
-                 engine <span class="op">=</span> <span class="st">"fixest"</span>,
-                 fesis <span class="op">=</span> <span class="cn">TRUE</span>, 
-                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">is4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">EU_emissions_road</span>,</span>
+<span>                 formula <span class="op">=</span> <span class="va">transport.emissions</span> <span class="op">~</span> <span class="va">lgdp</span> <span class="op">+</span> <span class="va">lpop</span>, </span>
+<span>                 index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"country"</span>,<span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                 effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
+<span>                 engine <span class="op">=</span> <span class="st">"fixest"</span>,</span>
+<span>                 fesis <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                 print.searchinfo <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># to save space we suppress the status information in the estimation</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is4</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"></p>
 </div>
 </div>
@@ -404,6 +403,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/moritzpschwarz/getspanel/actions" class="external-link"><img src="https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://CRAN.R-project.org/package=getspanel" class="external-link"><img src="https://www.r-pkg.org/badges/version/getspanel" alt="CRAN status"></a></li>
 </ul>
 </div>
 
@@ -418,7 +418,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer>
