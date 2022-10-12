@@ -213,7 +213,6 @@ test_that("Test that estimates of FESIS are equal across methods", {
 test_that("Test that estimates of FESIS are equal across methods", {
   skip_on_ci()
   data("pandata_simulated")
-  pandata_simulated <- as_tibble(pandata_simulated)
   pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
                   index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
