@@ -97,18 +97,32 @@ Panel isat function
 }
 \examples{
 \donttest{
-data <- pandata_simulated
+data(EU_emissions_road)
 
-is1 <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01)
-plot(is1)
-plot_grid(is1)
+# Group specification
+EU15 <- c("Austria", "Germany", "Denmark", "Spain", "Finland", "Belgium",
+         "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+         "Netherlands", "Greece", "Portugal", "Sweden")
 
-is2 <- isatpanel(data = data, gdp ~ temp + I(temp^2), index = c("country","year"),
-effect="twoways",iis=TRUE,fesis=TRUE, csis = TRUE,t.pval=0.01,engine = "fixest")
-plot(is2)
-plot_grid(is2)}
+# Prepare sample and data
+EU_emissions_road_short <- EU_emissions_road[
+EU_emissions_road$country \%in\% EU15 &
+EU_emissions_road$year >= 2000,
+]
 
+# Run
+result <- isatpanel(
+  data = EU_emissions_road_short,
+  formula = ltransport.emissions ~ lgdp + I(lgdp^2) + lpop,
+  index = c("country", "year"),
+  effect = "twoways",
+  fesis = TRUE,
+  plot = FALSE,
+  t.pval = 0.01
+)
+plot(result)
+plot_grid(result)
+}
 }
 \references{
 Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745

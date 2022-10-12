@@ -243,6 +243,61 @@ test_that("Check the turbo and parallel options",{
 
   options(print.searchinfo = FALSE)
 
+  data("EUCO2residential")
+  data <- EUCO2residential
+  data$lgdp_sq <- data$lgdp^2
+
+  # data$agg.directem_pc <- data$agg.directem/data$pop
+  # data$lagg.directem_pc <- log(data$agg.directem_pc)
+  # data %>%
+  #   group_by(country) %>%
+  #   mutate(L1.lagg.directem_pc = lag(lagg.directem_pc)) %>%
+  #   ungroup -> data
+
+
+
+
+  # Group specification
+  EU15 <- c("Austria", "Germany", "Denmark", "Spain", "Finland", "Belgium",
+            "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+            "Netherlands", "Greece", "Portugal", "Sweden")
+  EU16 <- c("Croatia", "Bulgaria", "Cyprus","Czech Republic", "Estonia",
+            "Hungary", "Lithuania", "Latvia", "Poland", "Romania",
+            "Slovenia", "Switzerland", "Slovak Republic", "Malta", #"Iceland",
+            "Norway")
+  EU31 <- c(EU15, EU16)
+
+  # Heterogenous effects preparation
+
+  base.int <- c("lgdp_EU15", "lgdp_EU16", "lgdpsq_EU15", "lgdpsq_EU16",
+                "lhdd_EU15", "lhdd_EU16", "lcdd_EU15", "lcdd_EU16",
+                "urban_EU15", "urban_EU16", "av.rate_EU15", "av.rate_EU16")
+
+  #
+  #   data$lgdp_EU15 <- data$lgdp * (data$country %in% EU15)
+  #   data$lgdp_EU16 <- data$lgdp * (data$country %in% EU16)
+  #   data$lgdpsq_EU15 <- data$lgdp_sq * (data$country %in% EU15)
+  #   data$lgdpsq_EU16 <- data$lgdp_sq * (data$country %in% EU16)
+  #   data$lhdd_EU15 <- data$lhdd * (data$country %in% EU15)
+  #   data$lhdd_EU16 <- data$lhdd * (data$country %in% EU16)
+  #   #data$lcdd_EU15 <- data$lcdd * (data$country %in% EU15)
+  #   #data$lcdd_EU16 <- data$lcdd * (data$country %in% EU16)
+  #   data$av.rate_EU15 <- data$av.rate * (data$country %in% EU15)
+  #   data$av.rate_EU16 <- data$av.rate * (data$country %in% EU16)
+  #   data$urban_EU15 <- data$urban * (data$country %in% EU15)
+  #   data$urban_EU16 <- data$urban * (data$country %in% EU16)
+
+
+  dv.name <- "log(agg. direct emissions p.c.)"
+  group <- 1
+
+  # Prepare sample and data
+  sample <- list(EU15, EU31)[[group]]
+  dat <- filter(data, country %in% sample, year >= 2000)
+
+  p.value <- 0.01
+
+
   a3.default <- isatpanel(
     data = dat,
     formula = ifelse(

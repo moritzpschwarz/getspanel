@@ -4,14 +4,14 @@
 #' @param plus_t Number of time periods for the counterfactual to be displayed (default = 5).
 #' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
 #' @param title Plot title. Must be a character vector.
-#' @param zero_line Plot a horizontal line at y = 0. Default is TRUE.
+#' @param zero_line Plot a horizontal line at y = 0. Default is FALSE.
 #'
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
 #' @export
 #'
 #' @importFrom ggplot2 geom_ribbon guides geom_rect
 #'
-plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = TRUE){
+plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = FALSE){
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX

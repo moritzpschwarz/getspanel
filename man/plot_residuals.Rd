@@ -15,13 +15,3 @@ A ggplot2 plot that plots an 'isatpanel' object and shows the residuals over tim
 \description{
 Plot Residuals from 'isatpanel' against OLS
 }
-\examples{
-
-\donttest{
-data <- pandata_simulated
-outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")
-plot_residuals(outcome)
-}
-
-}

@@ -9,7 +9,7 @@
   max.id.facet = 16,
   facet.scales = "free",
   title = NULL,
-  zero_line = TRUE,
+  zero_line = FALSE,
   ...
 )
 }
@@ -22,7 +22,7 @@
 
 \item{title}{Plot title. Must be a character vector.}
 
-\item{zero_line}{Plot a horizontal line at y = 0. Default is TRUE.}
+\item{zero_line}{Plot a horizontal line at y = 0. Default is FALSE.}
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }

@@ -9,7 +9,7 @@ plot_counterfactual(
   plus_t = 5,
   facet.scales = "free",
   title = NULL,
-  zero_line = TRUE
+  zero_line = FALSE
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ plot_counterfactual(
 
 \item{title}{Plot title. Must be a character vector.}
 
-\item{zero_line}{Plot a horizontal line at y = 0. Default is TRUE.}
+\item{zero_line}{Plot a horizontal line at y = 0. Default is FALSE.}
 }
 \value{
 A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.

@@ -5,14 +5,6 @@
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows the residuals over time in comparison to an OLS model.
 #' @export
 #'
-#' @examples
-#'
-#'\donttest{
-#' data <- pandata_simulated
-#' outcome <- isatpanel(data = data, gdp ~ temp, index = c("country","year"),
-#' effect="twoways",iis=FALSE,fesis=TRUE,t.pval=0.01,engine = "fixest")
-#' plot_residuals(outcome)
-#'}
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline
 #'
