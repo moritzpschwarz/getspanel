@@ -1,12 +1,13 @@
 
 test_that("Complicated example making sure that isatpanel and fixest are producing the same results",{
 
+  skip_on_cran()
   data("EUCO2residential")
   data <- EUCO2residential
   data$lgdp_sq <- data$lgdp^2
 
-  # data$agg.directem_pc <- data$agg.directem/data$pop
-  # data$lagg.directem_pc <- log(data$agg.directem_pc)
+  data$agg.directem_pc <- data$agg.directem/data$pop
+  data$lagg.directem_pc <- log(data$agg.directem_pc)
   # data %>%
   #   group_by(country) %>%
   #   mutate(L1.lagg.directem_pc = lag(lagg.directem_pc)) %>%
@@ -51,12 +52,14 @@ test_that("Complicated example making sure that isatpanel and fixest are produci
 
   # Prepare sample and data
   sample <- list(EU15, EU31)[[group]]
-  dat <- filter(data, country %in% sample, year >= 2000)
+  dat <- data[data$country %in% sample & data$year >= 2000,]
+
+
 
   p.value <- 0.01
 
   # IIS and FESIS
-start <- Sys.time()
+  start <- Sys.time()
   a1 <- isatpanel(
     data = dat,
     formula = ifelse(
@@ -72,7 +75,8 @@ start <- Sys.time()
     fesis = TRUE,
     #engine = "fixest",
     plot = FALSE,
-    t.pval = p.value
+    t.pval = p.value,
+    print.searchinfo = FALSE
   )
   end <- Sys.time()
   end - start
@@ -95,7 +99,8 @@ start <- Sys.time()
     #engine = "fixest",
     plot = FALSE,
     t.pval = p.value,
-    turbo = TRUE
+    turbo = TRUE,
+    print.searchinfo = FALSE
   )
   end <- Sys.time()
   end - start
@@ -115,7 +120,8 @@ start <- Sys.time()
     fesis = TRUE,
     engine = "fixest",
     plot = FALSE,
-    t.pval = p.value
+    t.pval = p.value,
+    print.searchinfo = FALSE
   )
 
 
@@ -139,7 +145,8 @@ start <- Sys.time()
     fesis = TRUE,
     #engine = "fixest",
     plot = FALSE,
-    t.pval = p.value
+    t.pval = p.value,
+    print.searchinfo = FALSE
   )
 
 
@@ -158,7 +165,8 @@ start <- Sys.time()
     fesis = TRUE,
     engine = "fixest",
     plot = FALSE,
-    t.pval=p.value
+    t.pval=p.value,
+    print.searchinfo = FALSE
   )
 
   expect_identical(a2$isatpanel.result$ISnames, b2$isatpanel.result$ISnames[!is.na(coef(b2$isatpanel.result)[b2$isatpanel.result$ISnames])])
@@ -181,7 +189,8 @@ start <- Sys.time()
     fesis = TRUE,
     #engine = "fixest",
     plot = FALSE,
-    t.pval=p.value
+    t.pval=p.value,
+    print.searchinfo = FALSE
   )
 
 
@@ -200,7 +209,8 @@ start <- Sys.time()
     fesis = TRUE,
     engine = "fixest",
     plot = FALSE,
-    t.pval=p.value
+    t.pval=p.value,
+    print.searchinfo = FALSE
   )
 
   expect_identical(a3$isatpanel.result$ISnames, b3$isatpanel.result$ISnames[!is.na(coef(b3$isatpanel.result)[b3$isatpanel.result$ISnames])])
@@ -241,14 +251,15 @@ start <- Sys.time()
 
 test_that("Check the turbo and parallel options",{
 
+  skip_on_cran()
   options(print.searchinfo = FALSE)
 
   data("EUCO2residential")
   data <- EUCO2residential
   data$lgdp_sq <- data$lgdp^2
 
-  # data$agg.directem_pc <- data$agg.directem/data$pop
-  # data$lagg.directem_pc <- log(data$agg.directem_pc)
+  data$agg.directem_pc <- data$agg.directem/data$pop
+  data$lagg.directem_pc <- log(data$agg.directem_pc)
   # data %>%
   #   group_by(country) %>%
   #   mutate(L1.lagg.directem_pc = lag(lagg.directem_pc)) %>%
@@ -293,7 +304,7 @@ test_that("Check the turbo and parallel options",{
 
   # Prepare sample and data
   sample <- list(EU15, EU31)[[group]]
-  dat <- filter(data, country %in% sample, year >= 2000)
+  dat <- data[data$country %in% sample & data$year >= 2000,]
 
   p.value <- 0.01
 
@@ -313,7 +324,8 @@ test_that("Check the turbo and parallel options",{
     fesis = TRUE,
     #engine = "fixest",
     plot = FALSE,
-    t.pval=p.value
+    t.pval=p.value,
+    print.searchinfo = FALSE
   )
 
   a3.turbo <- isatpanel(
@@ -332,7 +344,8 @@ test_that("Check the turbo and parallel options",{
     #engine = "fixest",
     plot = FALSE,
     t.pval=p.value,
-    turbo = TRUE
+    turbo = TRUE,
+    print.searchinfo = FALSE
   )
 
   a3.parallel <- isatpanel(
@@ -351,7 +364,8 @@ test_that("Check the turbo and parallel options",{
     #engine = "fixest",
     plot = FALSE,
     t.pval=p.value,
-    parallel.options = 2
+    parallel.options = 2,
+    print.searchinfo = FALSE
   )
 
 
@@ -372,7 +386,8 @@ test_that("Check the turbo and parallel options",{
     plot = FALSE,
     t.pval=p.value,
     parallel.options = 2,
-    turbo = TRUE
+    turbo = TRUE,
+    print.searchinfo = FALSE
   )
   expect_identical(a3.default$isatpanel.result$coefficients,
                    a3.turbo$isatpanel.result$coefficients,
@@ -416,7 +431,8 @@ test_that("Check the turbo and parallel options",{
     engine = "fixest",
     plot = FALSE,
     t.pval=p.value,
-    turbo = TRUE
+    turbo = TRUE,
+    print.searchinfo = FALSE
   )
 
   b3.parallel <- isatpanel(
@@ -435,7 +451,8 @@ test_that("Check the turbo and parallel options",{
     engine = "fixest",
     plot = FALSE,
     t.pval=p.value,
-    parallel.options = 2
+    parallel.options = 2,
+    print.searchinfo = FALSE
   )
 
 
@@ -456,7 +473,8 @@ test_that("Check the turbo and parallel options",{
     plot = FALSE,
     t.pval=p.value,
     parallel.options = 2,
-    turbo = TRUE
+    turbo = TRUE,
+    print.searchinfo = FALSE
   )
   expect_identical(b3.default$isatpanel.result$coefficients,
                    b3.turbo$isatpanel.result$coefficients,

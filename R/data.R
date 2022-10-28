@@ -50,11 +50,13 @@
 #' \describe{
 #'   \item{country}{Country}
 #'   \item{year}{Year}
-#'   \item{lgdp}{Lagged Gross Domestic Product}
-#'   \item{lhdd}{Logged Heating Degree Days}
-#'   \item{lcdd}{Logged Cooling Degree Days}
+#'   \item{lgdp}{Log Gross Domestic Product}
+#'   \item{lhdd}{Log Heating Degree Days}
+#'   \item{lcdd}{Log Cooling Degree Days}
 #'   \item{urban}{Urban Share}
 #'   \item{av.rate}{EU Interest Rate}
+#'   \item{pop}{Population}
+#'   \item{agg.directem}{Aggregated Direct Emissions}
 #' }
 #' @source IEA
 #'

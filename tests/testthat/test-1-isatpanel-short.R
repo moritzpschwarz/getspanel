@@ -94,6 +94,7 @@ test_that("Check unbalanced panel",{
 
 
 test_that("Simple Fixest Test",{
+  skip_on_cran()
   expect_silent(isatpanel(
     y = pandata_simulated$gdp,
     id = pandata_simulated$country,
@@ -110,6 +111,7 @@ test_that("Simple Fixest Test",{
 })
 
 test_that("Simple Default Test",{
+  skip_on_cran()
   expect_silent(isatpanel(
     y = pandata_simulated$gdp,
     id = pandata_simulated$country,
@@ -126,6 +128,7 @@ test_that("Simple Default Test",{
 
 
 test_that("Simple Default Test with AR1",{
+  skip_on_cran()
   expect_silent(isatpanel(
     y = pandata_simulated$gdp,
     id = pandata_simulated$country,
@@ -140,26 +143,28 @@ test_that("Simple Default Test with AR1",{
     print.searchinfo = FALSE
   ))
 
-  expect_silent(isatpanel(
-    y = pandata_simulated$gdp,
-    id = pandata_simulated$country,
-    time = pandata_simulated$year,
-    mxreg = pandata_simulated$temp,
-    effect = "twoways",
-    iis = FALSE,
-    fesis = TRUE,
-    t.pval = 0.01,
-    engine = "fixest",
-    cluster = "individual",
-    ar = 1,
-    print.searchinfo = FALSE
-  ))
+  expect_silent(
+    isatpanel(
+      y = pandata_simulated$gdp,
+      id = pandata_simulated$country,
+      time = pandata_simulated$year,
+      mxreg = pandata_simulated$temp,
+      effect = "twoways",
+      iis = FALSE,
+      fesis = TRUE,
+      t.pval = 0.01,
+      engine = "fixest",
+      cluster = "individual",
+      ar = 1,
+      print.searchinfo = FALSE
+    ))
 })
 
 
 
 
 test_that("Test that estimates of IIS are equal across methods and including perfectly linear terms", {
+  skip_on_cran()
   pandata_simulated$int_rate <- rep(rnorm(21),4)
   pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
 
@@ -189,6 +194,7 @@ test_that("Test that estimates of IIS are equal across methods and including per
 
 
 test_that("Test that estimates of FESIS are equal across methods", {
+  skip_on_cran()
   data("pandata_simulated")
 
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
@@ -211,7 +217,8 @@ test_that("Test that estimates of FESIS are equal across methods", {
 
 
 test_that("Test that estimates of FESIS are equal across methods", {
-  skip_on_ci()
+  #skip_on_ci()
+  skip_on_cran()
   data("pandata_simulated")
   pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,

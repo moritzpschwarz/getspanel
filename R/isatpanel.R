@@ -131,6 +131,7 @@ isatpanel <- function(
 
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
+  if(!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))) {
     mf <- match.call(expand.dots = FALSE)
@@ -146,6 +147,8 @@ isatpanel <- function(
     attr(mt,"intercept") <- 0 # This forces no intercept!!!
 
     y <- model.response(mf, "numeric")
+
+    if(all(is.na(y))){stop("All values of dependent variable are NA - check specification.")}
 
     x <- model.matrix(mt, mf)
 
