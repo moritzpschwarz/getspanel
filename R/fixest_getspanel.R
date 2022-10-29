@@ -93,7 +93,7 @@ fixestFun <- function(y, x, effect, time, id, cluster = "individual", ...){
   if (ncol(x) > length(out$coefficients)) {
     original <- data.frame(term = colnames(x),
                            index = 1:length(colnames(x)), row.names = NULL)
-    outcome <- data.frame(term = names(coef(tmp)),
+    outcome <- data.frame(term = gsub("`","",names(coef(tmp))),
                           coef = coef(tmp),
                           row.names = NULL)
     merged <- merge(original, outcome, by = "term", all = TRUE, sort = FALSE)

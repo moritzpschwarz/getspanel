@@ -35,7 +35,7 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       x <- as.matrix(x)
       colnames(x) <- "x"}
 
-    est_df <- data.frame(y,x,individual = as.factor(id),time = as.factor(time))
+    est_df <- data.frame(y,x,individual = as.factor(id),time = as.factor(time), check.names = FALSE)
 
     # fixest always uses the first FE to cluster the standard errors.
     # When twoways, we need to arrange them in the right order to match
@@ -81,7 +81,7 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
       paste0("y ~ ",paste0(row.names(na.omit(tmp$coefficients)),collapse = " + "),
              ifelse(effect == "none","-1",""),
              "|",parse_FE,"| 0 |",cluster)
-      )
+    )
     tmp <- lfe::felm(formula = parsed_formula,data = est_df)
 
     out$coefficients <- coef(tmp)
@@ -98,12 +98,11 @@ felmFun <- function (y, x, effect, time, id, cluster = "individual", ...) {
   out$rss <- sum(out$residuals2)
   out$sigma2 <- out$rss/out$df
 
-
   # # Adapt mXnames in arx when felm removes collinearity
   if(ncol(x) > length(out$coefficients)){
     original <- data.frame(term = colnames(x),
                            index = 1:length(colnames(x)), row.names = NULL)
-    outcome <- data.frame(term = names(coef(tmp)),
+    outcome <- data.frame(term = gsub("`","",names(coef(tmp))),
                           coef = coef(tmp),
                           row.names = NULL)
     merged <- merge(original, outcome, by = "term", all = TRUE, sort = FALSE)
