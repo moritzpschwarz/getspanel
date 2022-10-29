@@ -23,12 +23,12 @@ pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
 # Unit testing
 test_that("Initial Tests Isatpanel on simulated data",{
 
-  #expect_silent(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
+  expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"),fesis = TRUE))
 
   #newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
 
-  expect_silent(newmethod_ar <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
-                                          index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo = FALSE))
+  expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
+                           index = c("country","year"),fesis=TRUE, ar = 1))
 
 })
 
