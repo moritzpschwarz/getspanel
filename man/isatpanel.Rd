@@ -49,7 +49,7 @@ isatpanel(
 
 \item{user.estimator}{Use a user.estimator}
 
-\item{cluster}{cluster Standard Errors at this level. Default is "none". Possible values are: "indvidiual", "time", or "twoways".}
+\item{cluster}{cluster Standard Errors at this level. Default is "none". Possible values are: "individiual", "time", or "twoways".}
 
 \item{ar}{Autoregressive Term to be included. default is 0.}
 

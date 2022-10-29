@@ -12,7 +12,7 @@
 #' @param na.remove remove NAs
 #' @param engine Estimation function to use. Default is NULL, which uses the default estimation procedure of the gets package. Alternatives are "fixest", "plm", or "felm".
 #' @param user.estimator Use a user.estimator
-#' @param cluster cluster Standard Errors at this level. Default is "none". Possible values are: "indvidiual", "time", or "twoways".
+#' @param cluster cluster Standard Errors at this level. Default is "none". Possible values are: "individiual", "time", or "twoways".
 #' @param plm_model Type of PLM model (only if engine = "PLM")
 #' @param ar Autoregressive Term to be included. default is 0.
 #' @param iis use Impulse Indicator Saturation
