@@ -12,7 +12,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ scale_color_identity scale_linetype
 #'
-plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL, zero_line = FALSE,...){
+plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL, zero_line = FALSE, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
 

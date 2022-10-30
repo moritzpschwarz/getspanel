@@ -1,6 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+- Compressed the data files, deleted a few snapshot files and deleted a few files for the vignette to create a tarball with less than 5 MB.
 - Added \value to all exported functions where this has been missing before
 - Changed all \dontrun{} to \donttest{} as all of these can be run but just take longer than 5 seconds
 - Removed all par() in the test files in order not to change a users' options()
