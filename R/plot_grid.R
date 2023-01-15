@@ -10,6 +10,35 @@
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2
 #' @importFrom stats aggregate
 #'
+#' @examples
+#' \donttest{
+#'data(EU_emissions_road)
+#'
+#'# Group specification
+#'EU15 <- c("Austria", "Germany", "Denmark", "Spain", "Finland", "Belgium",
+#'          "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+#'          "Netherlands", "Greece", "Portugal", "Sweden")
+#'
+#'# Prepare sample and data
+#'EU_emissions_road_short <- EU_emissions_road[
+#'EU_emissions_road$country %in% EU15 &
+#' EU_emissions_road$year >= 2000,
+#' ]
+#'
+#'# Run
+#' result <- isatpanel(
+#'   data = EU_emissions_road_short,
+#'   formula = ltransport.emissions ~ lgdp + I(lgdp^2) + lpop,
+#'   index = c("country", "year"),
+#'   effect = "twoways",
+#'   fesis = TRUE,
+#'   plot = FALSE,
+#'   t.pval = 0.01
+#' )
+#' plot(result)
+#' plot_grid(result)
+#'}
+
 plot_grid <- function(x, title = NULL, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
@@ -82,6 +111,7 @@ plot_grid <- function(x, title = NULL, ...){
     indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), function(x){sum(x,na.rm = TRUE)})
     names(indicators_toplot) <- c("time","id","facet","effect")
     indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
+    indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
 
     ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
       geom_tile(na.rm = NA) +

@@ -8,6 +8,35 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline
 #'
+#' @examples
+#' \donttest{
+#'data(EU_emissions_road)
+#'
+#'# Group specification
+#'EU15 <- c("Austria", "Germany", "Denmark", "Spain", "Finland", "Belgium",
+#'          "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+#'          "Netherlands", "Greece", "Portugal", "Sweden")
+#'
+#'# Prepare sample and data
+#'EU_emissions_road_short <- EU_emissions_road[
+#'EU_emissions_road$country %in% EU15 &
+#' EU_emissions_road$year >= 2000,
+#' ]
+#'
+#'# Run
+#' result <- isatpanel(
+#'   data = EU_emissions_road_short,
+#'   formula = ltransport.emissions ~ lgdp + I(lgdp^2) + lpop,
+#'   index = c("country", "year"),
+#'   effect = "twoways",
+#'   fesis = TRUE,
+#'   plot = FALSE,
+#'   t.pval = 0.01
+#' )
+#' plot(result)
+#' plot_residuals(result)
+#'}
+
 plot_residuals <- function(isatpanelobject){
   finaldata <- isatpanelobject$finaldata
   finaldata$id <- as.factor(finaldata$id)

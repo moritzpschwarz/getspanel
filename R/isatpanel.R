@@ -503,16 +503,14 @@ isatpanel <- function(
   #############################
   ####### Estimate
   ###############################
-
   # Save original arx mc warning setting and disable it here
-  tmpmc <- getOption("mc.warning")
+  tmpmc <- options("mc.warning")
+  on.exit(options(tmpmc)) # set the old mc warning on exit
+
   options(mc.warning = FALSE)
 
   ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = sis, uis = sispanx, user.estimator = user.estimator, mc = FALSE, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
-
-  # Set the old arx mc warning again
-  options(mc.warning = tmpmc)
 
   ###############################
   ############## Return output
