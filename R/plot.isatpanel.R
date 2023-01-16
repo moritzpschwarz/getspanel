@@ -45,7 +45,7 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
   }
   # Steps
   if(nrow(df_identified$steps)>0){
-    g = g + geom_vline(data = df_identified$steps, aes_(xintercept = time,color="purple"))
+    g = g + geom_vline(data = df_identified$steps, aes_(xintercept = ~time,color="purple"))
   }
   # fesis
   if(!is.null(df_identified$fesis)){
@@ -75,7 +75,7 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
     scale_color_identity(name = NULL,
                          breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
-                         labels = c("y","Fitted","IIS","SIS","FESIS","CFESIS", "CSIS"),
+                         labels = c("y","Fitted","IIS","JSIS","FESIS","CFESIS", "CSIS"),
                          guide = "legend")+
 
     scale_linetype(name = "Variable") +

@@ -15,10 +15,14 @@ identify_indicator_timings <- function(object){
                   timevar = "name",
                   times = varying_vars,
                   direction = "long")
-
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]
   steps <- object_l[grepl("sis",object_l$name) & object_l$value == 1 & !grepl("fesis", object_l$name) & !grepl("csis", object_l$name),]
+  if(nrow(steps)>0){
+    steps <- aggregate(steps$time, by = list(id = steps$id, name = steps$name), FUN = min)
+    names(steps)[grep("x",names(steps))] <- "time"
+    steps$value <- 1
+  }
 
   # FESIS
   if(any(grepl("^fesis",names(object)))){

@@ -78,6 +78,10 @@ EUCO2residential <- EUCO2residential[EUCO2residential$year > 2000 &
                                                                        "Belgium", "Italy", 
                                                                        "Sweden", "Denmark"),]
 
+# let's create a log emissions per capita variable
+EUCO2residential$lagg.directem_pc <- log(EUCO2residential$agg.directem/EUCO2residential$pop)
+EUCO2residential <- dplyr::distinct(EUCO2residential)
+
 # and let's also turn off printing the intermediate output from isatpanel
 options(print.searchoutput = FALSE)
 ```
@@ -101,7 +105,7 @@ Using the new method
 
 ```{r}
 is_lm <- isatpanel(data = EUCO2residential,
-                   formula = lagg.directem_pc ~ lgdp, 
+                   formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                    index = c("country","year"),
                    
                    effect = "twoways",
@@ -172,7 +176,7 @@ Simply set `iis = TRUE`.
 
 ```{r}
 iis_example <- isatpanel(data = EUCO2residential,
-                         formula = lagg.directem_pc ~ lgdp,
+                         formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                          index = c("country","year"),
 
                          effect = "twoways",
@@ -199,10 +203,10 @@ If, however, `effect = "individual"` then we can use `jsis = TRUE` to select ove
 
 ```{r}
 jsis_example <- isatpanel(data = EUCO2residential,
-                          formula = lagg.directem_pc ~ lgdp,
+                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                           index = c("country","year"),
 
-                          effect = "twoways",
+                          effect = "individual",
 
                           jsis = TRUE)
 ```
@@ -222,7 +226,7 @@ To illustrate this, as well as the advantages of using the `lm` approach, we inc
 
 ```{r}
 csis_example <- isatpanel(data = EUCO2residential,
-                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                           index = c("country","year"),
 
                           effect = "twoways",
@@ -239,7 +243,7 @@ By default, all coefficients will be interacted and added to the indicator list 
 
 ```{r}
 csis_example2 <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
@@ -256,7 +260,7 @@ This is equivalent to supplying a constant to the mxbreak argument in the old me
 
 ```{r}
 fesis_example <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
@@ -276,7 +280,7 @@ Similar to the `csis_var` idea, we can specify the `fesis` method for a subset o
 
 ```{r}
 fesis_example2 <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
@@ -300,14 +304,15 @@ This means we can also combine the subsetting in both the variable and in the in
 
 ```{r}
 cfesis_example <- isatpanel(data = EUCO2residential,
-                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                             index = c("country","year"),
 
                             effect = "twoways",
 
                             cfesis = TRUE,
-                            cfesis_id = c("2","3"),
-                            cfesis_var = "lgdp")
+                            cfesis_id = c("Belgium","Germany"),
+                            cfesis_var = "lgdp",
+                            t.pval = 0.001)
 ```
 
 
@@ -322,7 +327,7 @@ It is now possible to specify an argument to include autoregressive coefficients
 
 ```{r}
 fesis_ar1_example <- isatpanel(data = EUCO2residential,
-                               formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                               formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                                index = c("country","year"),
 
                                effect = "twoways",
@@ -335,10 +340,10 @@ fesis_ar1_example <- isatpanel(data = EUCO2residential,
 
 ## Post-selection robustness
 
-The options for the `robust.isatpanel` are to use HAC Standard Errors, use a standard White Standard Error Correction (with the option of clustering the S.E. within groups or time):
+The options for the `robust_isatpanel` are to use HAC Standard Errors, use a standard White Standard Error Correction (with the option of clustering the S.E. within groups or time):
 
 ```{r}
-robust.isatpanel(fesis_ar1_example, HAC = TRUE, robust = TRUE, cluster = "group")
+robust_isatpanel(fesis_ar1_example, HAC = TRUE, robust = TRUE, cluster = "group")
 ```
 
 ## The `engine` argument
@@ -349,7 +354,7 @@ This also means that we can now use an argument to cluster Standard Errors using
 
 ```{r}
 fixest_example <- isatpanel(data = EUCO2residential,
-                            formula = lagg.directem_pc ~ lgdp,
+                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                             index = c("country","year"),
 
                             effect = "twoways",
@@ -374,11 +379,11 @@ Compared to the default estimator:
 head(is_lm$isatpanel.result$mean.results)
 ```
 
-However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - therefore clustering is therefore not recommended.**
+However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - clustering is therefore currently not recommended.**
 
 ```{r}
 fixest_example_cluster <- isatpanel(data = EUCO2residential,
-                                    formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                                    formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                                     index = c("country","year"),
 
                                     effect = "twoways",

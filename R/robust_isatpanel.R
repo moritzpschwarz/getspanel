@@ -38,10 +38,10 @@
 #' )
 #' plot(result)
 #' plot_grid(result)
-#' robust.isatpanel(result)
+#' robust_isatpanel(result)
 #'}
 #'
-robust.isatpanel <- function(object,
+robust_isatpanel <- function(object,
                              robust = TRUE,
                              HAC = FALSE,
                              lag = NULL,
