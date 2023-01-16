@@ -178,6 +178,7 @@ isatpanel <- function(
   if (is.null(cfesis_id)) {cfesis_id <- unique(id)}
 
   if (!all(cfesis_id %in% id)) {stop("Some or all id names in 'cfesis_id' not found in the data. Please check the input under 'cfesis_id'.")}
+  if (!all(fesis_id %in% id)) {stop("Some or all id names in 'fesis_id' not found in the data. Please check the input under 'fesis_id'.")}
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)) {

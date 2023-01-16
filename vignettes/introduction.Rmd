@@ -80,7 +80,6 @@ EUCO2residential <- EUCO2residential[EUCO2residential$year > 2000 &
 
 # let's create a log emissions per capita variable
 EUCO2residential$lagg.directem_pc <- log(EUCO2residential$agg.directem/EUCO2residential$pop)
-EUCO2residential <- dplyr::distinct(EUCO2residential)
 
 # and let's also turn off printing the intermediate output from isatpanel
 options(print.searchoutput = FALSE)
@@ -181,13 +180,14 @@ iis_example <- isatpanel(data = EUCO2residential,
 
                          effect = "twoways",
 
-                         iis = TRUE)
+                         iis = TRUE,
+                         fesis = TRUE)
 ```
 
 
 
 ```{r}
-plot(iis_example)
+plot(iis_example) 
 ```
 
 
@@ -276,7 +276,7 @@ plot(fesis_example)
 
 
 
-Similar to the `csis_var` idea, we can specify the `fesis` method for a subset of individuals as well using the `fesis_id` variable, which takes a character vector of individuals. In this case we can use e.g. `fesis_id = c("2","3")`.
+Similar to the `csis_var` idea, we can specify the `fesis` method for a subset of individuals as well using the `fesis_id` variable, which takes a character vector of individuals. In this case we can use e.g. `fesis_id = c("Austria","Denmark")`.
 
 ```{r}
 fesis_example2 <- isatpanel(data = EUCO2residential,
@@ -286,7 +286,7 @@ fesis_example2 <- isatpanel(data = EUCO2residential,
                            effect = "twoways",
 
                            fesis = TRUE,
-                           fesis_id = c("2","3"))
+                           fesis_id = c("Austria","Denmark"))
 ```
 
 
