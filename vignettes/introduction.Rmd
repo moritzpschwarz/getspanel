@@ -23,12 +23,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-The `getspanel` package can be downloaded and installed from [GitHub](https://github.com/moritzpschwarz/getspanel).
+The `getspanel` package can be downloaded and installed from CRAN [here](https://cran.r-project.org/web/packages/getspanel/index.html) by simply using: 
 
-The package can be installed using:
+```{r, eval=FALSE}
+install.packages("getspanel")
+```
+
+The source code of the package is on [GitHub](https://github.com/moritzpschwarz/getspanel) and the development version can be installed using:
+
 
     # install.packages("devtools")
-    devtools::install_github("moritzpschwarz/getspanel")
+    devtools::install_github("moritzpschwarz/getspanel", ref = "devel")
 
 Once installed we need to load the library:
 
@@ -38,6 +43,8 @@ library(getspanel)
 
 
 Currently the package is called **getspanel** to align with the **gets** package, but it's main function of course remains the **isatpanel** function.
+
+The **isatpanel** function implements the empirical break detection algorithm that is described in a [paper by Felix Pretis and Moritz Schwarz](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745) and was applied to a study by Nico Koch and colleagues on EU Road CO~2~ emissions, which was [published in Nature Energy in 2022](https://www.nature.com/articles/s41560-022-01095-6). 
 
 **A quick overview over what has changed:**
 
@@ -125,22 +132,6 @@ is_gets <- isatpanel(y = EUCO2residential$lagg.directem_pc,
                      fesis = TRUE)
 ```
 
-
-<!-- Let's check if those yield the same outcome: -->
-
-<!-- ```{r} -->
-
-<!-- head(is_lm$isatpanel.result$mean.results) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- head(is_gets$isatpanel.result$mean.results) -->
-
-<!-- ``` -->
-
-<!-- Evidently these are identical.  -->
 
 From here onwards, I will use the `lm` notation.
 
