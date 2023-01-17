@@ -16,10 +16,13 @@ knitr::opts_chunk$set(
   comment = NA,
   echo = TRUE,
   message = FALSE,
-  error=TRUE,
-  eval=TRUE,
+  error = TRUE,
+  eval = TRUE,
+  out.width = "100%",
   fig.width = 7,
-  fig.height = 5
+  fig.height = 5,
+  dev = "png",
+  dpi = 600
 )
 ```
 
@@ -178,7 +181,7 @@ iis_example <- isatpanel(data = EUCO2residential,
 
 
 ```{r}
-plot(iis_example) 
+plot(iis_example)
 ```
 
 
