@@ -216,7 +216,7 @@ plot(jsis_example)
 
 This method allows detection of coefficient breaks that are common across all groups. It is the interaction between `jsis` and the relevant coefficient.
 
-To illustrate this, as well as the advantages of using the `lm` approach, we include a non-linear term of the lgdperature variable using `I(lgdp^2)`:
+To illustrate this, as well as the advantages of using the `lm` approach, we include a non-linear term of the lgdp variable using `I(lgdp^2)`:
 
 ```{r}
 csis_example <- isatpanel(data = EUCO2residential,

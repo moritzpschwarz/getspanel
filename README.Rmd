@@ -82,7 +82,7 @@ Let's explore the other plots that we can use:
 plot_grid(is1)
 ```
 
-We can plot the couterfactuals as well:
+We can plot the counterfactuals as well:
 
 ```{r}
 plot_counterfactual(is1, plus_t = 5)

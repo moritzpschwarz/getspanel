@@ -65,7 +65,7 @@ Loading required namespace: gets
 ``` r
 is1
 
-Date: Fri Jan 27 13:24:57 2023 
+Date: Fri Jan 27 15:29:09 2023 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -185,7 +185,7 @@ plot_grid(is1)
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
-We can plot the couterfactuals as well:
+We can plot the counterfactuals as well:
 
 ``` r
 plot_counterfactual(is1, plus_t = 5)
@@ -218,7 +218,7 @@ is2 <- isatpanel(data = EU_emissions_road,
 ``` r
 is2     
 
-Date: Fri Jan 27 13:27:03 2023 
+Date: Fri Jan 27 15:31:38 2023 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
