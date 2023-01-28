@@ -11,7 +11,7 @@ status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.
 status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
 <!-- badges: end -->
 
-The package is a panel adaptation of the gets package see [see
+The package is a panel adaptation of the gets package [see
 here](https://CRAN.R-project.org/package=gets).
 
 This code is being developed by Felix Pretis and Moritz Schwarz. The
@@ -26,7 +26,7 @@ CO<sub>2</sub> emissions, which was [published in Nature Energy in
 ## Installation
 
 You can install the released version of getspanel from
-[CRAN](https://CRAN.R-project.org) with:
+[CRAN](https://cran.r-project.org/package=getspanel) with:
 
 ``` r
 install.packages("getspanel")
@@ -65,7 +65,7 @@ Loading required namespace: gets
 ``` r
 is1
 
-Date: Fri Jan 27 15:29:09 2023 
+Date: Sat Jan 28 18:02:02 2023 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -218,7 +218,7 @@ is2 <- isatpanel(data = EU_emissions_road,
 ``` r
 is2     
 
-Date: Fri Jan 27 15:31:38 2023 
+Date: Sat Jan 28 18:04:11 2023 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 

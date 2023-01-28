@@ -1,15 +1,18 @@
-# getspanel 0.1.2
+# getspanel 0.1.2.1
 
-* Added a `NEWS.md` file to track changes to the package.
-* First CRAN release of the package. 
-* Consult the Introduction Vignette for an overview.
-* Changes to the package as a response to CRAN tests
-* Changes to how the option mc.warning is dealt with
+* Bugfixes
+* Changed the name of the function robust.isatpanel to robust_isatpanel to ensure consistency
+* More error checks for csis and cfesis (ensuring that no out of sample groups can be chosen).
+* Small changes to the introduction and the README
 
 
 ## Bug fixes
 
-* Changed order of y-axis in plot_grid
+* Corrected provided sample data (no. of rows and removed duplicates)
+* Bug fix in internal identify_indicator_timings() function to deal with steps correctly
+* Bug fix in plot.isatpanel to ensure JSIS is plotted correctly
+* Disabled the 'sis' option in isatpanel as it does not work in a panel context but might have been passed to 'isat'
+
 
 <!--  ## Major Changes
 

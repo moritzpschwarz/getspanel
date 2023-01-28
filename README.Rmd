@@ -24,13 +24,13 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
 <!-- badges: end -->
 
-The package is a panel adaptation of the gets package see [see here](https://CRAN.R-project.org/package=gets).
+The package is a panel adaptation of the gets package [see here](https://CRAN.R-project.org/package=gets).
 
 This code is being developed by Felix Pretis and Moritz Schwarz. The associated working paper is published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis and Schwarz, which is available at SSRN [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745) and was applied to a study by Nico Koch and colleagues on EU Road CO~2~ emissions, which was [published in Nature Energy in 2022](https://www.nature.com/articles/s41560-022-01095-6). 
 
 ## Installation
 
-You can install the released version of getspanel from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of getspanel from [CRAN](https://cran.r-project.org/package=getspanel) with:
 
 ``` r
 install.packages("getspanel")

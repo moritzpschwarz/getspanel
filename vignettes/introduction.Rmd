@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The `getspanel` package can be downloaded and installed from CRAN [here](https://cran.r-project.org/web/packages/getspanel/index.html) by simply using: 
+The `getspanel` package can be downloaded and installed from CRAN [here](https://cran.r-project.org/package=getspanel) by simply using: 
 
 ```{r, eval=FALSE}
 install.packages("getspanel")
