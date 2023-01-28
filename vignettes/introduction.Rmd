@@ -16,19 +16,27 @@ knitr::opts_chunk$set(
   comment = NA,
   echo = TRUE,
   message = FALSE,
-  error=TRUE,
-  eval=TRUE,
+  error = TRUE,
+  eval = TRUE,
+  out.width = "100%",
   fig.width = 7,
-  fig.height = 5
+  fig.height = 5,
+  dev = "png",
+  dpi = 600
 )
 ```
 
-The `getspanel` package can be downloaded and installed from [GitHub](https://github.com/moritzpschwarz/getspanel).
+The `getspanel` package can be downloaded and installed from CRAN [here](https://cran.r-project.org/package=getspanel) by simply using: 
 
-The package can be installed using:
+```{r, eval=FALSE}
+install.packages("getspanel")
+```
+
+The source code of the package is on [GitHub](https://github.com/moritzpschwarz/getspanel) and the development version can be installed using:
+
 
     # install.packages("devtools")
-    devtools::install_github("moritzpschwarz/getspanel")
+    devtools::install_github("moritzpschwarz/getspanel", ref = "devel")
 
 Once installed we need to load the library:
 
@@ -38,6 +46,8 @@ library(getspanel)
 
 
 Currently the package is called **getspanel** to align with the **gets** package, but it's main function of course remains the **isatpanel** function.
+
+The **isatpanel** function implements the empirical break detection algorithm that is described in a [paper by Felix Pretis and Moritz Schwarz](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745) and was applied to a study by Nico Koch and colleagues on EU Road CO~2~ emissions, which was [published in Nature Energy in 2022](https://www.nature.com/articles/s41560-022-01095-6). 
 
 **A quick overview over what has changed:**
 
@@ -78,6 +88,9 @@ EUCO2residential <- EUCO2residential[EUCO2residential$year > 2000 &
                                                                        "Belgium", "Italy", 
                                                                        "Sweden", "Denmark"),]
 
+# let's create a log emissions per capita variable
+EUCO2residential$lagg.directem_pc <- log(EUCO2residential$agg.directem/EUCO2residential$pop)
+
 # and let's also turn off printing the intermediate output from isatpanel
 options(print.searchoutput = FALSE)
 ```
@@ -101,7 +114,7 @@ Using the new method
 
 ```{r}
 is_lm <- isatpanel(data = EUCO2residential,
-                   formula = lagg.directem_pc ~ lgdp, 
+                   formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                    index = c("country","year"),
                    
                    effect = "twoways",
@@ -122,22 +135,6 @@ is_gets <- isatpanel(y = EUCO2residential$lagg.directem_pc,
                      fesis = TRUE)
 ```
 
-
-<!-- Let's check if those yield the same outcome: -->
-
-<!-- ```{r} -->
-
-<!-- head(is_lm$isatpanel.result$mean.results) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- head(is_gets$isatpanel.result$mean.results) -->
-
-<!-- ``` -->
-
-<!-- Evidently these are identical.  -->
 
 From here onwards, I will use the `lm` notation.
 
@@ -172,12 +169,13 @@ Simply set `iis = TRUE`.
 
 ```{r}
 iis_example <- isatpanel(data = EUCO2residential,
-                         formula = lagg.directem_pc ~ lgdp,
+                         formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                          index = c("country","year"),
 
                          effect = "twoways",
 
-                         iis = TRUE)
+                         iis = TRUE,
+                         fesis = TRUE)
 ```
 
 
@@ -199,10 +197,10 @@ If, however, `effect = "individual"` then we can use `jsis = TRUE` to select ove
 
 ```{r}
 jsis_example <- isatpanel(data = EUCO2residential,
-                          formula = lagg.directem_pc ~ lgdp,
+                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                           index = c("country","year"),
 
-                          effect = "twoways",
+                          effect = "individual",
 
                           jsis = TRUE)
 ```
@@ -218,11 +216,11 @@ plot(jsis_example)
 
 This method allows detection of coefficient breaks that are common across all groups. It is the interaction between `jsis` and the relevant coefficient.
 
-To illustrate this, as well as the advantages of using the `lm` approach, we include a non-linear term of the lgdperature variable using `I(lgdp^2)`:
+To illustrate this, as well as the advantages of using the `lm` approach, we include a non-linear term of the lgdp variable using `I(lgdp^2)`:
 
 ```{r}
 csis_example <- isatpanel(data = EUCO2residential,
-                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                          formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                           index = c("country","year"),
 
                           effect = "twoways",
@@ -239,7 +237,7 @@ By default, all coefficients will be interacted and added to the indicator list 
 
 ```{r}
 csis_example2 <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
@@ -256,7 +254,7 @@ This is equivalent to supplying a constant to the mxbreak argument in the old me
 
 ```{r}
 fesis_example <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
@@ -272,17 +270,17 @@ plot(fesis_example)
 
 
 
-Similar to the `csis_var` idea, we can specify the `fesis` method for a subset of individuals as well using the `fesis_id` variable, which takes a character vector of individuals. In this case we can use e.g. `fesis_id = c("2","3")`.
+Similar to the `csis_var` idea, we can specify the `fesis` method for a subset of individuals as well using the `fesis_id` variable, which takes a character vector of individuals. In this case we can use e.g. `fesis_id = c("Austria","Denmark")`.
 
 ```{r}
 fesis_example2 <- isatpanel(data = EUCO2residential,
-                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                           formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                            index = c("country","year"),
 
                            effect = "twoways",
 
                            fesis = TRUE,
-                           fesis_id = c("2","3"))
+                           fesis_id = c("Austria","Denmark"))
 ```
 
 
@@ -300,14 +298,15 @@ This means we can also combine the subsetting in both the variable and in the in
 
 ```{r}
 cfesis_example <- isatpanel(data = EUCO2residential,
-                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                             index = c("country","year"),
 
                             effect = "twoways",
 
                             cfesis = TRUE,
-                            cfesis_id = c("2","3"),
-                            cfesis_var = "lgdp")
+                            cfesis_id = c("Belgium","Germany"),
+                            cfesis_var = "lgdp",
+                            t.pval = 0.001)
 ```
 
 
@@ -322,7 +321,7 @@ It is now possible to specify an argument to include autoregressive coefficients
 
 ```{r}
 fesis_ar1_example <- isatpanel(data = EUCO2residential,
-                               formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                               formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                                index = c("country","year"),
 
                                effect = "twoways",
@@ -335,10 +334,10 @@ fesis_ar1_example <- isatpanel(data = EUCO2residential,
 
 ## Post-selection robustness
 
-The options for the `robust.isatpanel` are to use HAC Standard Errors, use a standard White Standard Error Correction (with the option of clustering the S.E. within groups or time):
+The options for the `robust_isatpanel` are to use HAC Standard Errors, use a standard White Standard Error Correction (with the option of clustering the S.E. within groups or time):
 
 ```{r}
-robust.isatpanel(fesis_ar1_example, HAC = TRUE, robust = TRUE, cluster = "group")
+robust_isatpanel(fesis_ar1_example, HAC = TRUE, robust = TRUE, cluster = "group")
 ```
 
 ## The `engine` argument
@@ -349,7 +348,7 @@ This also means that we can now use an argument to cluster Standard Errors using
 
 ```{r}
 fixest_example <- isatpanel(data = EUCO2residential,
-                            formula = lagg.directem_pc ~ lgdp,
+                            formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                             index = c("country","year"),
 
                             effect = "twoways",
@@ -374,11 +373,11 @@ Compared to the default estimator:
 head(is_lm$isatpanel.result$mean.results)
 ```
 
-However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - therefore clustering is therefore not recommended.**
+However, changing the `cluster` specification of course does. **The Standard Error correction with it's current implementation is not valid, so allows for many more indicators than true - clustering is therefore currently not recommended.**
 
 ```{r}
 fixest_example_cluster <- isatpanel(data = EUCO2residential,
-                                    formula = lagg.directem_pc ~ lgdp + I(lgdp^2),
+                                    formula = lagg.directem_pc ~ lgdp + I(lgdp^2) + pop,
                                     index = c("country","year"),
 
                                     effect = "twoways",

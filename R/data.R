@@ -46,7 +46,7 @@
 
 #' CO2 Data for the EU Residential Sector
 #'
-#'@format A data frame with 899 rows and 8 variables:
+#'@format A data frame with 1550 rows and 9 variables:
 #' \describe{
 #'   \item{country}{Country}
 #'   \item{year}{Year}

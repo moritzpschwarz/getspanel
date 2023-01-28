@@ -15,13 +15,12 @@
 #' @param cluster cluster Standard Errors at this level. Default is "none". Possible values are: "individual", "time", or "twoways".
 #' @param plm_model Type of PLM model (only if engine = "PLM")
 #' @param ar Autoregressive Term to be included. default is 0.
-#' @param iis use Impulse Indicator Saturation
-#' @param sis use Step Indicator Saturation. This is only possible if time fixed effects are not used, as they are collinear otherwise.
-#' @param jiis use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
-#' @param jsis use Join Step Indicator Saturation (steps are common across all units)
-#' @param fesis Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
-#' @param csis Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
-#' @param cfesis Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
+#' @param iis Logical. Use Impulse Indicator Saturation.
+#' @param jiis Logical. Use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
+#' @param jsis Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.
+#' @param fesis Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
+#' @param csis Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
+#' @param cfesis Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param ... Further arguments to gets::isat()
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
@@ -81,7 +80,7 @@ isatpanel <- function(
 
     ar=0,
     iis = FALSE,
-    sis = FALSE,
+    #sis = FALSE,
     jiis = FALSE,
     jsis = FALSE,
     fesis = FALSE,
@@ -122,13 +121,13 @@ isatpanel <- function(
 
   if (is.null(engine) & cluster != "none") {stop("Cluster specifications are currently only implemented for engine = 'fixest'. Either select cluster = 'none' or engine = 'fixest'.")}
 
-  if (sis & (effect == "twoways" | effect == "time")) {warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
+  #if (sis & (effect == "twoways" | effect == "time")) {warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
+  if (!is.null(match.call()$sis)) {stop("The argument 'sis' cannot be specified with isatpanel. Use 'jsis' instead.")}
 
   # csis and cfesis
   if (csis == FALSE & (!missing(csis_var))) {stop("You cannot specify csis_var when csis = FALSE.")}
   if (cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))) {stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
   if (fesis == FALSE & (!missing(fesis_id))) {stop("You cannot specify fesis_id when fesis = FALSE.")}
-
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
   if(!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
@@ -177,6 +176,9 @@ isatpanel <- function(
   # An example would be: test for separate coefficient estimates for post-soviet countries
   if (is.null(fesis_id)) {fesis_id <- unique(id)}
   if (is.null(cfesis_id)) {cfesis_id <- unique(id)}
+
+  if (!all(cfesis_id %in% id)) {stop("Some or all id names in 'cfesis_id' not found in the data. Please check the input under 'cfesis_id'.")}
+  if (!all(fesis_id %in% id)) {stop("Some or all id names in 'fesis_id' not found in the data. Please check the input under 'fesis_id'.")}
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)) {
@@ -256,7 +258,6 @@ isatpanel <- function(
   # Break Methods -----------------------------------------------------------
 
   BreakList <- list()
-
   # jsis = TRUE
   if (jsis) {
     jsis_df <- as.data.frame(cbind(time = unique(time),gets::sim(Tsample)))
@@ -270,8 +271,10 @@ isatpanel <- function(
     if (!identical(drop,integer(0))) {
       current <- current[,-drop]
     }
+    current <- current[order(current$id, current$time),]
     # Add to Breaklist (uis list)
     BreakList <- c(BreakList,list(jsis = as.matrix(current[,!names(current) %in% c("id","time")])))
+    if(effect %in% c("twoways","time")){message("\nInformation: JSIS will normally not be retained when effects are 'twoways' or 'time' as they will be collinear with the Time Fixed Effects. This is not a problem though as they are dropped in the estimation procedure.\n")}
   }
 
   #jiis = TRUE - This is just like a time FE
@@ -508,8 +511,8 @@ isatpanel <- function(
   on.exit(options(tmpmc)) # set the old mc warning on exit
 
   options(mc.warning = FALSE)
-
-  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = sis, uis = sispanx, user.estimator = user.estimator, mc = FALSE, ...)
+  #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
+  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   ###############################

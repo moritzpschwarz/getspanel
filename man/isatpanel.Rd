@@ -15,7 +15,6 @@ isatpanel(
   cluster = "none",
   ar = 0,
   iis = FALSE,
-  sis = FALSE,
   jiis = FALSE,
   jsis = FALSE,
   fesis = FALSE,
@@ -53,19 +52,17 @@ isatpanel(
 
 \item{ar}{Autoregressive Term to be included. default is 0.}
 
-\item{iis}{use Impulse Indicator Saturation}
+\item{iis}{Logical. Use Impulse Indicator Saturation.}
 
-\item{sis}{use Step Indicator Saturation. This is only possible if time fixed effects are not used, as they are collinear otherwise.}
+\item{jiis}{Logical. Use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.}
 
-\item{jiis}{use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.}
+\item{jsis}{Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.}
 
-\item{jsis}{use Join Step Indicator Saturation (steps are common across all units)}
+\item{fesis}{Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.}
 
-\item{fesis}{Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.}
+\item{csis}{Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
 
-\item{csis}{Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
-
-\item{cfesis}{Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
+\item{cfesis}{Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
 \item{csis_var}{The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 

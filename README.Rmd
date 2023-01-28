@@ -9,9 +9,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "",
   fig.path = "man/figures/README-",
-  fig.width = 8, 
-  fig.height = 6,
-  out.width = "100%"
+  out.width = "100%",
+  fig.width = 7,
+  fig.height = 5,
+  dev = "png",
+  dpi = 600
 )
 ```
 
@@ -22,13 +24,13 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
 <!-- badges: end -->
 
-The package is a panel adaptation of the gets package see [see here](https://CRAN.R-project.org/package=gets).
+The package is a panel adaptation of the gets package [see here](https://CRAN.R-project.org/package=gets).
 
-This code is being developed by Felix Pretis and Moritz Schwarz. The associated working paper is published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis and Schwarz, which is available at SSRN [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745).
+This code is being developed by Felix Pretis and Moritz Schwarz. The associated working paper is published under "Panel Break Detection: Detecting Unknown Treatment, Stability, Heterogeneity, and Outliers" by Pretis and Schwarz, which is available at SSRN [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4022745) and was applied to a study by Nico Koch and colleagues on EU Road CO~2~ emissions, which was [published in Nature Energy in 2022](https://www.nature.com/articles/s41560-022-01095-6). 
 
 ## Installation
 
-You can install the released version of getspanel from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of getspanel from [CRAN](https://cran.r-project.org/package=getspanel) with:
 
 ``` r
 install.packages("getspanel")
@@ -40,16 +42,19 @@ And the development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("moritzpschwarz/getspanel")
 ```
+
+
 ## Example
 
 ```{r example}
 library(getspanel)
 
 data("EU_emissions_road")
-subset_EU15 <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland", 
-                 "France",  "Greece", "Ireland", "Italy", "Luxembourg", "Netherlands","Portugal",  "Sweden", "United Kingdom")
+# let's subset a few countries to make this faster
+subset <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", 
+                 "France",  "Greece", "Ireland", "Italy", "Netherlands", "Sweden", "United Kingdom")
 
-EU_emissions_road <- EU_emissions_road[EU_emissions_road$country %in% subset_EU15, ]
+EU_emissions_road <- EU_emissions_road[EU_emissions_road$country %in% subset, ]
 
 is1 <- isatpanel(data = EU_emissions_road,
                  formula = transport.emissions ~ lgdp + lpop, 
@@ -77,10 +82,10 @@ Let's explore the other plots that we can use:
 plot_grid(is1)
 ```
 
-We can plot the counterfactual aspects compared 
+We can plot the counterfactuals as well:
 
 ```{r}
-plot_counterfactual(is1)
+plot_counterfactual(is1, plus_t = 5)
 ```
 
 We can plot the residuals against an OLS model:
@@ -106,7 +111,6 @@ is2 <- isatpanel(data = EU_emissions_road,
 ```{r}
 is2     
 plot(is2)
-
 ```
 
 
