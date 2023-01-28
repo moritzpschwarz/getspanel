@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,6 @@
 <span>  cluster <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  ar <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  iis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  sis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  jiis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  jsis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  fesis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -127,31 +126,27 @@
 
 
 <dt>iis</dt>
-<dd><p>use Impulse Indicator Saturation</p></dd>
-
-
-<dt>sis</dt>
-<dd><p>use Step Indicator Saturation. This is only possible if time fixed effects are not used, as they are collinear otherwise.</p></dd>
+<dd><p>Logical. Use Impulse Indicator Saturation.</p></dd>
 
 
 <dt>jiis</dt>
-<dd><p>use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.</p></dd>
+<dd><p>Logical. Use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.</p></dd>
 
 
 <dt>jsis</dt>
-<dd><p>use Join Step Indicator Saturation (steps are common across all units)</p></dd>
+<dd><p>Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.</p></dd>
 
 
 <dt>fesis</dt>
-<dd><p>Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.</p></dd>
+<dd><p>Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.</p></dd>
 
 
 <dt>csis</dt>
-<dd><p>Coefficient Step Indicator Saturation. Constructed by Default is FALSE.</p></dd>
+<dd><p>Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.</p></dd>
 
 
 <dt>cfesis</dt>
-<dd><p>Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.</p></dd>
+<dd><p>Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.</p></dd>
 
 
 <dt>csis_var</dt>

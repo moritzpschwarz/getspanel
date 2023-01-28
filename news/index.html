@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,15 +51,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.2" id="getspanel-012">getspanel 0.1.2<a class="anchor" aria-label="anchor" href="#getspanel-012"></a></h2><p class="text-muted">CRAN release: 2023-01-17</p>
-<ul><li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
-<li>First CRAN release of the package.</li>
-<li>Consult the Introduction Vignette for an overview.</li>
-<li>Changes to the package as a response to CRAN tests</li>
-<li>Changes to how the option mc.warning is dealt with</li>
+<h2 class="pkg-version" data-toc-text="0.1.2.1" id="getspanel-0121">getspanel 0.1.2.1<a class="anchor" aria-label="anchor" href="#getspanel-0121"></a></h2>
+<ul><li>Bugfixes</li>
+<li>Changed the name of the function robust.isatpanel to robust_isatpanel to ensure consistency</li>
+<li>More error checks for csis and cfesis (ensuring that no out of sample groups can be chosen).</li>
+<li>Small changes to the introduction and the README</li>
 </ul><div class="section level3">
-<h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
-<ul><li>Changed order of y-axis in plot_grid</li>
+<h3 id="bug-fixes-0-1-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2-1"></a></h3>
+<ul><li>Corrected provided sample data (no. of rows and removed duplicates)</li>
+<li>Bug fix in internal identify_indicator_timings() function to deal with steps correctly</li>
+<li>Bug fix in plot.isatpanel to ensure JSIS is plotted correctly</li>
+<li>Disabled the ‘sis’ option in isatpanel as it does not work in a panel context but might have been passed to ‘isat’</li>
 </ul><!--  ## Major Changes
 
 New package, to be filled for new releases
