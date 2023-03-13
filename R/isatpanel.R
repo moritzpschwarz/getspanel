@@ -229,11 +229,13 @@ isatpanel <- function(
   # Autoregressive Term
   if (ar > 0) {
     ar_df <- cbind(cbind(df,y),mxreg)
-    ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x) {
+    ar_df_processed <- by(ar_df,INDICES = ar_df$id, FUN = function(x) {
       y = x$y
-      gets::regressorsMean(y = y, mxreg = mxreg,ar = c(1:ar),return.as.zoo = FALSE)
+      mx <- x[, names(x) %in% colnames(mxreg)]
+      gets::regressorsMean(y = y, mxreg = mx,ar = c(1:ar),return.as.zoo = FALSE)
     })
-    ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)))
+
+    ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)[unique(ar_df$id)])) # the [unique(ar_df$id)] is necessary to retain the original order
 
     # get data back out
     y <- ar_df_processed$y
@@ -243,7 +245,11 @@ isatpanel <- function(
     # Adjust the time and id vectors
     # The code below removes the minimum time period for each group as many times as the AR term sets out
     for (a in 1:max(ar)) {
-      df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x) {x[!x$time == min(x$time),]})),row.names = NULL)
+      df <- data.frame(do.call("rbind",
+                               by(df,df$id,FUN = function(x){
+                                 x[!x$time == min(x$time),]
+                                 })[unique(ar_df$id)]), # the [unique(ar_df$id)] is necessary to retain the original order
+                       row.names = NULL)
     }
 
     time <- df$time
