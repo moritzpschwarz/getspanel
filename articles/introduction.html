@@ -400,46 +400,7 @@ coefficients, using the <code>ar</code> argument.</p>
 Standard Errors, use a standard White Standard Error Correction (with
 the option of clustering the S.E. within groups or time):</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">robust_isatpanel</span>(fesis_ar1_example, <span class="at">HAC =</span> <span class="cn">TRUE</span>, <span class="at">robust =</span> <span class="cn">TRUE</span>, <span class="at">cluster =</span> <span class="st">"group"</span>)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>plm_object</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>Model Formula<span class="sc">:</span> y <span class="sc">~</span> ar1 <span class="sc">+</span> lgdp <span class="sc">+</span> I.lgdp.<span class="fl">2.</span> <span class="sc">+</span> pop <span class="sc">+</span> indicators</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>environment<span class="sc">:</span> <span class="dv">0x56306ce19de8</span><span class="sc">&gt;</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>Coefficients<span class="sc">:</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>       ar1 indicators </span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>   <span class="fl">0.79587</span>   <span class="sc">-</span><span class="fl">0.18504</span> </span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>robust</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>t test of coefficients<span class="sc">:</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>            Estimate Std. Error t value  <span class="fu">Pr</span>(<span class="sc">&gt;</span><span class="er">|</span>t<span class="sc">|</span>)    </span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>ar1         <span class="fl">0.795872</span>   <span class="fl">0.011568</span>  <span class="fl">68.801</span> <span class="sc">&lt;</span> <span class="fl">2.2e-16</span> <span class="sc">**</span><span class="er">*</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>indicators <span class="sc">-</span><span class="fl">0.185045</span>   <span class="fl">0.015963</span> <span class="sc">-</span><span class="fl">11.592</span> <span class="sc">&lt;</span> <span class="fl">2.2e-16</span> <span class="sc">**</span><span class="er">*</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>Signif. codes<span class="sc">:</span>  <span class="dv">0</span> <span class="st">'***'</span> <span class="fl">0.001</span> <span class="st">'**'</span> <span class="fl">0.01</span> <span class="st">'*'</span> <span class="fl">0.05</span> <span class="st">'.'</span> <span class="fl">0.1</span> <span class="st">' '</span> <span class="dv">1</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>HAC</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>t test of coefficients<span class="sc">:</span></span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>              Estimate  Std. Error t value  <span class="fu">Pr</span>(<span class="sc">&gt;</span><span class="er">|</span>t<span class="sc">|</span>)    </span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>idAustria  <span class="sc">-</span><span class="fl">1.5389e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3052</span>   <span class="fl">0.19517</span>    </span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>idBelgium  <span class="sc">-</span><span class="fl">1.5386e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3050</span>   <span class="fl">0.19523</span>    </span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>idDenmark  <span class="sc">-</span><span class="fl">1.5390e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3053</span>   <span class="fl">0.19511</span>    </span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>idGermany  <span class="sc">-</span><span class="fl">1.5387e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3050</span>   <span class="fl">0.19521</span>    </span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>idItaly    <span class="sc">-</span><span class="fl">1.5388e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3051</span>   <span class="fl">0.19517</span>    </span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>idSweden   <span class="sc">-</span><span class="fl">1.5391e+03</span>  <span class="fl">1.1791e+03</span> <span class="sc">-</span><span class="fl">1.3054</span>   <span class="fl">0.19509</span>    </span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>time       <span class="sc">-</span><span class="fl">1.7146e-02</span>  <span class="fl">8.3590e-03</span> <span class="sc">-</span><span class="fl">2.0513</span>   <span class="fl">0.04315</span> <span class="sc">*</span>  </span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>ar1         <span class="fl">6.9527e-01</span>  <span class="fl">5.4987e-02</span> <span class="fl">12.6443</span> <span class="sc">&lt;</span> <span class="fl">2.2e-16</span> <span class="sc">**</span><span class="er">*</span></span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>lgdp        <span class="fl">1.1814e+02</span>  <span class="fl">8.8918e+01</span>  <span class="fl">1.3287</span>   <span class="fl">0.18731</span>    </span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>I.lgdp.<span class="fl">2.</span>  <span class="sc">-</span><span class="fl">2.2249e+00</span>  <span class="fl">1.6685e+00</span> <span class="sc">-</span><span class="fl">1.3335</span>   <span class="fl">0.18573</span>    </span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>pop         <span class="fl">3.5077e-07</span>  <span class="fl">1.6776e-07</span>  <span class="fl">2.0909</span>   <span class="fl">0.03935</span> <span class="sc">*</span>  </span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>indicators <span class="sc">-</span><span class="fl">2.5696e-01</span>  <span class="fl">4.0278e-02</span> <span class="sc">-</span><span class="fl">6.3797</span> <span class="fl">7.507e-09</span> <span class="sc">**</span><span class="er">*</span></span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>Signif. codes<span class="sc">:</span>  <span class="dv">0</span> <span class="st">'***'</span> <span class="fl">0.001</span> <span class="st">'**'</span> <span class="fl">0.01</span> <span class="st">'*'</span> <span class="fl">0.05</span> <span class="st">'.'</span> <span class="fl">0.1</span> <span class="st">' '</span> <span class="dv">1</span></span></code></pre></div>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>Error <span class="cf">in</span> <span class="fu">solve.default</span>(<span class="fu">crossprod</span>(demX))<span class="sc">:</span> system is computationally singular<span class="sc">:</span> reciprocal condition number <span class="ot">=</span> <span class="fl">9.93268e-18</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="the-engine-argument">The <code>engine</code> argument<a class="anchor" aria-label="anchor" href="#the-engine-argument"></a>
