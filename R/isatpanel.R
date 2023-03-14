@@ -111,7 +111,7 @@ isatpanel <- function(
   if (ar < 0) {stop("The ar argument must be greater than or equal to 0.")}
   if (!ar %% 1 == 0) {stop("The ar argument must be an integer.")} # check if the numeric value of ar is an integer - the is.integer checks the type
 
-  # Transformations (to do: time, country and mxbreak as grepl character vectors)
+  # Transformations (TODO: time, country and mxbreak as grepl character vectors)
   if (is.data.frame(mxreg)) {mxreg <- as.matrix(mxreg)}
 
   # Formula, Index and Data arguments
@@ -228,10 +228,18 @@ isatpanel <- function(
 
   # Autoregressive Term
   if (ar > 0) {
-    ar_df <- cbind(cbind(df,y),mxreg)
+
+    if(is.null(colnames(mxreg))){
+      mx_all <- mxreg
+      colnames(mx_all) <- "x1"
+    } else {
+      mx_all <- mxreg
+    }
+
+    ar_df <- cbind(cbind(df,y),mx_all)
     ar_df_processed <- by(ar_df,INDICES = ar_df$id, FUN = function(x) {
       y = x$y
-      mx <- x[, names(x) %in% colnames(mxreg)]
+      mx <- x[, names(x) %in% colnames(mx_all)]
       gets::regressorsMean(y = y, mxreg = mx,ar = c(1:ar),return.as.zoo = FALSE)
     })
 
@@ -248,7 +256,7 @@ isatpanel <- function(
       df <- data.frame(do.call("rbind",
                                by(df,df$id,FUN = function(x){
                                  x[!x$time == min(x$time),]
-                                 })[unique(ar_df$id)]), # the [unique(ar_df$id)] is necessary to retain the original order
+                               })[unique(ar_df$id)]), # the [unique(ar_df$id)] is necessary to retain the original order
                        row.names = NULL)
     }
 

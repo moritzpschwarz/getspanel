@@ -16,9 +16,20 @@ test_that("AR gives exact same result", {
   ]
 
 
-  EU_emissions_road_short %>%
-    dplyr::group_by(country) %>%
-    dplyr::mutate(ar1 = dplyr::lag(ltransport.emissions)) -> EU_emissions_road_short_ar
+  # EU_emissions_road_short %>%
+  #   dplyr::group_by(country) %>%
+  #   dplyr::mutate(ar1 = dplyr::lag(ltransport.emissions)) -> EU_emissions_road_short_ar
+
+  # EU_emissions_road_short$ar1 <- ave(EU_emissions_road_short$ltransport.emissions,
+  #                                    EU_emissions_road_short$country,
+  #                                    FUN = function(x) c(NA, lag(x, default = NA)))
+
+
+  EU_emissions_road_short_ar <- EU_emissions_road_short
+
+  EU_emissions_road_short_ar$ar1 <- ave(EU_emissions_road_short_ar$ltransport.emissions,
+                                        EU_emissions_road_short_ar$country,
+                                     FUN = function(x) c(NA, head(x, -1)))
 
 
   result_builtinAR <- isatpanel(
@@ -29,7 +40,8 @@ test_that("AR gives exact same result", {
     ar = 1,
     fesis = TRUE,
     plot = FALSE,
-    t.pval = 0.01
+    t.pval = 0.01,
+    print.searchinfo = FALSE
   )
 
 
@@ -41,7 +53,8 @@ test_that("AR gives exact same result", {
     ar = 0,
     fesis = TRUE,
     plot = FALSE,
-    t.pval = 0.01
+    t.pval = 0.01,
+    print.searchinfo = FALSE
   )
 
 
