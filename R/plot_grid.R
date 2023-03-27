@@ -2,6 +2,7 @@
 #'
 #' @param x An object produced by the isatpanel function
 #' @param title Plot title. Must be a character vector.
+#' @param regex_exclude_indicators A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.
 #' @param ... Further arguments to be passed to ggplot2.
 #'
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
@@ -39,14 +40,18 @@
 #' plot_grid(result)
 #'}
 
-plot_grid <- function(x, title = NULL, ...){
+plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
-
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   indicators <- indicators[,!grepl("^id|^time",colnames(indicators))]
+
+  if(!is.null(regex_exclude_indicators)){
+    indicators <- indicators[,!grepl(regex_exclude_indicators,colnames(indicators)),drop = FALSE]
+  }
+
   df <- cbind(df,indicators)
 
   if(dim(indicators)[2] != 0){
