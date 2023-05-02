@@ -104,7 +104,7 @@ is1_coef <- is1_coef[order(names(is1_coef))]
 is2_coef <- is2_coef[order(names(is2_coef))]
 is3_coef <- is3_coef[order(names(is3_coef))]
 
-is1_tib <- dplyr::tibble(name = c("fesisFinland.2000",
+is1_tib <- data.frame(name = c("fesisFinland.2000",
                                   "fesisGermany.2002",
                                   "fesisIreland.2011",
                                   "fesisIreland.2015",
@@ -118,7 +118,7 @@ is1_tib <- dplyr::tibble(name = c("fesisFinland.2000",
                                   -0.095))
 
 
-is2_tib <- dplyr::tibble(name = c("fesisFinland.2000",
+is2_tib <- data.frame(name = c("fesisFinland.2000",
                                   "fesisGermany.2002",
                                   "fesisIreland.2015",
                                   "fesisSweden.2001"),
@@ -128,7 +128,7 @@ is2_tib <- dplyr::tibble(name = c("fesisFinland.2000",
                                   -0.103))
 
 
-is3_tib <- dplyr::tibble(name = c("fesisFinland.2000",
+is3_tib <- data.frame(name = c("fesisFinland.2000",
                                   "fesisGermany.2002",
                                   "fesisIreland.2011",
                                   "fesisLuxembourg.2015",
@@ -141,18 +141,18 @@ is3_tib <- dplyr::tibble(name = c("fesisFinland.2000",
 
 test_that("Equal Breaks as in Koch et al are identified",{
 
-  is1_tib_estimated <- dplyr::tibble(name = names(is1_coef[is1_coef < 0]),
+  is1_tib_estimated <- data.frame(name = names(is1_coef[is1_coef < 0]),
                                      coef = as.numeric(round(is1_coef[is1_coef < 0], 3)))
 
   expect_equal(is1_tib, is1_tib_estimated)
 
 
-  is2_tib_estimated <- dplyr::tibble(name = names(is2_coef[is2_coef < 0]),
+  is2_tib_estimated <- data.frame(name = names(is2_coef[is2_coef < 0]),
                                      coef = as.numeric(round(is2_coef[is2_coef < 0], 3)))
 
   expect_equal(is2_tib, is2_tib_estimated)
 
-  is3_tib_estimated <- dplyr::tibble(name = names(is3_coef[is3_coef < 0]),
+  is3_tib_estimated <- data.frame(name = names(is3_coef[is3_coef < 0]),
                                      coef = as.numeric(round(is3_coef[is3_coef < 0], 3)))
 
   expect_equal(is3_tib, is3_tib_estimated)
@@ -173,7 +173,7 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 
 
 
-  is1_tib_break <- dplyr::tibble(name = c("fesisFinland.2000",
+  is1_tib_break <- data.frame(name = c("fesisFinland.2000",
                                           "fesisGermany.2002",
                                           "fesisIreland.2011",
                                           "fesisIreland.2015",
@@ -187,7 +187,7 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
                                          2))
 
 
-  is2_tib_break <- dplyr::tibble(name = c("fesisFinland.2000",
+  is2_tib_break <- data.frame(name = c("fesisFinland.2000",
                                           "fesisGermany.2002",
                                           "fesisIreland.2015",
                                           "fesisSweden.2001"),
@@ -197,7 +197,7 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
                                          2))
 
 
-  is3_tib_break <- dplyr::tibble(name = c("fesisFinland.2000",
+  is3_tib_break <- data.frame(name = c("fesisFinland.2000",
                                           "fesisGermany.2002",
                                           "fesisIreland.2011",
                                           "fesisLuxembourg.2015",
@@ -211,9 +211,9 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 
 
 
-  expect_equal(is1_tib_break, dplyr::as_tibble(break_is1[,c("name", "tci")]))
-  expect_equal(is2_tib_break, dplyr::as_tibble(break_is2[,c("name", "tci")]))
-  expect_equal(is3_tib_break, dplyr::as_tibble(break_is3[,c("name", "tci")]))
+  expect_equal(is1_tib_break, as.data.frame(break_is1[,c("name", "tci")]))
+  expect_equal(is2_tib_break, as.data.frame(break_is2[,c("name", "tci")]))
+  expect_equal(is3_tib_break, as.data.frame(break_is3[,c("name", "tci")]))
 
 })
 

@@ -119,7 +119,7 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
 
     ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
-      geom_tile(na.rm = NA) +
+      geom_tile(na.rm = TRUE) +
       #scale_fill_viridis_c(na.value = NA) +
       scale_fill_gradient2(na.value = NA, name = "Effect")+
       scale_x_continuous(expand = c(0, 0)) +
