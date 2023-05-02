@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,17 +51,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.2.1" id="getspanel-0121">getspanel 0.1.2.1<a class="anchor" aria-label="anchor" href="#getspanel-0121"></a></h2>
-<ul><li>Bugfixes</li>
-<li>Changed the name of the function robust.isatpanel to robust_isatpanel to ensure consistency</li>
-<li>More error checks for csis and cfesis (ensuring that no out of sample groups can be chosen).</li>
-<li>Small changes to the introduction and the README</li>
+<h2 class="pkg-version" data-toc-text="0.1.4" id="getspanel-014">getspanel 0.1.4<a class="anchor" aria-label="anchor" href="#getspanel-014"></a></h2>
+<ul><li>Bugfixes and additional test files</li>
+<li>new option in plot_grid() to allow users to exclude plotting certain type of indicators</li>
 </ul><div class="section level3">
-<h3 id="bug-fixes-0-1-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2-1"></a></h3>
-<ul><li>Corrected provided sample data (no. of rows and removed duplicates)</li>
-<li>Bug fix in internal identify_indicator_timings() function to deal with steps correctly</li>
-<li>Bug fix in plot.isatpanel to ensure JSIS is plotted correctly</li>
-<li>Disabled the ‘sis’ option in isatpanel as it does not work in a panel context but might have been passed to ‘isat’</li>
+<h3 id="bug-fixes-0-1-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-4"></a></h3>
+<ul><li>Bug fix in isatpanel() when using AR models and not sorting the id data alphabetically</li>
+<li>Bug fix in break_uncertainty()</li>
+<li>Bug fix in plot_grid() (changing na.rm = NA to na.rm = TRUE in geom_tile())</li>
 </ul><!--  ## Major Changes
 
 New package, to be filled for new releases
