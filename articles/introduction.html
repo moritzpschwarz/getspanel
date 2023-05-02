@@ -220,9 +220,12 @@ the <strong>ggplot2</strong> package):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-6-1.png" width="100%"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-7-1.png" width="100%"></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(is_lm)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> [1m [33mError [39m <span class="cf">in</span> <span class="st">`</span><span class="at">geom_tile()</span><span class="st">`</span><span class="sc">:</span> [22m</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> [1m [22m [33m<span class="sc">!</span> [39m Problem <span class="cf">while</span> converting geom to grob.</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> [36mℹ [39m Error occurred <span class="cf">in</span> the 1st layer.</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a> [1mCaused by error <span class="cf">in</span> <span class="st">`</span><span class="at">remove_missing()</span><span class="st">`</span><span class="sc">:</span> [22m</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a> [33m<span class="sc">!</span> [39m <span class="st">`</span><span class="at">na.rm</span><span class="st">`</span> must be <span class="st">`</span><span class="at">TRUE</span><span class="st">`</span> or <span class="st">`</span><span class="at">FALSE</span><span class="st">`</span>, not <span class="st">`</span><span class="at">NA</span><span class="st">`</span>.</span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-8-1.png" width="100%"></p>
