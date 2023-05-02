@@ -45,7 +45,7 @@ EU15 <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland",
 
 # Prepare sample and data
 sample <- EU15
-dat <- dplyr::filter(data, country %in% sample, year>=1995)
+dat <- data[data$country %in% sample & data$year>=1995,] 
 
 
 
