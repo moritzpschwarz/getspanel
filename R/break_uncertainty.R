@@ -144,13 +144,6 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
     return(p.tot)
   }
 
-
-
-
-
-
-
-
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
@@ -165,7 +158,7 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
                                          coef = coef(x$isatpanel.result),
                                          sd = sqrt(diag(vcov(x$isatpanel.result)))), by = "name")
 
-  dat <- df_identified_coef$coef/df_identified_coef$sd
+  dat <- df_identified_coef$coef/sqrt(x$isatpanel.result$sigma2)
   prob <- matrix(NA, NROW(dat), 2*m+1)
   ci <- matrix(NA, NROW(dat), 4)
 
