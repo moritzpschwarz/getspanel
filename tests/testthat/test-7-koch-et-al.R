@@ -45,7 +45,7 @@ EU15 <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland",
 
 # Prepare sample and data
 sample <- EU15
-dat <- data[data$country %in% sample & data$year>=1995,] 
+dat <- data[data$country %in% sample & data$year>=1995,]
 
 
 
@@ -103,6 +103,7 @@ is3_coef <- coef(is3$isatpanel.result)[get_countries(is3)$fesis$name]
 is1_coef <- is1_coef[order(names(is1_coef))]
 is2_coef <- is2_coef[order(names(is2_coef))]
 is3_coef <- is3_coef[order(names(is3_coef))]
+
 
 is1_tib <- data.frame(name = c("fesisFinland.2000",
                                   "fesisGermany.2002",
@@ -167,10 +168,13 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
   break_is2 <- break_uncertainty( is2, interval = 0.99)
   break_is3 <- break_uncertainty( is3, interval = 0.99)
 
-  break_is1 <- dplyr::filter( break_is1, coef < 0 )
-  break_is2 <- dplyr::filter( break_is2, coef < 0 )
-  break_is3 <- dplyr::filter( break_is3, coef < 0 )
+  break_is1 <- break_is1[break_is1$coef < 0,]
+  break_is2 <- break_is2[break_is2$coef < 0,]
+  break_is3 <- break_is3[break_is3$coef < 0,]
 
+  row.names(break_is1) <- 1:nrow(break_is1)
+  row.names(break_is2) <- 1:nrow(break_is2)
+  row.names(break_is3) <- 1:nrow(break_is3)
 
 
   is1_tib_break <- data.frame(name = c("fesisFinland.2000",
@@ -211,9 +215,9 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 
 
 
-  expect_equal(is1_tib_break, as.data.frame(break_is1[,c("name", "tci")]))
-  expect_equal(is2_tib_break, as.data.frame(break_is2[,c("name", "tci")]))
-  expect_equal(is3_tib_break, as.data.frame(break_is3[,c("name", "tci")]))
+  expect_equal(is1_tib_break, break_is1[,c("name", "tci")])
+  expect_equal(is2_tib_break, break_is2[,c("name", "tci")])
+  expect_equal(is3_tib_break, break_is3[,c("name", "tci")])
 
 })
 
