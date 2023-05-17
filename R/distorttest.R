@@ -91,6 +91,9 @@ distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
 
       V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[keep, keep]
 
+      # get the variance term of the difference of the coefficients
+      var.difference <- (rhoc1)^(-1) * diag(x$vcov.mean[keep, keep])
+
     } else { #testing on subset of coefficients
 
       betaOLS1 <- coefficients(x)[coef]
@@ -98,7 +101,7 @@ distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
 
 
       V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
-
+      var.difference <- (rhoc1)^(-1) * diag(x$vcov.mean[coef, coef])
     }
 
   } else {
@@ -107,7 +110,7 @@ distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
     betaOLS <- coefficients(ols.y)[coef]
 
     V <- (nOLS_rob/nOLS) * (rhoc1)^(-1)*(varsigmac)^(-1) * x$vcov.mean[coef, coef]
-
+    var.difference <- (rhoc1)^(-1) * diag(x$vcov.mean[coef, coef])
   }
 
   if (NROW(coef)==1){
@@ -126,7 +129,6 @@ distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
 
   esigma2MinverseOLS1 = nOLS * rhoc1 * V
   eavarOLS10 = avar1 * esigma2MinverseOLS1
-
 
   if (any(!cf_diff==0)){ #if the difference between OLS and IIS coefficients is not zero
 
@@ -153,7 +155,8 @@ distorttest <- function(x, coef="all", ols = NULL, var.man = NULL){
                    coef.diff = cf_diff,
                    var.diff = eavarOLS10,
                    iis=x,
-                   ols=ols.y)
+                   ols=ols.y,
+                   var.difference = var.difference)
   attr(rval_chi, "class") <- "htest"
 
   out <- return(rval_chi)
