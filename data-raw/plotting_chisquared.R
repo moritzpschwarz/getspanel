@@ -53,7 +53,7 @@ overall %>%
 
 dat_short %>%
   select(sample, teststat, ar, nreg, rel.df) %>%
-  filter(nreg == 5, ar == 0) %>%
+  filter(nreg == 5) %>%
   unnest(teststat) %>%
   unnest(rel.df) %>%
   tidyr::pivot_longer(cols = -c(sample, ar, nreg, rel.df)) %>%
@@ -128,21 +128,29 @@ dat_short %>%
 
 
 plot_df %>%
+  mutate(ar_lab = factor(ar, labels = c(paste0("rho * {phantom() == phantom()} * ",c(0, 0.5, 0.9))))) %>%
   ggplot() +
   aes(x = value, color = sample) +
   #geom_histogram(bins = 1000) +
   geom_density(linewidth = 1) +
+  facet_wrap(~ar_lab, nrow = 1, labeller = label_parsed) +
   scale_color_viridis_d(name = "Sample") +
   labs(y = "Density", x = "Test Statistic", title = "Test Statistic Distribution under the Null",
-       subtitle = bquote('10,000 Replications. 5 Regressors. Normal Distribution. '*rho * {phantom() == phantom()} * 0*'. Dashed line is '*chi[df * {phantom() == phantom()} * 6]^{2}*".")) +
+       subtitle = bquote('10,000 Replications. 5 Regressors. Normal Distribution. Dashed is '*chi[df * {phantom() == phantom()} * 6]^{2}*' for '*rho * {phantom() == phantom()} * 0*' and '*chi[df * {phantom() == phantom()} * 7]^{2}*" otherwise.")) +
   theme_minimal() +
-  stat_function(fun = dchisq, args = list(df = 6), #6),
-                linewidth = 0.5, linetype = 2, color = "black", inherit.aes = FALSE,
-                aes(x = .data$value)) +
+  stat_function(data = data.frame(x = 0:70, ar_lab = "rho * {phantom() == phantom()} * 0"),
+                fun = dchisq, args = list(df = 6),
+                linewidth = 0.5, linetype = 2, color = "black", inherit.aes = FALSE) +
+  stat_function(data = data.frame(x = 0:70, ar_lab = "rho * {phantom() == phantom()} * 0.5"),
+                fun = dchisq, args = list(df = 7),
+                linewidth = 0.5, linetype = 2, color = "black", inherit.aes = FALSE) +
+  stat_function(data = data.frame(x = 0:70, ar_lab = "rho * {phantom() == phantom()} * 0.9"),
+                fun = dchisq, args = list(df = 7),
+                linewidth = 0.5, linetype = 2, color = "black", inherit.aes = FALSE) +
   geom_hline(aes(yintercept = 0)) -> p
 
-ggsave(plot = p,here("data-raw/figures/rr2305/Chisq_teststat.png"), dpi = 1000, width = 7, height = 5, bg ="white")
-ggsave(plot = p,here("data-raw/figures/rr2305/Chisq_teststat.pdf"), width = 7, height = 5, bg ="white")
+ggsave(plot = p,here("data-raw/figures/rr2305/Chisq_teststat.png"), dpi = 1000, width = 8, height = 5, bg ="white")
+ggsave(plot = p,here("data-raw/figures/rr2305/Chisq_teststat.pdf"), width = 8, height = 5, bg ="white")
 
 
 
