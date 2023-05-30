@@ -1,0 +1,542 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r}
+library(conflicted)
+library(here)
+library(tidyverse)
+library(kableExtra)
+
+conflict_prefer("filter", "dplyr")
+conflict_prefer("select", "dplyr")
+```
+
+
+```{r}
+sum_list <- list()
+sum_rej_05_list <- list()
+sum_rej_01_list <- list()
+
+
+load(here("data-raw","simulations/rr2305","spec_list.RData"))
+spec_n <- NROW(specs)
+
+missing <- 0
+failed <- vector()
+
+# NULL files for RR2305
+files_null <- list.files(here("data-raw/simulations/rr2305"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+# Only subsetting the files I actually need
+files_null <- files_null[grepl("NA_null_norm_", files_null)]
+files_null <- files_null[grepl("10000_0.9|10000_0.75", files_null)]
+
+# Alt files for RR2305
+files_alt <- list.files(here("data-raw/simulations/rr2305"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+# Only subsetting the files I actually need
+files_alt <- files_alt[!grepl("NA_null_norm_", files_alt)]
+files_alt <- files_alt[grepl("10000_0.9|10000_0.75", files_alt)]
+
+
+# ADDING FILES not run in RR2305 but in the initial submission
+# this should only be the Null, non-BS, p_alpha = 0.05 and 0.01, Nreg = 10
+files_initsubm <- list.files(here("data-raw/simulations/"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+files_initsubm <- files_initsubm[grepl("FALSE_null_10000_", files_initsubm)]
+#files_initsubm <- files_initsubm[grepl("0.05_10_|0.01_10_", files_initsubm)]
+files_initsubm1 <- files_initsubm[grepl("_norm_", files_initsubm)]
+
+files_initsubm <- list.files(here("data-raw/simulations/"), pattern = "[0-9]+.RData", full.names = TRUE, recursive = FALSE)
+files_initsubm <- files_initsubm[grepl("FALSE_alternative_10000_", files_initsubm)]
+files_initsubm <- files_initsubm[grepl("_norm_", files_initsubm)]
+files_initsubm2 <- files_initsubm[grepl("_0.1_NA", files_initsubm)]
+
+
+specs_backup <- specs
+load(here("data-raw","simulations","spec_list.RData"))
+specs_initsubm <- specs[!specs$bootstrap &  specs$dist=="norm",]
+
+# combine them again
+files <- c(files_null, files_alt, files_initsubm1, files_initsubm2)
+specs <- dplyr::bind_rows(specs_backup, specs_initsubm)
+spec_n <- NROW(specs)
+
+
+for (l in files){
+  
+  # res <- list.res[[l]]
+  #if(file.exists(here("data-raw","simulations/2305",paste0(paste0(specs[l,],collapse = "_"),".RData")))){
+  load(l)
+  #} else{
+  # print(paste0("File Specification ",l," skipped - not found."))
+  #  missing <- missing + 1
+  # next
+  #}
+  # <- 1
+  #load(list.files(here("data-raw/simulations"), pattern = "602.RData", full.names = TRUE))
+  #load(here("data-raw/simulations/","100_null_TRUE_100_TRUE_99_TRUE_TRUE_norm_NA_NA_5_0.05_1_0.5_601_601.RData"))
+  #load(here("data-raw/simulations/rr2207/1_t3_30_0.1_50_5_0.05_TRUE_3_20_1_TRUE_TRUE_alternative_4_1_0.5_TRUE_TRUE_1772_1.RData"))
+  if(any(class(res) == "list")){
+    failed <- c(failed,res$id)
+    next
+  }
+  if("dist" %in% names(res)){
+    res$dist <- NULL
+  }
+  
+  
+  
+  #load(list.files(here("data-raw/simulations"), pattern = "6[0-9][0-9].RData", full.names = TRUE))
+  res.rej05 <- res[,2:NCOL(res)]
+  res.rej05$rej <- NA
+  res.rej05$rej.L2.boot <- NA
+  res.rej05$rej.L1.boot <- NA
+  res.rej05$rej.dist.boot <- NA
+  
+  res.rej05$rej.prop.test <- NA
+  res.rej05$rej.prop.test.boot <- NA
+  res.rej05$rej.prop.boot <- NA
+  
+  res.rej05$rej.var.boot <- NA
+  
+  
+  res.rej05$rej[res.rej05$is.dist1.p > 0.05] <- 999
+  res.rej05$rej[res.rej05$is.dist1.p < 0.05] <- 1
+  res.rej05$rej[res.rej05$rej > 1] <- 0
+  
+  res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p > 0.05] <- 999
+  res.rej05$rej.L2.boot[res.rej05$is.dist1.boot.L2.p < 0.05] <- 1
+  res.rej05$rej.L2.boot[res.rej05$rej.L2.boot > 1] <- 0
+  
+  res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p > 0.05] <- 999
+  res.rej05$rej.L1.boot[res.rej05$is.dist1.boot.L1.p < 0.05] <- 1
+  res.rej05$rej.L1.boot[res.rej05$rej.L1.boot > 1] <- 0
+  
+  res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p > 0.05] <- 999
+  res.rej05$rej.dist.boot[res.rej05$is.dist1.boot.dist.p < 0.05] <- 1
+  res.rej05$rej.dist.boot[res.rej05$rej.dist.boot > 1] <- 0
+  
+  res.rej05$rej.var.boot[res.rej05$is.dist1.boot.var.p > 0.05] <- 999
+  res.rej05$rej.var.boot[res.rej05$is.dist1.boot.var.p < 0.05] <- 1
+  res.rej05$rej.var.boot[res.rej05$rej.var.boot > 1] <- 0
+  
+  
+  ####proportion test
+  res.rej05$rej.prop.test[res.rej05$is.prop.test.p > 0.05] <- 999
+  res.rej05$rej.prop.test[res.rej05$is.prop.test.p < 0.05] <- 1
+  res.rej05$rej.prop.test[res.rej05$rej.prop.test > 1] <- 0
+  
+  res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p > 0.05] <- 999
+  res.rej05$rej.prop.test.boot[res.rej05$is.prop.boot.test.p < 0.05] <- 1
+  res.rej05$rej.prop.test.boot[res.rej05$rej.prop.test.boot > 1] <- 0
+  
+  res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p > 0.05] <- 999
+  res.rej05$rej.prop.boot[res.rej05$is.prop.boot.p < 0.05] <- 1
+  res.rej05$rej.prop.boot[res.rej05$rej.prop.boot > 1] <- 0
+  
+  
+  
+  
+  
+  res.rej05$id <- res$id
+  res.rej05$id.seq <- res$id.seq
+  
+  
+  sum_rej_05_list[[l]] <- colMeans(res.rej05, na.rm = TRUE)
+  
+  
+  res.rej01 <- res[,2:NCOL(res)]
+  res.rej01$rej <- NA
+  res.rej01$rej.L2.boot <- NA
+  res.rej01$rej.L1.boot <- NA
+  res.rej01$rej.dist.boot <- NA
+  
+  res.rej01$rej.var.boot <- NA
+  
+  res.rej01$rej.prop.test <- NA
+  res.rej01$rej.prop.test.boot <- NA
+  res.rej01$rej.prop.boot <- NA
+  
+  
+  
+  res.rej01$rej[res.rej01$is.dist1.p > 0.01] <- 999
+  res.rej01$rej[res.rej01$is.dist1.p < 0.01] <- 1
+  res.rej01$rej[res.rej01$rej > 1] <- 0
+  
+  res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p > 0.01] <- 999
+  res.rej01$rej.L2.boot[res.rej01$is.dist1.boot.L2.p < 0.01] <- 1
+  res.rej01$rej.L2.boot[res.rej01$rej.L2.boot > 1] <- 0
+  
+  res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p > 0.01] <- 999
+  res.rej01$rej.L1.boot[res.rej01$is.dist1.boot.L1.p < 0.01] <- 1
+  res.rej01$rej.L1.boot[res.rej01$rej.L1.boot > 1] <- 0
+  
+  res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p > 0.01] <- 999
+  res.rej01$rej.dist.boot[res.rej01$is.dist1.boot.dist.p < 0.01] <- 1
+  res.rej01$rej.dist.boot[res.rej01$rej.dist.boot > 1] <- 0
+  
+  res.rej01$rej.var.boot[res.rej01$is.dist1.boot.var.p > 0.01] <- 999
+  res.rej01$rej.var.boot[res.rej01$is.dist1.boot.var.p < 0.01] <- 1
+  res.rej01$rej.var.boot[res.rej01$rej.var.boot > 1] <- 0
+  
+  ###proportion test
+  res.rej01$rej.prop.test[res.rej01$is.prop.test.p > 0.01] <- 999
+  res.rej01$rej.prop.test[res.rej01$is.prop.test.p < 0.01] <- 1
+  res.rej01$rej.prop.test[res.rej01$rej.prop.test > 1] <- 0
+  
+  res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p > 0.01] <- 999
+  res.rej01$rej.prop.test.boot[res.rej01$is.prop.boot.test.p < 0.01] <- 1
+  res.rej01$rej.prop.test.boot[res.rej01$rej.prop.test.boot > 1] <- 0
+  
+  res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p > 0.01] <- 999
+  res.rej01$rej.prop.boot[res.rej01$is.prop.boot.p < 0.01] <- 1
+  res.rej01$rej.prop.boot[res.rej01$rej.prop.boot > 1] <- 0
+  
+  
+  
+  
+  
+  res.rej01$id <- res$id
+  res.rej01$id.seq <- res$id.seq
+  
+  sum_rej_01_list[[l]] <- colMeans(res.rej01, na.rm = TRUE)
+  
+  
+}
+
+print(paste0("Number of files still missing: ",missing))
+
+
+sum.05 <- dplyr::bind_rows(sum_rej_05_list)
+#names(sum.05) <- names(sum_rej_05_list[[1]])
+sum.05$test.lev <- 0.05
+
+sum.01 <- dplyr::bind_rows(sum_rej_01_list)
+#names(sum.01) <- names(sum_rej_01_list[[1]])
+sum.01$test.lev <- 0.01
+
+###combine
+sum.01.m <- merge(sum.01, specs, by="id")
+sum.05.m <- merge(sum.05, specs, by="id")
+
+sum_tab <- rbind(sum.01.m, sum.05.m)
+
+
+# sum_tab -----------------------------------------------------------------
+
+sum_tab
+```
+
+
+```{r}
+head(sum_tab, 30)
+```
+
+
+```{r}
+plot_specs_overall <- dplyr::distinct(specs,hypothesis,out_prop, bootstrap, dist, ar, p_alpha, nreg, lambda, bad_leverage)
+```
+
+
+```{r}
+table_change <- function(input_table, caption, label){
+  # insert caption
+  tab <- gsub("\\begin{table}",
+              paste0("\\begin{table}
+                   \\caption{",caption,"}
+                   \\label{",label,"}"), input_table, fixed = TRUE)
+  
+  # fixing the header
+  # tab <- gsub("\\begin{tabular}",
+  #             "\\resizebox{\\textwidth}{!}{\\begin{tabular}",tab, fixed = TRUE)
+  # 
+  # # fixiing the footer
+  # tab <- gsub("\\end{tabular}",
+  #             "\\end{tabular}}",tab, fixed = TRUE)
+  
+  return(tab)
+}
+```
+
+
+```{r}
+remove_tabletex <- function(table){
+  gsub("\\end{table}","",gsub("\\begin{table}","",table, fixed = TRUE), fixed = TRUE)
+}
+
+
+column_tables <- function(table_list, tex_alone = FALSE, caption = "", label = "", resize = FALSE){
+  
+  cols = length(table_list)
+  
+  colwidth = round((1/cols),2)-0.01
+  
+  
+  tab_intermed <- paste0("\\begin{table}\n\\small")
+  
+  tab_intermed <- paste0(tab_intermed, 
+                         "\n\\caption{",caption,"}", 
+                         "\n\\label{",label,"}")
+  
+  
+  for(i in 1:cols){
+    paste0(tab_intermed,
+           "\n \\parbox{",colwidth,"\\textwidth}{",
+           ifelse(resize, paste0("\\resizebox{",colwidth,"\\textwidth}{!}{"),""),
+           remove_tabletex(table_list[[i]]), 
+           ifelse(resize,"}}","}"), 
+           ifelse(test = i != cols, 
+                  yes = paste0("\n \\hfill"),
+                  no = "\n \\end{table}")
+    ) -> tab_intermed
+  }
+  
+  if(tex_alone){
+    paste0("\\documentclass{article} \n \\usepackage{booktabs} \n \\usepackage{graphicx} \n\\begin{document}\n",
+           tab_intermed,
+           "\n \\end{document}") -> tab_intermed}
+  
+  tab_intermed -> final_table
+  
+  return(final_table)
+}
+```
+
+
+
+
+<!-- \documentclass{article} -->
+<!-- \usepackage{booktabs} -->
+<!-- \usepackage{graphicx} -->
+
+<!-- \begin{document} -->
+
+
+<!-- \include{table_asym_badleverage} -->
+
+<!-- \include{table_boot_null_nonparam} -->
+<!-- \include{table_boot_null_param} -->
+
+<!-- \include{table_boot_alternative_nonparam} -->
+<!-- \include{table_boot_alternative_param} -->
+<!-- \include{table_boot_alternative_BadLeverage} -->
+
+
+<!-- \end{document} -->
+
+
+
+
+
+# No Bootstrap
+
+## Null Hypothesis
+
+
+<!-- ### Sample Size against number of observations for different levels -->
+
+<!-- This is 3.1a and  -->
+
+<!-- ```{r} -->
+<!-- sum_tab %>%  -->
+<!--   filter(hypothesis == "null" & bootstrap == FALSE & dist == "norm") %>%  -->
+
+<!--   filter(test.lev %in% c(0.01, 0.05) &  -->
+<!--            nreg == 5 & ar == 0 & p_alpha %in% c(0.01,0.05)) %>%  -->
+
+<!--   select(sample, rej, p_alpha, nreg, test.lev) %>%  -->
+<!--   arrange(p_alpha, sample) %>%  -->
+<!--   pivot_wider(id_cols = c(sample, nreg, test.lev), -->
+<!--               names_from = c(p_alpha), values_from = rej) %>%  -->
+<!--   arrange(test.lev, sample) %>%  -->
+
+<!--   select(-test.lev) %>%  -->
+<!--   kable(format = "latex", -->
+<!--         digits = 3, -->
+<!--         col.names = c("n", "# Regressors", "0.01", "0.05"),  -->
+<!--         booktabs = TRUE) %>%  -->
+<!--   kable_styling(full_width = FALSE) %>%  -->
+<!--   kable_paper() %>%  -->
+<!--   #pack_rows("Normal Distribution",1, 10) %>% -->
+<!--   #pack_rows("$t_3$ Distribution", 11, 20) %>%  -->
+
+<!--   add_header_above(c(" " = 2, "$\\\\gamma_c$" = 2),escape = FALSE) %>%  -->
+<!--   #add_header_above(c(" " = 2, "Normal Distr." = 2), escape = FALSE) %>%  -->
+
+<!--   pack_rows("Level 0.01",1, 5) %>% -->
+<!--   pack_rows("Level 0.05", 6, 10) -> tab1 -->
+
+<!-- ``` -->
+
+<!-- ### Sample Size against number of observations for different number of coefficients -->
+
+<!-- ```{r} -->
+<!-- sum_tab %>%  -->
+<!--   filter(hypothesis == "null" & bootstrap == FALSE & dist == "norm") %>%  -->
+
+<!--   filter(test.lev == 0.05 & nreg %in% c(1,5,10) & ar == 0 & p_alpha == 0.05) %>%  -->
+
+<!--   select(sample, rej, p_alpha, test.lev, nreg) %>%  -->
+<!--   arrange(p_alpha) %>%  -->
+<!--   pivot_wider(id_cols = c(sample, test.lev, p_alpha), -->
+<!--               names_from = c(nreg), values_from = rej) %>%  -->
+
+<!--   kable(format = "latex",  -->
+<!--         digits = 3, -->
+<!--         col.names = c("n", "Level","$\\gamma_c$", "1","5","10"),  -->
+<!--         booktabs = TRUE, escape = FALSE) %>%  -->
+<!--   kable_styling(full_width = FALSE) %>%  -->
+<!--   kable_paper() %>%  -->
+
+<!--   add_header_above(c(" " = 3, "# Regressors" = 3)) -> tab2 -->
+<!-- ``` -->
+
+
+### Autoregressive Behaviour
+
+```{r}
+sum_tab %>% 
+  filter(hypothesis == "null" & bootstrap == FALSE & dist == "norm") %>% 
+  
+  filter(test.lev == 0.05 & nreg==5 & ar %in% c(0,0.5, 0.9)& p_alpha == 0.05) %>% 
+  
+  select(sample, rej, p_alpha, ar, test.lev, nreg) %>% 
+  arrange(ar) %>% 
+  pivot_wider(id_cols = c(sample, test.lev, p_alpha, nreg),
+              names_from = c(ar), values_from = rej) %>% 
+  
+  kable(format = "latex", booktabs = TRUE,
+        digits = 3,
+        col.names = c("n", "Level","$\\gamma_c$",
+                      "\\# Regressors", "0","0.5","0.9"),  escape = FALSE) %>% 
+  kable_styling(full_width = FALSE) %>% 
+  kable_paper() %>% 
+  
+  add_header_above(c(" " = 4, "$\\\\rho$" = 3), escape = FALSE)  -> tab3 
+
+
+
+
+column_tables(list(tab3), 
+              caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} right panel."), 
+              label = "fig_out_sim_null_tabright") %>% 
+  
+  cat(file = here("data-raw/text/rr2305 Tables/","table_null_tab3AR.tex"))
+
+# pack_rows("Normal Distribution",1, 5) %>%
+# pack_rows("$t_3$ Distribution", 6, 10, escape = FALSE)  -> tab3 
+```
+
+
+### Save for Null no BS
+
+```{r}
+
+column_tables(list(tab1), 
+              caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} left panel."), 
+              label = "fig_out_sim_null_tableft") %>% 
+  paste(., 
+        
+        column_tables(list(tab2), 
+                      caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} middle panel."), 
+                      label = "fig_out_sim_null_tabmid"), sep = "\n") %>% 
+  
+  paste(
+    column_tables(list(tab3), 
+                  caption = paste0("Simulation performance of the asymptotic test under the null of no distortion. Data for a Normal Distribution identical to Figure \\ref{fig_out_sim_null} right panel."), 
+                  label = "fig_out_sim_null_tabright"), sep = "\n") %>% 
+  
+  cat(file = here("data-raw/text/v8/","table_null.tex"))
+```
+
+
+## Alternative
+
+Other than with the original Simulation Tables Files, here we just filter for AR == 0.9
+```{r}
+plot_specs_overall %>% 
+  filter(bootstrap==FALSE & hypothesis=="alternative", ar == 0.9) %>% 
+  distinct(out_prop, p_alpha, ar,nreg) -> plot_specs
+
+table_list_alt <- ""
+
+plot_specs %>% 
+  mutate(text = "Simulation performance under the alternative for varying sample sizes and outlier magnitudes for a Normal Distribution when the dependent variable is a  ", 
+         text = paste0(text, case_when(ar == 0 ~"cross-sectional process", 
+                                       ar == 0.5 ~"stationary autoregressive process with coefficient of 0.5 on the autoregressive term", 
+                                       ar == 0.9 ~"stationary autoregressive process with coefficient of 0.9 on the autoregressive term", 
+                                       ar == 1 ~"unit-root process"))) %>% 
+  
+  mutate(text = paste0(text, " and ", 
+                       case_when(out_prop == 0.10 ~ "10\\% of the sample is outlier-contaminated.", 
+                                 out_prop == 0.15 ~ "15\\% of the sample is outlier-contaminated."))) %>% 
+  
+  mutate(text = paste0(text, " Estimation was carried out with ",
+                       nreg, " regressor",ifelse(nreg>1,"s",""),".")) %>% 
+  
+  pull(text) -> alt_caption_list
+
+
+alt_label_list <- paste0("simluation_alternative_table_",1:nrow(plot_specs))
+```
+
+
+```{r}
+table_list_alt <- ""
+for(i in 1:nrow(plot_specs) ){
+  
+  print(paste("AR:",plot_specs[i,"ar"], 
+              "NREG:", plot_specs[i,"nreg"], 
+              "Outl. Prop:", plot_specs[i,"out_prop"], sep = " "))
+  
+  sum_tab %>% 
+    filter(hypothesis == "alternative" & bootstrap == FALSE & dist == "norm") %>% 
+    filter(test.lev == 0.01 & p_alpha == 0.05) %>% 
+    filter(out_prop == plot_specs[i,"out_prop"] & 
+             nreg == plot_specs[i,"nreg"] & 
+             ar == plot_specs[i,"ar"]) -> datalt
+  
+  datalt %>% 
+    select(sample, ar, rej, out_prop, test.lev, p_alpha, nreg, lambda) %>% 
+    pivot_wider(id_cols = c(sample, ar, out_prop, test.lev, p_alpha, nreg),
+                names_from = c(lambda), values_from = c(rej)) -> df_to_table
+  
+  df_to_table %>% 
+    kable(format = "latex", 
+          booktabs = TRUE,
+          escape = FALSE,
+          digits = 3,
+          col.names = c("n","$\\rho$", "Outl. Prop.", "Level",
+                        "$\\gamma_c$","\\# Regressors", "2","3","4","6")) %>% 
+    kable_styling(full_width = FALSE) %>% 
+    kable_paper() %>%  
+    
+    add_header_above(header = c(" " = 6, 
+                                "Rejection Frequency for $\\\\lambda$" = 4), 
+                     escape = FALSE) -> tab_intermed
+  
+  
+  column_tables(list(tab_intermed), 
+                caption = alt_caption_list[i], 
+                label = alt_label_list[i], resize = TRUE) %>% 
+    
+    paste0(table_list_alt, ., sep = "\n") -> table_list_alt
+  
+}
+```
+
+
+```{r}
+#  paste0("\\documentclass{article} \n \\usepackage{booktabs} \n \\usepackage{graphicx} \n\\begin{document}\n",
+#            table_list_alt,
+#            "\n \\end{document}") %>% 
+# cat(file = here("data-raw/text/v8/table_alternative.tex"))
+
+
+cat(table_list_alt,file = here("data-raw/text/rr2305 Tables/table_alternative_AR0.9.tex"))
+```
+
