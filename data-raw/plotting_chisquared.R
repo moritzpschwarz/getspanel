@@ -235,6 +235,9 @@ plot_df_ready %>%
   labs(y = "Density", x = bquote(n^{1 / 2}*(widehat(beta)[c]^{(1)} - beta)),title = "IIS Estimator under the Null",
        subtitle = "10,000 Replications. 5 Regressors. Normal Distribution.\nDashed is Normal Distribution with corresponding Variance.") +
   theme_minimal() +
+  theme(axis.text.x = element_text(size = 6.5),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank()) +
   geom_hline(aes(yintercept = 0)) -> p
 ggsave(plot = p,here("data-raw/figures/rr2305/IIS_woAR.png"), dpi = 1000, width = 7, height = 5, bg ="white")
 ggsave(plot = p,here("data-raw/figures/rr2305/IIS_woAR.pdf"), width = 7, height = 5, bg ="white")
