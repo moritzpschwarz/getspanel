@@ -75,9 +75,8 @@ robust_isatpanel <- function(object,
     }
   }
 
-
   if(HAC){
-    lm_mod <- lm(y~.-1,df)
+    lm_mod <- lm(y ~ as.factor(time) + .-1,df)
     out$HAC <- lmtest::coeftest(lm_mod, vcov=sandwich::vcovHAC(lm_mod, cluster=cluster, lag = lag))
   }
 
