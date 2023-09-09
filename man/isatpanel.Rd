@@ -2,7 +2,7 @@
 % Please edit documentation in R/isatpanel.R
 \name{isatpanel}
 \alias{isatpanel}
-\title{Panel isat function}
+\title{Indicator Saturation for Panel Data}
 \usage{
 isatpanel(
   data = NULL,
@@ -24,7 +24,8 @@ isatpanel(
   fesis_id = NULL,
   cfesis_var = colnames(mxreg),
   cfesis_id = NULL,
-  plot = FALSE,
+  uis = NULL,
+  plot = TRUE,
   plm_model = "within",
   y = NULL,
   id = NULL,
@@ -58,7 +59,7 @@ isatpanel(
 
 \item{jsis}{Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.}
 
-\item{fesis}{Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.}
+\item{fesis}{Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.}
 
 \item{csis}{Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
 
@@ -72,7 +73,9 @@ isatpanel(
 
 \item{cfesis_id}{The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
 
-\item{plot}{Logical. Should the final object be plotted? Default is FALSE.}
+\item{uis}{Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Surcarrat (2020) below for an explanation of the UIS system.}
+
+\item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
 
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
 
@@ -84,13 +87,16 @@ isatpanel(
 
 \item{mxreg}{The co-variates matrix}
 
-\item{...}{Further arguments to gets::isat()}
+\item{...}{Further arguments to \code{\link[gets:isat]{gets::isat()}}}
 }
 \value{
 A list with class 'isatpanel'.
 }
 \description{
-Panel isat function
+This function is essentially a wrapper function around the \code{\link[gets:isat]{gets::isat()}} function from the \code{gets} package.
+This function allows the running of various different indicator saturation techniques that can, for example, be used to answer reverse causal questions.
+Indicator Saturation techniques fully saturate a model with indicators (for example dummy-indicators or step-indicators) and then use an automated block-search
+algorithm to retain only relevant indicators that improve the model (based on a chosen information criterion).
 }
 \examples{
 \donttest{
@@ -119,8 +125,16 @@ result <- isatpanel(
 )
 plot(result)
 plot_grid(result)
+
+# print the retained indicators
+get_indicators(result)
 }
 }
 \references{
 Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
+
+Genaro Sucarrat. User-Specified General-to-Specific and Indicator Saturation Methods, The R Journal (2020) 12:2, pages 388-401. Available at: https://journal.r-project.org/archive/2021/RJ-2021-024/index.html
+}
+\seealso{
+\code{\link[gets:isat]{gets::isat()}}
 }

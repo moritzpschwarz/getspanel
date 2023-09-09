@@ -93,7 +93,7 @@ get_countries <- function(x){
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
-  identify_indicator_timings(df)
+  identify_indicator_timings(df, uis_breaks = NULL)
 }
 
 is1_coef <- coef(is1$isatpanel.result)[get_countries(is1)$fesis$name]

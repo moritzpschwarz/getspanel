@@ -53,7 +53,7 @@ plot_residuals <- function(isatpanelobject){
   residual_df$time <- as.numeric(residual_df$time)
 
   ggplot(residual_df) +
-    aes_(x = ~time, group = ~id, y = ~diff) +
+    aes(x = .data$time, group = .data$id, y = .data$diff) +
     facet_wrap("id") +
     geom_line() +
     geom_hline(aes(yintercept = 0))+
