@@ -2,6 +2,7 @@
 #'
 #' @param x An object produced by the isatpanel function
 #' @param title Plot title. Must be a character vector.
+#' @param regex_exclude_indicators A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.
 #' @param ... Further arguments to be passed to ggplot2.
 #'
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
@@ -39,14 +40,18 @@
 #' plot_grid(result)
 #'}
 
-plot_grid <- function(x, title = NULL, ...){
+plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
 
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
-
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   indicators <- indicators[,!grepl("^id|^time",colnames(indicators))]
+
+  if(!is.null(regex_exclude_indicators)){
+    indicators <- indicators[,!grepl(regex_exclude_indicators,colnames(indicators)),drop = FALSE]
+  }
+
   df <- cbind(df,indicators)
 
   if(dim(indicators)[2] != 0){
@@ -114,7 +119,7 @@ plot_grid <- function(x, title = NULL, ...){
     indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
 
     ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
-      geom_tile(na.rm = NA) +
+      geom_tile(na.rm = TRUE) +
       #scale_fill_viridis_c(na.value = NA) +
       scale_fill_gradient2(na.value = NA, name = "Effect")+
       scale_x_continuous(expand = c(0, 0)) +

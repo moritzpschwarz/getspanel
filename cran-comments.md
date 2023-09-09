@@ -1,12 +1,11 @@
-## Resubmission
-Resubmitting after fixing the URL to the CRAN package using the right canonical form.
+## Submission
+This is a minor update to fix a few bugs. This should rectify the issues associated with the CRAN archival. 
 
-This is a minor update to fix a few bugs
+- I fixed a small error in geom_tile() that I think was the reason for CRAN archival
+- I have fixed a bug in isatpanel() that produced false results when using 'AR' other than 0
+- I fixed a bug in break_uncertainty() and added a new test file for it
+- I added a small option to plot_grid()
 
-- updated Vignette as there was a mistake
-- corrected errors in isatpanel to deal with option jsis and disabled sis
-- minor fixes in the plotting function
-- changed the name of one function
 
 ## R CMD Checks
 

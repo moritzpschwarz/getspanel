@@ -4,12 +4,14 @@
 \alias{plot_grid}
 \title{Plotting an isatpanel object}
 \usage{
-plot_grid(x, title = NULL, ...)
+plot_grid(x, title = NULL, regex_exclude_indicators = NULL, ...)
 }
 \arguments{
 \item{x}{An object produced by the isatpanel function}
 
 \item{title}{Plot title. Must be a character vector.}
+
+\item{regex_exclude_indicators}{A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.}
 
 \item{...}{Further arguments to be passed to ggplot2.}
 }

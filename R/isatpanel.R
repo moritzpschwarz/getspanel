@@ -111,7 +111,7 @@ isatpanel <- function(
   if (ar < 0) {stop("The ar argument must be greater than or equal to 0.")}
   if (!ar %% 1 == 0) {stop("The ar argument must be an integer.")} # check if the numeric value of ar is an integer - the is.integer checks the type
 
-  # Transformations (to do: time, country and mxbreak as grepl character vectors)
+  # Transformations (TODO: time, country and mxbreak as grepl character vectors)
   if (is.data.frame(mxreg)) {mxreg <- as.matrix(mxreg)}
 
   # Formula, Index and Data arguments
@@ -228,12 +228,22 @@ isatpanel <- function(
 
   # Autoregressive Term
   if (ar > 0) {
-    ar_df <- cbind(cbind(df,y),mxreg)
-    ar_df_processed <- by(ar_df,INDICES = ar_df$id,FUN = function(x) {
+
+    if(is.null(colnames(mxreg))){
+      mx_all <- mxreg
+      colnames(mx_all) <- "x1"
+    } else {
+      mx_all <- mxreg
+    }
+
+    ar_df <- cbind(cbind(df,y),mx_all)
+    ar_df_processed <- by(ar_df,INDICES = ar_df$id, FUN = function(x) {
       y = x$y
-      gets::regressorsMean(y = y, mxreg = mxreg,ar = c(1:ar),return.as.zoo = FALSE)
+      mx <- x[, names(x) %in% colnames(mx_all)]
+      gets::regressorsMean(y = y, mxreg = mx,ar = c(1:ar),return.as.zoo = FALSE)
     })
-    ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)))
+
+    ar_df_processed <- as.data.frame(do.call("rbind",as.list(ar_df_processed)[unique(ar_df$id)])) # the [unique(ar_df$id)] is necessary to retain the original order
 
     # get data back out
     y <- ar_df_processed$y
@@ -243,7 +253,11 @@ isatpanel <- function(
     # Adjust the time and id vectors
     # The code below removes the minimum time period for each group as many times as the AR term sets out
     for (a in 1:max(ar)) {
-      df <- data.frame(do.call("rbind",by(df,df$id,FUN = function(x) {x[!x$time == min(x$time),]})),row.names = NULL)
+      df <- data.frame(do.call("rbind",
+                               by(df,df$id,FUN = function(x){
+                                 x[!x$time == min(x$time),]
+                               })[unique(ar_df$id)]), # the [unique(ar_df$id)] is necessary to retain the original order
+                       row.names = NULL)
     }
 
     time <- df$time
