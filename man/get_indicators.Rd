@@ -11,6 +11,41 @@ get_indicators(object, uis_breaks = NULL)
 
 \item{uis_breaks}{A string with the names of user-specified indicators.}
 }
+\value{
+A list of indicators.
+}
 \description{
 Extract the retained indicators from an \code{isatpanel} object
+}
+\examples{
+\donttest{
+data(EU_emissions_road)
+
+# Group specification
+EU15 <- c("Austria", "Germany", "Denmark", "Spain", "Finland", "Belgium",
+         "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+         "Netherlands", "Greece", "Portugal", "Sweden")
+
+# Prepare sample and data
+EU_emissions_road_short <- EU_emissions_road[
+EU_emissions_road$country \%in\% EU15 &
+EU_emissions_road$year >= 2000,
+]
+
+# Run
+result <- isatpanel(
+  data = EU_emissions_road_short,
+  formula = ltransport.emissions ~ lgdp + I(lgdp^2) + lpop,
+  index = c("country", "year"),
+  effect = "twoways",
+  fesis = TRUE,
+  plot = FALSE,
+  t.pval = 0.01
+)
+plot(result)
+plot_grid(result)
+
+# print the retained indicators
+get_indicators(result)
+}
 }

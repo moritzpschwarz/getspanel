@@ -3,10 +3,11 @@
 #' @param object An object produced by the isatpanel function.
 #' @param uis_breaks A string with the names of user-specified indicators.
 #'
-#' @return
+#' @return A list of indicators.
 #' @export
 #'
 #' @examples
+#' \donttest{
 #'data(EU_emissions_road)
 #'
 #'# Group specification
@@ -35,7 +36,7 @@
 #'
 #' # print the retained indicators
 #' get_indicators(result)
-#'}
+#' }
 get_indicators <- function(object, uis_breaks = NULL){
 
   df <- object$estimateddata
