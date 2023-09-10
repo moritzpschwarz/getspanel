@@ -101,10 +101,10 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   sub_title <- NULL
 
 
-  ggplot(df, aes_(
-    x = ~time,
-    y = ~fitted,
-    group = ~id
+  ggplot(df, aes(
+    x = .data$time,
+    y = fitted,
+    group = .data$id
   )) -> g
 
 
@@ -112,18 +112,18 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
 
   g +
-    geom_line(aes_(y = ~y, color = "black"), size = 0.7) +
+    geom_line(aes(y = .data$y, color = "black"), size = 0.7) +
 
-    geom_rect(data = effects, aes_(xmin = ~start_rect, xmax = ~end_rect, ymin = -Inf, ymax = Inf, group = ~name),fill = "grey",alpha = 0.1, na.rm = TRUE) +
+    geom_rect(data = effects, aes(xmin = .data$start_rect, xmax = .data$end_rect, ymin = -Inf, ymax = Inf, group = .data$name),fill = "grey",alpha = 0.1, na.rm = TRUE) +
 
     geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
 
     # fesis
-    geom_vline(data = df_ident_fesis, aes_(xintercept = ~time,color="red")) +
+    geom_vline(data = df_ident_fesis, aes(xintercept = .data$time,color="red")) +
 
-    geom_ribbon(data = effects, aes_(ymin = ~cf_lwr, ymax = ~cf_upr, fill = "red", group = ~name), alpha = 0.5, na.rm = FALSE) +
+    geom_ribbon(data = effects, aes(ymin = .data$cf_lwr, ymax = .data$cf_upr, fill = "red", group = .data$name), alpha = 0.5, na.rm = FALSE) +
 
-    geom_line(data = effects, aes_(y = ~cf, color = "red", group = ~name), na.rm = TRUE) +
+    geom_line(data = effects, aes(y = .data$cf, color = "red", group = .data$name), na.rm = TRUE) +
 
     # Faceting
     facet_wrap("id", scales = facet.scales) +

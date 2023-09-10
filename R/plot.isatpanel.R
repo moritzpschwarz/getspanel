@@ -10,7 +10,7 @@
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows observed data, the fitted values, and all identified breaks and impulses.
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ scale_color_identity scale_linetype
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline scale_color_identity scale_linetype
 #'
 plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = NULL, zero_line = FALSE, ...){
 
@@ -28,45 +28,51 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     fitted <- as.numeric(x$isatpanel.result$fit)
   }
 
-  df_identified <- identify_indicator_timings(df)
+  df_identified <- get_indicators(x)
 
   sub_title <- NULL
 
-  ggplot(df, aes_(
-    x = ~time,
-    y = ~fitted,
-    group = ~id
+  ggplot(df, aes(
+    x = .data$time,
+    y = fitted,
+    group = .data$id
   )) -> g
 
 
   # Impulses
-  if(nrow(df_identified$impulses)>0){
-    g = g + geom_vline(data = df_identified$impulses,aes_(xintercept = ~time,color="grey"))
+  if(!is.null(df_identified$impulses)){
+    g = g + geom_vline(data = df_identified$impulses,aes(xintercept = .data$time,color="grey"))
   }
   # Steps
-  if(nrow(df_identified$steps)>0){
-    g = g + geom_vline(data = df_identified$steps, aes_(xintercept = ~time,color="purple"))
+  if(!is.null(df_identified$steps)){
+    g = g + geom_vline(data = df_identified$steps, aes(xintercept = .data$time,color="purple"))
   }
+
+  # uis
+  if(!is.null(df_identified$uis_breaks)){
+    g = g + geom_vline(data = df_identified$uis_breaks, aes(xintercept = .data$time, color="violetred4"))
+  }
+
   # fesis
   if(!is.null(df_identified$fesis)){
-    g = g + geom_vline(data = df_identified$fesis, aes_(xintercept = ~time,color="red"))
+    g = g + geom_vline(data = df_identified$fesis, aes(xintercept = .data$time,color="red"))
   }
 
   # cfesis
   if(!is.null(df_identified$cfesis)){
-    g = g + geom_vline(data = df_identified$cfesis, aes_(xintercept = ~time, color="darkgreen", linetype = ~name))
+    g = g + geom_vline(data = df_identified$cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$name))
   }
 
   # csis
   if(!is.null(df_identified$csis)){
-    g = g + geom_vline(data = df_identified$csis, aes_(xintercept = ~time, color="orange", linetype = ~name))
+    g = g + geom_vline(data = df_identified$csis, aes(xintercept = .data$time, color="orange", linetype = .data$name))
   }
 
-  if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
 
+  if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
   g +
-    geom_line(aes_(y = ~y,color="black"), size = 0.7) +
-    geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
+    geom_line(aes(y = .data$y,color="black"), linewidth = 0.7) +
+    geom_line(aes(color = "blue"),linetype = 1, linewidth = 0.5) +
 
 
 
@@ -74,8 +80,8 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     facet_wrap("id", scales = facet.scales) +
 
     scale_color_identity(name = NULL,
-                         breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
-                         labels = c("y","Fitted","IIS","JSIS","FESIS","CFESIS", "CSIS"),
+                         breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange", "violetred4"),
+                         labels = c("y","Fitted","IIS","JSIS","FESIS","CFESIS", "CSIS", "User-Specified"),
                          guide = "legend")+
 
     scale_linetype(name = "Variable") +
@@ -85,14 +91,14 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     legend.key = element_rect(fill = NA),
     panel.border = element_rect(colour = "grey",fill = NA),
     panel.background = element_blank()#,
-    #panel.grid.major.y = element_line(colour = "grey",size = 0.1)
+    #panel.grid.major.y = element_line(colour = "grey",linewidth = 0.1)
   ) +
 
     labs(title = title,subtitle = sub_title, y = NULL, x = NULL) -> plotoutput
 
   # # cfesis
   # if(!is.null(cfesis)){
-  #   g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, linetype = ~variable, color="green"))
+  #   g = g + geom_vline(data = cfesis, aes(xintercept = .data$time, linetype = .data$variable, color="green"))
   # }#
   # # browser
   # #   if(interactive){

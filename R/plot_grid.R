@@ -8,7 +8,7 @@
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline aes_ geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2 .data
 #' @importFrom stats aggregate
 #'
 #' @examples
@@ -45,8 +45,8 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
   #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
-  indicators <- indicators[,!colnames(indicators) %in% names(df)]
-  indicators <- indicators[,!grepl("^id|^time",colnames(indicators))]
+  indicators <- indicators[,!colnames(indicators) %in% names(df), drop = FALSE]
+  indicators <- indicators[,!grepl("^id|^time",colnames(indicators)), drop = FALSE]
 
   if(!is.null(regex_exclude_indicators)){
     indicators <- indicators[,!grepl(regex_exclude_indicators,colnames(indicators)),drop = FALSE]
@@ -118,20 +118,29 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
     indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
 
-    ggplot(indicators_toplot, aes_(x = ~time, y = ~id, fill = ~effect)) +
+    # Figure out the colours if there is only one break
+    col_limits <- c(min(indicators_toplot$effect, na.rm = TRUE), max(indicators_toplot$effect, na.rm = TRUE))
+
+    if(col_limits[1] == col_limits[2]){
+      if(col_limits[1]<0){col_limits[2] <- col_limits[2] * -1} else {col_limits[1] <- col_limits[1] * -1}
+    } else if(sign(col_limits[1]) == sign(col_limits[2])){
+      if(sign(col_limits[1]) < 0){col_limits[2] <- col_limits[1]*-1} else {col_limits[1] <- col_limits[2]*-1}
+    }
+
+    ggplot(indicators_toplot, aes(x = .data$time, y = .data$id, fill = .data$effect)) +
       geom_tile(na.rm = TRUE) +
       #scale_fill_viridis_c(na.value = NA) +
-      scale_fill_gradient2(na.value = NA, name = "Effect")+
+      scale_fill_gradient2(limits = col_limits, na.value = NA, name = "Effect", midpoint = 0) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_discrete(expand = c(0, 0)) +
-      facet_wrap(~facet) +
+      facet_wrap(~.data$facet) +
       theme_bw() +
       theme(panel.grid = element_blank(),
             panel.border = element_rect(fill = NA),
             strip.background = element_blank()) +
       labs(x = NULL, y = NULL)
 
-  } else {warning("No indicators identified in the isatpanel object. No plot produced.")}
+  } else {message("No indicators identified in the isatpanel object. No plot produced.")}
 
 
   #
@@ -247,38 +256,38 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
   #
   # sub_title <- NULL
   #
-  # ggplot(df, aes_(
-  #   x = ~time,
-  #   y = ~fitted,
-  #   group = ~id
+  # ggplot(df, aes(
+  #   x = .data$time,
+  #   y = fitted,
+  #   group = .data$id
   # )) -> g
   #
   #
   # # Impulses
   # if(nrow(impulses)>0){
-  #   g = g + geom_vline(data = impulses,aes_(xintercept = ~time,color="grey"))
+  #   g = g + geom_vline(data = impulses,aes(xintercept = .data$time,color="grey"))
   # }
   # # Steps
   # if(nrow(steps)>0){
-  #   g = g + geom_vline(data = steps, aes_(xintercept = time,color="purple"))
+  #   g = g + geom_vline(data = steps, aes(xintercept = time,color="purple"))
   # }
   # # fesis
   # if(!is.null(fesis)){
-  #   g = g + geom_vline(data = fesis, aes_(xintercept = ~time,color="red"))
+  #   g = g + geom_vline(data = fesis, aes(xintercept = .data$time,color="red"))
   # }
   #
   # # cfesis
   # if(!is.null(cfesis)){
-  #   g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, color="darkgreen", linetype = ~name))
+  #   g = g + geom_vline(data = cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$name))
   # }
   #
   # # csis
   # if(!is.null(csis)){
-  #   g = g + geom_vline(data = csis, aes_(xintercept = ~time, color="orange", linetype = ~name))
+  #   g = g + geom_vline(data = csis, aes(xintercept = .data$time, color="orange", linetype = .data$name))
   # }
   #
   # g +
-  #   geom_line(aes_(y = ~y,color="black"), size = 0.7) +
+  #   geom_line(aes(y = .data$y,color="black"), size = 0.7) +
   #   geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
   #   geom_hline(aes(yintercept = 0)) +
   #
@@ -304,7 +313,7 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
   #
   # # cfesis
   # if(!is.null(cfesis)){
-  #   g = g + geom_vline(data = cfesis, aes_(xintercept = ~time, linetype = ~variable, color="green"))
+  #   g = g + geom_vline(data = cfesis, aes(xintercept = .data$time, linetype = .data$variable, color="green"))
   # }#
   # # browser
   # #   if(interactive){

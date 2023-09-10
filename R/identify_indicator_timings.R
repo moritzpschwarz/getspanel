@@ -1,10 +1,11 @@
 #' Internal function to identify the timing of selected indicators
 #'
 #' @param object data.frame
+#' @param uis_breaks A character vector with the names of the UIS breaks if the \code{uis} argument was used in [isatpanel].
 #'
 #' @return A list of data.frames
 #'
-identify_indicator_timings <- function(object){
+identify_indicator_timings <- function(object, uis_breaks = NULL){
 
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
@@ -22,6 +23,13 @@ identify_indicator_timings <- function(object){
     steps <- aggregate(steps$time, by = list(id = steps$id, name = steps$name), FUN = min)
     names(steps)[grep("x",names(steps))] <- "time"
     steps$value <- 1
+  }
+
+  uis_indicators <- object_l[object_l$name %in% uis_breaks & object_l$value == 1,]
+  if(nrow(uis_indicators)>0){
+    uis_indicators <- aggregate(uis_indicators$time, by = list(id = uis_indicators$id, name = uis_indicators$name), FUN = min)
+    names(uis_indicators)[grep("x",names(uis_indicators))] <- "time"
+    uis_indicators$value <- 1
   }
 
   # FESIS
@@ -119,11 +127,12 @@ identify_indicator_timings <- function(object){
 
 
   output <- list()
-  output$impulses <- impulses
-  output$steps <- steps
+  output$impulses <- if(nrow(impulses)>0) {impulses} else{NULL}
+  output$steps <- if(nrow(steps)>0) {steps} else{NULL}
   output$csis <- csis
   output$fesis <- fesis
   output$cfesis <- cfesis
+  output$uis_breaks <- if(nrow(uis_indicators)>0) {uis_indicators} else{NULL}
 
   return(output)
 

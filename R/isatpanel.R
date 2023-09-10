@@ -2,7 +2,13 @@
 
 ########### panel isat function
 
-#' Panel isat function
+#' Indicator Saturation for Panel Data
+#' @description
+#' This function is essentially a wrapper function around the [gets::isat()] function from the \code{gets} package.
+#' This function allows the running of various different indicator saturation techniques that can, for example, be used to answer reverse causal questions.
+#' Indicator Saturation techniques fully saturate a model with indicators (for example dummy-indicators or step-indicators) and then use an automated block-search
+#' algorithm to retain only relevant indicators that improve the model (based on a chosen information criterion).
+#'
 #'
 #' @param y Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.
 #' @param id Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the grouping variable as a character or factor
@@ -18,10 +24,11 @@
 #' @param iis Logical. Use Impulse Indicator Saturation.
 #' @param jiis Logical. Use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
 #' @param jsis Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.
-#' @param fesis Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is FALSE.
+#' @param fesis Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.
 #' @param csis Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
-#' @param ... Further arguments to gets::isat()
+#' @param uis Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Surcarrat (2020) below for an explanation of the UIS system.
+#' @param ... Further arguments to [gets::isat()]
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
@@ -29,13 +36,16 @@
 #' @param fesis_id The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability in a character vector.
 #' @param cfesis_var The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
 #' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
-#' @param plot Logical. Should the final object be plotted? Default is FALSE.
+#' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and [plot_grid()] using the \code{cowplot} package.
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
 #' @importFrom fastDummies dummy_cols
 #'
+#' @seealso [gets::isat()]
+#'
 #' @references Felix Pretis and Moritz Schwarz (2022). Discovering What Mattered: Answering Reverse Causal Questions by Detecting Unknown Treatment Assignment and Timing as Breaks in Panel Models. January 31, 2022. Available at SSRN: https://ssrn.com/abstract=4022745 or http://dx.doi.org/10.2139/ssrn.4022745
+#' @references Genaro Sucarrat. User-Specified General-to-Specific and Indicator Saturation Methods, The R Journal (2020) 12:2, pages 388-401. Available at: https://journal.r-project.org/archive/2021/RJ-2021-024/index.html
 #'
 #' @examples
 #' \donttest{
@@ -64,6 +74,9 @@
 #' )
 #' plot(result)
 #' plot_grid(result)
+#'
+#' # print the retained indicators
+#' get_indicators(result)
 #'}
 
 
@@ -90,8 +103,9 @@ isatpanel <- function(
     fesis_id = NULL,
     cfesis_var = colnames(mxreg),
     cfesis_id = NULL,
+    uis = NULL,
 
-    plot = FALSE,
+    plot = TRUE,
     plm_model = "within",
 
     y=NULL,
@@ -165,6 +179,8 @@ isatpanel <- function(
   out$inputdata <- data.frame(id,time,y,mxreg)
 
   # Remove any spaces in the id variables (e.g. United Kingdom becomes UnitedKingdom)
+  # id_orig <- dplyr::tibble(id_orig = id,
+  #                          id_used = gsub(" ","",id))
   id <- gsub(" ","",id)
 
 
@@ -418,13 +434,22 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(cfesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-
   if (any(fesis,jsis,jiis,csis,cfesis)) {
     sispanx <- BreakList
   } else {
     sispanx = FALSE
   }
 
+  # If someone supplies the uis argument to pass a user-specified indicator list to the function
+  if(!missing(uis)){
+    if(identical(sispanx,FALSE)){
+      sispanx <- uis
+    } else {
+      sispanx <- c(sispanx, uis)
+    }
+    uis_args <- uis
+    rm(uis)
+  } else {uis_args <- NULL}
 
 
   if (is.null(engine) && effect != "none") {
@@ -554,15 +579,22 @@ isatpanel <- function(
   out$arguments$user.estimator <- user.estimator
   out$arguments$cluster <- cluster
   out$arguments$effect <- effect
+  out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
+  #out$arguments$id_orig <- id_orig
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
   class(out) <- "isatpanel"
 
-  try(
-    if (plot == TRUE) {
-      plot(out, zero_line = FALSE)
+  if (plot == TRUE) {
+    if(identical(list(),get_indicators(out))){
+      print(plot(out, zero_line = FALSE))
+    } else {
+      print(cowplot::plot_grid(plot(out, zero_line = FALSE),
+                               plot_grid(out),
+                               nrow = 2))
     }
-  )
+  }
+
 
   return(out)
 
