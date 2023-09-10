@@ -27,7 +27,7 @@
 #' @param fesis Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.
 #' @param csis Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
-#' @param uis Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Surcarrat (2020) below for an explanation of the UIS system.
+#' @param uis Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.
 #' @param ... Further arguments to [gets::isat()]
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.

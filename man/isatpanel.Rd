@@ -73,7 +73,7 @@ isatpanel(
 
 \item{cfesis_id}{The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
 
-\item{uis}{Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Surcarrat (2020) below for an explanation of the UIS system.}
+\item{uis}{Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.}
 
 \item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
 

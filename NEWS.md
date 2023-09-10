@@ -1,14 +1,22 @@
 # getspanel 0.1.5
 
+## Major changes
+
 -   Implemented the argument `uis` in `isatpanel()` to enable user-specified indicator saturation
--   Improved Plotting when there is just a single identified break (now the colour scale adjusts)
+- Added new function `get_indicators()`
+
+
+## Minor changes
+
 -   Set the default argument for plotting in `isatpanel` to `TRUE` to enable automatic plotting
 -   Changed the default plot in `plot.isatpanel()` to now be a combination of time series and `plot_grid()` using the `cowplot` package
+
 
 ## Bug fixes
 
 -   Bugfix in robust_isatpanel()
 -   Bugfixes in plotting to work with uis specifications
+-   Improved Plotting when there is just a single identified break (now the colour scale adjusts)
 
 # getspanel 0.1.4
 

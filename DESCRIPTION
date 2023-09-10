@@ -1,7 +1,7 @@
 Package: getspanel
 Title: General-to-Specific Modelling of Panel Data
 Version: 0.1.5
-Date: 2023-09-09
+Date: 2023-09-10
 Authors@R: 
     c(
     person(given = "Felix",

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
   fig.width = 7,
   fig.height = 5,
   dev = "png",
-  dpi = 600
+  dpi = 300
 )
 ```
 
@@ -42,6 +42,7 @@ Once installed we need to load the library:
 
 ```{r setup}
 library(getspanel)
+library(fixest)
 ```
 
 
