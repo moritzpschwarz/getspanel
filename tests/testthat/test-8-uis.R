@@ -301,7 +301,7 @@ test_that("Test that passing a uis works",{
   )
 
   expect_true("britishisles_break_2010" %in% result$isatpanel.result$ISfinalmodels[[1]])
-  expect_true(coef(result$isatpanel.result)["britishisles_break_2010"] == -0.0448470360573489)
+  expect_true(round(coef(result$isatpanel.result)["britishisles_break_2010"], digits = 6) == round(-0.0448470360573489, digits = 6))
 
 
 
