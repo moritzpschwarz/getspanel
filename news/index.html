@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,18 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.5" id="getspanel-015">getspanel 0.1.5<a class="anchor" aria-label="anchor" href="#getspanel-015"></a></h2>
+<ul><li>Implemented the argument <code>uis</code> in <code><a href="../reference/isatpanel.html">isatpanel()</a></code> to enable user-specified indicator saturation</li>
+<li>Improved Plotting when there is just a single identified break (now the colour scale adjusts)</li>
+<li>Set the default argument for plotting in <code>isatpanel</code> to <code>TRUE</code> to enable automatic plotting</li>
+<li>Changed the default plot in <code><a href="../reference/plot.isatpanel.html">plot.isatpanel()</a></code> to now be a combination of time series and <code><a href="../reference/plot_grid.html">plot_grid()</a></code> using the <code>cowplot</code> package</li>
+</ul><div class="section level3">
+<h3 id="bug-fixes-0-1-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-5"></a></h3>
+<ul><li>Bugfix in robust_isatpanel()</li>
+<li>Bugfixes in plotting to work with uis specifications</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.4" id="getspanel-014">getspanel 0.1.4<a class="anchor" aria-label="anchor" href="#getspanel-014"></a></h2><p class="text-muted">CRAN release: 2023-05-05</p>
 <ul><li>Bugfixes and additional test files</li>
 <li>new option in plot_grid() to allow users to exclude plotting certain type of indicators</li>
@@ -59,17 +71,43 @@
 <ul><li>Bug fix in isatpanel() when using AR models and not sorting the id data alphabetically</li>
 <li>Bug fix in break_uncertainty()</li>
 <li>Bug fix in plot_grid() (changing na.rm = NA to na.rm = TRUE in geom_tile())</li>
-</ul><!--  ## Major Changes
-
-New package, to be filled for new releases
-
-## Bug fixes
-
-New package, to be filled for new releases
-
-Referring to an issue:
-(<a href='https://github.com/moritzpschwarz/getspanel/issues/10'>#10</a>) --></div>
+</ul></div>
 </div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="getspanel-013">getspanel 0.1.3<a class="anchor" aria-label="anchor" href="#getspanel-013"></a></h2><p class="text-muted">CRAN release: 2023-01-28</p>
+<ul><li>Bugfixes</li>
+<li>Changed the name of the function robust.isatpanel to robust_isatpanel to ensure consistency</li>
+<li>More error checks for csis and cfesis (ensuring that no out of sample groups can be chosen).</li>
+<li>Small changes to the introduction and the README</li>
+</ul><div class="section level3">
+<h3 id="bug-fixes-0-1-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-3"></a></h3>
+<ul><li>Corrected provided sample data (no. of rows and removed duplicates)</li>
+<li>Bug fix in internal identify_indicator_timings() function to deal with steps correctly</li>
+<li>Bug fix in plot.isatpanel to ensure JSIS is plotted correctly</li>
+<li>Disabled the ‘sis’ option in isatpanel as it does not work in a panel context but might have been passed to ‘isat’</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="getspanel-012">getspanel 0.1.2<a class="anchor" aria-label="anchor" href="#getspanel-012"></a></h2><p class="text-muted">CRAN release: 2023-01-17</p>
+<ul><li>Changes to how the option mc.warning is dealt with</li>
+</ul><div class="section level3">
+<h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
+<ul><li>Changed order of y-axis in plot_grid</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="getspanel-011">getspanel 0.1.1<a class="anchor" aria-label="anchor" href="#getspanel-011"></a></h2>
+<ul><li>Changes to the package as a response to CRAN tests</li>
+</ul><div class="section level3">
+<h3 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
+<ul><li>Bug fixes in isatpanel() to handle missing values</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="getspanel-010">getspanel 0.1.0<a class="anchor" aria-label="anchor" href="#getspanel-010"></a></h2>
+<ul><li>First CRAN release of the package.</li>
+<li>Consult the Introduction Vignette for an overview.</li>
+</ul></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

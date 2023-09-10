@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">getspanel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -200,6 +200,7 @@ result:</p>
 <span>                   effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span>                   </span>
 <span>                   fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 <p>Using the traditional method</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">is_gets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">EUCO2residential</span><span class="op">$</span><span class="va">lagg.directem_pc</span>,</span>
@@ -210,6 +211,7 @@ result:</p>
 <span>                     effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span></span>
 <span>                     fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-5-1.png" width="100%"></p>
 <p>From here onwards, I will use the <code>lm</code> notation.</p>
 </div>
 <div class="section level3">
@@ -247,6 +249,7 @@ observation.</p>
 <span></span>
 <span>                         iis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-9-1.png" width="100%"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-10-1.png" width="100%"></p>
@@ -276,6 +279,7 @@ effects.</p>
 <span>                          effect <span class="op">=</span> <span class="st">"individual"</span>,</span>
 <span></span>
 <span>                          jsis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-11-1.png" width="100%"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jsis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-12-1.png" width="100%"></p>
@@ -300,6 +304,7 @@ variable using <code>I(lgdp^2)</code>:</p>
 <span>                          effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span></span>
 <span>                          csis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-13-1.png" width="100%"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">csis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-14-1.png" width="100%"></p>
@@ -316,6 +321,7 @@ i.e. <code>csis_var = "lgdp"</code>.</p>
 <span></span>
 <span>                           csis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                           csis_var <span class="op">=</span> <span class="st">"lgdp"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="fixed-effect-step-indicator-saturation">Fixed Effect Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#fixed-effect-step-indicator-saturation"></a>
@@ -331,6 +337,7 @@ i.e. the individual fixed effect.</p>
 <span>                           effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span></span>
 <span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-16-1.png" width="100%"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-17-1.png" width="100%"></p>
@@ -348,6 +355,7 @@ e.g. <code>fesis_id = c("Austria","Denmark")</code>.</p>
 <span></span>
 <span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                           fesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Austria"</span>,<span class="st">"Denmark"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-18-1.png" width="100%"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" width="100%"></p>
@@ -372,6 +380,7 @@ and in the individual units using <code>cfesis_id</code> and
 <span>                            cfesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Belgium"</span>,<span class="st">"Germany"</span><span class="op">)</span>,</span>
 <span>                            cfesis_var <span class="op">=</span> <span class="st">"lgdp"</span>,</span>
 <span>                            t.pval <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-20-1.png" width="100%"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cfesis_example</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-21-1.png" width="100%"></p>
@@ -392,6 +401,7 @@ coefficients, using the <code>ar</code> argument.</p>
 <span>                               fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span></span>
 <span>                               ar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-22-1.png" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="post-selection-robustness">Post-selection robustness<a class="anchor" aria-label="anchor" href="#post-selection-robustness"></a>
@@ -421,6 +431,7 @@ Errors using <code>cluster</code>.</p>
 <span></span>
 <span>                            engine <span class="op">=</span> <span class="st">"fixest"</span>,</span>
 <span>                            cluster <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-24-1.png" width="100%"></p>
 <p>We can verify that, using no clustering of Standard Errors at all,
 using the <strong>fixest</strong> package does not change our
 estimates:</p>
@@ -456,6 +467,7 @@ true - clustering is therefore currently not recommended.</strong></p>
 <span></span>
 <span>                                    engine <span class="op">=</span> <span class="st">"fixest"</span>,</span>
 <span>                                    cluster <span class="op">=</span> <span class="st">"individual"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/unnamed-chunk-27-1.png" width="100%"></p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fixest_example_cluster</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-28-1.png" width="100%"></p>
