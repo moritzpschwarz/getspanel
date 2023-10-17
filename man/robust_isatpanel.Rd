@@ -17,17 +17,15 @@ robust_isatpanel(
 \arguments{
 \item{object}{An isatpanel object}
 
-\item{robust}{Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity?}
+\item{robust}{Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity? This uses \link[plm:vcovHC.plm]{plm::vcovHC} with the specified type (default is "HC0").}
 
-\item{HAC}{Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used?}
+\item{HAC}{Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used? This uses \link[plm:vcovNW]{plm::vcovNW}, which uses the Newey-West estimator.}
 
-\item{lag}{Number of Lags to be used with HAC in coeftest. Cannot be specified when HAC = FALSE.}
+\item{lag}{Maximum Number of Lags to be used with \link[plm:vcovNW]{plm::vcovNW} using the Newey-West estimator. Cannot be specified when HAC = FALSE. Default is \code{NULL}.}
 
-\item{effect}{The effects introduced into the plm model, one of "individual", "time", "twoways" (default), or "nested"}
+\item{type}{Character string. Type of Robust procedure e.g. 'HC0' for White SE or 'HC3' for Lang.}
 
-\item{type}{Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang}
-
-\item{cluster}{'group' or 'time' or FALSE}
+\item{cluster}{Should an object with clustered S.E. be included? Choose between 'group' or 'time' or FALSE. Uses \link[plm:vcovHC.plm]{plm::vcovHC} with the cluster argument.}
 }
 \value{
 A list with robust estimates
@@ -60,8 +58,6 @@ result <- isatpanel(
   plot = FALSE,
   t.pval = 0.01
 )
-plot(result)
-plot_grid(result)
 robust_isatpanel(result)
 }
 

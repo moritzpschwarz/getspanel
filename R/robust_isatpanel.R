@@ -1,12 +1,11 @@
 #' Get robust Standard Errors for the isatpanel result
 #'
 #' @param object An isatpanel object
-#' @param robust Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity?
-#' @param HAC Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used?
-#' @param lag Number of Lags to be used with HAC in coeftest. Cannot be specified when HAC = FALSE.
-#' @param effect The effects introduced into the plm model, one of "individual", "time", "twoways" (default), or "nested"
-#' @param type Type of Robust procedure e.g. HC0 for White SE or HC3 for Lang
-#' @param cluster 'group' or 'time' or FALSE
+#' @param robust Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity? This uses [plm::vcovHC] with the specified type (default is "HC0").
+#' @param HAC Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used? This uses [plm::vcovNW], which uses the Newey-West estimator.
+#' @param lag Maximum Number of Lags to be used with [plm::vcovNW] using the Newey-West estimator. Cannot be specified when HAC = FALSE. Default is \code{NULL}.
+#' @param type Character string. Type of Robust procedure e.g. 'HC0' for White SE or 'HC3' for Lang.
+#' @param cluster Should an object with clustered S.E. be included? Choose between 'group' or 'time' or FALSE. Uses [plm::vcovHC] with the cluster argument.
 #'
 #' @return A list with robust estimates
 #' @export
@@ -36,8 +35,6 @@
 #'   plot = FALSE,
 #'   t.pval = 0.01
 #' )
-#' plot(result)
-#' plot_grid(result)
 #' robust_isatpanel(result)
 #'}
 #'
@@ -48,37 +45,69 @@ robust_isatpanel <- function(object,
                              effect = "twoways",
                              type = "HC0",
                              cluster = "group"){
-  if(!is.logical(cluster)){docluster <- TRUE}
-  if(cluster == TRUE){stop("Please specify the cluster setting i.e. either 'group' or 'time'. TRUE is not allowed. To disable clustering use FALSE. ")}
 
+  # Checks
+  if(cluster == TRUE){stop("Please specify the cluster setting i.e. either 'group' or 'time'. TRUE is not allowed. To disable clustering use FALSE.")}
   if(!is.null(lag)&!HAC){stop("You cannot specify a lag when you select HAC = FALSE.")}
-  out <- list()
 
+
+  # Set-up
   df <- object$finaldata
+  df$id <- as.factor(df$id)
+  df$time <- as.factor(df$time)
+  effect <- object$arguments$effect
   pdata <- plm::pdata.frame(df,index = c("id","time"))
+
+  # parse FE
+  parse_FE <- if (effect == "twoways") {
+    "| id + time"
+  } else if (effect == "time")  {
+    " + time"
+  } else if (effect == "individual") {
+    " + id"
+  } else if (effect == "none") {
+    ""
+  } else {
+    stop("No Fixed Effect Specification was selected. Choose from 'twoways', 'time', 'individual', or 'none'")
+  }
 
   # Let's look at the plm output
   formula <- as.formula(paste0("y ~ ",paste0(names(pdata[,!names(pdata) %in% c("y","id","time")]),collapse = " + ")))
-  plm_object <- plm::plm(formula = formula,data = pdata, effect = effect,model = "within")
+  plm_object <- plm::plm(formula = formula, data = pdata, effect = effect, model = "within")
 
+
+  out <- list()
   out$plm_object <- plm_object
+
+  out$robust <- lmtest::coeftest(plm_object, vcov = plm::vcovHC(plm_object, type = type))
+
+  if(cluster != FALSE){
+    out$cluster <- lmtest::coeftest(plm_object, vcov = plm::vcovHC(plm_object, type = type, cluster = cluster))
+  }
+
+  if(HAC){
+    out$HAC <- lmtest::coeftest(plm_object, vcov = plm::vcovNW(plm_object, type = type, maxlag = lag))
+  }
+
+
+
+
 
   #summary(plm_object)
   # This should be exactly the same output as the one from isatpanel
 
 
-  if(robust){
-    if(docluster){
-      out$robust <- lmtest::coeftest(plm_object, vcov=sandwich::vcovHC(plm_object,type=type,cluster=cluster))
-    }else{
-      out$robust <- lmtest::coeftest(plm_object, vcov=sandwich::vcovHC(plm_object,type=type))
-    }
-  }
-
-  if(HAC){
-    lm_mod <- lm(y ~ as.factor(time) + .-1,df)
-    out$HAC <- lmtest::coeftest(lm_mod, vcov=sandwich::vcovHAC(lm_mod, cluster=cluster, lag = lag))
-  }
+  # if(robust){
+  #   if(docluster){
+  #     out$robust <- lmtest::coeftest(plm_object, vcov=sandwich::vcovHC(plm_object,type=type,cluster=cluster))
+  #   }else{
+  #     out$robust <- lmtest::coeftest(plm_object, vcov=sandwich::vcovHC(plm_object,type=type))
+  #   }
+  # }
+  #
+  # if(HAC){
+  #
+  # }
 
   #
   # # The following also for autocorrelation

@@ -28,6 +28,7 @@
 #' @param csis Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param uis Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.
+#' @param t.pval numeric value between 0 and 1. The significance level used for the two-sided regressor significance t-tests
 #' @param ... Further arguments to [gets::isat()]
 #' @param data The input data.frame object.
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
@@ -104,6 +105,7 @@ isatpanel <- function(
     cfesis_var = colnames(mxreg),
     cfesis_id = NULL,
     uis = NULL,
+    t.pval = 0.001,
 
     plot = TRUE,
     plm_model = "within",
@@ -551,7 +553,7 @@ isatpanel <- function(
 
   options(mc.warning = FALSE)
   #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
-  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   ###############################
@@ -561,13 +563,12 @@ isatpanel <- function(
 
   out$isatpanel.result <- ispan
 
-
   # Create a final data object
   indicators <- out$isatpanel.result$aux$mX
   if (is.null(engine)) {
-    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),if (exists("dummies")) {names(dummies)}else{NULL})]
+    indicators <- indicators[,!colnames(indicators) %in% c(names(estimateddata),if (exists("dummies")) {names(dummies)}else{NULL}), drop = FALSE]
   } else {
-    indicators <- indicators[,!colnames(indicators) %in% names(estimateddata)]
+    indicators <- indicators[,!colnames(indicators) %in% names(estimateddata), drop = FALSE]
   }
 
 

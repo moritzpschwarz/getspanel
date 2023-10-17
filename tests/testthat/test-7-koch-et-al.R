@@ -106,55 +106,55 @@ is3_coef <- is3_coef[order(names(is3_coef))]
 
 
 is1_tib <- data.frame(name = c("fesisFinland.2000",
-                                  "fesisGermany.2002",
-                                  "fesisIreland.2011",
-                                  "fesisIreland.2015",
-                                  "fesisLuxembourg.2007",
-                                  "fesisSweden.2001"),
-                         coef = c(-0.103,
-                                  -0.105,
-                                  -0.087,
-                                  -0.148,
-                                  -0.136,
-                                  -0.095))
+                               "fesisGermany.2002",
+                               "fesisIreland.2011",
+                               "fesisIreland.2015",
+                               "fesisLuxembourg.2007",
+                               "fesisSweden.2001"),
+                      coef = c(-0.103,
+                               -0.105,
+                               -0.087,
+                               -0.148,
+                               -0.136,
+                               -0.095))
 
 
 is2_tib <- data.frame(name = c("fesisFinland.2000",
-                                  "fesisGermany.2002",
-                                  "fesisIreland.2015",
-                                  "fesisSweden.2001"),
-                         coef = c(-0.123,
-                                  -0.131,
-                                  -0.192,
-                                  -0.103))
+                               "fesisGermany.2002",
+                               "fesisIreland.2015",
+                               "fesisSweden.2001"),
+                      coef = c(-0.123,
+                               -0.131,
+                               -0.192,
+                               -0.103))
 
 
 is3_tib <- data.frame(name = c("fesisFinland.2000",
-                                  "fesisGermany.2002",
-                                  "fesisIreland.2011",
-                                  "fesisLuxembourg.2015",
-                                  "fesisSweden.2001"),
-                         coef = c(-0.128,
-                                  -0.108,
-                                  -0.127,
-                                  -0.214,
-                                  -0.110))
+                               "fesisGermany.2002",
+                               "fesisIreland.2011",
+                               "fesisLuxembourg.2015",
+                               "fesisSweden.2001"),
+                      coef = c(-0.128,
+                               -0.108,
+                               -0.127,
+                               -0.214,
+                               -0.110))
 
 test_that("Equal Breaks as in Koch et al are identified",{
 
   is1_tib_estimated <- data.frame(name = names(is1_coef[is1_coef < 0]),
-                                     coef = as.numeric(round(is1_coef[is1_coef < 0], 3)))
+                                  coef = as.numeric(round(is1_coef[is1_coef < 0], 3)))
 
   expect_equal(is1_tib, is1_tib_estimated)
 
 
   is2_tib_estimated <- data.frame(name = names(is2_coef[is2_coef < 0]),
-                                     coef = as.numeric(round(is2_coef[is2_coef < 0], 3)))
+                                  coef = as.numeric(round(is2_coef[is2_coef < 0], 3)))
 
   expect_equal(is2_tib, is2_tib_estimated)
 
   is3_tib_estimated <- data.frame(name = names(is3_coef[is3_coef < 0]),
-                                     coef = as.numeric(round(is3_coef[is3_coef < 0], 3)))
+                                  coef = as.numeric(round(is3_coef[is3_coef < 0], 3)))
 
   expect_equal(is3_tib, is3_tib_estimated)
 
@@ -178,39 +178,39 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 
 
   is1_tib_break <- data.frame(name = c("fesisFinland.2000",
-                                          "fesisGermany.2002",
-                                          "fesisIreland.2011",
-                                          "fesisIreland.2015",
-                                          "fesisLuxembourg.2007",
-                                          "fesisSweden.2001"),
-                                 tci = c(2,
-                                         2,
-                                         3,
-                                         1,
-                                         1,
-                                         2))
+                                       "fesisGermany.2002",
+                                       "fesisIreland.2011",
+                                       "fesisIreland.2015",
+                                       "fesisLuxembourg.2007",
+                                       "fesisSweden.2001"),
+                              tci = c(2,
+                                      2,
+                                      3,
+                                      1,
+                                      1,
+                                      2))
 
 
   is2_tib_break <- data.frame(name = c("fesisFinland.2000",
-                                          "fesisGermany.2002",
-                                          "fesisIreland.2015",
-                                          "fesisSweden.2001"),
-                                 tci = c(2,
-                                         1,
-                                         1,
-                                         2))
+                                       "fesisGermany.2002",
+                                       "fesisIreland.2015",
+                                       "fesisSweden.2001"),
+                              tci = c(2,
+                                      1,
+                                      1,
+                                      2))
 
 
   is3_tib_break <- data.frame(name = c("fesisFinland.2000",
-                                          "fesisGermany.2002",
-                                          "fesisIreland.2011",
-                                          "fesisLuxembourg.2015",
-                                          "fesisSweden.2001"),
-                                 tci = c(2,
-                                         3,
-                                         2,
-                                         1,
-                                         3))
+                                       "fesisGermany.2002",
+                                       "fesisIreland.2011",
+                                       "fesisLuxembourg.2015",
+                                       "fesisSweden.2001"),
+                              tci = c(2,
+                                      3,
+                                      2,
+                                      1,
+                                      3))
 
 
 
@@ -222,7 +222,71 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 })
 
 
+test_that("Koch et al: Standard Error Corrections",{
 
+  is1_robust_nocluster <- robust_isatpanel(is1, cluster = FALSE)$robust
+  is2_robust_nocluster <- robust_isatpanel(is2, cluster = FALSE)$robust
+  is3_robust_nocluster <- robust_isatpanel(is3, cluster = FALSE)$robust
+
+  is1_robust_nocluster_round <- round(is1_robust_nocluster[is1_robust_nocluster[,1,drop = FALSE]<0 & grepl("^fesis",row.names(is1_robust_nocluster)),2,drop = FALSE],3)
+  is2_robust_nocluster_round <- round(is2_robust_nocluster[is2_robust_nocluster[,1,drop = FALSE]<0 & grepl("^fesis",row.names(is2_robust_nocluster)),2,drop = FALSE],3)
+  is3_robust_nocluster_round <- round(is3_robust_nocluster[is3_robust_nocluster[,1,drop = FALSE]<0 & grepl("^fesis",row.names(is3_robust_nocluster)),2,drop = FALSE],3)
+
+  is1_robust_nocluster_ready <- data.frame(name = row.names(is1_robust_nocluster_round), se = is1_robust_nocluster_round[,1])
+  is2_robust_nocluster_ready <- data.frame(name = row.names(is2_robust_nocluster_round), se = is2_robust_nocluster_round[,1])
+  is3_robust_nocluster_ready <- data.frame(name = row.names(is3_robust_nocluster_round), se = is3_robust_nocluster_round[,1])
+
+  is1_robust_nocluster_ready <- is1_robust_nocluster_ready[order(is1_robust_nocluster_ready$name),]
+  is2_robust_nocluster_ready <- is2_robust_nocluster_ready[order(is2_robust_nocluster_ready$name),]
+  is3_robust_nocluster_ready <- is3_robust_nocluster_ready[order(is3_robust_nocluster_ready$name),]
+
+  row.names(is1_robust_nocluster_ready) <- NULL
+  row.names(is2_robust_nocluster_ready) <- NULL
+  row.names(is3_robust_nocluster_ready) <- NULL
+
+
+  is1_robust_nocluster_paper <- data.frame(name = c("fesisFinland.2000",
+                                                    "fesisGermany.2002",
+                                                    "fesisIreland.2011",
+                                                    "fesisIreland.2015",
+                                                    "fesisLuxembourg.2007",
+                                                    "fesisSweden.2001"),
+                                           se = c(0.006,
+                                                  0.008,
+                                                  0.012,
+                                                  0.031,
+                                                  0.012,
+                                                  0.008))
+
+
+  is2_robust_nocluster_paper <- data.frame(name = c("fesisFinland.2000",
+                                                    "fesisGermany.2002",
+                                                    "fesisIreland.2015",
+                                                    "fesisSweden.2001"),
+                                           se = c(0.014,
+                                                  0.011,
+                                                  0.032,
+                                                  0.01))
+
+
+  is3_robust_nocluster_paper <- data.frame(name = c("fesisFinland.2000",
+                                                    "fesisGermany.2002",
+                                                    "fesisIreland.2011",
+                                                    "fesisLuxembourg.2015",
+                                                    "fesisSweden.2001"),
+                                           se = c(0.018,
+                                                  0.02,
+                                                  0.016,
+                                                  0.034,
+                                                  0.015))
+
+
+
+  expect_equal(is1_robust_nocluster_paper, is1_robust_nocluster_ready)
+  expect_equal(is2_robust_nocluster_paper, is2_robust_nocluster_ready)
+  expect_equal(is3_robust_nocluster_paper, is3_robust_nocluster_ready)
+
+})
 
 # ##### uncertainty for break dates
 #
