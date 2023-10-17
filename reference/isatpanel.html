@@ -87,6 +87,7 @@ algorithm to retain only relevant indicators that improve the model (based on a 
 <span>  cfesis_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">mxreg</span><span class="op">)</span>,</span>
 <span>  cfesis_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uis <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  t.pval <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plm_model <span class="op">=</span> <span class="st">"within"</span>,</span>
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -177,6 +178,10 @@ algorithm to retain only relevant indicators that improve the model (based on a 
 
 <dt>uis</dt>
 <dd><p>Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without <code>NA</code> values. Default is <code>NULL</code>. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.</p></dd>
+
+
+<dt>t.pval</dt>
+<dd><p>numeric value between 0 and 1. The significance level used for the two-sided regressor significance t-tests</p></dd>
 
 
 <dt>plot</dt>

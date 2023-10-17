@@ -55,6 +55,7 @@
 <div class="section level3">
 <h3 id="major-changes-0-1-5">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-1-5"></a></h3>
 <ul><li>Implemented the argument <code>uis</code> in <code><a href="../reference/isatpanel.html">isatpanel()</a></code> to enable user-specified indicator saturation</li>
+<li>Added a new argument <code>t.pval</code> to mirror the setting of a target p-value to the gets::isat() function.</li>
 <li>Added new function <code><a href="../reference/get_indicators.html">get_indicators()</a></code>
 </li>
 </ul></div>
@@ -62,12 +63,13 @@
 <h3 id="minor-changes-0-1-5">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-1-5"></a></h3>
 <ul><li>Set the default argument for plotting in <code>isatpanel</code> to <code>TRUE</code> to enable automatic plotting</li>
 <li>Changed the default plot in <code><a href="../reference/plot.isatpanel.html">plot.isatpanel()</a></code> to now be a combination of time series and <code><a href="../reference/plot_grid.html">plot_grid()</a></code> using the <code>cowplot</code> package</li>
+<li>Automated testing for <code><a href="../reference/robust_isatpanel.html">robust_isatpanel()</a></code> using the Koch et al. 2022 results</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-1-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-5"></a></h3>
-<ul><li>Bugfix in robust_isatpanel()</li>
+<ul><li>Bugfix in robust_isatpanel(). Before it appeared like HAC S.E. with clusters were possible. This has been fixed. Now also the estimation type is taken from the inital model rather than specified as a separate argument; hence ‘effect’ has been removed as an argument.<br></li>
 <li>Bugfixes in plotting to work with uis specifications</li>
-<li>Improved Plotting when there is just a single identified break (now the colour scale adjusts)</li>
+<li>Improved plotting when there is just a single identified break (now the colour scale adjusts)</li>
 </ul></div>
 </div>
     <div class="section level2">
