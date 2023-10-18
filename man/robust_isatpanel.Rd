@@ -9,7 +9,6 @@ robust_isatpanel(
   robust = TRUE,
   HAC = FALSE,
   lag = NULL,
-  effect = "twoways",
   type = "HC0",
   cluster = "group"
 )

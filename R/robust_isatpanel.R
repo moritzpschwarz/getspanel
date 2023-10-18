@@ -42,7 +42,6 @@ robust_isatpanel <- function(object,
                              robust = TRUE,
                              HAC = FALSE,
                              lag = NULL,
-                             effect = "twoways",
                              type = "HC0",
                              cluster = "group"){
 
