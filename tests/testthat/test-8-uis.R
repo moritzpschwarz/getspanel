@@ -1,6 +1,6 @@
 
 test_that("Test that passing a uis works",{
-
+  skip_on_cran()
   data(EU_emissions_road)
 
   # Group specification

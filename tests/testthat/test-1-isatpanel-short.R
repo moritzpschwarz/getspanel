@@ -61,7 +61,7 @@ test_that("Test the cfesis and csis arguments",{
 
 
 test_that("Standard Error Options using fixest",{
-
+  skip_on_cran()
   expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest"))
   expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
 })

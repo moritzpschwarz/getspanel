@@ -14,7 +14,7 @@
 
 ## Bug fixes
 
--   Bugfix in robust_isatpanel(). Before it appeared like HAC S.E. with clusters were possible. This has been fixed. Now also the estimation type is taken from the inital model rather than specified as a separate argument; hence 'effect' has been removed as an argument.  
+-   Bugfix in robust_isatpanel(). Before it appeared like HAC S.E. with clusters were possible. This has been fixed. Now also the estimation type is taken from the initial model rather than specified as a separate argument; hence 'effect' has been removed as an argument.  
 -   Bugfixes in plotting to work with uis specifications
 -   Improved plotting when there is just a single identified break (now the colour scale adjusts)
 

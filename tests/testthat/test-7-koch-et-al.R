@@ -1,3 +1,5 @@
+
+
 # Prepare Data
 set.seed(1230)
 #data <- read.csv("CO2DriversEU_dataset.csv")
@@ -141,7 +143,7 @@ is3_tib <- data.frame(name = c("fesisFinland.2000",
                                -0.110))
 
 test_that("Equal Breaks as in Koch et al are identified",{
-
+  skip_on_cran()
   is1_tib_estimated <- data.frame(name = names(is1_coef[is1_coef < 0]),
                                   coef = as.numeric(round(is1_coef[is1_coef < 0], 3)))
 
@@ -163,7 +165,7 @@ test_that("Equal Breaks as in Koch et al are identified",{
 
 
 test_that("Equal Break Uncertainties as in Koch et al are identified",{
-
+  skip_on_cran()
   break_is1 <- break_uncertainty( is1, interval = 0.99)
   break_is2 <- break_uncertainty( is2, interval = 0.99)
   break_is3 <- break_uncertainty( is3, interval = 0.99)
@@ -223,7 +225,7 @@ test_that("Equal Break Uncertainties as in Koch et al are identified",{
 
 
 test_that("Koch et al: Standard Error Corrections",{
-
+  skip_on_cran()
   is1_robust_nocluster <- robust_isatpanel(is1, cluster = FALSE)$robust
   is2_robust_nocluster <- robust_isatpanel(is2, cluster = FALSE)$robust
   is3_robust_nocluster <- robust_isatpanel(is3, cluster = FALSE)$robust
