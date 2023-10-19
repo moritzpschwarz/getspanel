@@ -3,7 +3,7 @@
 ### This is a resubmission: 
 The pre-tests failed with the error (only on DEBIAN and only on CRAN, not on win-builder or rhub): 
 "Running R code in ‘testthat.R’ had CPU time 3 times elapsed time"
-I therefore made changes to the testing files and included skip_on_cran() a few times.
+Based on the discussions on R-pkg-devel (https://stat.ethz.ch/pipermail/r-package-devel/2023q3/009513.html and https://www.mail-archive.com/r-package-devel@r-project.org/msg08794.html) I have added a .onLoad() function in `getspanel.R` that sets `Sys.setenv("OMP_THREAD_LIMIT" = 2)`
 
 
 
