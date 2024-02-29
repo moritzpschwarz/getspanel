@@ -16,6 +16,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
                   timevar = "name",
                   times = varying_vars,
                   direction = "long")
+
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]
   steps <- object_l[grepl("sis",object_l$name) & object_l$value == 1 & !grepl("fesis", object_l$name) & !grepl("csis", object_l$name),]
@@ -55,6 +56,10 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
     fesis <- fesis_l[!duplicated(fesis_l),]
 
   } else {fesis <- NULL}
+
+  # TIS
+  trends <- object_l[grepl("tis",object_l$name) & object_l$value == 1 ,] # identify the first occurrence of a trend
+
 
   # CFESIS
   if(any(grepl("cfesis",names(object)))){
@@ -132,6 +137,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   output$csis <- csis
   output$fesis <- fesis
   output$cfesis <- cfesis
+  output$trends <- trends
   output$uis_breaks <- if(nrow(uis_indicators)>0) {uis_indicators} else{NULL}
 
   return(output)

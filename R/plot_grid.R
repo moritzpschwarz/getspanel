@@ -90,8 +90,13 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
                             direction = "long")
 
     # introduce facets
-    default_facet_name <- "Intercept (IIS, FESIS)"
+    default_facet_name <- "Intercept (IIS, FESIS, TIS)"
+    #default_facet_name <- "Intercept (IIS, FESIS)"
     indicators_l$facet <- default_facet_name
+
+    # Deal with TIS within facets
+    #indicators_l[grepl("^tis",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("^tis",indicators_l$name),"value"] != 0, 1, 0)
+    #indicators_l[grepl("^tis",indicators_l$name),"facet"] <- "TIS"
 
     # Deal with CSIS within facets
     indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)

@@ -98,10 +98,13 @@ isatpanel <- function(
     jiis = FALSE,
     jsis = FALSE,
     fesis = FALSE,
+    tis = FALSE,
+
     csis = FALSE,
     cfesis = FALSE,
     csis_var = colnames(mxreg),
     fesis_id = NULL,
+    tis_id = NULL,
     cfesis_var = colnames(mxreg),
     cfesis_id = NULL,
     uis = NULL,
@@ -194,6 +197,7 @@ isatpanel <- function(
   # An example would be: test for separate coefficient estimates for post-soviet countries
   if (is.null(fesis_id)) {fesis_id <- unique(id)}
   if (is.null(cfesis_id)) {cfesis_id <- unique(id)}
+  if (is.null(tis_id)) {tis_id <- unique(id)}
 
   if (!all(cfesis_id %in% id)) {stop("Some or all id names in 'cfesis_id' not found in the data. Please check the input under 'cfesis_id'.")}
   if (!all(fesis_id %in% id)) {stop("Some or all id names in 'fesis_id' not found in the data. Please check the input under 'fesis_id'.")}
@@ -436,7 +440,46 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(cfesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-  if (any(fesis,jsis,jiis,csis,cfesis)) {
+  # tis = TRUE
+  if (tis) {
+
+    # Create a balanced data.frame
+    df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
+    # Extract the names for the balanced data.frame
+    # find the minimum time for each id
+    tis_names_mintime <- aggregate(df$time, by = list(df$id), min)
+    names(tis_names_mintime) <- c("id","mintime")
+    # remove the mintime for each id
+    tis_names_merged <- merge(df_balanced, tis_names_mintime, by = "id", sort = FALSE)
+    tis_names_intermed <- tis_names_merged[tis_names_merged$time != tis_names_merged$mintime,c("id","time")]
+
+    tis_names <- paste0("tis",tis_names_intermed$id,".",tis_names_intermed$time)
+
+    tistlist <- do.call("list", rep(list(as.matrix(gets::tim(Tsample))), N))
+    tis_df <- as.data.frame(as.matrix(Matrix::bdiag(tistlist)))
+    names(tis_df) <- tis_names
+
+    tis_df <- cbind(df_balanced,tis_df)
+
+    # Set all indicators to 0 for ids which are not in tis_id
+    tis_df[!tis_df$id %in% tis_id,!names(tis_df) %in% c("id","time")] <- 0
+
+    # merge with df to ensure order is correct
+    current <- merge(df,tis_df,by = c("id","time"),all.x = TRUE, sort = FALSE)
+    # delete any columns that are 0 (can be included if panel not balanced)
+    current <- current[, colSums(current != 0) > 0]
+    # remove any duplicate columns
+    drop <- union(which(duplicated(as.list(current),fromLast = TRUE)),which(duplicated(as.list(current),fromLast = FALSE)))
+    if (!identical(drop,integer(0))) {
+      current <- current[,-drop]
+    }
+
+    # Add to Breaklist (uis list)
+    BreakList <- c(BreakList,list(tis = as.matrix(current[,!names(current) %in% c("id","time")])))
+  }
+
+
+  if (any(fesis,jsis,jiis,csis,cfesis,tis)) {
     sispanx <- BreakList
   } else {
     sispanx = FALSE
@@ -571,6 +614,7 @@ isatpanel <- function(
     indicators <- indicators[,!colnames(indicators) %in% names(estimateddata), drop = FALSE]
   }
 
+  out$indicator_matrix <- sispanx
 
   out$finaldata <- data.frame(estimateddata, indicators)
 
