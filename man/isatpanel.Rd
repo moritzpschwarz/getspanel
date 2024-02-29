@@ -64,13 +64,17 @@ isatpanel(
 
 \item{fesis}{Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.}
 
+\item{tis}{Logical. Use Trend Indicator Saturation. Constructed by fitting a trend for each unit from every observation. Default is \code{FALSE}.}
+
 \item{csis}{Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
 
 \item{cfesis}{Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
 \item{csis_var}{The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 
-\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability in a character vector.}
+\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.}
+
+\item{tis_id}{The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the trend in a character vector.}
 
 \item{cfesis_var}{The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 

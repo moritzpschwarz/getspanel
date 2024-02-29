@@ -25,6 +25,7 @@
 #' @param jiis Logical. Use Joint Impulse Indicator Saturation (Outliers are common across all units). This is essentially just a time fixed effect, but this allows selection of FE.
 #' @param jsis Logical. Use Join Step Indicator Saturation (steps are common across all units). Will only be retained if time fixed effects are not included (i.e. effect = 'none' or 'individual'), as they are collinear otherwise.
 #' @param fesis Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.
+#' @param tis Logical. Use Trend Indicator Saturation. Constructed by fitting a trend for each unit from every observation. Default is \code{FALSE}.
 #' @param csis Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.
 #' @param cfesis Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.
 #' @param uis Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.
@@ -34,7 +35,8 @@
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
 #' @param csis_var The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
-#' @param fesis_id The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability in a character vector.
+#' @param fesis_id The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.
+#' @param tis_id The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the trend in a character vector.
 #' @param cfesis_var The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
 #' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and [plot_grid()] using the \code{cowplot} package.
