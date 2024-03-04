@@ -13,8 +13,8 @@
 #' @param y Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.
 #' @param id Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the grouping variable as a character or factor
 #' @param time Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the time variable as an integer or numeric.
-#' @param mxreg The co-variates matrix
-#' @param effect Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".
+#' @param mxreg Deprecated.The co-variates matrix. Superseded by the formula argument.
+#' @param effect Fixed Effect specification. Possible arguments: "twoways" (Default), "individual", "time", or "none".
 #' @param na.remove remove NAs
 #' @param engine Estimation function to use. Default is NULL, which uses the default estimation procedure of the gets package. Alternatives are "fixest", "plm", or "felm".
 #' @param user.estimator Use a user.estimator
@@ -40,6 +40,7 @@
 #' @param cfesis_var The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
 #' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and [plot_grid()] using the \code{cowplot} package.
+#' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
@@ -87,7 +88,7 @@ isatpanel <- function(
     data=NULL,
     formula=NULL,
     index=NULL,
-    effect = c("individual"),
+    effect = c("twoways"),
 
     na.remove = TRUE,
     engine = NULL,
@@ -113,6 +114,7 @@ isatpanel <- function(
     t.pval = 0.001,
 
     plot = TRUE,
+    print.searchinfo = TRUE,
     plm_model = "within",
 
     y=NULL,
@@ -125,6 +127,7 @@ isatpanel <- function(
 
   # Error checks
   if (!effect %in% c("twoways", "individual", "time","none")) {stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
+  if (missing(effect) & print.searchinfo){warning("New default for effect in 'isatpanel': Used to be 'individual', now 'twoways'. To quiet this message provide the argument 'effect' or select 'print.searchinfo = FALSE'.")}
 
   if ((effect == "both" | effect == "time") & jiis == TRUE) {stop("You cannot use time fixed effects and jiis = TRUE. These would be perfectly collinear. Either set jiis = FALSE or use effect = 'individual'.")}
 
@@ -598,7 +601,8 @@ isatpanel <- function(
 
   options(mc.warning = FALSE)
   #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
-  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval, ...)
+  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
+                      print.searchinfo = print.searchinfo, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
   ###############################

@@ -137,7 +137,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   output$csis <- csis
   output$fesis <- fesis
   output$cfesis <- cfesis
-  output$trends <- trends
+  output$tis <- trends
   output$uis_breaks <- if(nrow(uis_indicators)>0) {uis_indicators} else{NULL}
 
   return(output)

@@ -23,12 +23,19 @@ pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
 # Unit testing
 test_that("Initial Tests Isatpanel on simulated data",{
 
-  expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"),fesis = TRUE))
+  expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp, index = c("country","year"), fesis = TRUE, effect = "twoways",
+                           print.searchinfo = TRUE))
 
   #newmethod <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE)
 
   expect_message(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
-                           index = c("country","year"),fesis=TRUE, ar = 1))
+                           index = c("country","year"),fesis=TRUE, ar = 1, effect = "twoways"))
+
+
+  expect_warning(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
+                           index = c("country","year"),fesis=TRUE, ar = 1),
+                 regexp = "New default for effect in 'isatpanel': Used to be 'individual', now 'twoways'.")
+
 
 })
 
@@ -50,7 +57,9 @@ test_that("Isatpanel Test that missing values are removed",{
 test_that("Test the cfesis and csis arguments",{
 
   expect_silent(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE))
-  expect_silent(newmethod_cfesis_sub <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, cfesis = TRUE,cfesis_id = c("2","3"), ar = 1, print.searchinfo = FALSE))
+  expect_silent(newmethod_cfesis_sub <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2),
+                                                  index = c("country","year"),fesis=TRUE, cfesis = TRUE,cfesis_id = c("2","3"), ar = 1,
+                                                  print.searchinfo = FALSE))
 
 })
 
@@ -62,8 +71,10 @@ test_that("Test the cfesis and csis arguments",{
 
 test_that("Standard Error Options using fixest",{
   skip_on_cran()
-  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest"))
-  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1, print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
+  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1,
+                                    print.searchinfo=FALSE,engine = "fixest"))
+  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1,
+                                    print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
 })
 
 

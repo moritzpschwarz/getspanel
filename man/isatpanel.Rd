@@ -8,7 +8,7 @@ isatpanel(
   data = NULL,
   formula = NULL,
   index = NULL,
-  effect = c("individual"),
+  effect = c("twoways"),
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
@@ -29,6 +29,7 @@ isatpanel(
   uis = NULL,
   t.pval = 0.001,
   plot = TRUE,
+  print.searchinfo = TRUE,
   plm_model = "within",
   y = NULL,
   id = NULL,
@@ -44,7 +45,7 @@ isatpanel(
 
 \item{index}{Specify the name of the group and time column in the format c("id", "time").}
 
-\item{effect}{Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".}
+\item{effect}{Fixed Effect specification. Possible arguments: "twoways" (Default), "individual", "time", or "none".}
 
 \item{na.remove}{remove NAs}
 
@@ -86,6 +87,8 @@ isatpanel(
 
 \item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
 
+\item{print.searchinfo}{logical. If \code{TRUE} (default), then detailed information is printed.}
+
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
 
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
@@ -94,7 +97,7 @@ isatpanel(
 
 \item{time}{Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the time variable as an integer or numeric.}
 
-\item{mxreg}{The co-variates matrix}
+\item{mxreg}{Deprecated.The co-variates matrix. Superseded by the formula argument.}
 
 \item{...}{Further arguments to \code{\link[gets:isat]{gets::isat()}}}
 }

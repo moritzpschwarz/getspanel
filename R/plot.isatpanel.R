@@ -58,8 +58,8 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
   }
 
   # tis
-  if(!is.null(df_identified$trends)){
-    g = g + geom_vline(data = df_identified$trends, aes(xintercept = .data$time,color="lightblue"))
+  if(!is.null(df_identified$tis)){
+    g = g + geom_vline(data = df_identified$tis, aes(xintercept = .data$time,color="lightblue"))
   }
 
   # cfesis
