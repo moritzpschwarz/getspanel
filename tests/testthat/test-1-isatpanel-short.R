@@ -62,7 +62,7 @@ test_that("Test the cfesis and csis arguments",{
 
 
   expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
-                          fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, fesis_id = "Test"),
+                         fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, fesis_id = "Test"),
                regexp = "Some or all id names in 'fesis_id' not found in the data.")
 
   expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
@@ -199,8 +199,7 @@ test_that("Simple Default Test with AR1",{
 
 test_that("Test that estimates of IIS are equal across methods and including perfectly linear terms", {
   skip_on_cran()
-  pandata_simulated$int_rate <- rep(rnorm(21),4)
-  pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
+  pandata_simulated$int_rate <- rep(rnorm(50),4)
 
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
                   index = c("country","year"),fesis = FALSE, iis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
@@ -229,7 +228,6 @@ test_that("Test that estimates of IIS are equal across methods and including per
 
 test_that("Test that estimates of FESIS are equal across methods", {
   skip_on_cran()
-  data("pandata_simulated")
 
   aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
                   index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
@@ -250,20 +248,6 @@ test_that("Test that estimates of FESIS are equal across methods", {
 })
 
 
-test_that("Test that estimates of FESIS are equal across methods", {
-  #skip_on_ci()
-  skip_on_cran()
-  data("pandata_simulated")
-  pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
-  aa <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE)
-
-  bb <- isatpanel(data = pandata_simulated,formula = gdp~temp,
-                  index = c("country","year"), fesis = TRUE, effect = c("twoways"), print.searchinfo = FALSE, engine = "fixest")
-
-  expect_true(identical(round(coef(aa$isatpanel.result)["temp"],7),
-                        round(coef(bb$isatpanel.result)["temp"],7)))
-})
 
 
 
