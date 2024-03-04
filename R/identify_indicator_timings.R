@@ -59,7 +59,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
 
   # TIS
   trends <- object_l[grepl("tis",object_l$name) & object_l$value == 1 ,] # identify the first occurrence of a trend
-
+  if(nrow(trends) == 0){trends <- NULL}
 
   # CFESIS
   if(any(grepl("cfesis",names(object)))){
