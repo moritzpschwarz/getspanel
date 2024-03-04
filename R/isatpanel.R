@@ -35,8 +35,9 @@
 #' @param formula Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.
 #' @param index Specify the name of the group and time column in the format c("id", "time").
 #' @param csis_var The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
-#' @param fesis_id The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.
-#' @param tis_id The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the trend in a character vector.
+#' @param fesis_id The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.
+#' @param tis_id The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the trend in a character vector.
+#' @param tis_time The tis method can be conducted for all (default) time periods (i.e. looking for trends at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.
 #' @param cfesis_var The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
 #' @param cfesis_id The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and [plot_grid()] using the \code{cowplot} package.
@@ -102,15 +103,21 @@ isatpanel <- function(
     jsis = FALSE,
     fesis = FALSE,
     tis = FALSE,
-
     csis = FALSE,
     cfesis = FALSE,
-    csis_var = colnames(mxreg),
+
     fesis_id = NULL,
+    fesis_time = NULL,
     tis_id = NULL,
+    tis_time = NULL,
+    csis_var = colnames(mxreg),
+    #csis_time = NULL,
     cfesis_var = colnames(mxreg),
     cfesis_id = NULL,
+    cfesis_time = NULL,
+
     uis = NULL,
+
     t.pval = 0.001,
 
     plot = TRUE,
@@ -222,6 +229,19 @@ isatpanel <- function(
   if (!all(cfesis_var %in% mxnames)) {stop("Some or all variable names in 'cfesis_var' not found in the data. Please check the input under 'cfesis_var' with that in the data.")}
   if (!all(csis_var %in% mxnames)) {stop("Some or all variable names in 'csis_var' not found in the data. Please check the input under 'csis_var' with that in the data.")}
 
+  # check all the time vectors
+  if(!is.null(tis_time)){
+    check.time.subset.vectors(time.vector = tis_time, vector.name = "tis_time", id = id, time = time)
+  }
+  if(!is.null(fesis_time)){
+    check.time.subset.vectors(time.vector = fesis_time, vector.name = "fesis_time", id = id, time = time)
+  }
+  # if(!is.null(csis_time)){
+  #   check.time.subset.vectors(time.vector = csis_time, vector.name = "csis_time", id = id, time = time)
+  # }
+  if(!is.null(cfesis_time)){
+    check.time.subset.vectors(time.vector = cfesis_time, vector.name = "cfesis_time", id = id, time = time)
+  }
 
   #################################
   ########## Remove NA observations
@@ -362,6 +382,24 @@ isatpanel <- function(
     # Set all indicators to 0 for ids which are not in fesis_id
     fesis_df[!fesis_df$id %in% fesis_id,!names(fesis_df) %in% c("id","time")] <- 0
 
+    # Set all indicators to 0 for time periods which are not in fesis_time
+    if(!is.null(fesis_time)){
+      if(!is.list(fesis_time)){
+        fesis_df[,!names(fesis_df) %in% c("time","id",paste0("fesis",fesis_names_intermed$id,".",fesis_time))] <- 0
+      } else {
+        fesis_time_df <- data.frame()
+        # cycle through the elements of the list and create a data.frame with the ids and times
+        for(fesis_time_len in 1:length(fesis_time)){
+          if(is.null(fesis_time[[fesis_time_len]])){next}
+          fesis_time_df <- rbind(fesis_time_df,
+                               data.frame(id = names(fesis_time)[fesis_time_len],
+                                          time = fesis_time[[fesis_time_len]]))
+        }
+        fesis_df[,!names(fesis_df) %in% c("time","id",paste0("fesis",fesis_time_df$id,".",fesis_time_df$time))] <- 0
+      }
+    }
+
+
     # merge with df to ensure order is correct
     current <- merge(df,fesis_df,by = c("id","time"),all.x = TRUE, sort = FALSE)
     # delete any columns that are 0 (can be included if panel not balanced)
@@ -390,6 +428,7 @@ isatpanel <- function(
 
       csis_df <- cbind(csis_df,csis_intermed)
     }
+
 
 
     # merge with df to ensure order is correct
@@ -435,6 +474,23 @@ isatpanel <- function(
     # Set all indicators to 0 for ids which are not in cfesis_id
     cfesis_out[!cfesis_out$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
 
+    # Set all indicators to 0 for time periods which are not in cfesis_time
+    if(!is.null(cfesis_time)){
+      if(!is.list(cfesis_time)){
+        cfesis_out[,!names(cfesis_out) %in% c("time","id",paste0("cfesis",cfesis_names_intermed$id,".",cfesis_time))] <- 0
+      } else {
+        cfesis_time_df <- data.frame()
+        # cycle through the elements of the list and create a data.frame with the ids and times
+        for(cfesis_time_len in 1:length(cfesis_time)){
+          if(is.null(cfesis_time[[cfesis_time_len]])){next}
+          cfesis_time_df <- rbind(cfesis_time_df,
+                               data.frame(id = names(cfesis_time)[cfesis_time_len],
+                                          time = cfesis_time[[cfesis_time_len]]))
+        }
+        cfesis_out[,!names(cfesis_out) %in% c("time","id",paste0("cfesis",cfesis_time_df$id,".",cfesis_time_df$time))] <- 0
+      }
+    }
+
 
     # merge with df to ensure order is correct
     current <- merge(df,cfesis_out,by = c("id","time"),all.x = TRUE, sort = FALSE)
@@ -472,6 +528,23 @@ isatpanel <- function(
 
     # Set all indicators to 0 for ids which are not in tis_id
     tis_df[!tis_df$id %in% tis_id,!names(tis_df) %in% c("id","time")] <- 0
+
+    # Set all indicators to 0 for time periods which are not in tis_time
+    if(!is.null(tis_time)){
+      if(!is.list(tis_time)){
+        tis_df[,!names(tis_df) %in% c("time","id",paste0("tis",tis_names_intermed$id,".",tis_time))] <- 0
+      } else {
+        tis_time_df <- data.frame()
+        # cycle through the elements of the list and create a data.frame with the ids and times
+        for(tis_time_len in 1:length(tis_time)){
+          if(is.null(tis_time[[tis_time_len]])){next}
+          tis_time_df <- rbind(tis_time_df,
+                               data.frame(id = names(tis_time)[tis_time_len],
+                                          time = tis_time[[tis_time_len]]))
+        }
+        tis_df[,!names(tis_df) %in% c("time","id",paste0("tis",tis_time_df$id,".",tis_time_df$time))] <- 0
+      }
+    }
 
     # merge with df to ensure order is correct
     current <- merge(df,tis_df,by = c("id","time"),all.x = TRUE, sort = FALSE)

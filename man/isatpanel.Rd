@@ -21,11 +21,14 @@ isatpanel(
   tis = FALSE,
   csis = FALSE,
   cfesis = FALSE,
-  csis_var = colnames(mxreg),
   fesis_id = NULL,
+  fesis_time = NULL,
   tis_id = NULL,
+  tis_time = NULL,
+  csis_var = colnames(mxreg),
   cfesis_var = colnames(mxreg),
   cfesis_id = NULL,
+  cfesis_time = NULL,
   uis = NULL,
   t.pval = 0.001,
   plot = TRUE,
@@ -71,11 +74,13 @@ isatpanel(
 
 \item{cfesis}{Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
+\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.}
+
+\item{tis_id}{The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the trend in a character vector.}
+
+\item{tis_time}{The tis method can be conducted for all (default) time periods (i.e. looking for trends at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.}
+
 \item{csis_var}{The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
-
-\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.}
-
-\item{tis_id}{The tis method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, please specify the individuals/units for which you want to test the trend in a character vector.}
 
 \item{cfesis_var}{The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 

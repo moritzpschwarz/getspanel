@@ -8,7 +8,7 @@
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows all indicators as a grid to give a good and quick overview.
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2 .data
+#' @importFrom ggplot2 ggplot aes geom_line facet_wrap labs theme element_blank element_rect element_line geom_hline geom_vline geom_tile scale_x_continuous scale_y_discrete scale_y_discrete theme_bw scale_fill_gradient2 .data scale_x_date
 #' @importFrom stats aggregate
 #'
 #' @examples
@@ -77,7 +77,6 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     # steps <- df_identified$steps[names(df_identified$impulses) %in% c("id","time","value")]
     #
     # merge(x$estimateddata, impulses, by = c("id","time"), all.x = TRUE)
-
     indicators_df <- cbind(df[,names(df) %in% c("id","time")],indicators)
     varying_vars <- names(indicators_df)[!names(indicators_df)%in% c("id","time","y","fitted")]
 
@@ -132,13 +131,20 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
       if(sign(col_limits[1]) < 0){col_limits[2] <- col_limits[1]*-1} else {col_limits[1] <- col_limits[2]*-1}
     }
 
+    x_axis <- if(is.numeric(indicators_toplot$time)){
+      list(scale_x_continuous(expand = c(0,0)))
+    } else if(class(indicators_toplot$time) == "Date"){
+      #list(scale_x_datetime(expand = c(0,0)))
+      list(scale_x_date(expand = c(0,0)))
+    }
+
     ggplot(indicators_toplot, aes(x = .data$time, y = .data$id, fill = .data$effect)) +
       geom_tile(na.rm = TRUE) +
       #scale_fill_viridis_c(na.value = NA) +
       scale_fill_gradient2(limits = col_limits, na.value = NA, name = "Effect", midpoint = 0) +
-      scale_x_continuous(expand = c(0, 0)) +
+      x_axis +
       scale_y_discrete(expand = c(0, 0)) +
-      facet_wrap(~.data$facet) +
+      facet_wrap( ~ .data$facet)+
       theme_bw() +
       theme(panel.grid = element_blank(),
             panel.border = element_rect(fill = NA),
