@@ -10,7 +10,7 @@ data("pandata_simulated")
 # plot(pandata_simulated$gdp[pandata_simulated$country==3], type="l", main="Country 3 (No Break)")
 # plot(pandata_simulated$gdp[pandata_simulated$country==4], type="l", main="Country 4 (No Break)")
 
-pandata_simulated <- pandata_simulated[pandata_simulated$year>1979,]
+pandata_simulated <- pandata_simulated[pandata_simulated$year<1951,]
 
 # Normal testing
 
@@ -43,13 +43,12 @@ test_that("Initial Tests Isatpanel on simulated data",{
 
 test_that("Isatpanel Test that missing values are removed",{
   data_w_missing <- pandata_simulated
-  data_w_missing <- data_w_missing[data_w_missing$year>1979,]
-  data_w_missing$temp <- ifelse(data_w_missing$country == 2, NA, data_w_missing$temp)
+  data_w_missing$temp <- ifelse(data_w_missing$country == 2 & data_w_missing$year>1939, NA, data_w_missing$temp)
 
   expect_silent(a <- isatpanel(data = data_w_missing,formula = gdp~temp,
                                index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
   expect_output(print(a))
-  expect_true(a$isatpanel.result$n==63) # 63 because 3 * 21
+  expect_true(a$isatpanel.result$n==189)
 })
 
 
@@ -61,6 +60,30 @@ test_that("Test the cfesis and csis arguments",{
                                                   index = c("country","year"),fesis=TRUE, cfesis = TRUE,cfesis_id = c("2","3"), ar = 1,
                                                   print.searchinfo = FALSE))
 
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                          fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, fesis_id = "Test"),
+               regexp = "Some or all id names in 'fesis_id' not found in the data.")
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                         fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, cfesis_id = "Test"),
+               regexp = "Some or all id names in 'cfesis_id' not found in the data.")
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                         fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, cfesis_id = "Test", fesis_id = "Test"),
+               regexp = "Some or all id names in 'cfesis_id' not found in the data.")
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                         fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, cfesis_var = "Test"),
+               regexp = "Some or all variable names in 'cfesis_var' not found in the data.")
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                         fesis=TRUE, cfesis = TRUE, ar = 1, print.searchinfo = FALSE, csis_var = "Test"),
+               regexp = "You cannot specify csis_var when csis = FALSE.")
+
+  expect_error(isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),
+                         fesis=TRUE, cfesis = TRUE, csis = TRUE, ar = 1, print.searchinfo = FALSE, csis_var = "Test"),
+               regexp = "Some or all variable names in 'csis_var' not found in the data.")
 })
 
 

@@ -194,6 +194,19 @@ isatpanel <- function(
   id <- gsub(" ","",id)
 
 
+  mxnames <- colnames(mxreg)
+  if (!is.null(mxreg)) {
+    mxreg <- as.matrix(mxreg)
+
+    # if the mxreg does not have column names, they get x1, x2, etc. below
+    if (is.null(mxnames)) {
+      mxnames <- paste("x", seq_len(NCOL(mxreg)), sep = "")
+    }
+  } else {
+    mxnames <- NULL
+  }
+
+
   # Some more checks
   if (csis & !is.vector(csis_var)) {stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
   if (cfesis & !is.vector(cfesis_var)) {stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
@@ -206,18 +219,9 @@ isatpanel <- function(
 
   if (!all(cfesis_id %in% id)) {stop("Some or all id names in 'cfesis_id' not found in the data. Please check the input under 'cfesis_id'.")}
   if (!all(fesis_id %in% id)) {stop("Some or all id names in 'fesis_id' not found in the data. Please check the input under 'fesis_id'.")}
+  if (!all(cfesis_var %in% mxnames)) {stop("Some or all variable names in 'cfesis_var' not found in the data. Please check the input under 'cfesis_var' with that in the data.")}
+  if (!all(csis_var %in% mxnames)) {stop("Some or all variable names in 'csis_var' not found in the data. Please check the input under 'csis_var' with that in the data.")}
 
-  mxnames <- colnames(mxreg)
-  if (!is.null(mxreg)) {
-    mxreg <- as.matrix(mxreg)
-
-    # if the mxreg does not have column names, they get x1, x2, etc. below
-    if (is.null(mxnames)) {
-      mxnames <- paste("x", seq_len(NCOL(mxreg)), sep = "")
-    }
-  } else {
-    mxnames <- NULL
-  }
 
   #################################
   ########## Remove NA observations

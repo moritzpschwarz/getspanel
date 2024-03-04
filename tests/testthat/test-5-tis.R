@@ -75,6 +75,10 @@ trial_df_step$y[40:50] <- trial_df_step$y[40:50]*1.02
 
 
 test_that("TIS works", {
+  # isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), tis = TRUE) # TIS approximates step shift
+  # isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE) # Step Shift approximates trend (esp in B)
+  # isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE) # correct specification
+
   expect_silent(m1 <- isatpanel(trial_df, formula = y ~ x, index = c("id","year"), tis = TRUE, plot = FALSE, print.searchinfo = FALSE))
   expect_type(get_indicators(m1), type = "list")
   expect_identical(names(get_indicators(m1)), "tis")
