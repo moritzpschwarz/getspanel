@@ -40,10 +40,19 @@ trial_df <- data.frame(year = rep(1951:2000,3),
 trial_df_step <- trial_df
 trial_df_step$y[40:50] <- trial_df_step$y[40:50]*1.02
 
+# Do the same with a date object
+trial_df_date <- trial_df_step
+trial_df_date$year <- rep(seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month"),3)
 
 outcome1 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, tis = TRUE) # TIS approximates step shift
 outcome2 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = TRUE) # Step Shift approximates trend (esp in B)
 outcome3 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = TRUE, tis = TRUE) # correct specification
+
+outcome4 <- isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = 1960:1990, cfesis = TRUE)
+outcome5 <- isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis = TRUE,
+                      cfesis_time = list(A = seq.Date(from = as.Date("2000-01-01"), length.out = 10, by = "month"),
+                                         B = seq.Date(from = as.Date("2003-01-01"), length.out = 12, by = "month"),
+                                         C = seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month")))
 
 
 # To use expect_snapshot_file() you'll typically need to start by writing
@@ -88,6 +97,8 @@ test_that("Standard Plot",{
   expect_snapshot_plot("Standard_plot_outcome1.png", code = plot(outcome1))
   expect_snapshot_plot("Standard_plot_outcome2.png", code = plot(outcome2))
   expect_snapshot_plot("Standard_plot_outcome3.png", code = plot(outcome3))
+  expect_snapshot_plot("Standard_plot_outcome4.png", code = plot(outcome4))
+  expect_snapshot_plot("Standard_plot_outcome5.png", code = plot(outcome5))
 })
 
 
@@ -97,7 +108,14 @@ test_that("Grid Plot",{
   expect_snapshot_plot("Grid_plot_outcome1.png", code = plot_grid(outcome1))
   expect_snapshot_plot("Grid_plot_outcome2.png", code = plot_grid(outcome2))
   expect_snapshot_plot("Grid_plot_outcome3.png", code = plot_grid(outcome3))
+  expect_snapshot_plot("Grid_plot_outcome4.png", code = plot_grid(outcome4))
+  expect_snapshot_plot("Grid_plot_outcome5.png", code = plot_grid(outcome5))
 })
+
+
+
+
+
 
 test_that("Residuals Plot",{
   skip_on_ci()

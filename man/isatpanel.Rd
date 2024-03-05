@@ -25,8 +25,9 @@ isatpanel(
   fesis_time = NULL,
   tis_id = NULL,
   tis_time = NULL,
-  csis_var = colnames(mxreg),
-  cfesis_var = colnames(mxreg),
+  csis_var = NULL,
+  csis_time = NULL,
+  cfesis_var = NULL,
   cfesis_id = NULL,
   cfesis_time = NULL,
   uis = NULL,
@@ -84,6 +85,8 @@ isatpanel(
 
 \item{csis_var}{The CSIS method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 
+\item{csis_time}{The CSIS method can be conducted for all (default) time periods (i.e. looking for Coefficient Step Shifts across all units at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (e.g. \code{1:10}).'}
+
 \item{cfesis_var}{The CFESIS method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
 
 \item{cfesis_id}{The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
@@ -94,7 +97,7 @@ isatpanel(
 
 \item{t.pval}{numeric value between 0 and 1. The significance level used for the two-sided regressor significance t-tests}
 
-\item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
+\item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
 
 \item{print.searchinfo}{logical. If \code{TRUE} (default), then detailed information is printed.}
 

@@ -102,8 +102,8 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
 
     # Deal with CFESIS within facets
-    indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-    indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis[0-9]+","",indicators_l[grepl("\\.cfesis[0-9]+",indicators_l$name),"name"])))
+    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"name"])))
 
     # Control the order of the facets
     facet_order <- unique(indicators_l$facet)
@@ -134,7 +134,6 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     x_axis <- if(is.numeric(indicators_toplot$time)){
       list(scale_x_continuous(expand = c(0,0)))
     } else if(is(indicators_toplot$time, class2 = "Date")){
-      #list(scale_x_datetime(expand = c(0,0)))
       list(scale_x_date(expand = c(0,0)))
     }
 

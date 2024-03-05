@@ -6,7 +6,6 @@
 #' @return A list of data.frames
 #'
 identify_indicator_timings <- function(object, uis_breaks = NULL){
-
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
   object_l <- reshape(object,
@@ -81,7 +80,12 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
     cfesis_l$id <- gsub("cfesis","",cfesis_l$id)
 
     cfesis_l$time <- unlist(lapply(split_list, `[[`, 3))
-    cfesis_l$time <- as.numeric(cfesis_l$time)
+
+    if(all(is.na(suppressWarnings(as.numeric(cfesis_l$time))))){
+      cfesis_l$time <- as.Date(cfesis_l$time)
+    } else {
+      cfesis_l$time <- as.numeric(cfesis_l$time)
+    }
 
     cfesis_l <- cfesis_l[c("id","time","name")]
 

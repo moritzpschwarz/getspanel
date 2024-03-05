@@ -80,26 +80,54 @@ test_that("Subsetting and restricting indicators by the time dimension",{
 
 
 
-test_that("Subsetting and restricting indicators in fesis and cfesis",{
+test_that("Subsetting and restricting indicators in fesis, csis, and cfesis",{
 
   expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis_time = tis_test1, fesis = TRUE))
   expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis_time = tis_test2, fesis = TRUE))
-  #expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = tis_test1, cfesis = TRUE))
-  #expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = tis_test2, cfesis = TRUE))
+
+  expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = tis_test1, cfesis = TRUE))
+  expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = tis_test2, cfesis = TRUE))
+
+  expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), csis = TRUE, print.searchinfo = FALSE, csis_time = tis_test2),
+               regexp = "specifying a list is not allowed. CSIS is always looking for coefficient step shifts across all units")
+
+  expect_silent(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, csis_time = 1964:2000, csis = TRUE, effect = "individual"))
 
 })
 
 trial_df_date <- trial_df_step
 trial_df_date$year <- rep(seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month"),3)
 
-tis_test1 <- seq.Date(from = as.Date("2001-01-01"), length.out = 20, by = "month")
+tis_test1_date <- seq.Date(from = as.Date("2001-01-01"), length.out = 20, by = "month")
+tis_test2_date <- list(A = seq.Date(from = as.Date("2000-01-01"), length.out = 10, by = "month"), B = seq.Date(from = as.Date("2003-01-01"), length.out = 12, by = "month"), C = seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month"))
 
 test_that("Subsetting and restricting indicators by the time dimension (using dates)",{
 
-  expect_silent(isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), tis = TRUE, print.searchinfo = FALSE,tis_time = tis_test1))
+  expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), tis = TRUE, print.searchinfo = FALSE,tis_time = tis_test1_date),
+               regexp = "must either be in the format of the time dimension or a list with one element per id")
+  expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), tis = TRUE, print.searchinfo = FALSE,tis_time = tis_test2_date),
+               regexp = "must be either identical to the data format of the time column in the data or NULL.")
+
+
+  expect_silent(isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), tis = TRUE, print.searchinfo = FALSE,tis_time = tis_test1_date))
+
+  expect_silent(isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = tis_test2_date, cfesis = TRUE))
 
 })
 
+
+test_that("Checking that error messages work when indicators saturation is turned off",{
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, csis = FALSE, csis_time = 1964:2000), regexp = "You cannot specify")
+
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis = FALSE, cfesis_time = 1964:2000), regexp = "You cannot specify")
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis = FALSE, cfesis_var = "x"), regexp = "You cannot specify")
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis = FALSE, cfesis_id = "B"), regexp = "You cannot specify")
+
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = FALSE, fesis_time = 1964:2000), regexp = "You cannot specify")
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = FALSE, fesis_id = "B"), regexp = "You cannot specify")
+
+  expect_error(isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, tis = FALSE, tis_time = 1964:2000), regexp = "You cannot specify")
+})
 
 
 

@@ -60,7 +60,7 @@ plot_residuals <- function(isatpanelobject){
     labs(x = NULL, y = "Residual Difference", title = "Difference in Residuals between OLS and isatpanel object") +
     theme(panel.background = element_blank(),
           strip.background = element_blank(),
-          panel.border = element_rect(size = 0.5, colour = "black", fill =  NA),
+          panel.border = element_rect(linewidth = 0.5, colour = "black", fill =  NA),
           panel.grid.major.y = element_line(colour = "grey", linetype = 2))
 
 }

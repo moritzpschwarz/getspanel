@@ -40,9 +40,10 @@
 #' @param tis_time The TIS method can be conducted for all (default) time periods (i.e. looking for trends at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.
 #' @param fesis_time The FESIS method can be conducted for all (default) time periods (i.e. looking for Fixed Effect Step-shifts at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.
 #' @param cfesis_time The CFESIS method can be conducted for all (default) time periods (i.e. looking for Coefficient Step Shifts per unit at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.
+#' @param csis_time The CSIS method can be conducted for all (default) time periods (i.e. looking for Coefficient Step Shifts across all units at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (e.g. \code{1:10}).'
 #' @param cfesis_var The CFESIS method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.
 #' @param cfesis_id The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
-#' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and [plot_grid()] using the \code{cowplot} package.
+#' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and [plot_grid()] using the \code{cowplot} package.
 #' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
 #'
 #' @return A list with class 'isatpanel'.
@@ -112,9 +113,9 @@ isatpanel <- function(
     fesis_time = NULL,
     tis_id = NULL,
     tis_time = NULL,
-    csis_var = colnames(mxreg),
-    #csis_time = NULL,
-    cfesis_var = colnames(mxreg),
+    csis_var = NULL,
+    csis_time = NULL,
+    cfesis_var = NULL,
     cfesis_id = NULL,
     cfesis_time = NULL,
 
@@ -134,7 +135,7 @@ isatpanel <- function(
 ){
   requireNamespace("gets")
 
-  # Error checks
+  # Error checks -----
   if (!effect %in% c("twoways", "individual", "time","none")) {stop("Error in Fixed Effect Specification (effect). Possible values for effect are: 'twoways', 'individual', 'time', or 'none'.")}
   if (missing(effect) & print.searchinfo){warning("New default for effect in 'isatpanel': Used to be 'individual', now 'twoways'. To quiet this message provide the argument 'effect' or select 'print.searchinfo = FALSE'.")}
 
@@ -161,6 +162,13 @@ isatpanel <- function(
   if (csis == FALSE & (!missing(csis_var))) {stop("You cannot specify csis_var when csis = FALSE.")}
   if (cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))) {stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
   if (fesis == FALSE & (!missing(fesis_id))) {stop("You cannot specify fesis_id when fesis = FALSE.")}
+  if (tis == FALSE & (!missing(tis_id))) {stop("You cannot specify tis_id when tis = FALSE.")}
+
+  # checking that the time restrictions are not activated when the appropriate indicator saturation is not done
+  if (csis == FALSE & (!missing(csis_time))) {stop("You cannot specify csis_time when csis = FALSE.")}
+  if (cfesis == FALSE & (!missing(cfesis_time))) {stop("You cannot specify cfesis_time when cfesis = FALSE.")}
+  if (fesis == FALSE & (!missing(fesis_time))) {stop("You cannot specify fesis_time when fesis = FALSE.")}
+  if (tis == FALSE & (!missing(tis_time))) {stop("You cannot specify tis_time when tis = FALSE.")}
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
   if(!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
@@ -193,7 +201,7 @@ isatpanel <- function(
 
   }
 
-  # Set up Infrastructure
+  # Set up Infrastructure ------
   out <- list()
   out$inputdata <- data.frame(id,time,y,mxreg)
 
@@ -216,7 +224,11 @@ isatpanel <- function(
   }
 
 
-  # Some more checks
+  # if either nothing was provided in csis_var or cfesis_var or if those are NULL, then take all columns
+  if (missing(csis_var) | is.null(csis_var)){csis_var <- colnames(mxreg)}
+  if (missing(cfesis_var) | is.null(cfesis_var)){cfesis_var <- colnames(mxreg)}
+
+  ## Some more checks -------
   if (csis & !is.vector(csis_var)) {stop("Specify csis_var as a vector of names that correspond to columns names in mxreg.")}
   if (cfesis & !is.vector(cfesis_var)) {stop("Specify cfesis_var as a vector of names that correspond to columns names in mxreg.")}
 
@@ -232,22 +244,12 @@ isatpanel <- function(
   if (!all(csis_var %in% mxnames)) {stop("Some or all variable names in 'csis_var' not found in the data. Please check the input under 'csis_var' with that in the data.")}
 
   # check all the time vectors
-  if(!is.null(tis_time)){
-    check.time.subset.vectors(time.vector = tis_time, vector.name = "tis_time", id = id, time = time)
-  }
-  if(!is.null(fesis_time)){
-    check.time.subset.vectors(time.vector = fesis_time, vector.name = "fesis_time", id = id, time = time)
-  }
-  # if(!is.null(csis_time)){
-  #   check.time.subset.vectors(time.vector = csis_time, vector.name = "csis_time", id = id, time = time)
-  # }
-  if(!is.null(cfesis_time)){
-    check.time.subset.vectors(time.vector = cfesis_time, vector.name = "cfesis_time", id = id, time = time)
-  }
+  if(!is.null(tis_time)){check.time.subset.vectors(time.vector = tis_time, vector.name = "tis_time", id = id, time = time)}
+  if(!is.null(fesis_time)){check.time.subset.vectors(time.vector = fesis_time, vector.name = "fesis_time", id = id, time = time)}
+  if(!is.null(csis_time)){check.time.subset.vectors(time.vector = csis_time, vector.name = "csis_time", id = id, time = time)}
+  if(!is.null(cfesis_time)){check.time.subset.vectors(time.vector = cfesis_time, vector.name = "cfesis_time", id = id, time = time)}
 
-  #################################
-  ########## Remove NA observations
-  #################################
+  ## Remove NA observations --------
 
   if (na.remove)  {
 
@@ -290,7 +292,7 @@ isatpanel <- function(
     }
 
     ar_df <- cbind(cbind(df,y),mx_all)
-    ar_df_processed <- by(ar_df,INDICES = ar_df$id, FUN = function(x) {
+    ar_df_processed <- by(ar_df,INDICES = ar_df$id, function(x) {
       y = x$y
       mx <- x[, names(x) %in% colnames(mx_all)]
       gets::regressorsMean(y = y, mxreg = mx,ar = c(1:ar),return.as.zoo = FALSE)
@@ -307,7 +309,7 @@ isatpanel <- function(
     # The code below removes the minimum time period for each group as many times as the AR term sets out
     for (a in 1:max(ar)) {
       df <- data.frame(do.call("rbind",
-                               by(df,df$id,FUN = function(x){
+                               by(df,df$id, function(x){
                                  x[!x$time == min(x$time),]
                                })[unique(ar_df$id)]), # the [unique(ar_df$id)] is necessary to retain the original order
                        row.names = NULL)
@@ -322,10 +324,10 @@ isatpanel <- function(
 
   df_base <- df
 
-  # Break Methods -----------------------------------------------------------
+  # Break Methods ------------
 
   BreakList <- list()
-  # jsis = TRUE
+  ## jsis = TRUE --------
   if (jsis) {
     jsis_df <- as.data.frame(cbind(time = unique(time),gets::sim(Tsample)))
 
@@ -361,7 +363,7 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(jiis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-  # fesis = TRUE
+  ## fesis = TRUE ------
   if (fesis) {
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
@@ -394,8 +396,8 @@ isatpanel <- function(
         for(fesis_time_len in 1:length(fesis_time)){
           if(is.null(fesis_time[[fesis_time_len]])){next}
           fesis_time_df <- rbind(fesis_time_df,
-                               data.frame(id = names(fesis_time)[fesis_time_len],
-                                          time = fesis_time[[fesis_time_len]]))
+                                 data.frame(id = names(fesis_time)[fesis_time_len],
+                                            time = fesis_time[[fesis_time_len]]))
         }
         fesis_df[,!names(fesis_df) %in% c("time","id",paste0("fesis",fesis_time_df$id,".",fesis_time_df$time))] <- 0
       }
@@ -417,7 +419,7 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(fesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-  # csis = TRUE
+  ## csis = TRUE --------------
   if (csis) {
     csis_init <- cbind(time = unique(time),gets::sim(Tsample))
     names(csis_init) <- c("time",paste0("csis",unique(time)[-1]))
@@ -427,7 +429,9 @@ isatpanel <- function(
     for (i in csis_var) {
       csis_intermed <- csis_init[,!names(csis_init) %in% c("id","time")] * mxreg[,i]
       names(csis_intermed) <- paste0(i,".",names(csis_intermed))
-
+      if(!is.null(csis_time)){
+        csis_intermed[,!names(csis_intermed) %in% c("time","id",paste0(i,".csis",csis_time))] <- 0
+      }
       csis_df <- cbind(csis_df,csis_intermed)
     }
 
@@ -446,7 +450,7 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(csis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-  # cfesis=TRUE
+  ## cfesis=TRUE -------
   if (cfesis) {
     # Create a balanced data.frame
     df_balanced <- data.frame(id = rep(unique(id),each = Tsample),time = rep(unique(time),N))
@@ -457,7 +461,6 @@ isatpanel <- function(
     # remove the mintime for each id
     cfesis_names_merged <- merge(df_balanced, cfesis_names_mintime, by = "id")
     cfesis_names_intermed <- cfesis_names_merged[cfesis_names_merged$time != cfesis_names_merged$mintime,c("id","time")]
-
     cfesis_names <- paste0("cfesis",cfesis_names_intermed$id,".",cfesis_names_intermed$time)
 
     sistlist <- do.call("list", rep(list(as.matrix(gets::sim(Tsample))), N))
@@ -470,29 +473,29 @@ isatpanel <- function(
     for (i in cfesis_var) {
       cfesis_intermed <- cfesis_df[,!names(cfesis_df) %in% c("id","time")]*mxreg[,i]
       names(cfesis_intermed) <- paste0(i,".",names(cfesis_intermed))
+
+      # Set all indicators to 0 for time periods which are not in cfesis_time
+      if(!is.null(cfesis_time)){
+        if(!is.list(cfesis_time)){
+          cfesis_intermed[,!names(cfesis_intermed) %in% c("time","id",paste0(i,".cfesis",cfesis_names_intermed$id,".",cfesis_time))] <- 0
+        } else {
+          cfesis_time_df <- data.frame()
+          # cycle through the elements of the list and create a data.frame with the ids and times
+          for(cfesis_time_len in 1:length(cfesis_time)){
+            if(is.null(cfesis_time[[cfesis_time_len]])){next}
+            cfesis_time_df <- rbind(cfesis_time_df,
+                                    data.frame(id = names(cfesis_time)[cfesis_time_len],
+                                               time = cfesis_time[[cfesis_time_len]]))
+          }
+          cfesis_intermed[,!names(cfesis_intermed) %in% c("time","id",paste0(i,".cfesis",cfesis_time_df$id,".",cfesis_time_df$time))] <- 0
+        }
+
+      }
       cfesis_out <- cbind(cfesis_out,cfesis_intermed)
     }
 
     # Set all indicators to 0 for ids which are not in cfesis_id
     cfesis_out[!cfesis_out$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
-
-    # Set all indicators to 0 for time periods which are not in cfesis_time
-    if(!is.null(cfesis_time)){
-      if(!is.list(cfesis_time)){
-        cfesis_out[,!names(cfesis_out) %in% c("time","id",paste0("cfesis",cfesis_names_intermed$id,".",cfesis_time))] <- 0
-      } else {
-        cfesis_time_df <- data.frame()
-        # cycle through the elements of the list and create a data.frame with the ids and times
-        for(cfesis_time_len in 1:length(cfesis_time)){
-          if(is.null(cfesis_time[[cfesis_time_len]])){next}
-          cfesis_time_df <- rbind(cfesis_time_df,
-                               data.frame(id = names(cfesis_time)[cfesis_time_len],
-                                          time = cfesis_time[[cfesis_time_len]]))
-        }
-        cfesis_out[,!names(cfesis_out) %in% c("time","id",paste0("cfesis",cfesis_time_df$id,".",cfesis_time_df$time))] <- 0
-      }
-    }
-
 
     # merge with df to ensure order is correct
     current <- merge(df,cfesis_out,by = c("id","time"),all.x = TRUE, sort = FALSE)
@@ -507,7 +510,7 @@ isatpanel <- function(
     BreakList <- c(BreakList,list(cfesis = as.matrix(current[,!names(current) %in% c("id","time")])))
   }
 
-  # tis = TRUE
+  ## tis = TRUE ----------
   if (tis) {
 
     # Create a balanced data.frame
@@ -583,9 +586,7 @@ isatpanel <- function(
 
   if (is.null(engine) && effect != "none") {
 
-    ####
     # Generating Fixed effects ------------------------------------------------
-    ####
     FE <- vector()
     if (effect %in% c("individual", "twoways")) {FE <- append(FE,"id")}
     if (effect %in% c("time", "twoways")) {FE <- append(FE,"time")}
@@ -608,9 +609,8 @@ isatpanel <- function(
   }
 
 
-  #############################
+
   ####### Set Engine
-  ###############################
   if (is.null(user.estimator) && !is.null(engine)) {
     if (!engine %in% c("felm","fixest","plm")) {
       stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
@@ -671,9 +671,9 @@ isatpanel <- function(
   # add a manual intercept if no FE selected
   if (effect == "none") {mx <- cbind(mconst = 1, mx)}
 
-  #############################
-  ####### Estimate
-  ###############################
+
+  # Estimate ------
+
   # Save original arx mc warning setting and disable it here
   tmpmc <- options("mc.warning")
   on.exit(options(tmpmc)) # set the old mc warning on exit
@@ -684,9 +684,9 @@ isatpanel <- function(
                       print.searchinfo = print.searchinfo, ...)
   #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
 
-  ###############################
-  ############## Return output
-  ############################
+
+  # Return output ------------
+
 
 
   out$isatpanel.result <- ispan
