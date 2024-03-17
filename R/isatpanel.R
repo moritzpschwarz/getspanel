@@ -609,7 +609,6 @@ isatpanel <- function(
   }
 
 
-
   ####### Set Engine
   if (is.null(user.estimator) && !is.null(engine)) {
     if (!engine %in% c("felm","fixest","plm")) {
@@ -657,6 +656,13 @@ isatpanel <- function(
   if (is.null(engine)) {
     user.estimator <- NULL
   }
+
+  # add a manual intercept if no FE selected
+  if (effect == "none") {
+    mx <- cbind(mconst = 1, mx)
+    mxreg <- cbind(mconst = 1, mxreg)
+  }
+
   estimateddata <- data.frame(id,time,y)
   if (is.null(engine)) {
     # if FE are manually created we only use mxreg (which is with the id and time column but not the FE)
@@ -668,8 +674,7 @@ isatpanel <- function(
 
   out$estimateddata <- estimateddata
 
-  # add a manual intercept if no FE selected
-  if (effect == "none") {mx <- cbind(mconst = 1, mx)}
+
 
 
   # Estimate ------
