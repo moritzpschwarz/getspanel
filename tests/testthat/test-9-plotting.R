@@ -10,6 +10,17 @@
 
 
 
+
+##############
+#### I M P O R T A N T ###
+##############
+# This will only work by using the "Build" and then "Run Tests" Buttons. when doing this
+# our snapshots will work. They will not be the same if we use
+# the console and there use devtools::test() or devtools::test_active_file() then
+# the snapshots will be a tiny bit different
+# so we need to be consistent when snapshotting plots
+
+
 ###
 # Generate Three Unit Example
 ###
@@ -94,22 +105,22 @@ expect_snapshot_plot <- function(name, code) {
 test_that("Standard Plot",{
   skip_on_ci()
   skip_on_cran()
-  expect_snapshot_plot("Standard_plot_outcome1.png", code = plot(outcome1))
-  expect_snapshot_plot("Standard_plot_outcome2.png", code = plot(outcome2))
-  expect_snapshot_plot("Standard_plot_outcome3.png", code = plot(outcome3))
-  expect_snapshot_plot("Standard_plot_outcome4.png", code = plot(outcome4))
-  expect_snapshot_plot("Standard_plot_outcome5.png", code = plot(outcome5))
+  expect_snapshot_plot("Standard_plot_outcome1", code = plot(outcome1))
+  expect_snapshot_plot("Standard_plot_outcome2", code = plot(outcome2))
+  expect_snapshot_plot("Standard_plot_outcome3", code = plot(outcome3))
+  expect_snapshot_plot("Standard_plot_outcome4", code = plot(outcome4))
+  expect_snapshot_plot("Standard_plot_outcome5", code = plot(outcome5))
 })
 
 
 test_that("Grid Plot",{
   skip_on_ci()
   skip_on_cran()
-  expect_snapshot_plot("Grid_plot_outcome1.png", code = plot_grid(outcome1))
-  expect_snapshot_plot("Grid_plot_outcome2.png", code = plot_grid(outcome2))
-  expect_snapshot_plot("Grid_plot_outcome3.png", code = plot_grid(outcome3))
-  expect_snapshot_plot("Grid_plot_outcome4.png", code = plot_grid(outcome4))
-  expect_snapshot_plot("Grid_plot_outcome5.png", code = plot_grid(outcome5))
+  expect_snapshot_plot("Grid_plot_outcome1", code = plot_grid(outcome1))
+  expect_snapshot_plot("Grid_plot_outcome2", code = plot_grid(outcome2))
+  expect_snapshot_plot("Grid_plot_outcome3", code = plot_grid(outcome3))
+  expect_snapshot_plot("Grid_plot_outcome4", code = plot_grid(outcome4))
+  expect_snapshot_plot("Grid_plot_outcome5", code = plot_grid(outcome5))
 })
 
 
@@ -120,9 +131,9 @@ test_that("Grid Plot",{
 test_that("Residuals Plot",{
   skip_on_ci()
   skip_on_cran()
-  expect_snapshot_plot("Residuals_plot_outcome1.png", code = plot_residuals(outcome1))
-  expect_snapshot_plot("Residuals_plot_outcome2.png", code = plot_residuals(outcome2))
-  expect_snapshot_plot("Residuals_plot_outcome3.png", code = plot_residuals(outcome3))
+  expect_snapshot_plot("Residuals_plot_outcome1", code = plot_residuals(outcome1))
+  expect_snapshot_plot("Residuals_plot_outcome2", code = plot_residuals(outcome2))
+  expect_snapshot_plot("Residuals_plot_outcome3", code = plot_residuals(outcome3))
 })
 
 
