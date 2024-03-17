@@ -8,7 +8,7 @@ isatpanel(
   data = NULL,
   formula = NULL,
   index = NULL,
-  effect = c("individual"),
+  effect = c("twoways"),
   na.remove = TRUE,
   engine = NULL,
   user.estimator = NULL,
@@ -18,15 +18,22 @@ isatpanel(
   jiis = FALSE,
   jsis = FALSE,
   fesis = FALSE,
+  tis = FALSE,
   csis = FALSE,
   cfesis = FALSE,
-  csis_var = colnames(mxreg),
   fesis_id = NULL,
-  cfesis_var = colnames(mxreg),
+  fesis_time = NULL,
+  tis_id = NULL,
+  tis_time = NULL,
+  csis_var = NULL,
+  csis_time = NULL,
+  cfesis_var = NULL,
   cfesis_id = NULL,
+  cfesis_time = NULL,
   uis = NULL,
   t.pval = 0.001,
   plot = TRUE,
+  print.searchinfo = TRUE,
   plm_model = "within",
   y = NULL,
   id = NULL,
@@ -38,11 +45,11 @@ isatpanel(
 \arguments{
 \item{data}{The input data.frame object.}
 
-\item{formula}{Please specify a formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors. Note the intercept will always be removed, if effect is not "none" - this means that if any fixed effects are specified, the intercept will always be removed.}
+\item{formula}{Formula argument. The dependent variable will be the left-most element, separated by a ~ symbol from the remaining regressors (e.g. y ~ x + z). Note the intercept will always be removed unless the effect is "none" - this means that if any fixed effects are specified, the intercept will always be removed.}
 
 \item{index}{Specify the name of the group and time column in the format c("id", "time").}
 
-\item{effect}{Fixed Effect specification. Possible arguments: "twoways", "individual", "time", or "none".}
+\item{effect}{Fixed Effect specification. Possible arguments: "twoways" (Default), "individual", "time", or "none".}
 
 \item{na.remove}{remove NAs}
 
@@ -62,23 +69,37 @@ isatpanel(
 
 \item{fesis}{Logical. Use Fixed Effect Step Indicator Saturation. Constructed by multiplying a constant (1) with group Fixed Effects. Default is \code{FALSE}.}
 
+\item{tis}{Logical. Use Trend Indicator Saturation. Constructed by fitting a trend for each unit from every observation. Default is \code{FALSE}.}
+
 \item{csis}{Logical. Use Coefficient Step Indicator Saturation. Constructed by Default is FALSE.}
 
 \item{cfesis}{Logical. Use Coefficient-Fixed Effect Indicator Saturation. Default is FALSE.}
 
-\item{csis_var}{The csis method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+\item{fesis_id}{The FESIS method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the stability of the fixed effect in a character vector.}
 
-\item{fesis_id}{The fesis method can be conducted for all (default) individuals/units (i.e. looking for breaks in individual countries) or just a subset of them (joint breaks in the coefficients for a few individuals). If you want to use a subset, please specify the individuals/units for which you want to test the stability in a character vector.}
+\item{fesis_time}{The FESIS method can be conducted for all (default) time periods (i.e. looking for Fixed Effect Step-shifts at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.}
 
-\item{cfesis_var}{The cfesis method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+\item{tis_id}{The TIS method can be conducted for all (default) individuals/units (i.e. looking for trends in individual countries) or just a subset of them. If you want to use a subset, specify the individuals/units for which you want to test the trend in a character vector.}
 
-\item{cfesis_id}{The cfesis method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
+\item{tis_time}{The TIS method can be conducted for all (default) time periods (i.e. looking for trends at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.}
+
+\item{csis_var}{The CSIS method can be conducted for all (default) variables or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+
+\item{csis_time}{The CSIS method can be conducted for all (default) time periods (i.e. looking for Coefficient Step Shifts across all units at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (e.g. \code{1:10}).'}
+
+\item{cfesis_var}{The CFESIS method can be conducted for all variables (default) or just a subset of them. If you want to use a subset, please specify the column names of the variable in a character vector.}
+
+\item{cfesis_id}{The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.}
+
+\item{cfesis_time}{The CFESIS method can be conducted for all (default) time periods (i.e. looking for Coefficient Step Shifts per unit at every time period) or just a subset of them. If you want to use a subset, specify the time periods as a numeric vector (for all id's the same like \code{1:10}) or as a list with an equal number of elements as there are id's e.g. \code{list(A = 1:10, B = NULL, C = 5:10)}.}
 
 \item{uis}{Matrix or List. This can be used to include a set of UIS (User Specified Indicators). Must be equal to the sample size (so it is recommended to use this only with datasets without \code{NA} values. Default is \code{NULL}. See the reference by Genaro Sucarrat (2020) below for an explanation of the UIS system.}
 
 \item{t.pval}{numeric value between 0 and 1. The significance level used for the two-sided regressor significance t-tests}
 
-\item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
+\item{plot}{Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and \code{\link[=plot_grid]{plot_grid()}} using the \code{cowplot} package.}
+
+\item{print.searchinfo}{logical. If \code{TRUE} (default), then detailed information is printed.}
 
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
 
@@ -88,7 +109,7 @@ isatpanel(
 
 \item{time}{Deprecated. Can be used when data, index, and formula are not specified. Must be a vector of the time variable as an integer or numeric.}
 
-\item{mxreg}{The co-variates matrix}
+\item{mxreg}{Deprecated.The co-variates matrix. Superseded by the formula argument.}
 
 \item{...}{Further arguments to \code{\link[gets:isat]{gets::isat()}}}
 }

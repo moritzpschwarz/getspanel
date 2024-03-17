@@ -19,7 +19,7 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
-  indicators <- indicators[,!colnames(indicators) %in% names(df)]
+  indicators <- indicators[,!colnames(indicators) %in% names(df), drop = FALSE]
   df <- cbind(df,indicators)
 
   if(is.null(x$isatpanel.result$fit)){
@@ -38,7 +38,6 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     group = .data$id
   )) -> g
 
-
   # Impulses
   if(!is.null(df_identified$impulses)){
     g = g + geom_vline(data = df_identified$impulses,aes(xintercept = .data$time,color="grey"))
@@ -56,6 +55,11 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
   # fesis
   if(!is.null(df_identified$fesis)){
     g = g + geom_vline(data = df_identified$fesis, aes(xintercept = .data$time,color="red"))
+  }
+
+  # tis
+  if(!is.null(df_identified$tis)){
+    g = g + geom_vline(data = df_identified$tis, aes(xintercept = .data$time,color="lightblue"))
   }
 
   # cfesis
@@ -80,8 +84,8 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
     facet_wrap("id", scales = facet.scales) +
 
     scale_color_identity(name = NULL,
-                         breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange", "violetred4"),
-                         labels = c("y","Fitted","IIS","JSIS","FESIS","CFESIS", "CSIS", "User-Specified"),
+                         breaks = c("black", "blue", "grey", "purple", "red","lightblue","darkgreen", "orange", "violetred4"),
+                         labels = c("y","Fitted","IIS","JSIS","FESIS","TIS","CFESIS", "CSIS", "User-Specified"),
                          guide = "legend")+
 
     scale_linetype(name = "Variable") +

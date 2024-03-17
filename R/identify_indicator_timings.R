@@ -6,7 +6,6 @@
 #' @return A list of data.frames
 #'
 identify_indicator_timings <- function(object, uis_breaks = NULL){
-
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
   object_l <- reshape(object,
@@ -16,6 +15,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
                   timevar = "name",
                   times = varying_vars,
                   direction = "long")
+
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]
   steps <- object_l[grepl("sis",object_l$name) & object_l$value == 1 & !grepl("fesis", object_l$name) & !grepl("csis", object_l$name),]
@@ -56,6 +56,10 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
 
   } else {fesis <- NULL}
 
+  # TIS
+  trends <- object_l[grepl("tis",object_l$name) & object_l$value == 1 ,] # identify the first occurrence of a trend
+  if(nrow(trends) == 0){trends <- NULL}
+
   # CFESIS
   if(any(grepl("cfesis",names(object)))){
 
@@ -76,7 +80,12 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
     cfesis_l$id <- gsub("cfesis","",cfesis_l$id)
 
     cfesis_l$time <- unlist(lapply(split_list, `[[`, 3))
-    cfesis_l$time <- as.numeric(cfesis_l$time)
+
+    if(all(is.na(suppressWarnings(as.numeric(cfesis_l$time))))){
+      cfesis_l$time <- as.Date(cfesis_l$time)
+    } else {
+      cfesis_l$time <- as.numeric(cfesis_l$time)
+    }
 
     cfesis_l <- cfesis_l[c("id","time","name")]
 
@@ -132,6 +141,7 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   output$csis <- csis
   output$fesis <- fesis
   output$cfesis <- cfesis
+  output$tis <- trends
   output$uis_breaks <- if(nrow(uis_indicators)>0) {uis_indicators} else{NULL}
 
   return(output)
