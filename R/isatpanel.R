@@ -609,10 +609,10 @@ isatpanel <- function(
   }
 
 
-  ####### Set Engine
+  # Set Engine --------
   if (is.null(user.estimator) && !is.null(engine)) {
-    if (!engine %in% c("felm","fixest","plm")) {
-      stop("Specified engine not available. Choose either 'felm' or 'fixest'.")
+    if (!engine %in% c("felm","fixest","plm", "lasso")) {
+      stop("Specified engine not available. Choose either 'felm', 'lasso', or 'fixest'.")
     }
     if (engine == "felm") {
       #require(lfe, quietly = TRUE)
@@ -651,6 +651,18 @@ isatpanel <- function(
       mc = FALSE
     }
 
+    # if(engine == "lasso"){
+    #
+    #   user.estimator <- list(
+    #     name = lassoFun,
+    #     time = time,
+    #     id = id,
+    #     effect = effect,
+    #     cluster = cluster
+    #   )
+    #   mc = FALSE
+    # }
+
   }
 
   if (is.null(engine)) {
@@ -679,15 +691,107 @@ isatpanel <- function(
 
   # Estimate ------
 
-  # Save original arx mc warning setting and disable it here
-  tmpmc <- options("mc.warning")
-  on.exit(options(tmpmc)) # set the old mc warning on exit
+  if(engine != "lasso"){
+    # Save original arx mc warning setting and disable it here
+    tmpmc <- options("mc.warning")
+    on.exit(options(tmpmc)) # set the old mc warning on exit
 
-  options(mc.warning = FALSE)
-  #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
-  ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
-                      print.searchinfo = print.searchinfo, ...)
-  #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+    options(mc.warning = FALSE)
+    #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
+    ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
+                        print.searchinfo = print.searchinfo, ...)
+    #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+
+  }
+
+  if(engine == "lasso"){
+    browser()
+    mod_fit_adap1 = glmnet::glmnet(
+      y = y,
+      x = cbind(mx, as.data.frame(sispanx)),
+      family = "gaussian",
+      alpha = 1,
+      intercept = FALSE, # unclear what to do with this
+      penalty.factor = c(rep(0,ncol(mx)),
+                         rep(1,ncol(as.data.frame(sispanx))))
+    )
+
+    mod_cv_adap1 <- glmnet::cv.glmnet(
+      y = y,
+      x = as.matrix(cbind(mx, as.data.frame(sispanx))),
+      family = "gaussian",
+      alpha = 1,
+      nfolds = 10,
+      intercept = FALSE, # unclear what to do with this
+      penalty.factor = c(rep(0,ncol(mx)),
+                         rep(1,ncol(as.data.frame(sispanx))))
+    )
+
+    #coef(mod_fit_adap1, mod_fit$lambda[1])
+
+    best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+
+    penalty.factor = 1 / abs(best_lass_coef)
+    penalty.factor[seq_len(length(colnames(mx)))]  <- 0
+    penalty.factor <- penalty.factor[-1] # this will always exclude the intercept (that is added even though intercept = FALSE)
+
+    mod_fit_adap2 = glmnet::glmnet(
+      y = y,
+      x = cbind(mx, as.data.frame(sispanx)),
+      family = "gaussian",
+      alpha = 1,
+      intercept = FALSE, # unclear what to do with this
+      penalty.factor = penalty.factor)
+
+    coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
+
+    mod_cv_adap2 <- glmnet::cv.glmnet(
+      y = y,
+      x = as.matrix(cbind(mx, as.data.frame(sispanx))),
+      family = "gaussian",
+      alpha = 1,
+      nfolds = 10,
+      intercept = FALSE, # unclear what to do with this
+      penalty.factor = penalty.factor)
+
+
+    rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
+
+    #
+    # coef(mod_fit_adap1, mod_fit$lambda[1])
+    #
+    #
+    # best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+    #
+    # penalty.factor = 1 / abs(best_lass_coef)
+    # penalty.factor[1:35]  <- 0 #c(rep(0, 35)
+    #
+    # mod_fit_adap2 = glmnet(x=as.matrix(dat.sub.reg_mx), y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1,
+    #                        penalty.factor=penalty.factor)
+    # coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
+    # mod_cv_adap2 <- cv.glmnet(x=as.matrix(dat.sub.reg_mx), intercept=TRUE, nfolds=10, y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1, penalty.factor=penalty.factor)
+    # rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
+
+
+
+    xnames <- names(cbind(mx, as.data.frame(sispanx)))
+
+    ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
+    xret <- xnames[ret_cv-1] # the -1 ensures that the intercept is removed
+    xret.is <- xret[xret %in% cnnp]
+    xret.is.m <- dat.sub.reg_mx[,xret.is]
+
+    #unlist(xret.is)
+
+    xret.is_comma <- paste("`", as.vector(xret.is), "`", sep="")
+    xret.is_comma_p <- paste(xret.is_comma, collapse=" + ")
+    ###################
+    fixform_lass <- as.formula( paste("lgdpcap ~ linvest +",  xret.is_comma_p, " | id + time" , sep=""))
+
+
+
+
+  }
 
 
   # Return output ------------
