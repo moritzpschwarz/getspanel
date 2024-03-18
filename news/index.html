@@ -51,6 +51,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="getspanel-020">getspanel 0.2.0<a class="anchor" aria-label="anchor" href="#getspanel-020"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-0-2-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-2-0"></a></h3>
+<ul><li>Changed default <code>effect</code> from <code>individual</code> to <code>twoways</code>
+</li>
+<li>introduced Trend Indicator Saturation <code>tis</code> in <code>isatpanel</code>
+</li>
+<li>Enabled the ability to specify all indicator methods for only a specific subset of time and ids rather than for all ids or time (this was possible in a simpler form for some indicator methods for id already)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-0-2-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-2-0"></a></h3>
+<ul><li>Introduced new internal functions and tests to ensure that the subsetting of time and ids works</li>
+<li>Introduced new tests for <code>tis</code>
+</li>
+<li>Adapted a number of functions to work with <code>tis</code> (<code>identify_indicator_timings</code>, the plotting functions,</li>
+<li>Implemented codecov to check code coverage long-term</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="getspanel-015">getspanel 0.1.5<a class="anchor" aria-label="anchor" href="#getspanel-015"></a></h2><p class="text-muted">CRAN release: 2023-10-19</p>
 <div class="section level3">
 <h3 id="major-changes-0-1-5">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-1-5"></a></h3>
