@@ -133,7 +133,8 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
 
     x_axis <- if(is.numeric(indicators_toplot$time)){
       list(scale_x_continuous(expand = c(0,0)))
-    } else if(is(indicators_toplot$time, class2 = "Date")){
+    #} else if(is(indicators_toplot$time, class2 = "Date")){
+    } else if(inherits(indicators_toplot$time, "Date")){
       list(scale_x_date(expand = c(0,0)))
     }
 

@@ -1,3 +1,19 @@
+# getspanel 0.2.0
+
+## Major changes
+
+- Changed default `effect` from `individual` to `twoways`
+- introduced Trend Indicator Saturation `tis` in `isatpanel`
+- Enabled the ability to specify all indicator methods for only a specific subset of time and ids rather than for all ids or time (this was possible in a simpler form for some indicator methods for id already)
+
+
+## Minor changes
+- Introduced new internal functions and tests to ensure that the subsetting of time and ids works
+- Introduced new tests for `tis`
+- Adapted a number of functions to work with `tis` (`identify_indicator_timings`, the plotting functions, 
+- Implemented codecov to check code coverage long-term
+
+
 # getspanel 0.1.5
 
 ## Major changes
