@@ -45,6 +45,7 @@
 #' @param cfesis_id The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and [plot_grid()] using the \code{cowplot} package.
 #' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
+#' @param lasso_opts list. Only possible to be used if \code{engine = "lasso"}. Must be a list and can only take a TRUE/FALSE for 'adaptive' and 'standardize' and numeric for 'nfolds'. Example: list(adaptive = TRUE, standardize = FALSE, nfolds = 100)
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
@@ -126,6 +127,7 @@ isatpanel <- function(
     plot = TRUE,
     print.searchinfo = TRUE,
     plm_model = "within",
+    lasso_opts = NULL,
 
     y=NULL,
     id=NULL,
@@ -171,7 +173,17 @@ isatpanel <- function(
   if (tis == FALSE & (!missing(tis_time))) {stop("You cannot specify tis_time when tis = FALSE.")}
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
-  if(!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
+  if (!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
+
+  # checking lasso
+  if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
+  if (!is.null(lasso_opts)){
+    if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
+    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds'")}
+  }
+
+
+
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))) {
     mf <- match.call(expand.dots = FALSE)
@@ -701,14 +713,30 @@ isatpanel <- function(
   # Estimate using LASSO ------
   if(!is.null(engine) & identical(engine,"lasso")){
 
-    lasso_data <- as.matrix(cbind(mx, as.data.frame(sispanx)))
+    # create a dataset where all indicators are inputed as a large dataframe
+    full_indic_df <- data.frame()
+    for(sipanx_length in seq_along(sispanx)){
+      if(nrow(full_indic_df) == 0){
+        full_indic_df <- sispanx[[sipanx_length]]
+      } else {
+        full_indic_df <- cbind(full_indic_df,sispanx[[sipanx_length]])
+      }
+    }
+
+
+    lasso_data <- as.matrix(cbind(mx, full_indic_df))
     lasso_names <- colnames(lasso_data)
+
+    nflds <- if(!is.null(lasso_opts$nfolds)){lasso_opts$nfolds} else {10}
+    stdize <- if(!is.null(lasso_opts$standardize)){lasso_opts$standardize} else {FALSE}
+    adptive <- if(!is.null(lasso_opts$adaptive)){lasso_opts$adaptive} else {TRUE}
+
 
     mod_fit_adap1 = glmnet::glmnet(
       y = y,
       x = lasso_data,
       family = "gaussian",
-      #standardize = TRUE,
+      standardize = stdize,
       alpha = 1,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
@@ -719,9 +747,9 @@ isatpanel <- function(
       y = y,
       x = lasso_data,
       family = "gaussian",
-      #standardize = TRUE,
+      standardize = stdize,
       alpha = 1,
-      nfolds = 10,
+      nfolds = nflds,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
                          rep(1,ncol(as.data.frame(sispanx))))
@@ -737,13 +765,13 @@ isatpanel <- function(
     penalty.factor <- penalty.factor[!names(penalty.factor) == "(Intercept)"] # this will always exclude the intercept (that is added even though intercept = FALSE)
 
 
-    if(!all(penalty.factor %in% c(0,Inf))){
+    if(adptive & !all(penalty.factor %in% c(0,Inf))){
 
       mod_fit_adap2 = glmnet::glmnet(
         y = y,
         x = lasso_data,
-        standardize = TRUE,
         family = "gaussian",
+        standardize = stdize,
         alpha = 1,
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
@@ -754,8 +782,9 @@ isatpanel <- function(
         y = y,
         x = lasso_data,
         family = "gaussian",
+        standardize = stdize,
         alpha = 1,
-        nfolds = 10,
+        nfolds = nflds,
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
 
@@ -764,6 +793,12 @@ isatpanel <- function(
 
       ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
+
+      if(all(final_lasso_retained %in% names(mx))){
+        if(print.searchinfo){
+          message("LASSO did not identify any indicators. General Unrestricted Model will be estimated.")
+        }
+      }
 
 
     } else {
@@ -783,13 +818,12 @@ isatpanel <- function(
     arx_lasso_output <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret)
 
     ispan <- arx_lasso_output
+    ispan$aux$mX <- lasso_data_ret
 
   }
 
 
   # Return output ------------
-
-
 
   out$isatpanel.result <- ispan
 
