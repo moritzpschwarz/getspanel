@@ -35,6 +35,7 @@ isatpanel(
   plot = TRUE,
   print.searchinfo = TRUE,
   plm_model = "within",
+  lasso_opts = NULL,
   y = NULL,
   id = NULL,
   time = NULL,
@@ -102,6 +103,8 @@ isatpanel(
 \item{print.searchinfo}{logical. If \code{TRUE} (default), then detailed information is printed.}
 
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
+
+\item{lasso_opts}{list. Only possible to be used if \code{engine = "lasso"}. Must be a list and can only take a TRUE/FALSE for 'adaptive' and 'standardize' and numeric for 'nfolds'. Example: list(adaptive = TRUE, standardize = FALSE, nfolds = 100)}
 
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
 

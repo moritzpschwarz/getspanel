@@ -731,7 +731,6 @@ isatpanel <- function(
     stdize <- if(!is.null(lasso_opts$standardize)){lasso_opts$standardize} else {FALSE}
     adptive <- if(!is.null(lasso_opts$adaptive)){lasso_opts$adaptive} else {TRUE}
 
-
     mod_fit_adap1 = glmnet::glmnet(
       y = y,
       x = lasso_data,
@@ -804,7 +803,9 @@ isatpanel <- function(
     } else {
       ret_cv <- which(as.vector(best_lass_coef)!=0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
-      if(print.searchinfo){message("LASSO did not identify any indicators. General Unrestricted Model will be estimated.")}
+      if(all(final_lasso_retained %in% names(mx))){
+        if(print.searchinfo){message("LASSO did not identify any indicators. General Unrestricted Model will be estimated.")}
+      }
     }
 
     ### Re-estimate final model
@@ -815,10 +816,10 @@ isatpanel <- function(
     on.exit(options(tmpmc)) # set the old mc warning on exit
 
     options(mc.warning = FALSE)
-    arx_lasso_output <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret)
+    suppressWarnings(arx_lasso_output <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret))
 
     ispan <- arx_lasso_output
-    ispan$aux$mX <- lasso_data_ret
+    ispan$aux$mX <- lasso_data_ret[,colnames(lasso_data_ret) %in% arx_lasso_output$aux$mXnames]
 
   }
 
