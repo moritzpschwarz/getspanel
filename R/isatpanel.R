@@ -584,7 +584,7 @@ isatpanel <- function(
   } else {uis_args <- NULL}
 
 
-  if (is.null(engine) && effect != "none") {
+  if ((is.null(engine) | identical(engine, "lasso")) && effect != "none") {
 
     # Generating Fixed effects ------------------------------------------------
     FE <- vector()
@@ -650,19 +650,6 @@ isatpanel <- function(
       )
       mc = FALSE
     }
-
-    # if(engine == "lasso"){
-    #
-    #   user.estimator <- list(
-    #     name = lassoFun,
-    #     time = time,
-    #     id = id,
-    #     effect = effect,
-    #     cluster = cluster
-    #   )
-    #   mc = FALSE
-    # }
-
   }
 
   if (is.null(engine)) {
@@ -687,29 +674,41 @@ isatpanel <- function(
   out$estimateddata <- estimateddata
 
 
-
-
-  # Estimate ------
-
-  if(engine != "lasso"){
+  # Estimate using gets ------
+  if(is.null(engine) | !identical(engine,"lasso")){
     # Save original arx mc warning setting and disable it here
     tmpmc <- options("mc.warning")
     on.exit(options(tmpmc)) # set the old mc warning on exit
 
     options(mc.warning = FALSE)
     #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
-    ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
-                        print.searchinfo = print.searchinfo, ...)
-    #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
+    ispan <- gets::isat(
+      y,
+      mxreg = mx,
+      iis = iis,
+      sis = FALSE,
+      uis = sispanx,
+      user.estimator = user.estimator,
+      mc = FALSE,
+      t.pval = t.pval,
+      print.searchinfo = print.searchinfo,
+      ...
+    )
 
   }
 
-  if(engine == "lasso"){
-    browser()
+
+  # Estimate using LASSO ------
+  if(!is.null(engine) & identical(engine,"lasso")){
+
+    lasso_data <- as.matrix(cbind(mx, as.data.frame(sispanx)))
+    lasso_names <- colnames(lasso_data)
+
     mod_fit_adap1 = glmnet::glmnet(
       y = y,
-      x = cbind(mx, as.data.frame(sispanx)),
+      x = lasso_data,
       family = "gaussian",
+      #standardize = TRUE,
       alpha = 1,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
@@ -718,8 +717,9 @@ isatpanel <- function(
 
     mod_cv_adap1 <- glmnet::cv.glmnet(
       y = y,
-      x = as.matrix(cbind(mx, as.data.frame(sispanx))),
+      x = lasso_data,
       family = "gaussian",
+      #standardize = TRUE,
       alpha = 1,
       nfolds = 10,
       intercept = FALSE, # unclear what to do with this
@@ -728,68 +728,61 @@ isatpanel <- function(
     )
 
     #coef(mod_fit_adap1, mod_fit$lambda[1])
-
     best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
 
+
     penalty.factor = 1 / abs(best_lass_coef)
-    penalty.factor[seq_len(length(colnames(mx)))]  <- 0
-    penalty.factor <- penalty.factor[-1] # this will always exclude the intercept (that is added even though intercept = FALSE)
-
-    mod_fit_adap2 = glmnet::glmnet(
-      y = y,
-      x = cbind(mx, as.data.frame(sispanx)),
-      family = "gaussian",
-      alpha = 1,
-      intercept = FALSE, # unclear what to do with this
-      penalty.factor = penalty.factor)
-
-    coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
-
-    mod_cv_adap2 <- glmnet::cv.glmnet(
-      y = y,
-      x = as.matrix(cbind(mx, as.data.frame(sispanx))),
-      family = "gaussian",
-      alpha = 1,
-      nfolds = 10,
-      intercept = FALSE, # unclear what to do with this
-      penalty.factor = penalty.factor)
+    names(penalty.factor) <- row.names(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+    penalty.factor[colnames(mx)]  <- 0 # set all x variables to 0 (i.e. don't select over them)
+    penalty.factor <- penalty.factor[!names(penalty.factor) == "(Intercept)"] # this will always exclude the intercept (that is added even though intercept = FALSE)
 
 
-    rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
+    if(!all(penalty.factor %in% c(0,Inf))){
 
-    #
-    # coef(mod_fit_adap1, mod_fit$lambda[1])
-    #
-    #
-    # best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
-    #
-    # penalty.factor = 1 / abs(best_lass_coef)
-    # penalty.factor[1:35]  <- 0 #c(rep(0, 35)
-    #
-    # mod_fit_adap2 = glmnet(x=as.matrix(dat.sub.reg_mx), y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1,
-    #                        penalty.factor=penalty.factor)
-    # coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
-    # mod_cv_adap2 <- cv.glmnet(x=as.matrix(dat.sub.reg_mx), intercept=TRUE, nfolds=10, y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1, penalty.factor=penalty.factor)
-    # rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
+      mod_fit_adap2 = glmnet::glmnet(
+        y = y,
+        x = lasso_data,
+        standardize = TRUE,
+        family = "gaussian",
+        alpha = 1,
+        intercept = FALSE, # unclear what to do with this
+        penalty.factor = penalty.factor)
 
+      # coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
 
-
-    xnames <- names(cbind(mx, as.data.frame(sispanx)))
-
-    ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
-    xret <- xnames[ret_cv-1] # the -1 ensures that the intercept is removed
-    xret.is <- xret[xret %in% cnnp]
-    xret.is.m <- dat.sub.reg_mx[,xret.is]
-
-    #unlist(xret.is)
-
-    xret.is_comma <- paste("`", as.vector(xret.is), "`", sep="")
-    xret.is_comma_p <- paste(xret.is_comma, collapse=" + ")
-    ###################
-    fixform_lass <- as.formula( paste("lgdpcap ~ linvest +",  xret.is_comma_p, " | id + time" , sep=""))
+      mod_cv_adap2 <- glmnet::cv.glmnet(
+        y = y,
+        x = lasso_data,
+        family = "gaussian",
+        alpha = 1,
+        nfolds = 10,
+        intercept = FALSE, # unclear what to do with this
+        penalty.factor = penalty.factor)
 
 
+      rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
 
+      ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
+      final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
+
+
+    } else {
+      ret_cv <- which(as.vector(best_lass_coef)!=0)
+      final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
+      if(print.searchinfo){message("LASSO did not identify any indicators. General Unrestricted Model will be estimated.")}
+    }
+
+    ### Re-estimate final model
+    lasso_data_ret <- lasso_data[,colnames(lasso_data) %in% final_lasso_retained]
+
+    # Save original arx mc warning setting and disable it here
+    tmpmc <- options("mc.warning")
+    on.exit(options(tmpmc)) # set the old mc warning on exit
+
+    options(mc.warning = FALSE)
+    arx_lasso_output <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret)
+
+    ispan <- arx_lasso_output
 
   }
 

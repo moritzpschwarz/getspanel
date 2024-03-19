@@ -8,5 +8,13 @@
 #'
 #'
 print.isatpanel <- function(x, ...){
-  gets::print.isat(x$isatpanel.result)
+
+
+  if(inherits(x$isatpanel.result, "isat")){
+    gets::print.isat(x$isatpanel.result)
+  }
+
+  if(inherits(x$isatpanel.result, "arx")){
+    gets::print.arx(x$isatpanel.result)
+  }
 }
