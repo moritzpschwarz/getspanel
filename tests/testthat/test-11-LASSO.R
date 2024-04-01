@@ -71,7 +71,7 @@ trial_df <- data.frame(year = rep(1951:2000,3),
 
 # Introduce a step shift in A from 40
 trial_df_step <- trial_df
-trial_df_step$y[40:50] <- trial_df_step$y[40:50]*1.025
+trial_df_step$y[40:50] <- trial_df_step$y[40:50]*1.025 # in tis this is 1.02
 
 test_that("LASSO works", {
 
@@ -100,10 +100,11 @@ test_that("LASSO works", {
 
 
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+  test <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = TRUE,
             lasso_opts = list(standardize = FALSE,
-                              nfolds = 50))
+                              nfolds = 10,
+                              adaptive = FALSE))
 
   isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = FALSE,
@@ -126,6 +127,28 @@ test_that("LASSO works", {
   isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
   isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
   isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
+
+
+  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE,
+            print.searchinfo = TRUE, engine = "lasso", effect = "twoways", lasso_opts = list(adaptive = FALSE, s = 0.9, standardize = TRUE))
+
+
+
+
+
+
+
+
+  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,
+            effect = "individual", engine = "lasso",
+            fesis = TRUE, tis = TRUE,
+            lasso_opts = list(standardize = TRUE,
+                              nfolds = 50,
+                              adaptive = FALSE,
+                              s = 0.05))
+
+
+
 
 })
 

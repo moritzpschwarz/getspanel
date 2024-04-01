@@ -45,7 +45,7 @@
 #' @param cfesis_id The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and [plot_grid()] using the \code{cowplot} package.
 #' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
-#' @param lasso_opts list. Only possible to be used if \code{engine = "lasso"}. Must be a list and can only take a TRUE/FALSE for 'adaptive' and 'standardize' and numeric for 'nfolds'. Example: list(adaptive = TRUE, standardize = FALSE, nfolds = 100)
+#' @param lasso_opts list. Only meaningful if \code{engine = "lasso"}. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds' and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
@@ -90,9 +90,9 @@
 
 
 isatpanel <- function(
-    data=NULL,
-    formula=NULL,
-    index=NULL,
+    data = NULL,
+    formula = NULL,
+    index = NULL,
     effect = c("twoways"),
 
     na.remove = TRUE,
@@ -100,7 +100,7 @@ isatpanel <- function(
     user.estimator = NULL,
     cluster = "none",
 
-    ar=0,
+    ar = 0,
     iis = FALSE,
     #sis = FALSE,
     jiis = FALSE,
@@ -127,12 +127,12 @@ isatpanel <- function(
     plot = TRUE,
     print.searchinfo = TRUE,
     plm_model = "within",
-    lasso_opts = NULL,
+    lasso_opts = list(adaptive = TRUE, standardize = FALSE, nfolds = 100, foldid = NULL, s = "min"),
 
-    y=NULL,
-    id=NULL,
-    time=NULL,
-    mxreg=NULL,
+    y = NULL,
+    id = NULL,
+    time = NULL,
+    mxreg = NULL,
     ...
 ){
   requireNamespace("gets")
@@ -176,10 +176,10 @@ isatpanel <- function(
   if (!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
 
   # checking lasso
-  if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
+  #if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
   if (!is.null(lasso_opts)){
     if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
-    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds'")}
+    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds'")}
   }
 
 
@@ -723,13 +723,16 @@ isatpanel <- function(
       }
     }
 
-
+    lasso_output <- list()
     lasso_data <- as.matrix(cbind(mx, full_indic_df))
     lasso_names <- colnames(lasso_data)
 
-    nflds <- if(!is.null(lasso_opts$nfolds)){lasso_opts$nfolds} else {10}
+    nflds <- if(!is.null(lasso_opts$nfolds)){lasso_opts$nfolds} else {100}
     stdize <- if(!is.null(lasso_opts$standardize)){lasso_opts$standardize} else {FALSE}
     adptive <- if(!is.null(lasso_opts$adaptive)){lasso_opts$adaptive} else {TRUE}
+    s_variable <- if(!is.null(lasso_opts[["s"]])){lasso_opts[["s"]]} else {"min"}
+    foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {NULL}
+    #foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {as.numeric(as.factor(id))}
 
     mod_fit_adap1 = glmnet::glmnet(
       y = y,
@@ -742,6 +745,10 @@ isatpanel <- function(
                          rep(1,ncol(as.data.frame(sispanx))))
     )
 
+
+
+    #foldid_var = sample(rep(seq(50),length=150))
+
     mod_cv_adap1 <- glmnet::cv.glmnet(
       y = y,
       x = lasso_data,
@@ -749,22 +756,28 @@ isatpanel <- function(
       standardize = stdize,
       alpha = 1,
       nfolds = nflds,
+      foldid = foldid_var,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
                          rep(1,ncol(as.data.frame(sispanx))))
     )
 
+    lasso_output$firststage <- mod_fit_adap1
+    lasso_output$firststage.cv <- mod_cv_adap1
+    lasso_output$firststage.cv.lambda_min <- mod_cv_adap1$lambda.min
+
     #coef(mod_fit_adap1, mod_fit$lambda[1])
-    best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+    best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable}))
+
 
 
     penalty.factor = 1 / abs(best_lass_coef)
-    names(penalty.factor) <- row.names(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+    names(penalty.factor) <- row.names(coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable}))
     penalty.factor[colnames(mx)]  <- 0 # set all x variables to 0 (i.e. don't select over them)
     penalty.factor <- penalty.factor[!names(penalty.factor) == "(Intercept)"] # this will always exclude the intercept (that is added even though intercept = FALSE)
 
 
-    if(adptive & !all(penalty.factor %in% c(0,Inf))){
+    if(adptive & !all(penalty.factor %in% c(0, Inf))) {
 
       mod_fit_adap2 = glmnet::glmnet(
         y = y,
@@ -784,11 +797,17 @@ isatpanel <- function(
         standardize = stdize,
         alpha = 1,
         nfolds = nflds,
+        foldid = foldid_var,
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
 
+      lasso_output$secondstage <- mod_fit_adap2
+      lasso_output$secondstage.cv <- mod_cv_adap2
+      lasso_output$secondstage.cv.lambda_min <- mod_cv_adap2$lambda.min
 
-      rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
+      # TODO: check with FELIX
+      rel.coefs.adap2 <- coef(mod_cv_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
+      #rel.coefs.adap2 <- coef(mod_fit_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
 
       ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
@@ -847,6 +866,8 @@ isatpanel <- function(
   out$arguments$cluster <- cluster
   out$arguments$effect <- effect
   out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
+  out$arguments$lasso_opts <- lasso_opts
+  out$lasso_output <- if(!is.null(lasso_output)){lasso_output}
   #out$arguments$id_orig <- id_orig
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))

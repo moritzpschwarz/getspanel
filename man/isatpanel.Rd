@@ -35,7 +35,8 @@ isatpanel(
   plot = TRUE,
   print.searchinfo = TRUE,
   plm_model = "within",
-  lasso_opts = NULL,
+  lasso_opts = list(adaptive = TRUE, standardize = FALSE, nfolds = 100, foldid = NULL, s
+    = "min"),
   y = NULL,
   id = NULL,
   time = NULL,
@@ -104,7 +105,7 @@ isatpanel(
 
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
 
-\item{lasso_opts}{list. Only possible to be used if \code{engine = "lasso"}. Must be a list and can only take a TRUE/FALSE for 'adaptive' and 'standardize' and numeric for 'nfolds'. Example: list(adaptive = TRUE, standardize = FALSE, nfolds = 100)}
+\item{lasso_opts}{list. Only meaningful if \code{engine = "lasso"}. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds' and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")}
 
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
 
