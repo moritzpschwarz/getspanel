@@ -9,12 +9,12 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
   object_l <- reshape(object,
-                  varying = varying_vars,
-                  idvar = c("id","time"),
-                  v.names = "value",
-                  timevar = "name",
-                  times = varying_vars,
-                  direction = "long")
+                      varying = varying_vars,
+                      idvar = c("id","time"),
+                      v.names = "value",
+                      timevar = "name",
+                      times = varying_vars,
+                      direction = "long")
 
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]

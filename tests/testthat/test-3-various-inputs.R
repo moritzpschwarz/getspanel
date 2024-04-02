@@ -25,5 +25,15 @@ test_that("Testing whether character inputs work for groups", {
   expect_error(a <- isatpanel(data = group_df,formula = gdp~temp, index = c("country","date"),fesis = TRUE, print.searchinfo = FALSE),
                regexp = "The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")
 
+  # wrong index order
+  expect_error(a <- isatpanel(data = group_df,formula = gdp~temp, index = c("year","country"),fesis = TRUE, print.searchinfo = FALSE),
+               regexp = "The column for 'time' is containing characters.")
+
+  # check for duplicates
+  expect_error(a <- isatpanel(data = rbind(group_df,group_df),
+                              formula = gdp~temp, index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE),
+               regexp = "Your input data contains duplicates when considering the 'id' and 'time' column.")
+
+
   expect_silent(a <- isatpanel(data = group_df,formula = gdp~temp, index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
 })

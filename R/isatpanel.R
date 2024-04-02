@@ -174,6 +174,8 @@ isatpanel <- function(
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & is.null(index)) {stop("When you specify the function by using a 'data' and a 'formula' argument, you must also supply an 'index' argument.")}
   if (!is.null(index) & !all(index %in% names(data))){stop("The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")}
+  # check that the index for time is not a character
+  if (is.character(data[,names(data) %in% index[2],drop = TRUE])){stop("The column for 'time' is containing characters. Be sure to specify the 'index' variable in the format 'index = c('id','time')' where 'id' and 'time' must be replaced with the column names in your data.")}
 
   # checking lasso
   #if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
@@ -216,6 +218,9 @@ isatpanel <- function(
   # Set up Infrastructure ------
   out <- list()
   out$inputdata <- data.frame(id,time,y,mxreg)
+
+  # check for duplicates
+  if (any(duplicated(out$inputdata[,names(out$inputdata) %in% c("id","time")]))){stop("Your input data contains duplicates when considering the 'id' and 'time' column.")}
 
   # Remove any spaces in the id variables (e.g. United Kingdom becomes UnitedKingdom)
   # id_orig <- dplyr::tibble(id_orig = id,
@@ -685,7 +690,6 @@ isatpanel <- function(
 
   out$estimateddata <- estimateddata
 
-
   # Estimate using gets ------
   if(is.null(engine) | !identical(engine,"lasso")){
     # Save original arx mc warning setting and disable it here
@@ -867,21 +871,23 @@ isatpanel <- function(
   out$arguments$effect <- effect
   out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
   out$arguments$lasso_opts <- lasso_opts
-  out$lasso_output <- if(!is.null(lasso_output)){lasso_output}
+  out$lasso_output <- if(exists("lasso_output")){lasso_output}
   #out$arguments$id_orig <- id_orig
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
   class(out) <- "isatpanel"
 
-  if (plot == TRUE) {
-    if(identical(list(),get_indicators(out))){
-      print(plot(out, zero_line = FALSE))
-    } else {
-      print(cowplot::plot_grid(plot(out, zero_line = FALSE),
-                               plot_grid(out),
-                               nrow = 2))
+  try(
+    if (plot == TRUE) {
+      if(identical(list(),get_indicators(out))){
+        print(plot(out, zero_line = FALSE))
+      } else {
+        print(cowplot::plot_grid(plot(out, zero_line = FALSE),
+                                 plot_grid(out),
+                                 nrow = 2))
+      }
     }
-  }
+  )
 
 
   return(out)
