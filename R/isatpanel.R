@@ -45,7 +45,7 @@
 #' @param cfesis_id The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and [plot_grid()] using the \code{cowplot} package.
 #' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
-#' @param lasso_opts list. Only meaningful if \code{engine = "lasso"}. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds' and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")
+#' @param lasso_opts list. Only meaningful if \code{engine = "lasso"}, arguments to be used within \code{glmnet} where appropriate. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds', 'alpha', and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
@@ -181,7 +181,7 @@ isatpanel <- function(
   #if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
   if (!is.null(lasso_opts)){
     if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
-    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds'")}
+    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s", "alpha"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds', 'alpha'.")}
   }
 
 
@@ -727,43 +727,71 @@ isatpanel <- function(
       }
     }
 
+    #set.seed(123)
     lasso_output <- list()
     lasso_data <- as.matrix(cbind(mx, full_indic_df))
+    #lasso_data <- as.matrix(cbind(mx, full_indic_df[,sample(1:ncol(full_indic_df))]))
     lasso_names <- colnames(lasso_data)
 
     nflds <- if(!is.null(lasso_opts$nfolds)){lasso_opts$nfolds} else {100}
+    nflds <- if(!is.null(lasso_opts$foldid)){NULL} else {nflds}
+    foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {NULL}
+
     stdize <- if(!is.null(lasso_opts$standardize)){lasso_opts$standardize} else {FALSE}
     adptive <- if(!is.null(lasso_opts$adaptive)){lasso_opts$adaptive} else {TRUE}
     s_variable <- if(!is.null(lasso_opts[["s"]])){lasso_opts[["s"]]} else {"min"}
-    foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {NULL}
-    #foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {as.numeric(as.factor(id))}
+    alpha_variable <- if(!is.null(lasso_opts[["alpha"]])){lasso_opts[["alpha"]]} else {1}
 
+    #foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {as.numeric(as.factor(id))}
     mod_fit_adap1 = glmnet::glmnet(
       y = y,
       x = lasso_data,
       family = "gaussian",
       standardize = stdize,
-      alpha = 1,
+      alpha = alpha_variable,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
-                         rep(1,ncol(as.data.frame(sispanx))))
+                       rep(1,ncol(as.data.frame(sispanx))))
     )
 
+    if(!is.null(foldid_var) & is.numeric(foldid_var)){
+      # Assuming 'id' is a vector of identifiers and 'foldid_var' is some variable
+      # Initialize empty vector to store results
+      foldid_group <- numeric(length(id))
 
+      # Convert 'id' to factor, then to numeric, and calculate id_num
+      id_num <- as.numeric(factor(id)) * (1 / foldid_var)
 
-    #foldid_var = sample(rep(seq(50),length=150))
+      # Generate sequence 1:length(id)
+      x <- 1:length(id)
+
+      # Calculate foldid_group using cut function
+      for (i in unique(id)) {
+        # Subset x based on id
+        x_subset <- x[id == i]
+        # Calculate foldid_group using cut function
+        foldid_group_subset <- cut(x_subset, breaks = 1 / foldid_var, labels = FALSE)
+        foldid_group_subset <- foldid_group_subset + as.numeric(factor(id)[id == i]) * 1/foldid_var - 1/foldid_var
+
+        # Assign calculated foldid_group to corresponding indices in foldid_group vector
+        foldid_group[id == i] <- foldid_group_subset
+      }
+      foldid_group <- round(foldid_group)
+    } else {foldid_group = NULL}
+
 
     mod_cv_adap1 <- glmnet::cv.glmnet(
       y = y,
       x = lasso_data,
       family = "gaussian",
       standardize = stdize,
-      alpha = 1,
+      alpha = alpha_variable,
       nfolds = nflds,
-      foldid = foldid_var,
+      foldid = foldid_group,
+      grouped = FALSE,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
-                         rep(1,ncol(as.data.frame(sispanx))))
+      rep(1,ncol(as.data.frame(sispanx))))
     )
 
     lasso_output$firststage <- mod_fit_adap1
@@ -788,20 +816,20 @@ isatpanel <- function(
         x = lasso_data,
         family = "gaussian",
         standardize = stdize,
-        alpha = 1,
+        alpha = alpha_variable,
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
 
       # coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
-
       mod_cv_adap2 <- glmnet::cv.glmnet(
         y = y,
         x = lasso_data,
         family = "gaussian",
         standardize = stdize,
-        alpha = 1,
+        alpha = alpha_variable,
         nfolds = nflds,
-        foldid = foldid_var,
+        foldid = foldid_group,
+        grouped = FALSE,
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
 
@@ -809,11 +837,10 @@ isatpanel <- function(
       lasso_output$secondstage.cv <- mod_cv_adap2
       lasso_output$secondstage.cv.lambda_min <- mod_cv_adap2$lambda.min
 
-      # TODO: check with FELIX
       rel.coefs.adap2 <- coef(mod_cv_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
       #rel.coefs.adap2 <- coef(mod_fit_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
 
-      ret_cv <- which(as.vector(rel.coefs.adap2)!=0)
+      ret_cv <- which(as.vector(rel.coefs.adap2) != 0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
 
       if(all(final_lasso_retained %in% names(mx))){
@@ -831,8 +858,9 @@ isatpanel <- function(
       }
     }
 
+
     ### Re-estimate final model
-    lasso_data_ret <- lasso_data[,colnames(lasso_data) %in% final_lasso_retained]
+    lasso_data_ret <- lasso_data[,c(colnames(lasso_data) %in% c(colnames(mx),final_lasso_retained))]
 
     # Save original arx mc warning setting and disable it here
     tmpmc <- options("mc.warning")
