@@ -367,10 +367,11 @@ overall %>%
   geom_point() +
 
   facet_grid(indic_method~k) +
-  labs(x = "N per unit", y = "Number of Indicators") +
+  labs(x = "N per unit", y = "Number of Indicators", title = "Simulation Performance",
+       subtitle = "DGP contains one trend, one trendbreak, two steps") +
   theme_minimal(base_size = 12) +
   theme(panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = NA)) -> plt
 
-ggsave(plt, "simulation_results_plot.png", width = 8, height = 8)
+ggsave(plt, "~/GitHub/getspanel/simulation_results_plot.png", width = 8, height = 8, bg = "white")
 

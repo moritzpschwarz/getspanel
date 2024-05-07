@@ -105,7 +105,13 @@ isatpanel(
 
 \item{plm_model}{Type of PLM model (only if engine = "PLM")}
 
-\item{lasso_opts}{list. Only meaningful if \code{engine = "lasso"}. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds' and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")}
+\item{lasso_opts}{list. Only meaningful if \code{engine = "lasso"}, arguments to be used within \code{glmnet} where appropriate. It is recommended to consult the LASSO vignette: vignette("lasso",package = "getspanel")\cr
+Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types:\cr
+Arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}).\cr
+Arguments 'nfolds', 'alpha', and 'foldid' must be numeric. Foldid must be between 0 and 1 (representing the share of observations that are removed for each id). The default for 'nfolds' is 100. 'nfolds' and 'foldid' cannot be used at the same time. When both are supplied, 'foldid' will be used.
+Argument 's' can either be numeric, 'min' (which chooses the minimum lambda based on Cross Validation) or 'BIC' (OLS models are run for all lambda values and then chosen by minimum BIC).\cr
+Argument 'scale_by' (this standardises LASSO selection to mean 0 and SD 1) can either be \code{NULL} or 'time' or 'id'. Default is 'id' (meaning that the sample is scaled to be mean = 0 and SD = 1 within each id).\cr
+Example of 'lasso_opts': list(adaptive = TRUE, standardize = FALSE, nfolds = 50, s = "min")}
 
 \item{y}{Deprecated. The dependent variable. Can be used when data, index, and formula are not specified.}
 

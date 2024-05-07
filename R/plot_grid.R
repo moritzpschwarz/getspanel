@@ -148,7 +148,7 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
       theme(panel.grid = element_blank(),
             panel.border = element_rect(fill = NA),
             strip.background = element_blank()) +
-      labs(x = NULL, y = NULL)
+      labs(x = NULL, y = NULL, title = title)
 
   } else {message("No indicators identified in the isatpanel object. No plot produced.")}
 

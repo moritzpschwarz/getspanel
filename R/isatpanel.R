@@ -45,7 +45,13 @@
 #' @param cfesis_id The CFESIS method can be conducted for all individuals/units (default) or just a subset of them. If you want to use a subset, please specify the individuals/units to be tested in a character vector.
 #' @param plot Logical. Should the final object be plotted? Default is TRUE. The output is a combination of \code{plot()} and [plot_grid()] using the \code{cowplot} package.
 #' @param print.searchinfo logical. If \code{TRUE} (default), then detailed information is printed.
-#' @param lasso_opts list. Only meaningful if \code{engine = "lasso"}, arguments to be used within \code{glmnet} where appropriate. Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types: For arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}). Arguments 'nfolds', 'alpha', and 'foldid' must be numeric. The default for 'nfolds' is the number of id's and foldid will be set-up to exclude one id each time by default. The variable 's' can either be numeric or 'min' (which chooses the minimum lambda based on Cross Validation). Example for n = 150: list(adaptive = TRUE, standardize = FALSE, nfolds = 50, foldid = rep(1:3, each = 50), s = "min")
+#' @param lasso_opts list. Only meaningful if \code{engine = "lasso"}, arguments to be used within \code{glmnet} where appropriate. It is recommended to consult the LASSO vignette: vignette("lasso",package = "getspanel")\cr
+#' Must be a list or \code{NULL}. Any of the following arguments can be omitted (i.e. be \code{NULL}) or can take only the following types:\cr
+#' Arguments 'adaptive' (for Adaptive LASSO) and 'standardize' must be logical (\code{TRUE} or \code{FALSE}).\cr
+#' Arguments 'nfolds', 'alpha', and 'foldid' must be numeric. Foldid must be between 0 and 1 (representing the share of observations that are removed for each id). The default for 'nfolds' is 100. 'nfolds' and 'foldid' cannot be used at the same time. When both are supplied, 'foldid' will be used.
+#' Argument 's' can either be numeric, 'min' (which chooses the minimum lambda based on Cross Validation) or 'BIC' (OLS models are run for all lambda values and then chosen by minimum BIC).\cr
+#' Argument 'scale_by' (this standardises LASSO selection to mean 0 and SD 1) can either be \code{NULL} or 'time' or 'id'. Default is 'id' (meaning that the sample is scaled to be mean = 0 and SD = 1 within each id).\cr
+#' Example of 'lasso_opts': list(adaptive = TRUE, standardize = FALSE, nfolds = 50, s = "min")
 #'
 #' @return A list with class 'isatpanel'.
 #' @export
@@ -127,7 +133,7 @@ isatpanel <- function(
     plot = TRUE,
     print.searchinfo = TRUE,
     plm_model = "within",
-    lasso_opts = list(adaptive = TRUE, standardize = FALSE, nfolds = 100, foldid = NULL, s = "min"),
+    lasso_opts = list(adaptive = TRUE, standardize = FALSE, nfolds = 100, foldid = NULL, s = "min", scale_by = "id"),
 
     y = NULL,
     id = NULL,
@@ -181,7 +187,7 @@ isatpanel <- function(
   #if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
   if (!is.null(lasso_opts)){
     if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
-    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s", "alpha"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds', 'alpha'.")}
+    if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s", "alpha", "scale_by"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds', 'alpha', 'scale_by', 'foldid'.")}
   }
 
 
@@ -726,13 +732,11 @@ isatpanel <- function(
         full_indic_df <- cbind(full_indic_df,sispanx[[sipanx_length]])
       }
     }
+    if(iis){
+      full_indic_df <- cbind(full_indic_df, gets::iim(id))
+    }
 
-    #set.seed(123)
-    lasso_output <- list()
-    lasso_data <- as.matrix(cbind(mx, full_indic_df))
-    #lasso_data <- as.matrix(cbind(mx, full_indic_df[,sample(1:ncol(full_indic_df))]))
-    lasso_names <- colnames(lasso_data)
-
+    ## LASSO options and setup ----
     nflds <- if(!is.null(lasso_opts$nfolds)){lasso_opts$nfolds} else {100}
     nflds <- if(!is.null(lasso_opts$foldid)){NULL} else {nflds}
     foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {NULL}
@@ -741,17 +745,58 @@ isatpanel <- function(
     adptive <- if(!is.null(lasso_opts$adaptive)){lasso_opts$adaptive} else {TRUE}
     s_variable <- if(!is.null(lasso_opts[["s"]])){lasso_opts[["s"]]} else {"min"}
     alpha_variable <- if(!is.null(lasso_opts[["alpha"]])){lasso_opts[["alpha"]]} else {1}
+    scale_by <- if(!is.null(lasso_opts[["scale_by"]])){lasso_opts[["scale_by"]]}else{NULL}
 
+    # LASSO Scaling data ----
+    if(!is.null(scale_by)){
+      mx_lasso <- mx
+      mx_lasso_int <- mx_lasso[,mxnames]
+      if(scale_by == "id"){
+        # check which columns can be scaled (we cannot scale columns by id when for one id all values are 0)
+        cols_to_scale_within <- !apply(X = mx_lasso_int, MARGIN = 2, function(x){
+          any(as.vector(by(x, id, function(x){all(x == 0)})))
+        })
+        # for the identified columns, scale the relevant columns
+        mx_lasso_int[,cols_to_scale_within] <- apply(mx_lasso_int[,cols_to_scale_within], MARGIN = 2, function(x){
+          do.call(rbind,(by(x,id, scale)))
+        })
+        mx_lasso[,mxnames] <- mx_lasso_int
+        # scale the y variable
+        y_lass <- as.vector(do.call(rbind,by(y, id, scale)))
+      } else if(scale_by == "time"){
+        # check which columns can be scaled (we cannot scale columns by id when for one id all values are 0)
+        cols_to_scale_within <- !apply(X = mx_lasso_int, MARGIN = 2, function(x){
+          any(as.vector(by(x, time, function(x){all(x == 0)})))
+        })
+        # for the identified columns, scale the relevant columns
+        mx_lasso_int[,cols_to_scale_within] <- apply(mx_lasso_int[,cols_to_scale_within], MARGIN = 2, function(x){
+          do.call(rbind,(by(x,time, scale)))
+        })
+        mx_lasso[,mxnames] <- mx_lasso_int
+        # scale the y variable
+        y_lass <- as.vector(do.call(rbind,by(y, time, scale)))
+      }
+    } else {
+      mx_lasso <- mx
+      y_lass <- y
+    }
+
+    lasso_output <- list()
+    lasso_data <- as.matrix(cbind(mx_lasso, full_indic_df))
+    lasso_names <- colnames(lasso_data)
+
+
+    # LASSO First Stage ----
     #foldid_var <- if(!is.null(lasso_opts$foldid)){lasso_opts$foldid} else {as.numeric(as.factor(id))}
     mod_fit_adap1 = glmnet::glmnet(
-      y = y,
+      y = y_lass,
       x = lasso_data,
       family = "gaussian",
       standardize = stdize,
       alpha = alpha_variable,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
-                       rep(1,ncol(as.data.frame(sispanx))))
+                         rep(1,ncol(full_indic_df)))
     )
 
     if(!is.null(foldid_var) & is.numeric(foldid_var)){
@@ -781,7 +826,7 @@ isatpanel <- function(
 
 
     mod_cv_adap1 <- glmnet::cv.glmnet(
-      y = y,
+      y = y_lass,
       x = lasso_data,
       family = "gaussian",
       standardize = stdize,
@@ -791,7 +836,7 @@ isatpanel <- function(
       grouped = FALSE,
       intercept = FALSE, # unclear what to do with this
       penalty.factor = c(rep(0,ncol(mx)),
-      rep(1,ncol(as.data.frame(sispanx))))
+                         rep(1,ncol(full_indic_df)))
     )
 
     lasso_output$firststage <- mod_fit_adap1
@@ -799,20 +844,48 @@ isatpanel <- function(
     lasso_output$firststage.cv.lambda_min <- mod_cv_adap1$lambda.min
 
     #coef(mod_fit_adap1, mod_fit$lambda[1])
-    best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable}))
 
+    if(s_variable == "min" | is.numeric(s_variable)){
+      best_lass_coef <- coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable})
+    } else if(s_variable == "BIC"){
+      # we can also choose our model using the BIC
+      # this is done by running the OLS model for each lambda
+      # and then comparing the BIC of each model, thereby choosing the best
+      lambda_BIC_collection <- data.frame()
+      for(lass_mod_lambda in mod_fit_adap1$lambda){
+        best_lass_coef <- as.numeric(coef(mod_fit_adap1, s = lass_mod_lambda))
+        ret_cv <- which(as.vector(best_lass_coef)!=0)
+        int_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
 
+        ### Re-estimate final model
+        lasso_data_ret_int <- lasso_data[,c(colnames(lasso_data) %in% c(colnames(mx),int_lasso_retained))]
 
-    penalty.factor = 1 / abs(best_lass_coef)
-    names(penalty.factor) <- row.names(coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable}))
+        # Save original arx mc warning setting and disable it here
+        tmpmc <- options("mc.warning")
+        on.exit(options(tmpmc)) # set the old mc warning on exit
+
+        options(mc.warning = FALSE)
+        suppressWarnings(int_arx_lasso <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret_int))
+        lambda_BIC_collection <- rbind(lambda_BIC_collection, data.frame(lambda = lass_mod_lambda, BIC = BIC(int_arx_lasso)))
+      }
+
+      best_lambda <- lambda_BIC_collection[lambda_BIC_collection$BIC == min(lambda_BIC_collection$BIC),"lambda"]
+      best_lambda <- min(best_lambda) # in case two models with the same BIC
+      best_lass_coef <- coef(mod_fit_adap1, s = best_lambda)
+    } else {
+      stop("For LASSO models the parmeter 's' must be either numeric, 'min' or 'BIC'. The parameter is specified as a list in lasso_opts, e.g. as lasso_opts = list(s = 'min')")
+    }
+
+    penalty.factor = 1 / abs(as.numeric(best_lass_coef))
+    names(penalty.factor) <- row.names(best_lass_coef)
     penalty.factor[colnames(mx)]  <- 0 # set all x variables to 0 (i.e. don't select over them)
     penalty.factor <- penalty.factor[!names(penalty.factor) == "(Intercept)"] # this will always exclude the intercept (that is added even though intercept = FALSE)
 
-
+    # LASSO Second Stage ----
     if(adptive & !all(penalty.factor %in% c(0, Inf))) {
 
       mod_fit_adap2 = glmnet::glmnet(
-        y = y,
+        y = y_lass,
         x = lasso_data,
         family = "gaussian",
         standardize = stdize,
@@ -822,7 +895,7 @@ isatpanel <- function(
 
       # coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
       mod_cv_adap2 <- glmnet::cv.glmnet(
-        y = y,
+        y = y_lass,
         x = lasso_data,
         family = "gaussian",
         standardize = stdize,
@@ -837,8 +910,37 @@ isatpanel <- function(
       lasso_output$secondstage.cv <- mod_cv_adap2
       lasso_output$secondstage.cv.lambda_min <- mod_cv_adap2$lambda.min
 
-      rel.coefs.adap2 <- coef(mod_cv_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
-      #rel.coefs.adap2 <- coef(mod_fit_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
+
+
+      if(s_variable == "min" | is.numeric(s_variable)){
+        rel.coefs.adap2 <- coef(mod_cv_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
+      } else if(s_variable == "BIC"){
+        # we can also choose our model using the BIC
+        # this is done by running the OLS model for each lambda
+        # and then comparing the BIC of each model, thereby choosing the best
+        lambda_BIC_collection <- data.frame()
+        for(lass_mod_lambda in mod_fit_adap2$lambda){
+          best_lass_coef <- as.numeric(coef(mod_fit_adap2, s = lass_mod_lambda))
+          ret_cv <- which(as.vector(best_lass_coef)!=0)
+          int_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
+
+          ### Re-estimate final model
+          lasso_data_ret_int <- lasso_data[,c(colnames(lasso_data) %in% c(colnames(mx),int_lasso_retained))]
+
+          # Save original arx mc warning setting and disable it here
+          tmpmc <- options("mc.warning")
+          on.exit(options(tmpmc)) # set the old mc warning on exit
+
+          options(mc.warning = FALSE)
+          suppressWarnings(int_arx_lasso <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret_int))
+          lambda_BIC_collection <- rbind(lambda_BIC_collection, data.frame(lambda = lass_mod_lambda, BIC = BIC(int_arx_lasso)))
+        }
+        best_lambda <- lambda_BIC_collection[lambda_BIC_collection$BIC == min(lambda_BIC_collection$BIC),"lambda"]
+        best_lambda <- min(best_lambda) # in case two models with the same BIC
+        rel.coefs.adap2 <- coef(mod_fit_adap2, s = best_lambda)
+      } else {
+        stop("For LASSO models the parmeter 's' must be either numeric, 'min' or 'BIC'. The parameter is specified as a list in lasso_opts, e.g. as lasso_opts = list(s = 'min')")
+      }
 
       ret_cv <- which(as.vector(rel.coefs.adap2) != 0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
@@ -858,9 +960,9 @@ isatpanel <- function(
       }
     }
 
-
-    ### Re-estimate final model
-    lasso_data_ret <- lasso_data[,c(colnames(lasso_data) %in% c(colnames(mx),final_lasso_retained))]
+    # Re-estimate OLS Model ----
+    ### Re-estimate final model - but use the unscaled data!
+    lasso_data_ret <- as.matrix(cbind(mx_lasso, full_indic_df))[,c(colnames(lasso_data) %in% c(colnames(mx),final_lasso_retained))]
 
     # Save original arx mc warning setting and disable it here
     tmpmc <- options("mc.warning")
@@ -870,6 +972,7 @@ isatpanel <- function(
     suppressWarnings(arx_lasso_output <- gets::arx(y = y, mc = FALSE, mxreg = lasso_data_ret))
 
     ispan <- arx_lasso_output
+    # this next line just ensures that aux$mX has the correct column names
     ispan$aux$mX <- lasso_data_ret[,colnames(lasso_data_ret) %in% arx_lasso_output$aux$mXnames]
 
   }
