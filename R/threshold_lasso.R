@@ -1,15 +1,14 @@
 #' Run a threshold LASSO based on targeting a number of breaks
 #'
-#' @param lasso_obj
-#' @param breaks_in_ols_or_lasso
-#' @param target_neg_breaks
-#' @param target_overall_breaks
-#' @param plot
+#' @param lasso_obj An isatpanel object that was run with engine = 'lasso'
+#' @param breaks_in_ols_or_lasso Whether to target the number of breaks in the glmnet (LASSO) object or in the OLS object. The ols object often contains fewer breaks due to collinearity.
+#' @param target_neg_breaks Integer. Number of negative breaks to target. You can only choose either target_neg_breaks or target_overall_breaks but not both.
+#' @param target_overall_breaks Integer. Number of breaks to target. You can only choose either target_neg_breaks or target_overall_breaks but not both.
+#' @param plot Logical. Default is TRUE.
 #'
-#' @return
+#' @return A list
 #' @export
 #'
-#' @examples
 #'
 threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "ols", target_neg_breaks, target_overall_breaks = NULL, plot = TRUE){
 
@@ -17,7 +16,7 @@ threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "ols", target_ne
 
   lass_coef_collection_lasso <- tibble()
   lass_coef_collection_ols <- tibble()
-  if(!is.null(lasso_obj$lasso_output$secondstage)){
+  if(is.null(lasso_obj$lasso_output$secondstage)){
     pot_lambdas <- lasso_obj$lasso_output$firststage$lambda
     glmnet_obj <- lasso_obj$lasso_output$firststage
   } else {

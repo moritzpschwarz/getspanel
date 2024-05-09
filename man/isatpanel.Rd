@@ -36,7 +36,7 @@ isatpanel(
   print.searchinfo = TRUE,
   plm_model = "within",
   lasso_opts = list(adaptive = TRUE, standardize = FALSE, nfolds = 100, foldid = NULL, s
-    = "min"),
+    = "min", scale_by = "id"),
   y = NULL,
   id = NULL,
   time = NULL,
