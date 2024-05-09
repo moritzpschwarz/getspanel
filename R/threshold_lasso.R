@@ -1,4 +1,17 @@
-threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "lasso", target_neg_breaks, target_overall_breaks = NULL, plot = TRUE){
+#' Run a threshold LASSO based on targeting a number of breaks
+#'
+#' @param lasso_obj
+#' @param breaks_in_ols_or_lasso
+#' @param target_neg_breaks
+#' @param target_overall_breaks
+#' @param plot
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "ols", target_neg_breaks, target_overall_breaks = NULL, plot = TRUE){
 
   if(!is.null(target_neg_breaks) & !is.null(target_overall_breaks)){stop("Can only either use neg_breaks or overall_breaks. One of them must be NULL, the other must be numeric.")}
 
@@ -14,20 +27,20 @@ threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "lasso", target_
 
   for(i in pot_lambdas){
     # i = pot_lambdas[1]
-
     orig_lass_coef <- coef(glmnet_obj, s = i)
-    lass_coef <- as.numeric(orig_lass_coef)
+    lass_names <- row.names(coef(glmnet_obj, s = i))[-1] # -1 to remove intercept
+    lass_coef <- as.numeric(orig_lass_coef)[-1] # -1 to remove intercept
     lass_vars <- length(lass_coef[lass_coef != 0])
 
     # LASSO ---------
-    neg_breaks_lasso <- tibble(name = row.names(orig_lass_coef),
-                               coef = as.numeric(orig_lass_coef)) %>%
+    neg_breaks_lasso <- tibble(name = lass_names,
+                               coef = lass_coef) %>%
       filter(!name %in% c("Intercept",names(lasso_obj$estimateddata))) %>%
       filter(coef < 0) %>%
       nrow
 
-    pos_breaks_lasso <- tibble(name = row.names(orig_lass_coef),
-                               coef = as.numeric(orig_lass_coef)) %>%
+    pos_breaks_lasso <- tibble(name = lass_names,
+                               coef = lass_coef) %>%
       filter(!name %in% c("Intercept",names(lasso_obj$estimateddata))) %>%
       filter(coef > 0) %>%
       nrow
@@ -40,7 +53,7 @@ threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "lasso", target_
       bind_rows(lass_coef_collection_lasso, .) -> lass_coef_collection_lasso
 
     # OLS -------
-    xregs <- lasso_obj$estimateddata[,!names(lasso_obj$estimateddata) %in% c("id","time")]
+    xregs <- lasso_obj$estimateddata[,!names(lasso_obj$estimateddata) %in% c("id","time", "y")]
     xregs_ready <- cbind(xregs, lasso_obj$indicator_matrix$fesis)[,lass_coef!=0]
 
     suppressWarnings(
@@ -116,15 +129,15 @@ threshold_lasso <- function(lasso_obj, breaks_in_ols_or_lasso = "lasso", target_
 
   if(plot){
     plot_df <-lass_coef_collection_lasso %>%
-        rename(`Negative Breaks (in LASSO obj)` = neg_breaks_lasso,
-               `Positive Breaks (in LASSO obj)` = pos_breaks_lasso,
-               `Total Breaks (in LASSO obj)` = total_breaks_lasso,
-               `Total Estimated Variables` = lass_vars) %>%
+      rename(`Negative Breaks (in LASSO obj)` = neg_breaks_lasso,
+             `Positive Breaks (in LASSO obj)` = pos_breaks_lasso,
+             `Total Breaks (in LASSO obj)` = total_breaks_lasso,
+             `Total Estimated Variables` = lass_vars) %>%
       bind_cols(lass_coef_collection_ols %>%
                   select(neg_breaks_ols, pos_breaks_ols, total_breaks_ols)) %>%
       rename(`Negative Breaks (in OLS obj)` = neg_breaks_ols,
-               `Positive Breaks (in OLS obj)` = pos_breaks_ols,
-               `Total Breaks (in OLS obj)` = total_breaks_ols)
+             `Positive Breaks (in OLS obj)` = pos_breaks_ols,
+             `Total Breaks (in OLS obj)` = total_breaks_ols)
     plot_df %>%
       pivot_longer(-lambda) %>%
       ggplot(aes(x = lambda, y = value, color = name)) +

@@ -86,105 +86,7 @@ df_restr_trends <- df_excl %>% mutate(country = as.factor(country),
 # Base forms
 tot_forms_trends <- c(paste0(tot_forms, " + country:trend"))
 
-
-
-### run for developing economies LASSO ----------
-
 overall <- tibble()
-for(lambda in c("min","BIC")){
-  for(scale_by in c("country")){
-    for(adpt in c(TRUE)){
-      for(iis in c(TRUE, FALSE)){
-
-        # ##run models for developing economies
-        # rel_forms_trends <- tot_forms_trends[1:4]
-        #
-        # for(f in rel_forms_trends){
-        #
-        #   print(paste0("Scale by:",scale_by," Adaptive:",adpt, " Sector:", f, " Lambda:",lambda, " IIS:",iis))
-        #
-        #
-        #   set.seed(123)
-        #   dat <- df_restr_trends %>% filter(country %in% samples[["AC6"]])
-        #   if(scale_by == "NULL"){
-        #     dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))))
-        #   } else {
-        #     dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))), .by = country)
-        #   }
-        #
-        #
-        #   # dat %>%
-        #   #   pivot_longer(-c(country,year)) %>%
-        #   #   ggplot(aes(x = year, y = value, color = name)) +
-        #   #   geom_line() +
-        #   #   facet_wrap(~country)
-        #
-        #   is <- isatpanel(
-        #     data = dat,
-        #     formula = as.formula(f),
-        #     index = c("country", "year"),
-        #     effect = "twoways",
-        #     iis = iis,
-        #     fesis = TRUE,
-        #     ar = 0,
-        #     engine = "lasso",
-        #     lasso_opts = list(adaptive = adpt, foldid = 0.25, s = lambda)
-        #   )
-        #   tibble(source = f,
-        #          country_sample = "AC6",
-        #          year_range = paste0(min(dat$year),":",max(dat$year)),
-        #          is = list(is),
-        #          b_size = 20,
-        #          engine = "lasso",
-        #          iis = iis,
-        #          adaptive = adpt,
-        #          scale_by = scale_by,
-        #          lambda = lambda,
-        #          ar = 0) %>%
-        #     bind_rows(overall,.) -> overall
-        # }
-
-        ### run for developed economies LASSO ----------
-
-        ### run for developed economies
-        rel_forms_trends <- tot_forms_trends[5:8]
-
-        for(f in rel_forms_trends){
-          dat <- df_restr_trends %>% filter(country %in% samples[["AC1"]])
-          if(scale_by == "NULL"){
-            dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))))
-          } else {
-            dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))), .by = country)
-          }
-          set.seed(123)
-          is <- isatpanel(
-            data = dat,
-            formula = as.formula(f),
-            index = c("country", "year"),
-            effect = "twoways",
-            iis = iis,
-            fesis = TRUE,
-            ar = 0,
-            engine = "lasso",
-            lasso_opts = list(adaptive = adpt, foldid = 0.25, s = lambda)
-          )
-          tibble(source = f,
-                 country_sample = "AC1",
-                 year_range = paste0(min(dat$year),":",max(dat$year)),
-                 is = list(is),
-                 adaptive = adpt,
-                 b_size = 20,
-                 iis = iis,
-                 engine = "lasso",
-                 scale_by = scale_by,
-                 lambda = lambda,
-                 ar = 0) %>% bind_rows(overall, .) -> overall
-        }
-      }
-    }
-  }
-}
-
 ### run for developing economies gets ----------
 
 ##run models for developing economies
@@ -243,141 +145,241 @@ for(f in rel_forms_trends){
     bind_rows(overall, .) -> overall
 }
 
+
+### run for developing economies LASSO ----------
+
+for(lambda in c("min","BIC")){
+  for(scale_by in c("id")){
+    for(adpt in c(TRUE)){
+      for(iis in c(TRUE, FALSE)){
+
+        ##run models for developing economies
+        rel_forms_trends <- tot_forms_trends[1:4]
+
+        for(f in rel_forms_trends){
+
+          print(paste0("Scale by:",scale_by," Adaptive:",adpt, " Sector:", f, " Lambda:",lambda, " IIS:",iis))
+
+
+          set.seed(123)
+          dat <- df_restr_trends %>% filter(country %in% samples[["AC6"]])
+          # if(scale_by == "NULL"){
+          #   dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))))
+          # } else {
+          #   dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))), .by = country)
+          # }
+
+
+          # dat %>%
+          #   pivot_longer(-c(country,year)) %>%
+          #   ggplot(aes(x = year, y = value, color = name)) +
+          #   geom_line() +
+          #   facet_wrap(~country)
+
+          is <- isatpanel(
+            data = dat,
+            formula = as.formula(f),
+            index = c("country", "year"),
+            effect = "twoways",
+            iis = iis,
+            fesis = TRUE,
+            ar = 0,
+            engine = "lasso",
+            lasso_opts = list(adaptive = adpt, foldid = 0.25, s = lambda, scale_by = scale_by)
+          )
+          tibble(source = f,
+                 country_sample = "AC6",
+                 year_range = paste0(min(dat$year),":",max(dat$year)),
+                 is = list(is),
+                 b_size = 20,
+                 engine = "lasso",
+                 iis = iis,
+                 adaptive = adpt,
+                 scale_by = scale_by,
+                 lambda = lambda,
+                 ar = 0) %>%
+            bind_rows(overall,.) -> overall
+        }
+
+        ### run for developed economies LASSO ----------
+
+        ### run for developed economies
+        rel_forms_trends <- tot_forms_trends[5:8]
+
+        for(f in rel_forms_trends){
+          dat <- df_restr_trends %>% filter(country %in% samples[["AC1"]])
+          # if(scale_by == "NULL"){
+          #   dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))))
+          # } else {
+          #   dat <- mutate(dat,across(c(where(is.numeric),-year), ~as.numeric(scale(.))), .by = country)
+          # }
+          set.seed(123)
+          is <- isatpanel(
+            data = dat,
+            formula = as.formula(f),
+            index = c("country", "year"),
+            effect = "twoways",
+            iis = iis,
+            fesis = TRUE,
+            ar = 0,
+            engine = "lasso",
+            lasso_opts = list(adaptive = adpt, foldid = 0.25, s = lambda, scale_by = scale_by)
+          )
+          tibble(source = f,
+                 country_sample = "AC1",
+                 year_range = paste0(min(dat$year),":",max(dat$year)),
+                 is = list(is),
+                 adaptive = adpt,
+                 b_size = 20,
+                 iis = iis,
+                 engine = "lasso",
+                 scale_by = scale_by,
+                 lambda = lambda,
+                 ar = 0) %>% bind_rows(overall, .) -> overall
+        }
+      }
+    }
+  }
+}
+
+
+
 overall_bic <- overall
-#save(overall, file = "Saving Overall intermediate.RData")
-load("Saving Overall intermediate.RData")
-
-overall %>%
-  filter(engine == "gets") %>%
-  bind_rows(overall_bic) -> overall
-
-
-for(src in c("buildings","transport","electricity","industry")){
-  for(ctry in c("AC6","AC1")){
-
-    overall %>%
-      filter(grepl(src,source),
-             country_sample == ctry) %>%
-      mutate(plts = pmap(.l = list(is, adaptive, scale_by, lambda), .f = function(x,y,z,lambda){
-        titl <- paste0(case_when(y~"Adaptive - ",
-                                 !y~"Not Adaptive - ",
-                                 is.na(y)~"gets - "), src)
-
-        sub_titl <- paste0(case_when(is.na(y) ~ "",
-                                     z == "NULL"~"\nScaled across sample.",
-                                     z == "country"~"\nScaled within countries."))
-
-        if(!is.na(lambda) & lambda == "BIC"){sub_titl <- paste0(sub_titl,"\nSelected with BIC")}
-
-        plot_grid(x, title = paste0(titl,sub_titl))
-      })) %>%
-      pull(plts) -> plot_list
-
-    cowplot::plot_grid(plot_list[[1]], plot_list[[2]], plot_list[[3]], plot_list[[4]],
-                       plot_list[[5]], plot_list[[6]], plot_list[[7]], ncol = 1) -> p
-    ggsave(p, file = paste0(ctry,"_",src,".png"), width = 8, height = 15, bg = "white")
-  }
-}
-
-
-
-
-for(src in c("buildings","transport","electricity","industry")){
-  for(ctry in c("AC6","AC1")){
-
-    overall %>%
-      filter(grepl(src,source),
-             country_sample == ctry,
-             engine == "gets") %>%
-      bind_rows(overall %>%
-                  filter(grepl(src,source),
-                         country_sample == ctry,
-                         adaptive,
-                         scale_by == "country")) %>%
-      mutate(plts = pmap(.l = list(is, adaptive, scale_by, lambda, iis), .f = function(x,y,z,lambda, iis){
-        titl <- paste0(case_when(y~"Adaptive - ",
-                                 !y~"Not Adaptive - ",
-                                 is.na(y)~"gets - "), src)
-
-        sub_titl <- paste0(case_when(is.na(y) ~ "",
-                                     z == "NULL"~"\nScaled across sample",
-                                     z == "country"~"\nScaled within countries"))
-
-        if(!is.na(lambda) & lambda == "BIC"){sub_titl <- paste0(sub_titl,"\nSelected with BIC")}
-        if(iis){sub_titl <- paste0(sub_titl," using IIS.")}
-
-        plot_grid(x, title = paste0(titl,sub_titl), regex_exclude_indicators = "^iis")
-      })) %>%
-      pull(plts) -> plot_list
-
-
-    cowplot::plot_grid(plot_list[[1]], plot_list[[2]], plot_list[[3]], plot_list[[4]], plot_list[[5]], ncol = 1) -> p
-    ggsave(p, file = paste0("2024-05-06 ",ctry,"_",src,".short.png"), width = 8, height = 15, bg = "white")
-  }
-}
-
-
-
-
-
-
-
-
+save(overall, file = "20240509 Saving Overall intermediate.RData")
+#
+# load("Saving Overall intermediate.RData")
+#
+# overall %>%
+#   filter(engine == "gets") %>%
+#   bind_rows(overall_bic) -> overall
 #
 #
-# for(i in 1:nrow(results_developed)){
-#   # i = 1
-#   print(i)
+# for(src in c("buildings","transport","electricity","industry")){
+#   for(ctry in c("AC6","AC1")){
 #
-#   results_developed %>%
-#     slice(i) %>%
-#     pull(source) %>%
-#     str_split_fixed(pattern = " ~ ", n = 2) -> sector
+#     overall %>%
+#       filter(grepl(src,source),
+#              country_sample == ctry) %>%
+#       mutate(plts = pmap(.l = list(is, adaptive, scale_by, lambda), .f = function(x,y,z,lambda){
+#         titl <- paste0(case_when(y~"Adaptive - ",
+#                                  !y~"Not Adaptive - ",
+#                                  is.na(y)~"gets - "), src)
 #
-#   results_developed %>%
-#     slice(i) %>%
-#     pull(is) %>%
-#     first  -> is
+#         sub_titl <- paste0(case_when(is.na(y) ~ "",
+#                                      z == "NULL"~"\nScaled across sample.",
+#                                      z == "country"~"\nScaled within countries."))
 #
-#   results_developed_lasso %>%
-#     slice(i) %>%
-#     pull(is) %>%
-#     first -> is_lass
+#         if(!is.na(lambda) & lambda == "BIC"){sub_titl <- paste0(sub_titl,"\nSelected with BIC")}
 #
-#   cowplot::plot_grid(
-#     plot_grid(is, title = "gets"),
-#     plot_grid(is_lass, title = "LASSO"), nrow = 2, align = "hv", axis = "t") -> p
+#         plot_grid(x, title = paste0(titl,sub_titl))
+#       })) %>%
+#       pull(plts) -> plot_list
 #
-#
-#   ggsave(paste0("developed_",sector[1,1],".png"), height = 8, width = 8)
-#
-#
-#   results_developing %>%
-#     slice(i) %>%
-#     pull(source) %>%
-#     str_split_fixed(pattern = " ~ ", n = 2) -> sector
-#
-#   results_developing %>%
-#     slice(i) %>%
-#     pull(is) %>%
-#     first -> is
-#
-#   results_developing_lasso %>%
-#     slice(i) %>%
-#     pull(is) %>%
-#     first  -> is_lass
-#
-#   cowplot::plot_grid(#plot(is[[1]]),
-#     #plot(is_lass[[1]]),
-#     plot_grid(is, title = "gets"),
-#     plot_grid(is_lass, title = "LASSO"), nrow = 2, align = "hv", axis = "t") -> p
-#
-#
-#   ggsave(paste0("developing_",sector[1,1],".png"), height = 8, width = 8)
-#
+#     cowplot::plot_grid(plot_list[[1]], plot_list[[2]], plot_list[[3]], plot_list[[4]],
+#                        plot_list[[5]], plot_list[[6]], plot_list[[7]], ncol = 1) -> p
+#     ggsave(p, file = paste0(ctry,"_",src,".png"), width = 8, height = 15, bg = "white")
+#   }
 # }
 #
-
+#
+#
+#
+# for(src in c("buildings","transport","electricity","industry")){
+#   for(ctry in c("AC6","AC1")){
+#
+#     overall %>%
+#       filter(grepl(src,source),
+#              country_sample == ctry,
+#              engine == "gets") %>%
+#       bind_rows(overall %>%
+#                   filter(grepl(src,source),
+#                          country_sample == ctry,
+#                          adaptive,
+#                          scale_by == "country")) %>%
+#       mutate(plts = pmap(.l = list(is, adaptive, scale_by, lambda, iis), .f = function(x,y,z,lambda, iis){
+#         titl <- paste0(case_when(y~"Adaptive - ",
+#                                  !y~"Not Adaptive - ",
+#                                  is.na(y)~"gets - "), src)
+#
+#         sub_titl <- paste0(case_when(is.na(y) ~ "",
+#                                      z == "NULL"~"\nScaled across sample",
+#                                      z == "country"~"\nScaled within countries"))
+#
+#         if(!is.na(lambda) & lambda == "BIC"){sub_titl <- paste0(sub_titl,"\nSelected with BIC")}
+#         if(iis){sub_titl <- paste0(sub_titl," using IIS.")}
+#
+#         plot_grid(x, title = paste0(titl,sub_titl), regex_exclude_indicators = "^iis")
+#       })) %>%
+#       pull(plts) -> plot_list
+#
+#
+#     cowplot::plot_grid(plot_list[[1]], plot_list[[2]], plot_list[[3]], plot_list[[4]], plot_list[[5]], ncol = 1) -> p
+#     ggsave(p, file = paste0("2024-05-06 ",ctry,"_",src,".short.png"), width = 8, height = 15, bg = "white")
+#   }
+# }
+#
+#
+#
+#
+#
+#
+#
+#
+# #
+# #
+# # for(i in 1:nrow(results_developed)){
+# #   # i = 1
+# #   print(i)
+# #
+# #   results_developed %>%
+# #     slice(i) %>%
+# #     pull(source) %>%
+# #     str_split_fixed(pattern = " ~ ", n = 2) -> sector
+# #
+# #   results_developed %>%
+# #     slice(i) %>%
+# #     pull(is) %>%
+# #     first  -> is
+# #
+# #   results_developed_lasso %>%
+# #     slice(i) %>%
+# #     pull(is) %>%
+# #     first -> is_lass
+# #
+# #   cowplot::plot_grid(
+# #     plot_grid(is, title = "gets"),
+# #     plot_grid(is_lass, title = "LASSO"), nrow = 2, align = "hv", axis = "t") -> p
+# #
+# #
+# #   ggsave(paste0("developed_",sector[1,1],".png"), height = 8, width = 8)
+# #
+# #
+# #   results_developing %>%
+# #     slice(i) %>%
+# #     pull(source) %>%
+# #     str_split_fixed(pattern = " ~ ", n = 2) -> sector
+# #
+# #   results_developing %>%
+# #     slice(i) %>%
+# #     pull(is) %>%
+# #     first -> is
+# #
+# #   results_developing_lasso %>%
+# #     slice(i) %>%
+# #     pull(is) %>%
+# #     first  -> is_lass
+# #
+# #   cowplot::plot_grid(#plot(is[[1]]),
+# #     #plot(is_lass[[1]]),
+# #     plot_grid(is, title = "gets"),
+# #     plot_grid(is_lass, title = "LASSO"), nrow = 2, align = "hv", axis = "t") -> p
+# #
+# #
+# #   ggsave(paste0("developing_",sector[1,1],".png"), height = 8, width = 8)
+# #
+# # }
+# #
+#
 
 
 

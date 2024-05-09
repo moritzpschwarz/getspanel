@@ -840,14 +840,11 @@ isatpanel <- function(
                          rep(1,ncol(full_indic_df)))
     )
 
-    lasso_output$firststage <- mod_fit_adap1
-    lasso_output$firststage.cv <- mod_cv_adap1
-    lasso_output$firststage.cv.lambda_min <- mod_cv_adap1$lambda.min
-
     #coef(mod_fit_adap1, mod_fit$lambda[1])
 
     if(s_variable == "min" | is.numeric(s_variable)){
-      best_lass_coef <- coef(mod_cv_adap1, s = if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable})
+      best_lambda <- if(s_variable == "min"){mod_cv_adap1$lambda.min} else {s_variable}
+      best_lass_coef <- coef(mod_cv_adap1, s = best_lambda)
     } else if(s_variable == "BIC"){
       # we can also choose our model using the BIC
       # this is done by running the OLS model for each lambda
@@ -876,6 +873,11 @@ isatpanel <- function(
     } else {
       stop("For LASSO models the parmeter 's' must be either numeric, 'min' or 'BIC'. The parameter is specified as a list in lasso_opts, e.g. as lasso_opts = list(s = 'min')")
     }
+
+    lasso_output$firststage <- mod_fit_adap1
+    lasso_output$firststage.cv <- mod_cv_adap1
+    lasso_output$firststage.lambda <- best_lambda
+
 
     penalty.factor = 1 / abs(as.numeric(best_lass_coef))
     names(penalty.factor) <- row.names(best_lass_coef)
@@ -907,14 +909,12 @@ isatpanel <- function(
         intercept = FALSE, # unclear what to do with this
         penalty.factor = penalty.factor)
 
-      lasso_output$secondstage <- mod_fit_adap2
-      lasso_output$secondstage.cv <- mod_cv_adap2
-      lasso_output$secondstage.cv.lambda_min <- mod_cv_adap2$lambda.min
 
 
 
       if(s_variable == "min" | is.numeric(s_variable)){
-        rel.coefs.adap2 <- coef(mod_cv_adap2, s = if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable})
+        best_lambda <- if(s_variable == "min"){mod_cv_adap2$lambda.min} else {s_variable}
+        rel.coefs.adap2 <- coef(mod_cv_adap2, s = best_lambda)
       } else if(s_variable == "BIC"){
         # we can also choose our model using the BIC
         # this is done by running the OLS model for each lambda
@@ -943,6 +943,10 @@ isatpanel <- function(
         stop("For LASSO models the parmeter 's' must be either numeric, 'min' or 'BIC'. The parameter is specified as a list in lasso_opts, e.g. as lasso_opts = list(s = 'min')")
       }
 
+      lasso_output$secondstage <- mod_fit_adap2
+      lasso_output$secondstage.cv <- mod_cv_adap2
+      lasso_output$secondstage.lambda <- best_lambda
+
       ret_cv <- which(as.vector(rel.coefs.adap2) != 0)
       final_lasso_retained <- lasso_names[ret_cv-1] # -1 for the intercept
 
@@ -951,7 +955,6 @@ isatpanel <- function(
           message("LASSO did not identify any indicators. General Unrestricted Model will be estimated.")
         }
       }
-
 
     } else {
       ret_cv <- which(as.vector(best_lass_coef)!=0)
