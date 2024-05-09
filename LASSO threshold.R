@@ -85,13 +85,14 @@ overall %>%
 
 
 # plotting ---------
-plot_outcome_threshold <- function(threshold_data_output, original_model_list, file_name_suffix = "_threshold_lasso.png"){
+plot_outcome_threshold <- function(threshold_data_output, original_model_list, file_name_suffix = "_threshold_lasso.png",
+                                   threshold, coef_direction = NULL, coef_scaled = 1){
 
   threshold_data_output %>%
     full_join(original_model_list %>%
                 filter(engine == "gets") %>% select(source, country_sample, gets_obj = is)) %>%
-    mutate(plt = pmap(.l = list(gets_obj, is, new_lass_model, adaptive, iis, lambda, source, row_number()),
-                      function(g,l,l_new, adaptive, iis, lambda, source, i){
+    mutate(plt = pmap(.l = list(gets_obj, is, new_lass_model, adaptive, iis, lambda, source, row_number(), country_sample),
+                      function(g,l,l_new, adaptive, iis, lambda, source, i, country_sample){
                         print(i)
                         sector <- case_when(grepl("buildings", source) ~ "Buildings",
                                             grepl("electricity", source) ~ "Electricity",
@@ -115,11 +116,21 @@ plot_outcome_threshold <- function(threshold_data_output, original_model_list, f
                         l_new_coef_excl <- if(l_new_coef_excl == ""){NULL} else {l_new_coef_excl}
                         l_coef_excl <- if(l_coef_excl == ""){NULL} else {l_coef_excl}
 
-                        p <- cowplot::plot_grid(plot_grid(g, regex_exclude_indicators = gets_coef_excl) + labs(title = paste0(sector, "\ngets")),
-                                                plot_grid(l_new, regex_exclude_indicators = l_new_coef_excl) + labs(title = "Threshold LASSO", subtitle = "Lambda chosen based on Number of Negative Breaks in gets"),
-                                                plot_grid(l, regex_exclude_indicators = l_coef_excl) + labs(title = paste0(adaptive,", ", iis), subtitle = paste0("Lambda Selection: ", lambda), caption = "In all plots only negative breaks shown."),
-                                                ncol = 1)
-                        ggsave(p,file = paste0(i,file_name_suffix), width = 8, height = 9)
+                        threshold_subtitle <- case_when(
+                          threshold == "breaks" ~ "Lambda chosen based on Number of Negative Breaks in gets",
+                          threshold == "coef" & coef_direction == "min" & coef_scaled == 1 ~ "Lambda chosen based on minimum detectable effect size of Negative Breaks in gets",
+                          threshold == "coef" & coef_direction == "absolute" & coef_scaled == 1 ~ "Lambda chosen based on minimum detectable effect size of all Breaks in gets",
+                          threshold == "coef" & coef_direction == "min" & coef_scaled != 1 ~ paste0("Lambda chosen based on minimum detectable effect size multiplied by ",coef_scaled," of Negative Breaks in gets"),
+                          threshold == "coef" & coef_direction == "absolute" & coef_scaled != 1 ~ paste0("Lambda chosen based on minimum detectable effect size multiplied by ",coef_scaled," of all Breaks in gets")
+                        )
+
+
+                        p <- cowplot::plot_grid(
+                          plot_grid(g, regex_exclude_indicators = gets_coef_excl) + labs(title = paste0(sector, "\ngets")),
+                          plot_grid(l_new, regex_exclude_indicators = l_new_coef_excl) + labs(title = "Threshold LASSO", subtitle = threshold_subtitle),
+                          plot_grid(l, regex_exclude_indicators = l_coef_excl) + labs(title = paste0(adaptive,", ", iis), subtitle = paste0("Lambda Selection: ", lambda), caption = "In all plots only negative breaks shown."),
+                          ncol = 1)
+                        ggsave(p,file = paste0(i,"_",sector,"_",country_sample,file_name_suffix), width = 8, height = 9)
                       }))
 
 
@@ -127,10 +138,10 @@ plot_outcome_threshold <- function(threshold_data_output, original_model_list, f
 }
 
 
-plot_outcome_threshold(overall_threshold_lasso, overall, file_name_suffix = "_threshold_lasso.png")
-plot_outcome_threshold(overall_threshold.coef_min_lasso, overall, file_name_suffix = "_threshold.coef_min_lasso.png")
-plot_outcome_threshold(overall_threshold.coef_absolute_lasso, overall, file_name_suffix = "_threshold.coef_absolute_lasso.png")
-plot_outcome_threshold(overall_threshold.coef_absolute_0.5_lasso, overall, file_name_suffix = "_threshold.coef_absolute_0.5_lasso.png")
+plot_outcome_threshold(overall_threshold_lasso, overall, file_name_suffix = "_threshold_lasso.png", threshold = "breaks")
+plot_outcome_threshold(overall_threshold.coef_min_lasso, overall, file_name_suffix = "_threshold.coef_min_lasso.png", threshold = "coef", coef_direction = "min")
+plot_outcome_threshold(overall_threshold.coef_absolute_lasso, overall, file_name_suffix = "_threshold.coef_absolute_lasso.png", threshold = "coef", coef_direction = "absolute")
+plot_outcome_threshold(overall_threshold.coef_absolute_0.5_lasso, overall, file_name_suffix = "_threshold.coef_absolute_0.5_lasso.png", threshold = "coef",coef_direction = "absolute", coef_scaled = 0.5)
 
 
 #
