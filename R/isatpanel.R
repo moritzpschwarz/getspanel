@@ -189,6 +189,7 @@ isatpanel <- function(
     if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
     if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s", "alpha", "scale_by"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds', 'alpha', 'scale_by', 'foldid'.")}
   }
+  if (!(is.null(lasso_opts[["scale_by"]]) | lasso_opts[["scale_by"]]  %in% c("id","time"))) {stop("The lasso option 'scale_by' must be either NULL, 'id' or 'time'. Any other values are not allowed.")}
 
 
 
