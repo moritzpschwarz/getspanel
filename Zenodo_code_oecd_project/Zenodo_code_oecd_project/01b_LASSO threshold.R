@@ -161,6 +161,7 @@ plot_outcome_threshold(overall_threshold.coef_absolute_0.5_lasso, overall, file_
 # Finishing up the analysis for inclusion in the paper ---------------------------------------------------------
 
 overall_threshold.coef_absolute_0.5_lasso %>%
+  filter(lambda == "min", iis) %>%
   unnest(min_detectable_effect_abs) %>%
   full_join(overall %>%
               filter(engine == "gets") %>%
@@ -171,4 +172,4 @@ overall_threshold.coef_absolute_0.5_lasso %>%
          lasso_model = is,
          threshold_lasso_model = new_lass_model) -> final_lasso_modellist
 
-save(final_lasso_modellist, file = "20240509 Lasso Models.RData")
+save(final_lasso_modellist, file = "20240511 Final Lasso Models.RData")
