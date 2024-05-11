@@ -6,12 +6,13 @@ devtools::load_all()
 conflict_prefer("filter", "dplyr")
 conflicted::conflicts_prefer(dplyr::first)
 
-load("20240509 Saving Overall intermediate.RData")
+setwd("~/GitHub/getspanel/Zenodo_code_oecd_project/Zenodo_code_oecd_project/")
+load("20240510 Saving Overall intermediate.RData")
 #source("~/GitHub/getspanel/R/threshold_lasso.R")
 
-overall %>%
-  # remove BIC
-  filter(is.na(lambda) | lambda != "BIC") -> overall
+# overall %>%
+#   # remove BIC
+#   filter(is.na(lambda) | lambda != "BIC") -> overall
 
 
 
@@ -66,7 +67,8 @@ overall %>%
 #   })) -> overall_threshold.coef_min_lasso
 
 overall %>%
-  filter(engine == "lasso", !iis) %>%
+  # filter(engine == "lasso", !iis) %>%
+  filter(engine == "lasso") %>%
   full_join(neg_breaks_gets, by = join_by(source, country_sample)) %>%
 
   mutate(new_lass_model = pmap(.l = list(is, min_detectable_effect_abs, row_number()), function(is, min_detectable_effect_abs , i){
@@ -79,7 +81,7 @@ overall %>%
 
 
 overall %>%
-  filter(engine == "lasso", !iis) %>%
+  filter(engine == "lasso") %>%
   full_join(neg_breaks_gets, by = join_by(source, country_sample)) %>%
   mutate(new_lass_model = pmap(.l = list(is, min_detectable_effect_abs, row_number()), function(is, min_detectable_effect_abs , i){
     print(i)
@@ -117,12 +119,13 @@ plot_outcome_threshold <- function(threshold_data_output, original_model_list, f
                         l_coef <- coef(l$isatpanel.result)[get_indicators(l)$fesis$name]
 
                         gets_coef_excl <- paste0(names(gets_coef[gets_coef > 0]), collapse = "|")
-                        l_new_coef_excl <- paste0(names(l_new_coef[l_new_coef > 0]), collapse = "|")
+                        l_new_coef_excl <- paste0("^iis|", names(l_new_coef[l_new_coef > 0]), collapse = "|")
                         l_coef_excl <- paste0("^iis|",paste0(names(l_coef[l_coef > 0]), collapse = "|"))
 
                         gets_coef_excl <- if(gets_coef_excl == ""){NULL} else {gets_coef_excl}
                         l_new_coef_excl <- if(l_new_coef_excl == ""){NULL} else {l_new_coef_excl}
                         l_coef_excl <- if(l_coef_excl == ""){NULL} else {l_coef_excl}
+
 
                         threshold_subtitle <- case_when(
                           threshold == "breaks" ~ "Lambda chosen based on Number of Negative Breaks in gets",
@@ -132,11 +135,16 @@ plot_outcome_threshold <- function(threshold_data_output, original_model_list, f
                           threshold == "coef" & coef_direction == "absolute" & coef_scaled != 1 ~ paste0("Lambda chosen based on minimum detectable effect size multiplied by ",coef_scaled," of all Breaks in gets")
                         )
 
+                        if(identical(names(gets_coef[gets_coef > 0]), names(gets_coef))){a <- ggplot()}
+                        if(identical(names(l_new_coef[l_new_coef > 0]), names(l_new_coef))){b <- ggplot()}
+                        if(identical(names(l_coef[l_coef > 0]), names(l_coef))){c <- ggplot()}
+
+                        if(!identical(names(gets_coef[gets_coef > 0]), names(gets_coef))){a <- plot_grid(g, regex_exclude_indicators = gets_coef_excl) + labs(title = paste0(sector, "\ngets"))}
+                        if(!identical(names(l_new_coef[l_new_coef > 0]), names(l_new_coef))){b <- plot_grid(l_new, regex_exclude_indicators = l_new_coef_excl) + labs(title = "Threshold LASSO", subtitle = threshold_subtitle)}
+                        if(!identical(names(l_coef[l_coef > 0]), names(l_coef))){c <- plot_grid(l, regex_exclude_indicators = l_coef_excl) + labs(title = paste0(adaptive,", ", iis), subtitle = paste0("Lambda Selection: ", lambda), caption = "In all plots only negative breaks shown.")}
 
                         p <- cowplot::plot_grid(
-                          plot_grid(g, regex_exclude_indicators = gets_coef_excl) + labs(title = paste0(sector, "\ngets")),
-                          plot_grid(l_new, regex_exclude_indicators = l_new_coef_excl) + labs(title = "Threshold LASSO", subtitle = threshold_subtitle),
-                          plot_grid(l, regex_exclude_indicators = l_coef_excl) + labs(title = paste0(adaptive,", ", iis), subtitle = paste0("Lambda Selection: ", lambda), caption = "In all plots only negative breaks shown."),
+                          a,b,c,
                           ncol = 1)
                         ggsave(p,file = paste0(i,"_",sector,"_",country_sample,file_name_suffix), width = 8, height = 9)
                       }))

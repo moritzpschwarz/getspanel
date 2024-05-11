@@ -11,6 +11,8 @@
 #'
 threshold.coef_lasso <- function(lasso_obj, min_coef, scale_min_coef = 1, absolute = FALSE, direction = "negative"){
 
+  if(!is(lasso_obj, "isatpanel")){stop("Argument 'lasso_obj' must be an isatpanel object.")}
+  if(!is.numeric(min_coef)){stop("Argument 'min_coef' must be numeric.")}
   if(!is.numeric(scale_min_coef)){}
   if(!direction %in% c("negative", "positive")){stop("Argument 'direction' can either be 'positive' or 'negative'. If 'absolute' is TRUE, this will be ignored.")}
 
@@ -29,7 +31,13 @@ threshold.coef_lasso <- function(lasso_obj, min_coef, scale_min_coef = 1, absolu
   lass_vars <- length(lass_coef[lass_coef != 0])
 
   xregs <- lasso_obj$estimateddata[,!names(lasso_obj$estimateddata) %in% c("id","time","y")]
-  xregs_ready <- cbind(xregs, lasso_obj$indicator_matrix$fesis)[,lass_coef!=0]
+
+  if(any(grepl("^iis", lass_names))){
+    xregs_ready <- cbind(xregs, lasso_obj$indicator_matrix$fesis, lasso_obj$indicator_matrix$iis)[,lass_coef!=0]
+    } else {
+    xregs_ready <- cbind(xregs, lasso_obj$indicator_matrix$fesis)[,lass_coef!=0]
+  }
+
 
   suppressWarnings(
     arx_obj <- arx(y = lasso_obj$estimateddata$y, mxreg = xregs_ready, mc = FALSE)
@@ -42,9 +50,10 @@ threshold.coef_lasso <- function(lasso_obj, min_coef, scale_min_coef = 1, absolu
   } else if(direction == "positive"){
     retain_vars <- names(coef(arx_obj)[coef(arx_obj) > min_coef*scale_min_coef])
   }
+
   final_vars <- unique(c(names(xregs), retain_vars))
 
-  xregs_final <- cbind(xregs, lasso_obj$indicator_matrix$fesis)[,final_vars]
+  xregs_final <- xregs_ready[,names(xregs_ready) %in% final_vars]
 
   new_lasso_obj <- lasso_obj
   new_lasso_obj$isatpanel.result <- suppressWarnings(arx_obj_final <- arx(y = lasso_obj$estimateddata$y, mxreg = xregs_final, mc = FALSE))

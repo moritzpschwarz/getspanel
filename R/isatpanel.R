@@ -994,8 +994,8 @@ isatpanel <- function(
     indicators <- indicators[,!colnames(indicators) %in% names(estimateddata), drop = FALSE]
   }
 
+  if(iis){sispanx$iis <- gets::iim(y)}
   out$indicator_matrix <- sispanx
-
   out$finaldata <- data.frame(estimateddata, indicators)
 
   out$arguments <- list()
@@ -1004,7 +1004,16 @@ isatpanel <- function(
   out$arguments$user.estimator <- user.estimator
   out$arguments$cluster <- cluster
   out$arguments$effect <- effect
+
   out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
+  out$arguments$iis <- iis
+  out$arguments$fesis <- fesis
+  out$arguments$cfesis <- cfesis
+  out$arguments$csis <- csis
+  out$arguments$tis <- tis
+  out$arguments$jsis <- jsis
+
+
   out$arguments$lasso_opts <- lasso_opts
   out$lasso_output <- if(exists("lasso_output")){lasso_output}
   #out$arguments$id_orig <- id_orig

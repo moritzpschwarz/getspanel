@@ -245,12 +245,13 @@ for(lambda in c("min","BIC")){
 
 
 overall_bic <- overall
-save(overall, file = "20240509 Saving Overall intermediate.RData")
+save(overall, file = "20240510 Saving Overall intermediate.RData")
+
 #
 # load("Saving Overall intermediate.RData")
 #
 # overall %>%
-#   filter(engine == "gets") %>%
+#   filter(!iis) %>%
 #   bind_rows(overall_bic) -> overall
 #
 #
