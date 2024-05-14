@@ -49,11 +49,13 @@ robust_isatpanel <- function(object,
   if(cluster == TRUE){stop("Please specify the cluster setting i.e. either 'group' or 'time'. TRUE is not allowed. To disable clustering use FALSE.")}
   if(!is.null(lag)&!HAC){stop("You cannot specify a lag when you select HAC = FALSE.")}
 
-
   # Set-up
-  df <- object$finaldata
-  df$id <- as.factor(df$id)
-  df$time <- as.factor(df$time)
+  #df <- object$finaldata
+  df <- as.data.frame(object$isatpanel.result$aux$mX)
+  df$y <- object$isatpanel.result$aux$y
+
+  df$id <- as.factor(object$finaldata$id)
+  df$time <- as.factor(object$finaldata$time)
   effect <- object$arguments$effect
   pdata <- plm::pdata.frame(df,index = c("id","time"))
 
