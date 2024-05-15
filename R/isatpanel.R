@@ -966,7 +966,7 @@ isatpanel <- function(
 
     # Re-estimate OLS Model ----
     ### Re-estimate final model - but use the unscaled data!
-    lasso_data_ret <- as.matrix(cbind(mx_lasso, full_indic_df))[,c(colnames(lasso_data) %in% c(colnames(mx),final_lasso_retained))]
+    lasso_data_ret <- as.matrix(cbind(mx, full_indic_df))[,c(colnames(lasso_data) %in% c(colnames(mx),final_lasso_retained))]
 
     # Save original arx mc warning setting and disable it here
     tmpmc <- options("mc.warning")
