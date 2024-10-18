@@ -105,16 +105,16 @@ basq_linv <-  zooreg(basqrel.comp.reg[basqrel.comp.reg$regionname %in% "Basque C
 # is1.bas.noctr <- isat(y= basq_lgdp, mxreg=basq_linv , sis=TRUE, iis=FALSE)
 
 is1.bas.noctr <- isatpanel(data = basqrel.comp.reg[basqrel.comp.reg$regionname %in% "Basque Country (Pais Vasco)",],
-                     formula = lgdpcap ~   linvest,
-                     index = c("regionname","year"),
-                     effect = "none",
-                     fesis = TRUE, iis=FALSE, t.pval=0.001)
-
-is1.bas.noctr_iis <- isatpanel(data = basqrel.comp.reg[basqrel.comp.reg$regionname %in% "Basque Country (Pais Vasco)",],
                            formula = lgdpcap ~   linvest,
                            index = c("regionname","year"),
                            effect = "none",
-                           fesis = FALSE, iis=TRUE, t.pval=0.01)
+                           fesis = TRUE, iis=FALSE, t.pval=0.001)
+
+is1.bas.noctr_iis <- isatpanel(data = basqrel.comp.reg[basqrel.comp.reg$regionname %in% "Basque Country (Pais Vasco)",],
+                               formula = lgdpcap ~   linvest,
+                               index = c("regionname","year"),
+                               effect = "none",
+                               fesis = FALSE, iis=TRUE, t.pval=0.01)
 
 #dat_res <- basqrel.comp.reg[basqrel.comp.reg$regionname %in% "Basque Country (Pais Vasco)",]
 is1.bas.noctr_iis <- isat(basq_lgdp, mxreg=basq_linv, iis=TRUE, mc=TRUE, t.pval=0.05, sis=FALSE, max.block.size = 15)
@@ -155,10 +155,10 @@ is1.bas <- isatpanel(data = basqrel.comp.reg,
 plot(is1.bas)
 
 is1.bas_01 <- isatpanel(data = basqrel.comp.reg,
-                     formula = lgdpcap ~   linvest,
-                     index = c("regionname","year"),
-                     effect = "twoways",
-                     fesis = TRUE, iis=FALSE, t.pval=0.01, max.block.size=15)
+                        formula = lgdpcap ~   linvest,
+                        index = c("regionname","year"),
+                        effect = "twoways",
+                        fesis = TRUE, iis=FALSE, t.pval=0.01, max.block.size=15)
 plot(is1.bas_01)
 
 
@@ -173,25 +173,25 @@ isatdates(is1.bas$isatpanel.result)
 ####try it with time-varying treatment effects (i.e. IIS)
 
 is1.bas_iis <- isatpanel(data = basqrel.comp.reg,
-                     formula = lgdpcap ~   linvest + const,
-                     index = c("regionname","year"),
-                     effect = "twoways",
-                     fesis = FALSE, iis=TRUE, t.pval=0.05, max.block.size=15)
+                         formula = lgdpcap ~   linvest + const,
+                         index = c("regionname","year"),
+                         effect = "twoways",
+                         fesis = FALSE, iis=TRUE, t.pval=0.05, max.block.size=15)
 plot(is1.bas_iis)
 
 
 is1.bas_iis_025 <- isatpanel(data = basqrel.comp.reg,
-                         formula = lgdpcap ~   linvest + const,
-                         index = c("regionname","year"),
-                         effect = "twoways",
-                         fesis = FALSE, iis=TRUE, t.pval=0.025, max.block.size=15)
-plot(is1.bas_iis_025)
-
-is1.bas_iis_01 <- isatpanel(data = basqrel.comp.reg,
                              formula = lgdpcap ~   linvest + const,
                              index = c("regionname","year"),
                              effect = "twoways",
-                             fesis = FALSE, iis=TRUE, t.pval=0.01, max.block.size=15)
+                             fesis = FALSE, iis=TRUE, t.pval=0.025, max.block.size=15)
+plot(is1.bas_iis_025)
+
+is1.bas_iis_01 <- isatpanel(data = basqrel.comp.reg,
+                            formula = lgdpcap ~   linvest + const,
+                            index = c("regionname","year"),
+                            effect = "twoways",
+                            fesis = FALSE, iis=TRUE, t.pval=0.01, max.block.size=15)
 plot(is1.bas_iis_01)
 
 
@@ -417,7 +417,7 @@ for (n in 1: nbreaks)
   breakvar <- 1
   mxbreakname <- "mxbreak1"
 
-  sism <- sim(Tsample)
+  sism <- gets::sim(Tsample)
   colnames(sism) <- paste("break", "t", 2:(NCOL(sism)+1)+min(dat.sub$year)-1, sep="")
 
   sist <- as.matrix(sism)
@@ -456,8 +456,8 @@ for (n in 1: nbreaks)
 
 
 ############ merge here:
-#library(dummies)
-library(fastDummies)
+library(dummies)
+#library(fastDummies)
 regdat <- data.frame(cbind(dat.sub$lgdpcap, dat.sub$linvest))
 names(regdat) <- c("lgdp", "linvest")
 regdat <- cbind(regdat, dummy(dat.sub$regionname), dummy(dat.sub$year))
@@ -472,6 +472,7 @@ NCOL(sispanxlist[[1]])
 
 dat.sub.m <- cbind(regdat, as.matrix( sispanxlist[[1]]))
 dat.sub.reg <- dat.sub.m
+dat.sub.reg$lgdp <- as.numeric(dat.sub.reg$lgdp)
 dat.sub.reg_mx <- dat.sub.reg[,-(which(colnames(dat.sub.reg)=="lgdp"))]
 
 library(glmnet)
@@ -524,23 +525,59 @@ coef_lass_cv <- coef(mod_cv, mod_cv$lambda.1se)
 
 set.seed(12345)
 
-mod_fit_adap1 = glmnet(x=as.matrix(dat.sub.reg_mx), intercept=TRUE, y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1,
-                       penalty.factor=c(rep(0, ncol(regdat)), rep(1, ncol(dat.sub.reg_mx)-ncol(regdat))))
-mod_cv_adap1 <- cv.glmnet(x=as.matrix(dat.sub.reg_mx), intercept=TRUE, nfolds=10, y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1,
-                          penalty.factor=c(rep(0, ncol(regdat)), rep(1, ncol(dat.sub.reg_mx)-ncol(regdat))))
+# penalty.factor.1 <- rep(1, length(dat.sub.reg_mx)+1) # +1 for intercept
+# names(penalty.factor.1) <- c("(Intercept)", names(dat.sub.reg_mx))
+
+penalty.factor.1 <- rep(1, length(dat.sub.reg_mx))
+names(penalty.factor.1) <- names(dat.sub.reg_mx)
+penalty.factor.1[grepl("linvest|regionname|year_", names(penalty.factor.1))] <- 0
+
+mod_fit_adap1 = glmnet(
+  x = as.matrix(dat.sub.reg_mx),
+  intercept = TRUE,
+  y = as.matrix(dat.sub.reg$lgdp),
+  family = 'gaussian',
+  alpha = 1,
+  penalty.factor = penalty.factor.1
+)
+mod_cv_adap1 <- cv.glmnet(
+  x = as.matrix(dat.sub.reg_mx),
+  intercept = TRUE,
+  nfolds = 10,
+  y = as.matrix(dat.sub.reg$lgdp),
+  family = 'gaussian',
+  alpha = 1,
+  penalty.factor = penalty.factor.1
+)
 
 coef(mod_fit_adap1, mod_fit$lambda[1])
 
 
 best_lass_coef <- as.numeric(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
 
-penalty.factor = 1 / abs(best_lass_coef)
-penalty.factor[1:35]  <- 0 #c(rep(0, 35)
+penalty.factor.2 = 1 / abs(best_lass_coef)
+names(penalty.factor.2) <- row.names(coef(mod_cv_adap1, s = mod_cv_adap1$lambda.min))
+penalty.factor.2[grepl("(Intercept)|linvest|regionname|year_", names(penalty.factor.2))] <- 0
+penalty.factor.2 <- penalty.factor.2[!names(penalty.factor.2) %in% "(Intercept)"]
 
-mod_fit_adap2 = glmnet(x=as.matrix(dat.sub.reg_mx), y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1,
-                       penalty.factor=penalty.factor)
+mod_fit_adap2 = glmnet(
+  x = as.matrix(dat.sub.reg_mx),
+  y = as.matrix(dat.sub.reg$lgdp),
+  family = 'gaussian',
+  alpha = 1,
+  penalty.factor = penalty.factor.2
+)
+
 coef(mod_fit_adap2, mod_fit_adap2$lambda[2])
-mod_cv_adap2 <- cv.glmnet(x=as.matrix(dat.sub.reg_mx), intercept=TRUE, nfolds=10, y=as.matrix(dat.sub.reg$lgdp), family='gaussian', alpha=1, penalty.factor=penalty.factor)
+mod_cv_adap2 <- cv.glmnet(
+  x = as.matrix(dat.sub.reg_mx),
+  intercept = TRUE,
+  nfolds = 10,
+  y = as.matrix(dat.sub.reg$lgdp),
+  family = 'gaussian',
+  alpha = 1,
+  penalty.factor = penalty.factor.2
+)
 rel.coefs.adap2 <- coef(mod_fit_adap2, s = mod_cv_adap1$lambda.min)
 
 ####estimate with fixest
@@ -697,21 +734,21 @@ basqrel.comp <- cbind(basqrel.comp, reg_dum)
 
 yr_names <- colnames(reg_dum)
 
- #basqrel.comp
+#basqrel.comp
 
 basqrel.comp$meanlgdp <- NA
 years <- unique(basqrel.comp$year)
 
 18*31
 
- for (i in 1:length(years)){
- # i <- 1
+for (i in 1:length(years)){
+  # i <- 1
   rel.yr <- years[i]
   basqrel.comp$meanlgdp[basqrel.comp$year==rel.yr] <- mean(basqrel.comp$lgdp[basqrel.comp$year==rel.yr])
   basqrel.comp$meanlinvest[basqrel.comp$year==rel.yr] <- mean(basqrel.comp$linvest[basqrel.comp$year==rel.yr])
 
 
-  }
+}
 library(dummies)
 provdum <- dummy(basqrel.comp$regionname)*basqrel.comp$meanlgdp
 provdum_linvest <- dummy(basqrel.comp$regionname)*basqrel.comp$meanlinvest
@@ -745,10 +782,10 @@ is1.bas.ar <- isatpanel(data = basqrel.comp,
 plot(is1.bas.ar)
 
 is1.bas_all <- isatpanel(data = basqrel.comp,
-                     formula = form,
-                     index = c("regionname","year"),
-                     effect = "twoways",
-                     fesis = TRUE, iis=TRUE, t.pval=0.0001)
+                         formula = form,
+                         index = c("regionname","year"),
+                         effect = "twoways",
+                         fesis = TRUE, iis=TRUE, t.pval=0.0001)
 
 plot(is1.bas_all)
 
@@ -761,10 +798,10 @@ dev.off()
 ##################
 ### just using IIS
 is1.bas_all_iis <- isatpanel(data = basqrel.comp,
-                         formula = form,
-                         index = c("regionname","year"),
-                         effect = "twoways",
-                         fesis = FALSE, iis=TRUE, t.pval=0.01)
+                             formula = form,
+                             index = c("regionname","year"),
+                             effect = "twoways",
+                             fesis = FALSE, iis=TRUE, t.pval=0.01)
 
 plot(is1.bas_all_iis)
 
