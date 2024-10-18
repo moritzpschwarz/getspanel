@@ -166,7 +166,7 @@ isatpanel <- function(
   #if (sis & (effect == "twoways" | effect == "time")) {warning("The argument 'sis' cannot be specified with isatpanel when time fixed effects are used as SIS will then be collinear.")}
   if (!is.null(match.call()$sis)) {stop("The argument 'sis' cannot be specified with isatpanel. Use 'jsis' instead.")}
 
-  # csis and cfesis
+  ## checking csis and cfesis ------
   if (csis == FALSE & (!missing(csis_var))) {stop("You cannot specify csis_var when csis = FALSE.")}
   if (cfesis == FALSE & (!missing(cfesis_var) | !missing(cfesis_id))) {stop("You cannot specify cfesis_id or cfesis_var when cfesis = FALSE.")}
   if (fesis == FALSE & (!missing(fesis_id))) {stop("You cannot specify fesis_id when fesis = FALSE.")}
@@ -183,16 +183,16 @@ isatpanel <- function(
   # check that the index for time is not a character
   if (is.character(data[,names(data) %in% index[2],drop = TRUE])){stop("The column for 'time' is containing characters. Be sure to specify the 'index' variable in the format 'index = c('id','time')' where 'id' and 'time' must be replaced with the column names in your data.")}
 
-  # checking lasso
+  ## checking lasso -------
   #if (!is.null(lasso_opts) & !identical(engine, "lasso")){stop("'lasso_opts' can only be supplied when 'engine' is set to 'lasso'.")}
   if (!is.null(lasso_opts)){
     if(!is.list(lasso_opts)){stop("'lasso_opts' must be a list.")}
+    if(is.null(names(lasso_opts))){stop("'lasso_opts' must be a list and must have named elements.")}
     if(!all(names(lasso_opts) %in% c("standardize","adaptive","nfolds","foldid", "s", "alpha", "scale_by"))){stop("'lasso_opts' must be a list and can only take the elements 'adaptive', 'standardize', 'nfolds', 'alpha', 'scale_by', 'foldid'.")}
   }
-  if (!(is.null(lasso_opts[["scale_by"]]) | lasso_opts[["scale_by"]]  %in% c("id","time"))) {stop("The lasso option 'scale_by' must be either NULL, 'id' or 'time'. Any other values are not allowed.")}
-
-
-
+  if(!is.null(lasso_opts[["scale_by"]])){
+    if (!lasso_opts[["scale_by"]]  %in% c("id","time")) {stop("The lasso option 'scale_by' must be either NULL, 'id' or 'time'. Any other values are not allowed.")}
+  }
 
   if (is.null(y) & is.null(mxreg) & is.null(time) & is.null(id) & (!is.null(formula) & !is.null(data) & !is.null(index))) {
     mf <- match.call(expand.dots = FALSE)
@@ -233,7 +233,6 @@ isatpanel <- function(
   # id_orig <- dplyr::tibble(id_orig = id,
   #                          id_used = gsub(" ","",id))
   id <- gsub(" ","",id)
-
 
   mxnames <- colnames(mxreg)
   if (!is.null(mxreg)) {
@@ -293,7 +292,7 @@ isatpanel <- function(
       # mx <- mx[-remove,]
       id <- id[-remove]
       time <- time[-remove]
-      mxreg <- mxreg[-remove,]
+      mxreg <- mxreg[-remove,, drop = FALSE]
     }
   }
 
@@ -607,7 +606,6 @@ isatpanel <- function(
     rm(uis)
   } else {uis_args <- NULL}
 
-
   if ((is.null(engine) | identical(engine, "lasso")) && effect != "none") {
 
     # Generating Fixed effects ------------------------------------------------
@@ -751,14 +749,15 @@ isatpanel <- function(
     # LASSO Scaling data ----
     if(!is.null(scale_by)){
       mx_lasso <- mx
-      mx_lasso_int <- mx_lasso[,mxnames]
+
+      mx_lasso_int <- mx_lasso[,mxnames, drop = FALSE]
       if(scale_by == "id"){
         # check which columns can be scaled (we cannot scale columns by id when for one id all values are 0)
         cols_to_scale_within <- !apply(X = mx_lasso_int, MARGIN = 2, function(x){
           any(as.vector(by(x, id, function(x){all(x == 0)})))
         })
         # for the identified columns, scale the relevant columns
-        mx_lasso_int[,cols_to_scale_within] <- apply(mx_lasso_int[,cols_to_scale_within], MARGIN = 2, function(x){
+        mx_lasso_int[,cols_to_scale_within] <- apply(mx_lasso_int[,cols_to_scale_within, drop = FALSE], MARGIN = 2, function(x){
           do.call(rbind,(by(x,id, scale)))
         })
         mx_lasso[,mxnames] <- mx_lasso_int
@@ -994,7 +993,10 @@ isatpanel <- function(
     indicators <- indicators[,!colnames(indicators) %in% names(estimateddata), drop = FALSE]
   }
 
-  if(iis){sispanx$iis <- gets::iim(y)}
+  if(iis){if(identical(sispanx,FALSE)){
+    sispanx <- list()}
+    sispanx$iis <- gets::iim(y)}
+
   out$indicator_matrix <- sispanx
   out$finaldata <- data.frame(estimateddata, indicators)
 
