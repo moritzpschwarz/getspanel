@@ -48,15 +48,16 @@
 ###
 set.seed(123)
 # Generate some random data for the two control countries
-xA <- rnorm(50, mean = 100)
-xB <- rnorm(50, mean = 30)
-xC <- rnorm(50, mean = 70)
+xA <- rnorm(50, mean = 10)
+xB <- rnorm(50, mean = 3)
+xC <- rnorm(50, mean = 7)
 
-epA <- rnorm(50, sd = 0.2)
-epB <- rnorm(50, sd = 0.2)
-epC <- rnorm(50, sd = 0.2)
+epA <- rnorm(50, sd = 0.5)
+epB <- rnorm(50, sd = 0.5)
+epC <- rnorm(50, sd = 0.5)
 
-trend <- 1951:2000
+#trend <- 1951:2000
+trend <- 1:50
 trendbreak <- c(rep(0,19),1:31) # impose a trendbreak from 1975
 
 yA <- 10 + 0.5 * xA + 0.2 * trend - 0.3 * trendbreak + epA
@@ -68,6 +69,13 @@ trial_df <- data.frame(year = rep(1951:2000,3),
                        x = c(xA, xB, xC),
                        y = c(yA,yB,yC))
 
+
+trial_df %>%
+  rename(x1 = x) %>%
+  mutate(x2 = rnorm(n()),
+         x3 = rnorm(n()),
+         x4 = rnorm(n()),
+         x5 = rnorm(n())) -> trial_df
 
 # Introduce a step shift in A from 40
 trial_df_step <- trial_df
@@ -81,10 +89,13 @@ test_that("LASSO works", {
   # expect_identical(get_indicators(m1)$tis$name, c("tisA.1952", "tisA.1970", "tisC.1956"))
 
   expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
-                         lasso_opts = "test", effect = "twoways"), regexp = "can only be supplied when 'engine' is set to 'lasso'")
+                         lasso_opts = "test", effect = "twoways"), regexp = "must be a list")
 
   expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
-                         lasso_opts = "test", effect = "twoways", engine = "lasso"), regexp = "must be a list and can only take the elements")
+                         lasso_opts = "test", effect = "twoways", engine = "lasso"), regexp = "must be a list")
+
+  expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
+                         lasso_opts = list("test"), effect = "twoways", engine = "lasso"), regexp = "must be a list and must have named elements")
 
 
   expect_error(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
@@ -93,43 +104,55 @@ test_that("LASSO works", {
                                            adaptive = TRUE,
                                            test = 100), effect = "twoways", engine = "lasso"), regexp = "must be a list and can only take the elements")
 
-  expect_silent(isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
+  expect_silent(isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE,
                           lasso_opts = list(standardize = FALSE,
                                             nfolds = 10), effect = "twoways", engine = "lasso"))
 
+  isatpanel(trial_df_step, formula = y ~ x1 + x2 + x3 + x4 + x5, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+                    fesis = TRUE,
+                    lasso_opts = list(standardize = FALSE,
+                                      nfolds = 30,
+                                      adaptive = FALSE, s = "min"))
 
 
-
-  test <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+  # POWER of TIS much greater
+  isatpanel(trial_df_step, formula = y ~ x1 + x2 + x3 + x4 + x5, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = TRUE,
             lasso_opts = list(standardize = FALSE,
-                              nfolds = 10,
-                              adaptive = FALSE))
+                              nfolds = 30,
+                              adaptive = FALSE, s = "min"))
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+
+  test <- isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+            fesis = TRUE, tis = TRUE,
+            lasso_opts = list(standardize = FALSE,
+                              nfolds = 30,
+                              adaptive = FALSE, s = "min"))
+
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = FALSE,
             lasso_opts = list(standardize = FALSE,
                               nfolds = 50))
 
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = FALSE, iis = TRUE,
             lasso_opts = list(standardize = FALSE,
                               nfolds = 10))
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = TRUE, iis = TRUE,
             lasso_opts = list(standardize = TRUE,
                               adaptive = TRUE,
                               nfolds = 10))
 
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), fesis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), fesis = TRUE, tis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE, print.searchinfo = TRUE, engine = "lasso", effect = "twoways")
 
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE,
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), fesis = TRUE, tis = TRUE, iis = TRUE, plot = TRUE,
             print.searchinfo = TRUE, engine = "lasso", effect = "twoways", lasso_opts = list(adaptive = FALSE, s = 0.9, standardize = TRUE))
 
 

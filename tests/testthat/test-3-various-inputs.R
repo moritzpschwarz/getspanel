@@ -37,3 +37,16 @@ test_that("Testing whether character inputs work for groups", {
 
   expect_silent(a <- isatpanel(data = group_df,formula = gdp~temp, index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE))
 })
+
+
+test_that("Test inputs that should not work", {
+
+  expect_error(isatpanel(data = pandata_simulated, formula = test ~ temp, index = c("country","date"),fesis = TRUE, print.searchinfo = FALSE),
+               regexp = "The values for 'index' not found as column names in the 'data' argument. Can only name columns that exist.")
+
+  expect_error(isatpanel(data = pandata_simulated, formula = test ~ temp, index = c("country","year"),fesis = TRUE, print.searchinfo = FALSE),
+               regexp = "object 'test' not found")
+
+
+})
+
