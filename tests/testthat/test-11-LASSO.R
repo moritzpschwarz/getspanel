@@ -71,11 +71,11 @@ trial_df <- data.frame(year = rep(1951:2000,3),
 
 
 trial_df %>%
-  rename(x1 = x) %>%
-  mutate(x2 = rnorm(n()),
-         x3 = rnorm(n()),
-         x4 = rnorm(n()),
-         x5 = rnorm(n())) -> trial_df
+  dplyr::rename(x1 = x) %>%
+  dplyr::mutate(x2 = rnorm(dplyr::n()),
+                x3 = rnorm(dplyr::n()),
+                x4 = rnorm(dplyr::n()),
+                x5 = rnorm(dplyr::n())) -> trial_df
 
 # Introduce a step shift in A from 40
 trial_df_step <- trial_df
@@ -109,10 +109,10 @@ test_that("LASSO works", {
                                             nfolds = 10), effect = "twoways", engine = "lasso"))
 
   isatpanel(trial_df_step, formula = y ~ x1 + x2 + x3 + x4 + x5, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
-                    fesis = TRUE,
-                    lasso_opts = list(standardize = FALSE,
-                                      nfolds = 30,
-                                      adaptive = FALSE, s = "min"))
+            fesis = TRUE,
+            lasso_opts = list(standardize = FALSE,
+                              nfolds = 30,
+                              adaptive = FALSE, s = "min"))
 
 
   # POWER of TIS much greater
@@ -124,10 +124,10 @@ test_that("LASSO works", {
 
 
   test <- isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
-            fesis = TRUE, tis = TRUE,
-            lasso_opts = list(standardize = FALSE,
-                              nfolds = 30,
-                              adaptive = FALSE, s = "min"))
+                    fesis = TRUE, tis = TRUE,
+                    lasso_opts = list(standardize = FALSE,
+                                      nfolds = 30,
+                                      adaptive = FALSE, s = "min"))
 
   isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,effect = "twoways", engine = "lasso",
             fesis = TRUE, tis = FALSE,
@@ -162,7 +162,7 @@ test_that("LASSO works", {
 
 
 
-  isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,
+  isatpanel(trial_df_step, formula = y ~ x1, index = c("id","year"), plot = TRUE, print.searchinfo = TRUE,
             effect = "individual", engine = "lasso",
             fesis = TRUE, tis = TRUE,
             lasso_opts = list(standardize = TRUE,
@@ -175,3 +175,6 @@ test_that("LASSO works", {
 
 })
 
+
+
+#test_that()

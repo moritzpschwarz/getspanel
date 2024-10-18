@@ -7,13 +7,7 @@ conflict_prefer("filter", "dplyr")
 conflicted::conflicts_prefer(dplyr::first)
 
 setwd("~/GitHub/getspanel/Zenodo_code_oecd_project/Zenodo_code_oecd_project/")
-load("20240510 Saving Overall intermediate.RData")
-#source("~/GitHub/getspanel/R/threshold_lasso.R")
-
-# overall %>%
-#   # remove BIC
-#   filter(is.na(lambda) | lambda != "BIC") -> overall
-
+load("20240515 Saving Overall LASSO FINAL.RData")
 
 
 # Analyse gets models -----------------------------------------------------
@@ -37,48 +31,6 @@ overall %>%
 
   unnest(neg_breaks) %>%
   select(source, country_sample, neg_breaks, min_detectable_effect, min_detectable_effect_abs) -> neg_breaks_gets
-
-
-
-# # Threshold -------
-# overall %>%
-#   filter(engine == "lasso", !iis) %>%
-#   full_join(neg_breaks_gets, by = join_by(source, country_sample)) %>%
-#
-#   mutate(new_lass_model = pmap(.l = list(is, neg_breaks, row_number()), function(is, neg_breaks, i){
-#     print(i)
-#     result <- threshold_lasso(breaks_in_ols_or_lasso = "ols",is, target_neg_breaks = neg_breaks, plot = FALSE)
-#     result$new_lasso_obj
-#   })) -> overall_threshold_lasso
-
-
-# Threshold coefficient --------
-# overall %>%
-#   filter(engine == "lasso", !iis) %>%
-#   full_join(neg_breaks_gets, by = join_by(source, country_sample)) %>%
-#
-#   mutate(new_lass_model = pmap(.l = list(is, min_detectable_effect, row_number()), function(is, min_detectable_effect, i){
-#     print(i)
-#     result <- threshold.coef_lasso(lasso_ob = is,
-#                                    absolute = FALSE,
-#                                    direction = "negative",
-#                                    min_coef = min_detectable_effect)
-#     result$new_lasso_obj
-#   })) -> overall_threshold.coef_min_lasso
-
-overall %>%
-  # filter(engine == "lasso", !iis) %>%
-  filter(engine == "lasso") %>%
-  full_join(neg_breaks_gets, by = join_by(source, country_sample)) %>%
-
-  mutate(new_lass_model = pmap(.l = list(is, min_detectable_effect_abs, row_number()), function(is, min_detectable_effect_abs , i){
-    print(i)
-    result <- threshold.coef_lasso(lasso_ob = is,
-                                   absolute = TRUE,
-                                   min_coef = min_detectable_effect_abs )
-    result$new_lasso_obj
-  })) -> overall_threshold.coef_absolute_lasso
-
 
 overall %>%
   filter(engine == "lasso") %>%
@@ -146,15 +98,11 @@ plot_outcome_threshold <- function(threshold_data_output, original_model_list, f
                         p <- cowplot::plot_grid(
                           a,b,c,
                           ncol = 1)
-                        ggsave(p,file = paste0(i,"_",sector,"_",country_sample,file_name_suffix), width = 8, height = 9)
+                        #ggsave(p,file = paste0(i,"_",sector,"_",country_sample,file_name_suffix), width = 8, height = 9)
                       }))
 }
 
-
-# plot_outcome_threshold(overall_threshold_lasso, overall, file_name_suffix = "_threshold_lasso.png", threshold = "breaks")
-#plot_outcome_threshold(overall_threshold.coef_min_lasso, overall, file_name_suffix = "_threshold.coef_min_lasso.png", threshold = "coef", coef_direction = "min")
-plot_outcome_threshold(overall_threshold.coef_absolute_lasso, overall, file_name_suffix = "_threshold.coef_absolute_lasso.png", threshold = "coef", coef_direction = "absolute")
-plot_outcome_threshold(overall_threshold.coef_absolute_0.5_lasso, overall, file_name_suffix = "_threshold.coef_absolute_0.5_lasso.png", threshold = "coef",coef_direction = "absolute", coef_scaled = 0.5)
+plot_outcome_threshold(overall_threshold.coef_absolute_0.5_lasso %>% filter(country_sample == "AC1", grepl("buildings",source)), overall, file_name_suffix = "_threshold.coef_absolute_0.5_lasso.png", threshold = "coef",coef_direction = "absolute", coef_scaled = 0.5)
 
 
 
@@ -172,4 +120,4 @@ overall_threshold.coef_absolute_0.5_lasso %>%
          lasso_model = is,
          threshold_lasso_model = new_lass_model) -> final_lasso_modellist
 
-save(final_lasso_modellist, file = "20240511 Final Lasso Models.RData")
+save(final_lasso_modellist, file = "20240515 Final Lasso Models.RData")
