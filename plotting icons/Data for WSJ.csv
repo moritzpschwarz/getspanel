@@ -1,0 +1,228 @@
+country,type,x,y,linecolour,areafill,linewidth,alpha,xmin,xmax,ymin,ymax,xintercept
+United Kingdom,Observed Data,2000,12.148545043102622,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2001,12.193326438533882,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2002,12.163604495891825,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2003,12.222272368841884,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2004,12.215981837339124,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2005,12.224633737302725,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2006,12.264521339048391,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2007,12.247634265803853,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2008,12.196333416833378,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2009,12.061389264845742,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2010,12.085597147143178,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2011,12.029156455650543,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2012,12.1140963341356,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2013,12.03328164857509,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2014,11.881684292819259,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2015,11.719015352329365,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2016,11.504197461076593,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2017,11.38091494150054,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2018,11.299010245898728,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2019,11.185841434075098,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2020,11.131635165184239,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Observed Data,2021,11.183797461105769,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United Kingdom,Uncertainty Around Break Timing (Estimated),2015,11.719015352329428,NA,grey,0.5,0.5,2013,2017,-Inf,Inf,NA
+United Kingdom,Uncertainty Around Break Timing (Estimated),2016,11.430492623267902,NA,grey,0.5,0.5,2015,2017,-Inf,Inf,NA
+United Kingdom,Uncertainty Around Break Timing (2yr),2015,11.719015352329428,NA,grey,0.5,0.3,2013,2017,-Inf,Inf,NA
+United Kingdom,Uncertainty Around Break Timing (2yr),2016,11.430492623267902,NA,grey,0.5,0.3,2014,2018,-Inf,Inf,NA
+United Kingdom,Fitted Values,2000,12.165193421106252,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2001,12.202979870830127,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2002,12.182103869060327,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2003,12.222378560944335,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2004,12.209849537186876,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2005,12.218602903296343,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2006,12.220625274801733,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2007,12.212129670124817,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2008,12.186145313937807,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2009,12.083655680149278,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2010,12.13548121389347,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2011,12.038967630410575,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2012,12.05958975090936,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2013,12.017737568643515,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2014,11.926617820573078,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2015,11.719015352329428,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2016,11.430492623267902,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2017,11.40363834270749,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2018,11.347146767409813,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2019,11.262001504841617,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2020,11.091488727555149,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Fitted Values,2021,11.150628743059286,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Break Time,NA,NA,red,NA,0.5,NA,NA,NA,NA,NA,2015
+United Kingdom,Break Time,NA,NA,red,NA,0.5,NA,NA,NA,NA,NA,2016
+United Kingdom,Policy Effect Uncertainty,2014,11.926617820573078,NA,#F8766D,0.5,0.5,NA,NA,11.926617820573078,11.926617820573078,NA
+United Kingdom,Policy Effect Uncertainty,2015,12.083681185630226,NA,#F8766D,0.5,0.5,NA,NA,12.083681185630226,11.776996143356024,NA
+United Kingdom,Policy Effect Uncertainty,2016,11.7951584565687,NA,#F8766D,0.5,0.5,NA,NA,11.7951584565687,11.488473414294498,NA
+United Kingdom,Policy Effect Uncertainty,2017,11.768304176008288,NA,#F8766D,0.5,0.5,NA,NA,11.768304176008288,11.461619133734086,NA
+United Kingdom,Policy Effect Uncertainty,2015,11.719015352329428,NA,#F8766D,0.5,0.5,NA,NA,11.719015352329428,11.719015352329428,NA
+United Kingdom,Policy Effect Uncertainty,2016,11.861134832518982,NA,#F8766D,0.5,0.5,NA,NA,11.861134832518982,11.56385432522637,NA
+United Kingdom,Policy Effect Uncertainty,2017,11.83428055195857,NA,#F8766D,0.5,0.5,NA,NA,11.83428055195857,11.537000044665957,NA
+United Kingdom,Policy Effect,2014,11.926617820573078,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2015,11.930338664493124,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2016,11.641815935431598,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2017,11.614961654871186,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2015,11.719015352329428,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2016,11.712494578872676,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2017,11.685640298312263,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2000,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2001,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2002,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2003,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2004,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2005,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2006,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2007,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2008,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2009,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2010,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2011,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2012,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2013,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2018,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2019,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2020,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United Kingdom,Policy Effect,2021,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Observed Data,2000,14.15017859442754,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2001,14.207033618348277,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2002,14.261132390107834,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2003,14.395538287788748,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2004,14.61197041071845,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2005,14.819357447799153,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2006,14.91384392859322,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2007,15.012946647318337,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2008,15.05823035386134,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2009,15.142974678575289,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2010,15.232154391739524,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2011,15.296130334246621,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2012,15.318125055850178,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2013,15.29702891071294,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2014,15.31256928402649,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2015,15.281830056335945,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2016,15.261313609265311,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2017,15.226643171895779,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2018,15.256406442344732,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2019,15.273650565295908,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2020,15.292537422439775,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Observed Data,2021,15.326557574474673,black,NA,0.7,NA,NA,NA,NA,NA,NA
+China,Uncertainty Around Break Timing (Estimated),2016,15.202193532628007,NA,grey,0.5,0.5,2015,2017,-Inf,Inf,NA
+China,Uncertainty Around Break Timing (2yr),2016,15.202193532628007,NA,grey,0.5,0.3,2014,2018,-Inf,Inf,NA
+China,Fitted Values,2000,14.22495727350374,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2001,14.239614955138908,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2002,14.309067723267486,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2003,14.372822984432727,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2004,14.479390365047973,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2005,14.853013382070284,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2006,14.945536515302791,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2007,15.027418120576403,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2008,15.038621144470309,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2009,15.08043657563724,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2010,15.18343315238135,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2011,15.254296942016303,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2012,15.256848866161475,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2013,15.306921181112344,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2014,15.353245970884647,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2015,15.385419238446,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2016,15.202193532628007,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2017,15.24163560943836,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2018,15.272937484727322,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2019,15.290538712516025,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2020,15.2840203255535,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Fitted Values,2021,15.345783120853019,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Break Time,NA,NA,red,NA,0.5,NA,NA,NA,NA,NA,2016
+China,Policy Effect Uncertainty,2015,15.385419238446,NA,#F8766D,0.5,0.5,NA,NA,15.385419238446,15.385419238446,NA
+China,Policy Effect Uncertainty,2016,15.537778853247415,NA,#F8766D,0.5,0.5,NA,NA,15.537778853247415,15.320158988709867,NA
+China,Policy Effect Uncertainty,2017,15.577220930057768,NA,#F8766D,0.5,0.5,NA,NA,15.577220930057768,15.35960106552022,NA
+China,Policy Effect,2015,15.385419238446,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2016,15.42896892097864,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2017,15.468410997788993,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2000,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2001,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2002,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2003,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2004,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2005,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2006,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2007,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2008,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2009,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2010,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2011,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2012,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2013,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2014,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2018,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2019,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2020,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+China,Policy Effect,2021,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2000,14.198568944999336,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2001,14.205947599883606,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2002,14.230599504563468,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2003,14.251504360340885,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2004,14.262210248650534,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2005,14.270888272150735,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2006,14.275491022565651,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2007,14.275913867154914,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2008,14.222245952696648,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2009,14.173377995719342,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2010,14.209559997403073,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2011,14.171067512719931,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2012,14.143787684787343,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2013,14.17305457129678,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2014,14.170496609892442,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2015,14.207188159424582,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2016,14.209552376728606,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2017,14.211234269885429,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2018,14.228637411418696,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2019,14.220289873520473,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2020,14.090739070175871,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Observed Data,2021,14.17345423884361,black,NA,0.7,NA,NA,NA,NA,NA,NA
+United States,Uncertainty Around Break Timing (Estimated),2008,14.190169066432508,NA,grey,0.5,0.5,2006,2010,-Inf,Inf,NA
+United States,Uncertainty Around Break Timing (2yr),2008,14.190169066432508,NA,grey,0.5,0.3,2006,2010,-Inf,Inf,NA
+United States,Fitted Values,2000,14.192736731007365,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2001,14.191461362339524,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2002,14.209974732532269,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2003,14.240205852607215,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2004,14.26704831211432,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2005,14.288169081995864,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2006,14.288142169255325,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2007,14.293385578457155,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2008,14.190169066432508,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2009,14.203534439471623,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2010,14.19404904329527,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2011,14.18528384005207,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2012,14.160190326806655,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2013,14.176136138209264,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2014,14.190340551187854,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2015,14.196104749340117,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2016,14.215521805584268,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2017,14.214068573777181,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2018,14.227459213043295,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2019,14.225436409351422,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2020,14.096026067556673,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Fitted Values,2021,14.130365500404386,blue,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Break Time,NA,NA,red,NA,0.5,NA,NA,NA,NA,NA,2008
+United States,Policy Effect Uncertainty,2007,14.293385578457155,NA,#F8766D,0.5,0.5,NA,NA,14.293385578457155,14.293385578457155,NA
+United States,Policy Effect Uncertainty,2008,14.327496220009749,NA,#F8766D,0.5,0.5,NA,NA,14.327496220009749,14.224913732998465,NA
+United States,Policy Effect Uncertainty,2009,14.340861593048864,NA,#F8766D,0.5,0.5,NA,NA,14.340861593048864,14.238279106037579,NA
+United States,Policy Effect Uncertainty,2010,14.33137619687251,NA,#F8766D,0.5,0.5,NA,NA,14.33137619687251,14.228793709861225,NA
+United States,Policy Effect,2007,14.293385578457155,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2008,14.276204976504108,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2009,14.289570349543222,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2010,14.280084953366869,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2000,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2001,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2002,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2003,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2004,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2005,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2006,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2011,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2012,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2013,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2014,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2015,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2016,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2017,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2018,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2019,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2020,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA
+United States,Policy Effect,2021,NA,red,NA,0.5,NA,NA,NA,NA,NA,NA

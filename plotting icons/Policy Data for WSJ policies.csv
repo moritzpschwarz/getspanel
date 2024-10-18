@@ -1,0 +1,43 @@
+country,x,areafill,label,name
+China,2003,#aaffc3,NA,Performance standard
+China,2005,#ffd8b1,NA,Label
+China,2008,#ffd8b1,NA,Label
+China,2014,#bfef45,NA,Emission trading scheme
+China,2015,#4363d8,NA,Financing mechanism
+China,2016,#aaffc3,NA,Performance standard
+China,2019,#991eb4,NA,Building code
+United Kingdom,2003,#f58231,NA,Air pollution standard
+United Kingdom,2003,#000075,NA,Renewable portfolio standard
+United Kingdom,2010,#808000,NA,Renewable feed in tariff
+United Kingdom,2010,#000075,NA,Renewable portfolio standard
+United Kingdom,2012,#fabed4,NA,Fossil fuel subsidy reform
+United Kingdom,2012,#9a6324,NA,Renewable expansion planning
+United Kingdom,2013,#f58231,NA,Air pollution standard
+United Kingdom,2013,#000075,NA,Renewable portfolio standard
+United Kingdom,2014,#bfef45,NA,Emission trading scheme
+United Kingdom,2014,#808000,NA,Renewable feed in tariff
+United Kingdom,2014,#9a6324,NA,Renewable expansion planning
+United Kingdom,2015,#800000,NA,Renewable auction
+United Kingdom,2015,#f032e6,NA,Ban & phase out
+United Kingdom,2015,#bfef45,NA,Emission trading scheme
+United Kingdom,2017,#f032e6,NA,Ban & phase out
+United Kingdom,2022,#800000,NA,Renewable auction
+United Kingdom,2005,NA,€,€
+United Kingdom,2018,NA,€,€
+United Kingdom,2005,NA,EU,EU
+United Kingdom,2018,NA,EU,EU
+China,2008,#aaffc3,NA,Performance standard
+China,2012,#aaffc3,NA,Performance standard
+China,2014,#bfef45,NA,Emission trading scheme
+China,2015,#4363d8,NA,Financing mechanism
+China,2016,#fabed4,NA,Fossil fuel subsidy reform
+China,2020,#fabed4,NA,Fossil fuel subsidy reform
+China,2021,#aaffc3,NA,Performance standard
+United States,2006,#e6194b,NA,Adoption subsidy
+United States,2007,#aaffc3,NA,Performance standard
+United States,2009,#e6194b,NA,Adoption subsidy
+United States,2010,#e6194b,NA,Adoption subsidy
+United States,2010,#aaffc3,NA,Performance standard
+United States,2013,#bfef45,NA,Emission trading scheme
+United States,2013,#fffac8,NA,Label 
+United States,2014,#000000,NA,Speed limit
