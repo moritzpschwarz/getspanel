@@ -99,7 +99,7 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
 
     # Deal with CSIS within facets
     indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
+    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+|\\.csis[0-9]+-[0-9]+-[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
 
     # Deal with CFESIS within facets
     indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
