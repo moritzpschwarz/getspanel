@@ -9,12 +9,13 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
   object_l <- reshape(object,
-                  varying = varying_vars,
-                  idvar = c("id","time"),
-                  v.names = "value",
-                  timevar = "name",
-                  times = varying_vars,
-                  direction = "long")
+                      varying = varying_vars,
+                      idvar = c("id","time"),
+                      v.names = "value",
+                      timevar = "name",
+                      times = varying_vars,
+                      direction = "long")
+
 
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]
@@ -48,7 +49,12 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
     fesis_l$id <- unlist(lapply(split_list, `[[`, 1))
     fesis_l$id <- gsub("fesis","",fesis_l$id)
     fesis_l$time <- unlist(lapply(split_list, `[[`, 2))
-    fesis_l$time <- as.numeric(fesis_l$time)
+
+    if(all(is.na(suppressWarnings(as.numeric(fesis_l$time))))){
+      fesis_l$time <- as.Date(fesis_l$time)
+    } else {
+      fesis_l$time <- as.numeric(fesis_l$time)
+    }
 
     fesis_l <- fesis_l[c("id","time","name")]
 
@@ -102,7 +108,6 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
   } else {cfesis <- NULL}
 
   # CSIS
-
   if(any(grepl("csis",names(object)))){
 
     csis_wide <- object[,grepl("csis", names(object)), drop = FALSE]
@@ -118,7 +123,11 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
     csis_l$name <- unlist(lapply(split_list, `[[`, 1))
     csis_l$time <- unlist(lapply(split_list, `[[`, 2))
     csis_l$time <- gsub("csis","",csis_l$time)
-    csis_l$time <- as.numeric(csis_l$time)
+    if(all(is.na(suppressWarnings(as.numeric(csis_l$time))))){
+      csis_l$time <- as.Date(csis_l$time)
+    } else {
+      csis_l$time <- as.numeric(csis_l$time)
+    }
 
     csis_l <- csis_l[c("time","name")]
 
