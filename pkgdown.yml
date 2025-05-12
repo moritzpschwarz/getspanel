@@ -3,7 +3,7 @@ pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   introduction: introduction.html
-last_built: 2025-05-12T19:44Z
+last_built: 2025-05-12T19:51Z
 urls:
   reference: http://moritzschwarz.org/getspanel/reference
   article: http://moritzschwarz.org/getspanel/articles
