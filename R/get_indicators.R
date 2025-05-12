@@ -40,7 +40,7 @@
 get_indicators <- function(object, uis_breaks = NULL){
 
   df <- object$estimateddata
-  indicators <- object$isatpanel.result$aux$mX
+  indicators <- object$finaldata
   indicators <- indicators[,!colnames(indicators) %in% names(df), drop = FALSE]
   df <- cbind(df,indicators)
 
@@ -50,6 +50,6 @@ get_indicators <- function(object, uis_breaks = NULL){
     uis_breaks <- NULL
   }
 
-  identify_indicator_timings(df, uis_breaks = uis_breaks)
+  identify_indicator_timings(df, uis_breaks = uis_breaks, isat_object = object$isatpanel.result)
 }
 

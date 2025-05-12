@@ -4,12 +4,14 @@
 \alias{identify_indicator_timings}
 \title{Internal function to identify the timing of selected indicators}
 \usage{
-identify_indicator_timings(object, uis_breaks = NULL)
+identify_indicator_timings(object, uis_breaks = NULL, isat_object = NULL)
 }
 \arguments{
 \item{object}{data.frame}
 
 \item{uis_breaks}{A character vector with the names of the UIS breaks if the \code{uis} argument was used in \link{isatpanel}.}
+
+\item{isat_object}{The object of class \code{isat} produced by \link{isatpanel}.}
 }
 \value{
 A list of data.frames

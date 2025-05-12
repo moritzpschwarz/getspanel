@@ -71,7 +71,7 @@ outcome5 <- isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), pr
 save_png <- function(code, width = 400, height = 400) {
   path <- tempfile(fileext = ".png")
 
-  if(ggplot2::is.ggplot(code)){
+  if(ggplot2::is_ggplot(code)){
     ggplot2::ggsave(filename = path, plot = code, width = 7, height = 5)
   } else {
     png(path, width = width, height = height)
@@ -121,10 +121,23 @@ test_that("Grid Plot",{
   expect_snapshot_plot("Grid_plot_outcome3", code = plot_grid(outcome3))
   expect_snapshot_plot("Grid_plot_outcome4", code = plot_grid(outcome4))
   expect_snapshot_plot("Grid_plot_outcome5", code = plot_grid(outcome5))
+
+  expect_snapshot_plot("Grid_plot_outcome4_regex", code = plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
+
+
 })
 
 
+test_that("Counterfactual Plot",{
+  skip_on_ci()
+  skip_on_cran()
+  # only carry out on FESIS objects
+  expect_snapshot_plot("counterfactual_plot_outcome2", code = plot_counterfactual(outcome2))
+  expect_snapshot_plot("counterfactual_plot_outcome3", code = plot_counterfactual(outcome3))
 
+  expect_snapshot_plot("counterfactual_plot_outcome2_regex", code = plot_grid(outcome2, regex_exclude_indicators = "fesisA"))
+  expect_snapshot_plot("counterfactual_plot_outcome3_regex", code = plot_grid(outcome3, , regex_exclude_indicators = "fesisA"))
+})
 
 
 
@@ -137,14 +150,17 @@ test_that("Residuals Plot",{
 })
 
 
-# save(outcome1, file = "outcome1.RData")
-# save(outcome2, file = "outcome2.RData")
-# save(outcome3, file = "outcome3.RData")
-# save(outcome4, file = "outcome4.RData")
-# save(outcome5, file = "outcome5.RData")
-#
-# plot(outcome1) + ggsave("plot_1.pdf", width = 6, height = 4)
-# plot(outcome2) + ggsave("plot_2.pdf", width = 6, height = 4)
-# plot(outcome3) + ggsave("plot_3.pdf", width = 6, height = 4)
-# plot(outcome4) + ggsave("plot_4.pdf", width = 6, height = 4)
-#
+# test functionality of plotting functions (like regex_exclude_indicators, main_title, etc.)
+
+test_that("plotting functions work with regex_exclude_indicators", {
+
+  expect_silent(plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
+  expect_silent(plot_grid(outcome4, regex_exclude_indicators = NULL))
+
+  expect_silent(plot_counterfactual(outcome2, regex_exclude_indicators = "cfesisC"))
+  expect_silent(plot_counterfactual(outcome3, regex_exclude_indicators = NULL))
+
+  expect_snapshot_plot("plot_grid_outcome4_regex", code = plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
+  expect_snapshot_plot("plot_counterfactual_outcome2_regex", code = plot_counterfactual(outcome2, regex_exclude_indicators = "fesisA"))
+})
+

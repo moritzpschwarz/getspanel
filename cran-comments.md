@@ -1,10 +1,8 @@
 ## Resubmission
 
-This is a resubmission as the first submission did not pass the CRAN tests. In fact, all CRAN tests were passed, but the log file indicated a NOTE saying "Overall checktime 12 min > 10 min", which I assume is why the pre-test did not work. 
+Submission for version 0.2.1
 
-I have now selected more tests to be skipped on CRAN to ensure that the check takes less than 10 minutes. 
-
-### General changes in version 0.2.0: 
+### General changes in version 0.2.1: 
 
 This is an update to extend the package with a new method to enable further analysis tools. 
 

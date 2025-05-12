@@ -680,16 +680,10 @@ isatpanel <- function(
   on.exit(options(tmpmc)) # set the old mc warning on exit
 
   options(mc.warning = FALSE)
-  #sis <- FALSE # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
+  # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
   ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
                       print.searchinfo = print.searchinfo, ...)
-  #ispan <- isat.short(y, mxreg = mx, iis=iis, sis=FALSE, uis=sispanx, user.estimator = user.estimator, mc=FALSE, ...)
-
-
   # Return output ------------
-
-
-
   out$isatpanel.result <- ispan
 
   # Create a final data object
@@ -702,7 +696,7 @@ isatpanel <- function(
 
   out$indicator_matrix <- sispanx
 
-  out$finaldata <- data.frame(estimateddata, indicators)
+  out$finaldata <- cbind(estimateddata, indicators)
 
   out$arguments <- list()
   out$arguments$index <- index
@@ -715,6 +709,8 @@ isatpanel <- function(
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
   class(out) <- "isatpanel"
+
+  out$retained.indicators <- get_indicators(out)
 
   if (plot == TRUE) {
     try(

@@ -2,10 +2,11 @@
 #'
 #' @param object data.frame
 #' @param uis_breaks A character vector with the names of the UIS breaks if the \code{uis} argument was used in [isatpanel].
+#' @param isat_object The object of class \code{isat} produced by [isatpanel].
 #'
 #' @return A list of data.frames
 #'
-identify_indicator_timings <- function(object, uis_breaks = NULL){
+identify_indicator_timings <- function(object, uis_breaks = NULL, isat_object = NULL){
   varying_vars <- names(object)[!names(object)%in% c("id","time","y","fitted")]
 
   object_l <- reshape(object,
@@ -16,6 +17,34 @@ identify_indicator_timings <- function(object, uis_breaks = NULL){
                       times = varying_vars,
                       direction = "long")
 
+  # indicators_identified <- gets::isatdates(isat_object)
+  #
+  # if(!is.null(indicators_identified$iis)){
+  #   iis <- indicators_identified$iis
+  # } else {
+  #   iis <- NULL
+  # }
+  #
+  #
+  # if(!is.null(indicators_identified$tis)){
+  #   tis <- indicators_identified$tis
+  # } else {
+  #   tis <- NULL
+  # }
+  #
+  # # sis
+  # if(!is.null(indicators_identified$sis)){
+  #   sis <- indicators_identified$sis
+  # } else {
+  #   sis <- NULL
+  # }
+  #
+  # # uis
+  # if(!is.null(indicators_identified$uis)){
+  #   uis <- indicators_identified$uis
+  # } else {
+  #   uis <- NULL
+  # }
 
   # Impulses and Steps
   impulses <- object_l[grepl("iis",object_l$name) & object_l$value == 1,]
