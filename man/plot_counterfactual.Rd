@@ -9,7 +9,8 @@ plot_counterfactual(
   plus_t = 5,
   facet.scales = "free",
   title = NULL,
-  zero_line = FALSE
+  zero_line = FALSE,
+  regex_exclude_indicators = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_counterfactual(
 \item{title}{Plot title. Must be a character vector.}
 
 \item{zero_line}{Plot a horizontal line at y = 0. Default is FALSE.}
+
+\item{regex_exclude_indicators}{A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.}
 }
 \value{
 A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.

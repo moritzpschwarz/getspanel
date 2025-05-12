@@ -71,7 +71,7 @@ outcome5 <- isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), pr
 save_png <- function(code, width = 400, height = 400) {
   path <- tempfile(fileext = ".png")
 
-  if(ggplot2::is.ggplot(code)){
+  if(ggplot2::is_ggplot(code)){
     ggplot2::ggsave(filename = path, plot = code, width = 7, height = 5)
   } else {
     png(path, width = width, height = height)
@@ -121,10 +121,23 @@ test_that("Grid Plot",{
   expect_snapshot_plot("Grid_plot_outcome3", code = plot_grid(outcome3))
   expect_snapshot_plot("Grid_plot_outcome4", code = plot_grid(outcome4))
   expect_snapshot_plot("Grid_plot_outcome5", code = plot_grid(outcome5))
+
+  expect_snapshot_plot("Grid_plot_outcome4_regex", code = plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
+
+
 })
 
 
+test_that("Counterfactual Plot",{
+  skip_on_ci()
+  skip_on_cran()
+  # only carry out on FESIS objects
+  expect_snapshot_plot("counterfactual_plot_outcome2", code = plot_counterfactual(outcome2))
+  expect_snapshot_plot("counterfactual_plot_outcome3", code = plot_counterfactual(outcome3))
 
+  expect_snapshot_plot("counterfactual_plot_outcome2_regex", code = plot_grid(outcome2, regex_exclude_indicators = "fesisA"))
+  expect_snapshot_plot("counterfactual_plot_outcome3_regex", code = plot_grid(outcome3, , regex_exclude_indicators = "fesisA"))
+})
 
 
 
