@@ -1,3 +1,13 @@
+# getspanel 0.2.1
+
+## Minor changes
+
+- fixed a bug in plotting when in `plot_grid()` when Dates are being used
+- added functionality to exclude indicators to `plot_counterfactual()`
+- slightly improved standard plots
+- added `retained.indicators` as output to `isatpanel`
+
+
 # getspanel 0.2.0
 
 ## Major changes

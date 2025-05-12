@@ -683,7 +683,6 @@ isatpanel <- function(
   # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
   ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
                       print.searchinfo = print.searchinfo, ...)
-
   # Return output ------------
   out$isatpanel.result <- ispan
 
@@ -697,7 +696,7 @@ isatpanel <- function(
 
   out$indicator_matrix <- sispanx
 
-  out$finaldata <- data.frame(estimateddata, indicators)
+  out$finaldata <- cbind(estimateddata, indicators)
 
   out$arguments <- list()
   out$arguments$index <- index
