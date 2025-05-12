@@ -118,11 +118,11 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
 
   g +
-    geom_line(aes(y = .data$y, color = "black"), size = 0.7) +
+    geom_line(aes(y = .data$y, color = "black"), linewidth = 0.7) +
 
     geom_rect(data = effects, aes(xmin = .data$start_rect, xmax = .data$end_rect, ymin = -Inf, ymax = Inf, group = .data$name),fill = "grey",alpha = 0.1, na.rm = TRUE) +
 
-    geom_line(aes(color = "blue"),linetype = 1, size = 0.5) +
+    geom_line(aes(color = "blue"),linetype = 1, linewidth = 0.5) +
 
     # fesis
     geom_vline(data = df_ident_fesis, aes(xintercept = .data$time,color="red")) +
