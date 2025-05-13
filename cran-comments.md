@@ -1,6 +1,6 @@
 ## Resubmission
 
-Submission for version 0.2.1
+This is a resubmission for version 0.2.1 - I corrected an error in the URL of the package. 
 
 ### General changes in version 0.2.1: 
 
