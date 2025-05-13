@@ -1,6 +1,6 @@
 ## Resubmission
 
-Submission for version 0.2.1
+This is a resubmission for version 0.2.1 - I corrected an error in the URL of the package. 
 
 I have now selected more tests to be skipped on CRAN to ensure that the check takes less than 10 minutes. 
 
