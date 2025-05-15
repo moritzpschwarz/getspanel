@@ -154,6 +154,9 @@ test_that("Residuals Plot",{
 
 test_that("plotting functions work with regex_exclude_indicators", {
 
+  skip_on_ci()
+  skip_on_cran()
+
   expect_silent(plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
   expect_silent(plot_grid(outcome4, regex_exclude_indicators = NULL))
 
@@ -162,5 +165,43 @@ test_that("plotting functions work with regex_exclude_indicators", {
 
   expect_snapshot_plot("plot_grid_outcome4_regex", code = plot_grid(outcome4, regex_exclude_indicators = "cfesisC"))
   expect_snapshot_plot("plot_counterfactual_outcome2_regex", code = plot_counterfactual(outcome2, regex_exclude_indicators = "fesisA"))
+})
+
+
+test_that("ggplot checks without snapshotting the plot", {
+
+  p_grid <- plot_grid(outcome4, regex_exclude_indicators = "cfesisC")
+
+  # First check that you really have a plot
+  expect_s3_class(p_grid, "gg")
+
+  # Retrieve the underlying list
+  class(p_grid) <- "list"
+
+  # Remove the "environment" element which is not predictible
+  p_grid$plot_env <- NULL
+
+  expect_true(all(is.na(p_grid$data[p_grid$data$id == "C", "effect"])))
+
+  # check the stability of the underlying list
+  expect_snapshot(p_grid)
+
+
+  p_counter <- plot_counterfactual(outcome2, regex_exclude_indicators = "cfesisC")
+
+  # First check that you really have a plot
+  expect_s3_class(p_counter, "gg")
+
+  # Retrieve the underlying list
+  class(p_counter) <- "list"
+
+  # Remove the "environment" element which is not predictible
+  p_counter$plot_env <- NULL
+
+  expect_true(all(is.na(p_counter$data[p_counter$data$id == "C", "effect"])))
+
+  # check the stability of the underlying list
+  expect_snapshot(p_counter)
+
 })
 
