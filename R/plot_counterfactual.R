@@ -69,6 +69,10 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   df_ident <- merge(df_ident, max_times, by = "id")
   df_ident$origtime <- df_ident$time
 
+  if(!is.null(regex_exclude_indicators)){
+    df_ident <- df_ident[!grepl(regex_exclude_indicators,df_ident$name),,drop = FALSE]
+  }
+
   # make sure the preceding observation collapses on the last observation
   df_ident_start <- df_ident
   df_ident_start$time <- df_ident_start$time - 1
