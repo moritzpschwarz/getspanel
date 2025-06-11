@@ -2,8 +2,9 @@
 #'
 #' @param x An object produced by the isatpanel function
 #' @param title Plot title. Must be a character vector.
-#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Default is NULL, meaning no indicators are excluded.
-#' @param zero_line Plot a horizontal line at y = 0. Default is FALSE.
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Filter out multiple indicators using "|" (e.g. regex_exclude_indicators = "cfesis|csis". Default is NULL, meaning no indicators are excluded.
+#' @param zero_line Logical. If TRUE, plot a horizontal line at y = 0. Default is FALSE.
+#' @param include_fixed_effects Logical. If TRUE, fixed effects are included in the plot. Default is FALSE.
 #'
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows observed data, the fitted values, and all identified breaks and impulses.
 #' @export
@@ -12,15 +13,19 @@
 #' @importFrom dplyr mutate left_join bind_rows group_by summarise
 #' @importFrom tidyr pivot_longer
 #' @importFrom tibble tibble
-plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, zero_line = FALSE) {
+plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, zero_line = FALSE, include_fixed_effects = FALSE) {
   panel_rows <- x$estimateddata
   indicator_table <- x$isatpanel.result$aux$mX
 
-  # Remove input variables and fixed effects from the indicator table
+  # Remove input variables from the indicator table
   indicator_table <- indicator_table[, !colnames(indicator_table) %in% names(panel_rows), drop = FALSE]
-  indicator_table <- indicator_table[, !grepl("^id|^time", colnames(indicator_table)), drop = FALSE]
 
-  # If regex_exclude_indicators is provided, filter out those indicators
+  # Remove fixed effects from the indicator table if specified
+  if (!include_fixed_effects) {
+    indicator_table <- indicator_table[, !grepl("^id|^time", colnames(indicator_table)), drop = FALSE]
+  }
+
+  # Remove indicators if regex_exclude_indicators is provided
   if (!is.null(regex_exclude_indicators)) {
     indicator_table <- indicator_table[, !grepl(regex_exclude_indicators, colnames(indicator_table)), drop = FALSE]
   }
@@ -47,11 +52,22 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
     mutate(
       indicator_type = case_when(
         grepl("^iis[0-9]+$", indicator) ~ "IIS",
-        grepl("^fesis[a-zA-Z]+\\.[0-9]+$", indicator) ~ "FESIS",
-        grepl("^tis[a-zA-Z]+\\.[0-9]+$", indicator) ~ "TIS",
+        grepl("^fesis.+\\.[0-9]+$", indicator) ~ "FESIS",
+        grepl("^tis.+\\.[0-9]+$", indicator) ~ "TIS",
         grepl("^.+\\.cfesis.+\\.[0-9]+$", indicator) ~ "CFESIS",
         grepl("^.+\\.csis[0-9]+$", indicator) ~ "CSIS",
-        TRUE ~ "Other"
+        grepl("^id.+$", indicator) ~ "Unit Fixed Effects",
+        grepl("^time[0-9]+$", indicator) ~ "Time Fixed Effects"
+      )
+    )
+
+  # Ensure that CSIS and CFESIS values are set to 1 if they are not zero
+  df_long <- df_long %>%
+    mutate(
+      value = ifelse(
+        indicator_type %in% c("CSIS", "CFESIS"),
+        ifelse(value != 0, 1, 0),
+        value
       )
     )
 
@@ -60,11 +76,34 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
     indicator = names(coef(x$isatpanel.result)),
     coef = coef(x$isatpanel.result)
   )
-
-  # TODO: Need to set CSIS and CFESIS value to 1 first?
   df_long <- df_long %>%
     left_join(coefficients, by = "indicator") %>%
     mutate(effect = value * coef)
+
+  if (include_fixed_effects) {
+    # Convert the time indicators to a format that includes the unit id instead of the time so they can be plotted in each facet separately
+    df_long <- df_long %>%
+      group_by(id, time, indicator_type) %>%
+      mutate(
+        indicator = ifelse(
+          indicator_type == "Time Fixed Effects",
+          paste0("time", id),
+          indicator
+        )
+      ) %>%
+      group_by(id, time, indicator, indicator_type) %>%
+      summarise(
+        value = 1,
+        coef = min(coef, na.rm = TRUE),
+        effect = min(effect, na.rm = TRUE),
+        .groups = "drop"
+      )
+  }
+
+  # Combined effects per indicator_type per id and time
+  # test <- df_long %>%
+  #   group_by(id, time, indicator_type) %>%
+  #   summarise(effect = sum(effect, na.rm = TRUE), .groups = "drop")
 
   # Replace 0 effects with NA for plotting
   df_long <- df_long %>%
@@ -72,13 +111,8 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
       effect = ifelse(effect == 0, NA, effect)
     )
 
-  # Combined effects per indicator_type per id and time
-  # test <- df_long %>%
-  #   group_by(id, time, indicator_type) %>%
-  #   summarise(effect = sum(effect, na.rm = TRUE), .groups = "drop")
-
-  # Combined effects of all indicators per id and time
-  test <- df_long %>%
+  # Combine effects of all indicators per id and time
+  df_long <- df_long %>%
     bind_rows(
       df_long %>%
         group_by(id, time) %>%
@@ -92,21 +126,32 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
         )
     )
 
+  indicator_colors <- c(
+    "IIS" = "grey",
+    "CSIS" = "orange",
+    "FESIS" = "red",
+    "CFESIS" = "darkgreen",
+    "TIS" = "lightblue",
+    "Combined" = "black",
+    "Unit Fixed Effects" = "purple",
+    "Time Fixed Effects" = "violetred4"
+  )
+
   # Create the plot
-  g <- ggplot(test, aes(x = time, y = effect, group = indicator, color = indicator_type, fill = indicator_type)) +
+  g <- ggplot(df_long, aes(x = time, y = effect, group = indicator, color = indicator_type, fill = indicator_type)) +
     # Bars for IIS and CSIS
     geom_col(
-      data = subset(test, indicator_type %in% c("IIS")),
+      data = subset(df_long, indicator_type %in% c("IIS")),
       width = 0.75,
     ) +
     # Lines for FESIS, CFESIS, TIS
     geom_line(
-      data = subset(test, indicator_type %in% c("FESIS", "CFESIS", "TIS", "CSIS")),
+      data = subset(df_long, indicator_type %in% c("FESIS", "CFESIS", "TIS", "CSIS", "Time Fixed Effects", "Unit Fixed Effects")),
       size = 0.75
     ) +
     # Line for Combined, set color manually to black
     geom_line(
-      data = subset(test, indicator_type == "Combined"),
+      data = subset(df_long, indicator_type == "Combined"),
       aes(color = indicator_type),
       size = 0.75,
       linetype = "dashed"
@@ -115,25 +160,11 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
     theme_minimal() +
     # Customize colors for each indicator type
     scale_color_manual(
-      values = c(
-        "IIS" = "grey",
-        "CSIS" = "orange",
-        "FESIS" = "red",
-        "CFESIS" = "darkgreen",
-        "TIS" = "lightblue",
-        "Combined" = "black"
-      ),
+      values = indicator_colors,
       name = "Indicator Type"
     ) +
     scale_fill_manual(
-      values = c(
-        "IIS" = "grey",
-        "CSIS" = "orange",
-        "FESIS" = "red",
-        "CFESIS" = "darkgreen",
-        "TIS" = "lightblue",
-        "Combined" = "black"
-      ),
+      values = indicator_colors,
       name = "Indicator Type"
     ) +
     # Customize the legend to show line and bar styles in one legend
@@ -142,11 +173,11 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
         override.aes = list(
           linetype = c(
             setNames(
-              rep("solid", length(unique(test$indicator_type))),
-              unique(test$indicator_type)
+              rep("solid", length(unique(df_long$indicator_type))),
+              unique(df_long$indicator_type)
             ),
-            Combined = "dotted"
-          )[levels(factor(test$indicator_type, levels = unique(test$indicator_type)))],
+            Combined = "dashed"
+          )[levels(factor(df_long$indicator_type, levels = unique(df_long$indicator_type)))],
           shape = NA
         )
       )
