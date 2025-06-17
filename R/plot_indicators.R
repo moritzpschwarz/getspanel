@@ -2,7 +2,7 @@
 #'
 #' @param x An object produced by the isatpanel function
 #' @param title Plot title. Must be a character vector.
-#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Filter out multiple indicators using "|" (e.g. regex_exclude_indicators = "cfesis|csis". Default is NULL, meaning no indicators are excluded.
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Filter out multiple indicators using "|" (e.g. regex_exclude_indicators = "cfesis|csis". Filter out Unit or Time fixed effects indicators using "id" or "time". Default is NULL, meaning no indicators are excluded.
 #' @param zero_line Logical. If TRUE, plot a horizontal line at y = 0. Default is FALSE.
 #' @param include_fixed_effects Logical. If TRUE, fixed effects are included in the plot. Default is FALSE.
 #'
@@ -20,7 +20,7 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
   # Remove input variables from the indicator table
   indicator_table <- indicator_table[, !colnames(indicator_table) %in% names(panel_rows), drop = FALSE]
 
-  # Remove fixed effects from the indicator table if specified
+  # Remove fixed effects indicators from the indicator table if not specified
   if (!include_fixed_effects) {
     indicator_table <- indicator_table[, !grepl("^id|^time", colnames(indicator_table)), drop = FALSE]
   }
@@ -95,7 +95,7 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
       summarise(
         value = 1,
         coef = min(coef, na.rm = TRUE),
-        effect = min(effect, na.rm = TRUE),
+        effect = sum(effect, na.rm = TRUE),
         .groups = "drop"
       )
   }
