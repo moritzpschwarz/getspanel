@@ -68,7 +68,7 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
 
     # Combine all tables in get_indicators by row and select id, time, name
     indicators <- get_indicators(tmp$is[[1]])
-    indicators <- indicators[!names(indicators) %in% "impulses"]
+    # indicators <- indicators[!names(indicators) %in% "impulses"]
     indicators_flat <- do.call(rbind, lapply(indicators, function(x) x[, c("id", "time", "name"), drop = FALSE]))
 
     raw_breaks <- merge(indicators_flat, coefficients)
@@ -80,7 +80,26 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
       raw_breaks <- raw_breaks %>% filter(coef > 0) 
     }
     
-    # Old code: this only "extends" the absolute coefficient value of the last break until the next break, this does not show the cumulative coefficient value (i.e. the net effect of all breaks)
+    # Prepare indicator info before completing the time grid
+    indicator_info <- raw_breaks %>%
+      mutate(
+        indicator_type = case_when(
+          grepl("^iis[0-9]+$", name) ~ "iis",
+          grepl("^fesis.+\\.[0-9]+$", name) ~ "fesis",
+          grepl("^tis.+\\.[0-9]+$", name) ~ "tis",
+          TRUE ~ "other"
+        ),
+        breaks = time
+      ) %>%
+      select(id, coef, indicator_type, breaks)
+    
+    # Create a full grid of id and time
+    full_grid <- expand.grid(
+      id = unique(indicator_info$id),
+      time = t_range
+    )
+
+    # Old code: this only "extends" the absolute coefficient value of the last (fesis) break until the next break, this does not show the cumulative coefficient value (i.e. the net effect of all breaks)
     # p_data <- raw_breaks %>%
     #   mutate(breaks = time) %>% 
     #   select(id, time, coef, breaks) %>% 
@@ -92,6 +111,7 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
     #   rbind(p_data)
 
     # Variant 1: this shows the coefficient value of a break at the time of the break, but also does not show any cumulative effect
+    # Note: works for iis and fesis but does not show the prolonged effect of fesis
     # p_data <- raw_breaks %>%
     #   mutate(breaks = time) %>%
     #   select(id, time, coef, breaks) %>%
@@ -104,17 +124,41 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
     #   rbind(p_data)
     
     # Variant 2: this shows the cumulative effect of all breaks, but the individual coefficient values are not distinguishable
-    p_data <- raw_breaks %>%
-      mutate(breaks = time) %>%
-      select(id, time, coef, breaks) %>%
-      complete(id, time = t_range) %>%
-      arrange(id, time) %>%
-      group_by(id) %>%
-      mutate(coef = cumsum(replace_na(coef, 0))) %>%
-      ungroup() %>%
+    # Note: only works for fesis breaks
+    # p_data <- raw_breaks %>%
+    #   mutate(breaks = time) %>%
+    #   select(id, time, coef, breaks) %>%
+    #   complete(id, time = t_range) %>%
+    #   arrange(id, time) %>%
+    #   group_by(id) %>%
+    #   mutate(coef = cumsum(replace_na(coef, 0))) %>%
+    #   ungroup() %>%
+    #   mutate(model = tmp$model) %>%
+    #   rbind(p_data)
+    
+    # This Version extends the old code idea of creating the full coefficients table from only the breaks to also support iis and tis breaks
+    # Requires some tweaking but is quite a bit faster (and potentially easier to understand) than the full indicators x panel method currently used in plot_grid and plot_indicators
+    p_data <- full_grid %>%
+      left_join(indicator_info, by = "id") %>%
+      mutate(
+        active = case_when(
+          indicator_type == "iis"   & breaks == time ~ TRUE,
+          indicator_type == "fesis" & breaks <= time ~ TRUE,
+          indicator_type == "tis"   & breaks <= time ~ TRUE,
+          TRUE ~ FALSE
+        ),
+        effect = case_when(
+          indicator_type == "iis"   & active ~ coef,
+          indicator_type == "fesis" & active ~ coef,
+          indicator_type == "tis"   & active ~ coef * (time - breaks + 1),
+          TRUE ~ 0
+        )
+      ) %>%
+      group_by(id, time) %>%
+      summarise(cum_coef = sum(effect, na.rm = TRUE), .groups = "drop") %>%
       mutate(model = tmp$model) %>%
       rbind(p_data)
-    
+
     if(!is.null(id_list)){p_data <- p_data %>% filter(id %in% id_list)}
   }
   
@@ -127,10 +171,10 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
   if(panel == "model"){
     p_data <- p_data %>% rename(id = model, model = id)
   }
-  
+
   p <- p_data %>%
     ggplot(aes(x = time, y = model)) +
-    geom_tile(aes(fill = coef), na.rm = TRUE) +  
+    geom_tile(aes(fill = cum_coef), na.rm = TRUE) +  
     scale_fill_gradient2(na.value = NA, name = "Effect", mid = "white")+
     scale_x_continuous(expand = c(0,0)) +
     scale_y_discrete(expand = c(0,0), limits = rev) +
@@ -190,10 +234,10 @@ plot_comp_quick <- function(mod,  sign, panel = "unit", na.rm = TRUE, id_list = 
   
   tmp <- tibble()
   for(m in 1:nrow(mod)){
-    if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid(regex_exclude_indicators = "iis") %>% ggplot_build %>% try %>% is.error){next}else{
+    if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build %>% try %>% is.error){next}else{
       mod_name <- mod %>% slice(m) %>% pull(model)
       # Currently,this extracts the data used to build the plot_grid in isatpanel; not ideal
-      grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid(regex_exclude_indicators = "iis") %>% ggplot_build
+      grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build
       grid_dat <- grid_dat$plot$data
       grid_dat$model <- mod_name
       tmp <- rbind(tmp, grid_dat)
@@ -232,7 +276,7 @@ plot_comp_quick <- function(mod,  sign, panel = "unit", na.rm = TRUE, id_list = 
           axis.text = element_text(size = 12, color = "black"),
           strip.text.y = element_text(size = 14, angle = 0)) +
     labs(x = NULL, y = NULL, title= "Model Overview")
-  
+
   return(p)
 }
 
