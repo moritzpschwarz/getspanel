@@ -61,8 +61,17 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
     tmp <- mod %>% 
       slice(r)
     
-    raw_breaks <- tmp %>% pull(is) %>% first %>% 
-      break_uncertainty
+    coefficients <- tibble(
+      name = names(coef(tmp$is[[1]]$isatpanel.result)),
+      coef = coef(tmp$is[[1]]$isatpanel.result)
+    )
+
+    # Combine all tables in get_indicators by row and select id, time, name
+    indicators <- get_indicators(tmp$is[[1]])
+    indicators <- indicators[!names(indicators) %in% "impulses"]
+    indicators_flat <- do.call(rbind, lapply(indicators, function(x) x[, c("id", "time", "name"), drop = FALSE]))
+
+    raw_breaks <- merge(indicators_flat, coefficients)
     
     if(missing(sign)){}
     else if(sign == "neg"){
@@ -71,14 +80,39 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
       raw_breaks <- raw_breaks %>% filter(coef > 0) 
     }
     
+    # Old code: this only "extends" the absolute coefficient value of the last break until the next break, this does not show the cumulative coefficient value (i.e. the net effect of all breaks)
+    # p_data <- raw_breaks %>%
+    #   mutate(breaks = time) %>% 
+    #   select(id, time, coef, breaks) %>% 
+    #   complete(id, time = t_range) %>% 
+    #   group_by(id) %>% 
+    #   fill(coef, .direction = "down") %>% 
+    #   ungroup() %>% 
+    #   mutate(model = tmp$model) %>% 
+    #   rbind(p_data)
+
+    # Variant 1: this shows the coefficient value of a break at the time of the break, but also does not show any cumulative effect
+    # p_data <- raw_breaks %>%
+    #   mutate(breaks = time) %>%
+    #   select(id, time, coef, breaks) %>%
+    #   complete(id, time = t_range) %>%
+    #   group_by(id, time) %>%
+    #   summarise(coef = sum(coef, na.rm = TRUE), .groups = "drop") %>%
+    #   group_by(id) %>%
+    #   mutate(model = tmp$model) %>%
+    #   ungroup() %>%
+    #   rbind(p_data)
+    
+    # Variant 2: this shows the cumulative effect of all breaks, but the individual coefficient values are not distinguishable
     p_data <- raw_breaks %>%
-      mutate(breaks = time) %>% 
-      select(id, time, coef, breaks) %>% 
-      complete(id, time = t_range) %>% 
-      group_by(id) %>% 
-      fill(coef, .direction = "down") %>% 
-      ungroup() %>% 
-      mutate(model = tmp$model) %>% 
+      mutate(breaks = time) %>%
+      select(id, time, coef, breaks) %>%
+      complete(id, time = t_range) %>%
+      arrange(id, time) %>%
+      group_by(id) %>%
+      mutate(coef = cumsum(replace_na(coef, 0))) %>%
+      ungroup() %>%
+      mutate(model = tmp$model) %>%
       rbind(p_data)
     
     if(!is.null(id_list)){p_data <- p_data %>% filter(id %in% id_list)}
@@ -237,8 +271,16 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
     tmp <- mod %>% 
       slice(r)
     
-    raw_breaks <- tmp %>% pull(is) %>% first %>% 
-      break_uncertainty
+    coefficients <- tibble(
+      name = names(coef(tmp$is[[1]]$isatpanel.result)),
+      coef = coef(tmp$is[[1]]$isatpanel.result)
+    )
+
+    # Combine all tables in get_indicators by row and select id, time, name
+    indicators <- get_indicators(tmp$is[[1]])
+    indicators_flat <- do.call(rbind, lapply(indicators, function(x) x[, c("id", "time", "name"), drop = FALSE]))
+
+    raw_breaks <- merge(indicators_flat, coefficients)
     
     p_data <- raw_breaks %>%
       mutate(breaks = time) %>% 
