@@ -31,8 +31,10 @@
 #' @param blanks Boolean - whether to include models in which no break is detected for a panel cross-section.
 #' @param t_range provide time range of panel from tt:TT.
 #' @param id_list provide a character vector of unit names to isolate only certain units
-#' 
+#'
 #' @return ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
+#' @export
+#'
 #' @examples
 #' library(tidyverse)
 #' library(here)
@@ -292,8 +294,9 @@ plot_comp_quick <- function(mod,  sign, panel = "unit", na.rm = TRUE, id_list = 
 #' @param unit Exact string identifier of panel cross-section/unit of interest in isatpanel result.
 #' @param blanks Boolean - whether to include models in which no break is detected for a panel cross-section.
 #' @param t_range provide time range of panel from tt:TT.
-#' 
+#'
 #' @return ggplot object that displays multiple isatpanel results for a single unit for quick comparison across multiple specifications.
+#' @export
 #' @examples
 #' res <- readRDS(here('standard_results_example.RDS')) 
 #' res %>% select(is, model, dep) %>% plot_unit(t_range = 2000:2021, unit = "Peru")
