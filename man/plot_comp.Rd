@@ -42,11 +42,9 @@ The function can only handle one outcome/dependent variable at a time.
 }
 \examples{
 library(tidyverse)
-library(here)
 library(gridExtra)
 library(gets)
 library(getspanel)
-library(assertthat)
 res <- readRDS(here('data/standard_results_example.RDS')) 
 res \%>\% select(is, model) \%>\% plot_comp(t_range = 2000:2021)
 # Example isolating specific units

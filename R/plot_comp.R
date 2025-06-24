@@ -5,9 +5,6 @@
 # The following contains three functions for plotting multiple models side by side. 
 # plot_comp: The first plots multiple isatpanel objects by panel cross-section or 
 #     model description using the break_uncertainty() function of getspanel
-# plot_comp_quick: given plot_comp compiles somewhat slowly, this second function 
-#     draws on the plotting output of plot_grid from getspanel for quicker rendering. 
-#     Note that this function prints successive breaks as additive rather than independent! 
 # plot_unit: final function can plot both multiple model specifications and multiple 
 #     dependent variables for a single panel cross-section/unit for higher-dim comparisons 
 
@@ -34,14 +31,16 @@
 #'
 #' @return ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
 #' @export
+#' @importFrom dplyr slice %>% mutate case_when select left_join group_by summarise rename
+#' @importFrom tidyr complete
+#' @importFrom tibble tibble
+#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs
 #'
 #' @examples
 #' library(tidyverse)
-#' library(here)
 #' library(gridExtra)
 #' library(gets)
 #' library(getspanel)
-#' library(assertthat)
 #' res <- readRDS(here('data/standard_results_example.RDS')) 
 #' res %>% select(is, model) %>% plot_comp(t_range = 2000:2021)
 #' # Example isolating specific units
@@ -49,8 +48,6 @@
 #'
 #'
 #'
-
-
 plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE, t_range, id_list = NULL){
   p_data <- tibble()
   if(nrow(mod) > 8){print(paste0("WARNING: Plotting ", nrow(mod), " models. Take care when plotting too many models."))}
@@ -196,93 +193,6 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
   return(p)
 }
 
-
-###############################################################################
-#' Plotting multiple isatpanel objects for comparison across units
-#'
-#' The following function takes a dataframe of isatpanel objects with associated 
-#' model names and builds a plot that allows for comparison of detected breaks 
-#' by panel cross-section. In contrast to the function above, this does not rely 
-#' on the break_uncertainty function of gets but rather pulls the plot data from 
-#' plot_grid for faster rendering. 
-#' 
-#' NOTE: this function prints successive breaks as additive rather than independent! 
-#' This significantly hampers interpretation of the grids as breaks are represented 
-#' as their net effect on y rather than independent effect.
-#'
-#' @param mod Dataframe of model objects. At minimum, requires one column with 
-#' one isatpanel object wrapped in a list per row and a second column with a unique model description.
-#' @param sign Type of break to display in plot ("all", negative ("neg"), or positive ("pos")). 
-#' @param panel Whether the results should be displayed by panel cross-section or by model ("model" or "unit")
-#' @param na.rm Same as blanks in plot_comp - whether to include models in which no break is detected for a panel cross-section.
-#' @param id_list provide a character vector of unit names to isolate only certain units
-#' 
-#' 
-#' @return ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
-#' @examples
-#' 
-#' res <- readRDS(here('standard_results_example.RDS')) 
-#' res %>% select(is, model) %>% plot_comp_quick()
-#' res %>% select(is, model) %>% plot_comp_quick(id_list = c("Chile", "Colombia", "CzechRepublic"))
-#'
-#'
-
-# Possible that this incorrectly distinguishes negative and positive breaks by including impulse effects? To be checked and corrected.
-plot_comp_quick <- function(mod,  sign, panel = "unit", na.rm = TRUE, id_list = NULL){
-  if(nrow(mod) > 8){print(paste0("WARNING: Plotting ", nrow(mod), " models. Take care when plotting too many models."))}
-  if(nrow(mod) == 0){
-    stop("No models to plot.")
-  }
-  
-  tmp <- tibble()
-  for(m in 1:nrow(mod)){
-    if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build %>% try %>% is.error){next}else{
-      mod_name <- mod %>% slice(m) %>% pull(model)
-      # Currently,this extracts the data used to build the plot_grid in isatpanel; not ideal
-      grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build
-      grid_dat <- grid_dat$plot$data
-      grid_dat$model <- mod_name
-      tmp <- rbind(tmp, grid_dat)
-    }
-  }
-  
-  if(!is.null(id_list)){tmp <- tmp %>% filter(id %in% id_list)}
-
-  
-  if(panel == "model"){
-    tmp <- tmp %>% rename(id = model, model = id)
-  }
-  
-  if(na.rm == TRUE){
-    tmp <- tmp %>% group_by(id, model) %>% filter(!all(is.na(effect)))
-  }
-  
-  if(missing(sign)){}
-  else if(sign == "pos"){
-    tmp <- tmp %>% group_by(id, model) %>% filter(any(effect > 0))
-    
-  }else if(sign == "neg") { tmp <- tmp %>% group_by(id, model) %>% filter(any(effect < 0))}
-  
-  p <- tmp %>% 
-    mutate(id = as.character(id)) %>% 
-    ggplot(aes(x = time, y = model)) +
-    geom_tile(aes(fill = effect), na.rm = TRUE) +
-    scale_fill_gradient2(na.value = NA, name = "Effect")+
-    scale_x_continuous(expand = c(0,0)) +
-    scale_y_discrete(expand = c(0,0), limits = rev) +
-    facet_grid(id~., scales = "free") +
-    theme_bw() +
-    theme(panel.grid = element_blank(),
-          panel.border = element_rect(fill = NA),
-          strip.background = element_blank(),
-          axis.text = element_text(size = 12, color = "black"),
-          strip.text.y = element_text(size = 14, angle = 0)) +
-    labs(x = NULL, y = NULL, title= "Model Overview")
-
-  return(p)
-}
-
-
 ###############################################################################
 #' This function plots multiple isatpanel objects by single panel cross-section allowing for 
 #' comparison across both multiple dependent variables and multiple model specifications.
@@ -297,6 +207,11 @@ plot_comp_quick <- function(mod,  sign, panel = "unit", na.rm = TRUE, id_list = 
 #'
 #' @return ggplot object that displays multiple isatpanel results for a single unit for quick comparison across multiple specifications.
 #' @export
+#' @importFrom tibble tibble
+#' @importFrom dplyr slice select filter mutate arrange group_by ungroup do %>%
+#' @importFrom tidyr complete fill
+#' @importFrom gridExtra grid.arrange arrangeGrob
+#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs
 #' @examples
 #' res <- readRDS(here('standard_results_example.RDS')) 
 #' res %>% select(is, model, dep) %>% plot_unit(t_range = 2000:2021, unit = "Peru")
@@ -365,7 +280,3 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
     }) %>%
     .$gg %>% arrangeGrob(grobs = ., ncol = 1) %>% grid.arrange(top = unit)
 }
-
-
-
-
