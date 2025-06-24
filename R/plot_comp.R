@@ -31,10 +31,10 @@
 #'
 #' @return ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
 #' @export
-#' @importFrom dplyr slice %>% mutate case_when select left_join group_by summarise rename
-#' @importFrom tidyr complete
+#' @importFrom dplyr slice %>% mutate case_when select left_join group_by summarise rename filter ungroup
+#' @importFrom tidyr complete fill
 #' @importFrom tibble tibble
-#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs element_text
+#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs element_text element_blank element_rect
 #'
 #' @examples
 #' library(tidyverse)
@@ -212,7 +212,8 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
 #' @importFrom dplyr slice select filter mutate arrange group_by ungroup do %>%
 #' @importFrom tidyr complete fill
 #' @importFrom gridExtra grid.arrange arrangeGrob
-#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs
+#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs element_blank element_text
+#' @importFrom scales squish
 #' @examples
 #' res <- readRDS(here('standard_results_example.RDS')) 
 #' res %>% select(is, model, dep) %>% plot_unit(t_range = 2000:2021, unit = "Peru")
@@ -269,7 +270,7 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
     group_by(dep) %>%
     do(gg = {ggplot(., aes(x = time, y = model)) +
         geom_tile(aes(fill = coef)) +
-        scale_fill_gradient2(na.value = NA, name = "Effect", oob = scales::squish) +
+        scale_fill_gradient2(na.value = NA, name = "Effect", oob = squish) +
         scale_x_continuous(expand = c(0,0)) +
         scale_y_discrete(expand = c(0,0), limits = rev) +
         facet_grid(dep~.) +
