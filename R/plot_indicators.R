@@ -9,10 +9,11 @@
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows observed data, the fitted values, and all identified breaks and impulses.
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_col geom_line facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides
-#' @importFrom dplyr mutate left_join bind_rows group_by summarise case_when
+#' @importFrom ggplot2 ggplot aes geom_col geom_line geom_hline facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides theme_minimal theme_bw guide_legend
+#' @importFrom dplyr %>% mutate left_join bind_rows group_by summarise case_when
 #' @importFrom tidyr pivot_longer
 #' @importFrom tibble tibble
+#' @importFrom gets coef.gets
 plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, zero_line = FALSE, include_fixed_effects = FALSE) {
   panel_rows <- x$estimateddata
   indicator_table <- x$isatpanel.result$aux$mX
