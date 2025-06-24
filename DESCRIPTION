@@ -42,7 +42,8 @@ Imports:
     mvtnorm,
     dplyr,
     tidyr,
-    tibble
+    tibble,
+    gridExtra
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown
