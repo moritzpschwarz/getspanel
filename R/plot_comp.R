@@ -298,7 +298,7 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
       ) %>%
       group_by(id, time) %>%
       summarise(cum_coef = sum(effect, na.rm = TRUE), .groups = "drop") %>%
-      mutate(model = tmp$model) %>%
+      mutate(model = tmp$model, dep = tmp$dep) %>%
       rbind(p_data)
   }
   cmod <- p_data %>% filter(id == unit)
@@ -314,13 +314,13 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
         geom_tile(aes(fill = cum_coef)) +
         scale_fill_gradient2(na.value = NA, name = "Effect", oob = squish) +
         scale_x_continuous(expand = c(0,0)) +
-        scale_y_discrete(expand = c(0,0), limits = rev) +
+        scale_y_discrete(expand = c(0,0), limits = rev, labels = function(x) x) +
         facet_grid(dep~.) +
         theme_bw() +
         theme(panel.grid = element_blank(),
               legend.position = "bottom",
               strip.background = element_blank(),
-              axis.text = element_blank(), #element_text(size = 12, color = "black"),
+              axis.text = element_text(size = 10, color = "black"),
               strip.text.y = element_text(size = 12)) +
         labs(x = NULL, y = NULL, title = NULL)
     }) %>%
