@@ -48,7 +48,7 @@
 #'
 #'
 #'
-plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE, t_range, id_list = NULL){
+plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE, t_range, id_list = NULL, regex_exclude_indicators = NULL){
   p_data <- tibble()
   print("NOTE: This function currently only plots FESIS breaks, and only plots their absolute coefficient value (no cumulative/overlapping effects)")
   if(nrow(mod) > 8){print(paste0("WARNING: Plotting ", nrow(mod), " models. Take care when plotting too many models."))}
@@ -68,7 +68,12 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
 
     # Combine all tables in get_indicators by row and select id, time, name
     indicators <- get_indicators(tmp$is[[1]])
-    indicators <- indicators[names(indicators) %in% "fesis"]
+    # Ignore cfesis and csis indicators
+    indicators <- indicators[names(indicators) %in% c("fesis", "iis", "tis")]
+    # Remove indicators if regex_exclude_indicators is provided
+    if(!is.null(regex_exclude_indicators)){
+      indicators <- indicators[!names(indicators) %in% regex_exclude_indicators]
+    }
     indicators_flat <- do.call(rbind, lapply(indicators, function(x) x[, c("id", "time", "name"), drop = FALSE]))
 
     raw_breaks <- merge(indicators_flat, coefficients)
@@ -220,7 +225,7 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
 #'
 #'
 
-plot_unit <- function(mod, unit, blanks = TRUE, t_range){
+plot_unit <- function(mod, unit, blanks = TRUE, t_range, regex_exclude_indicators = NULL){
   p_data <- tibble()
   print("NOTE: This function currently only plots FESIS breaks, and only plots their absolute coefficient value (no cumulative/overlapping effects)")
   if(nrow(mod) > 8){print(paste0("WARNING: Plotting ", nrow(mod), " models. Take care when plotting too many models."))}
@@ -243,7 +248,12 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range){
 
     # Combine all tables in get_indicators by row and select id, time, name
     indicators <- get_indicators(tmp$is[[1]])
-    indicators <- indicators[names(indicators) %in% "fesis"]
+    # Ignore cfesis and csis indicators
+    indicators <- indicators[names(indicators) %in% c("fesis", "iis", "tis")]
+    # Remove indicators if regex_exclude_indicators is provided
+    if(!is.null(regex_exclude_indicators)){
+      indicators <- indicators[!names(indicators) %in% regex_exclude_indicators]
+    }
     indicators_flat <- do.call(rbind, lapply(indicators, function(x) x[, c("id", "time", "name"), drop = FALSE]))
 
     raw_breaks <- merge(indicators_flat, coefficients)
