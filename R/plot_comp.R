@@ -69,7 +69,7 @@ plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE
     # Combine all tables in get_indicators by row and select id, time, name
     indicators <- get_indicators(tmp$is[[1]])
     # Ignore cfesis and csis indicators
-    indicators <- indicators[names(indicators) %in% c("fesis", "iis", "tis")]
+    indicators <- indicators[names(indicators) %in% c("fesis", "impulses", "tis")]
     # Remove indicators if regex_exclude_indicators is provided
     if(!is.null(regex_exclude_indicators)){
       indicators <- indicators[!names(indicators) %in% regex_exclude_indicators]
@@ -249,7 +249,7 @@ plot_unit <- function(mod, unit, blanks = TRUE, t_range, regex_exclude_indicator
     # Combine all tables in get_indicators by row and select id, time, name
     indicators <- get_indicators(tmp$is[[1]])
     # Ignore cfesis and csis indicators
-    indicators <- indicators[names(indicators) %in% c("fesis", "iis", "tis")]
+    indicators <- indicators[names(indicators) %in% c("fesis", "impulses", "tis")]
     # Remove indicators if regex_exclude_indicators is provided
     if(!is.null(regex_exclude_indicators)){
       indicators <- indicators[!names(indicators) %in% regex_exclude_indicators]
