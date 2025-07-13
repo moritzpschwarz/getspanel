@@ -17,7 +17,7 @@ Description: Uses several types of indicator saturation and automated General-to
 License: MIT + file LICENSE
 Encoding: UTF-8
 URL: https://github.com/moritzpschwarz/getspanel,
-    http://moritzschwarz.org/getspanel/
+    https://www.moritzschwarz.org/getspanel/
 BugReports: https://github.com/moritzpschwarz/getspanel/issues
 LazyData: true
 Roxygen: list(markdown = TRUE)

@@ -1,6 +1,6 @@
 ## Resubmission
 
-Submission for version 0.2.1
+This is a resubmission for version 0.2.1 - I corrected an error in the URL of the package. 
 
 ### General changes in version 0.2.1: 
 
@@ -13,4 +13,4 @@ This is an update to extend the package with a new method to enable further anal
 
 ## R CMD Checks
 
-There were no ERRORs or WARNINGs.
+devtools::check_rhub() is currently throwing an error which I don't believe is related to this package: "SSL peer certificate or SSH remote key was not OK: [builder.r-hub.io] schannel: SEC_E_UNTRUSTED_ROOT (0x80090325) - The certificate chain was issued by an authority that is not trusted."
