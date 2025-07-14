@@ -4,15 +4,17 @@
 \alias{get_indicators}
 \title{Extract the retained indicators from an \code{isatpanel} object}
 \usage{
-get_indicators(object, uis_breaks = NULL)
+get_indicators(object, uis_breaks = NULL, format = "list")
 }
 \arguments{
-\item{object}{An object produced by the isatpanel function.}
+\item{object}{An object produced by the \code{isatpanel} function.}
 
 \item{uis_breaks}{A string with the names of user-specified indicators.}
+
+\item{format}{A string indicating the format of the output. Can be "list", "table" or "long". Default is "list".}
 }
 \value{
-A list of indicators.
+A list of data frames (if \code{format = "list"}) or a single data frame (if \code{format = "table"} or \code{format = "long"}) containing information about the indicators identified in the \code{isatpanel} object. The list is provided for backward-compatibility and contains differently shaped data frames for each indicator type that can be accessed by name ("impulses", "fesis", "tis", "cfesis", "csis", "uis_breaks"). The "table" format returns a single data frame with all indicators that can be filtered by the "type" column. The "long" format returns a panel-shaped data frame that can be used for plotting (see \code{plot_indicators} and \code{plot_comp}). The column names between the formats differ slightly (see examples).
 }
 \description{
 Extract the retained indicators from an \code{isatpanel} object
@@ -43,9 +45,11 @@ result <- isatpanel(
   t.pval = 0.01
 )
 plot(result)
-plot_grid(result)
 
-# print the retained indicators
-get_indicators(result)
+# Different ways to retrieve information about the indicators:
+get_indicators(result, format = "list")$impulses # Legacy list format
+get_indicators(result, format = "table")[type == "IIS"] # Table format with additional columns "coef" and "variable" (used for CFESIS/CSIS)
+get_indicators(result, format = "long") # Long format with additional "coef", "value", and "effect" columns (useful to see the time-varying impact of e.g. trend indicators) and a "combined" indicator that sums up all IIS/TIS/FESIS-effects per id/time
+plot_indicators(result) # Plots the long format
 }
 }

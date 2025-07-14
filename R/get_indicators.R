@@ -1,11 +1,15 @@
 #' Extract the retained indicators from an `isatpanel` object
 #'
-#' @param object An object produced by the isatpanel function.
+#' @param object An object produced by the `isatpanel` function.
 #' @param uis_breaks A string with the names of user-specified indicators.
-#' @param list Logical. If TRUE (default), returns a list with each indicator type as a separate element. If FALSE, returns a single flat data frame.
+#' @param format A string indicating the format of the output. Can be "list", "table" or "long". Default is "list".
 #'
-#' @return A list of indicators (if list=TRUE) or a single data frame (if list=FALSE).
+#' @return A list of data frames (if `format = "list"`) or a single data frame (if `format = "table"` or `format = "long"`) containing information about the indicators identified in the `isatpanel` object. The list is provided for backward-compatibility and contains differently shaped data frames for each indicator type that can be accessed by name ("impulses", "fesis", "tis", "cfesis", "csis", "uis_breaks"). The "table" format returns a single data frame with all indicators that can be filtered by the "type" column. The "long" format returns a panel-shaped data frame that can be used for plotting (see `plot_indicators` and `plot_comp`). The column names between the formats differ slightly (see examples).
+#'
 #' @export
+#'
+#' @importFrom gets coef.gets
+#' @importFrom stats reshape aggregate
 #'
 #' @examples
 #' \donttest{
@@ -33,69 +37,35 @@
 #'   t.pval = 0.01
 #' )
 #' plot(result)
-#' plot_grid(result)
 #'
-#' # print the retained indicators
-#' get_indicators(result)
+#' # Different ways to retrieve information about the indicators:
+#' get_indicators(result, format = "list")$impulses # Legacy list format
+#' get_indicators(result, format = "table")[type == "IIS"] # Table format with additional columns "coef" and "variable" (used for CFESIS/CSIS)
+#' get_indicators(result, format = "long") # Long format with additional "coef", "value", and "effect" columns (useful to see the time-varying impact of e.g. trend indicators) and a "combined" indicator that sums up all IIS/TIS/FESIS-effects per id/time
+#' plot_indicators(result) # Plots the long format
 #' }
-
-# Helper function for common indicator processing
-process_indicators <- function(long_data, pattern, type, format, deduplicate = TRUE, extract_variable = FALSE) {
-  # Filter by pattern
-  filtered <- long_data[grepl(pattern, long_data$name), ]
-  
-  if (nrow(filtered) == 0) {
-    return(NULL)
-  }
-  
-  # Filter for value == 1 (except for some special cases)
-  if (!(type %in% c("TIS", "CFESIS", "CSIS"))) {
-    filtered <- filtered[filtered$value == 1, ]
-  }
-  
-  # Extract variable name if needed
-  if (extract_variable) {
-    split_list <- strsplit(x = filtered$name, split = "\\.")
-    filtered$variable <- unlist(lapply(split_list, `[[`, 1))
-  } else {
-    filtered$variable <- NA
-  }
-  
-  # Remove duplicates if requested
-  if (deduplicate) {
-    filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
-  }
-  
-  # Add type
-  filtered$type <- type
-
-  if (format == "long") {
-    return(filtered[,c("id", "time", "name", "type", "variable", "value", "coef", "effect")])
-  } else {
-    return(filtered[,c("id", "time", "name", "type", "variable", "coef")])
-  }
-}
-
-
-
-get_indicators <- function(object, uis_breaks = NULL, format = "list"){
+get_indicators <- function(object, uis_breaks = NULL, format = "list") {
+  # Get the indicator matrix from the isatpanel object
   df <- object$isatpanel.result$aux$mX
+
+  # Add the panel rows
   panel_rows <- object$finaldata[, c("id", "time"), drop = FALSE]
   df <- cbind(panel_rows, df)
+
+  # Get indicator names from the isatpanel object
   indicator_names <- object$isatpanel.result$ISnames
 
-  # Single transformation to long format for all indicators
+  # Reshape to long format (one row for every id/time/indicator combination)
   all_indicators_long <- reshape(
-    df, 
+    df,
     varying = indicator_names,
-    idvar = c("id", "time"), 
-    v.names = "value", 
-    timevar = "name", 
-    times = indicator_names, 
+    idvar = c("id", "time"),
+    v.names = "value",
+    timevar = "name",
+    times = indicator_names,
     direction = "long"
   )
-  
-  # Filter for non-zero values only once
+  # Only keep rows where indicators are active (indicated by any non-zero value)
   all_indicators_long <- all_indicators_long[all_indicators_long$value != 0, ]
 
   # Add coefficients
@@ -103,103 +73,75 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list"){
     name = colnames(object$isatpanel.result$aux$mX),
     coef = object$isatpanel.result$coefficients
   )
-
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
-  all_indicators_long$effect <- all_indicators_long$value * all_indicators_long$coef
 
-  
   # Initialize output based on format
   if (format == "list") {
     output <- list()
   } else {
-    output <- data.frame(matrix(nrow = 0, ncol = 6))
-    colnames(output) <- c("id", "time", "name", "type", "variable", "value")
+    output <- data.frame()
   }
 
   # IIS - Impulse Indicators
-  iis_result <- process_indicators(all_indicators_long, "^iis[0-9]+", "IIS", format, deduplicate = FALSE)
-  if (!is.null(iis_result)) {
-    if (format == "list") {
-      output$impulses <- iis_result
-    } else {
-      output <- rbind(output, iis_result)
-    }
+  iis_result <- process_indicators(all_indicators_long, "^iis[0-9]+", "IIS", format)
+  if (format == "list") {
+    output$impulses <- iis_result
+  } else {
+    output <- rbind(output, iis_result)
   }
 
   # FESIS - Fixed Effects Step Indicators
-  if (format == "long") {
-    fesis_result <- process_indicators(all_indicators_long, "^fesis.+\\.[0-9]+$", "FESIS", format, deduplicate = FALSE)
-    output <- rbind(output, fesis_result)
+  fesis_result <- process_indicators(all_indicators_long, "^fesis.+\\.[0-9]+$", "FESIS", format)
+  if (format == "list") {
+    output$fesis <- fesis_result
   } else {
-    fesis_result <- process_indicators(all_indicators_long, "^fesis.+\\.[0-9]+$", "FESIS", format, deduplicate = TRUE)
-    if (format == "list") {
-      output$fesis <- fesis_result
-    } else {
-      output <- rbind(output, fesis_result)
-    }
+    output <- rbind(output, fesis_result)
   }
 
   # TIS - Trend Indicators
-  if (format == "long") {
-    tis_result <- process_indicators(all_indicators_long, "^tis.+\\.[0-9]+$", "TIS", format, deduplicate = FALSE)
-    output <- rbind(output, tis_result)
+  tis_result <- process_indicators(all_indicators_long, "^tis.+\\.[0-9]+$", "TIS", format)
+  if (format == "list") {
+    output$tis <- tis_result
   } else {
-    tis_result <- process_indicators(all_indicators_long, "^tis.+\\.[0-9]+$", "TIS", format, deduplicate = TRUE)
-    if (format == "list") {
-      output$tis <- tis_result
-    } else {
-      output <- rbind(output, tis_result)
-    }
+    output <- rbind(output, tis_result)
   }
 
   # CFESIS - Conditional Fixed Effects Step Indicators
-  if (format == "long") {
-    cfesis_result <- process_indicators(all_indicators_long, "^.+\\.cfesis.+\\.[0-9]+$", "CFESIS", format, deduplicate = FALSE, extract_variable = TRUE)
-    output <- rbind(output, cfesis_result)
+  cfesis_result <- process_indicators(all_indicators_long, "^.+\\.cfesis.+\\.[0-9]+$", "CFESIS", format, extract_variable = TRUE)
+  if (format == "list") {
+    # Some adjustments to column names to be compatible with plot.isatpanel
+    rownames(cfesis_result) <- cfesis_result[, "name"]
+    cfesis_result[, c("name")] <- cfesis_result[, c("variable")]
+    cfesis_result <- cfesis_result[, c("id", "time", "name", "type", "coef")]
+    output$cfesis <- cfesis_result
   } else {
-    cfesis_result <- process_indicators(all_indicators_long, "^.+\\.cfesis.+\\.[0-9]+$", "CFESIS", format, deduplicate = TRUE, extract_variable = TRUE)
-    if (format == "list") {
-      rownames(cfesis_result) <- cfesis_result[,"name"]
-      cfesis_result[,c("name")] <- cfesis_result[,c("variable")]
-      cfesis_result <- cfesis_result[,c("id", "time", "name", "type", "coef")]
-      output$cfesis <- cfesis_result
-    } else {
-  output <- rbind(output, cfesis_result)
-    }
+    output <- rbind(output, cfesis_result)
   }
 
   # CSIS - Common Step Indicators
-  if (format == "long"){
-    csis_result <- process_indicators(all_indicators_long, "^.+\\.csis[0-9]+$", "CSIS", format, deduplicate = FALSE, extract_variable = TRUE)
-    output <- rbind(output, csis_result)
+  csis_result <- process_indicators(all_indicators_long, "^.+\\.csis[0-9]+$", "CSIS", format, extract_variable = TRUE)
+  if (format == "list") {
+    # Some adjustments to column names to be compatible with plot.isatpanel
+    csis_result <- csis_result[!duplicated(csis_result[, "name"]), ]
+    rownames(csis_result) <- csis_result[, "name"]
+    csis_result[, c("name")] <- csis_result[, c("variable")]
+    csis_result <- csis_result[, c("time", "name", "type", "coef")]
+    output$csis <- csis_result
   } else {
-    csis_result <- process_indicators(all_indicators_long, "^.+\\.csis[0-9]+$", "CSIS", format, deduplicate = TRUE, extract_variable = TRUE)
-    if (format == "list") {
-      # Some adjustments to be compatible with plot.isatpanel
-      csis_result <- csis_result[!duplicated(csis_result[, "name"]), ]
-      rownames(csis_result) <- csis_result[,"name"]
-      csis_result[,c("name")] <- csis_result[,c("variable")]
-      csis_result <- csis_result[,c("time", "name", "type", "coef")]
-      output$csis <- csis_result
-    } else {
-      output <- rbind(output, csis_result)
-    }
+    output <- rbind(output, csis_result)
   }
 
   # Handle UIS (User-specified Indicators) if present
-  if(!is.null(object$arguments$uis)){
-    uis_breaks <- colnames(object$arguments$uis)
-    uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*", "UIS", deduplicate = FALSE)
-    if (!is.null(uis_result)) {
-      if (list) {
-        output$uis_breaks <- uis_result
-      } else {
-        output <- rbind(output, uis_result)
-      }
+  if (!is.null(uis_breaks)) {
+    uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*", "UIS", format)
+    if (list) {
+      output$uis_breaks <- uis_result
+    } else {
+      output <- rbind(output, uis_result)
     }
   }
 
-  if(format == "long") {
+  if (format == "long") {
     # Calculate combined effect for each id/time by summing effect
     # Exclude cfesis and csis indicators from combined effect
     combined <- aggregate(
@@ -207,7 +149,8 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list"){
       data = output[!output$type %in% c("CFESIS", "CSIS"), ],
       sum
     )
-    # Expand to full id/time grid
+    # Expand to full id/time grid to deliver correct bounds for plotting
+    # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_comp filters for NA when blanks = FALSE)
     all_ids <- unique(panel_rows$id)
     all_times <- unique(panel_rows$time)
     full_grid <- expand.grid(id = all_ids, time = all_times)
@@ -225,9 +168,38 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list"){
   return(output)
 }
 
-# TODO:
-# [x] change cfesis when list is used
-# [x] add coefficients
-# [x] combined mit rübernehmen und bei plot_comp ausprobieren
-# [ ] überlegen ob fixed effects (und alle anderen) auch hier sinn ergeben
+# Helper function for common indicator processing
+process_indicators <- function(long_data, pattern, type, format, extract_variable = FALSE) {
+  # Filter by pattern
+  filtered <- long_data[grepl(pattern, long_data$name), ]
 
+  if (nrow(filtered) == 0) {
+    return(NULL)
+  }
+
+  # Add type
+  filtered$type <- type
+
+  # Extract variable name if needed, otherwise set to NA
+  # Used for CFESIS/CSIS indicators where the variable name is part of the name
+  if (extract_variable) {
+    split_list <- strsplit(x = filtered$name, split = "\\.")
+    filtered$variable <- unlist(lapply(split_list, `[[`, 1))
+  } else {
+    filtered$variable <- NA
+  }
+
+  # Reduce output to one row per indicator for list and table format
+  if (format == "list" || format == "table") {
+    filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
+  }
+
+  if (format == "list" || format == "table") {
+    # Don't need value column for list/table format
+    return(filtered[, c("id", "time", "name", "type", "variable", "coef")])
+  } else {
+    # For long format, keep value column and add effect
+    filtered$effect <- filtered$value * filtered$coef
+    return(filtered[, c("id", "time", "name", "type", "variable", "value", "coef", "effect")])
+  }
+}
