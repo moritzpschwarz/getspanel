@@ -10,122 +10,11 @@
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_line geom_hline facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides theme_minimal theme_bw guide_legend
-#' @importFrom dplyr %>% mutate left_join bind_rows group_by summarise case_when
-#' @importFrom tidyr pivot_longer
-#' @importFrom tibble tibble
 #' @importFrom gets coef.gets
 plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, zero_line = FALSE, include_fixed_effects = FALSE) {
-  panel_rows <- x$estimateddata
-  indicator_table <- x$isatpanel.result$aux$mX
-
-  # Remove input variables from the indicator table
-  indicator_table <- indicator_table[, !colnames(indicator_table) %in% names(panel_rows), drop = FALSE]
-
-  # Remove fixed effects indicators from the indicator table if not specified
-  if (!include_fixed_effects) {
-    indicator_table <- indicator_table[, !grepl("^id|^time", colnames(indicator_table)), drop = FALSE]
-  }
-
-  # Remove indicators if regex_exclude_indicators is provided
-  if (!is.null(regex_exclude_indicators)) {
-    indicator_table <- indicator_table[, !grepl(regex_exclude_indicators, colnames(indicator_table)), drop = FALSE]
-  }
-
-  # Stop if no indicators are left to plot
-  if (ncol(indicator_table) == 0) {
-    stop("No indicators found in the model. Please check your model specification.")
-  }
-
-  # Remove input variables from the panel rows and only keep id and time columns
-  panel_rows <- panel_rows[, c("id", "time"), drop = FALSE]
-  df <- cbind(panel_rows, indicator_table)
-
-  # Reshape the data to long format where each id, time, and indicator combination is a row
-  df_long <- df %>%
-    pivot_longer(
-      cols = -c(id, time),
-      names_to = "indicator",
-      values_to = "value"
-    )
-
-  # Extract the indicator type
-  df_long <- df_long %>%
-    mutate(
-      indicator_type = case_when(
-        grepl("^iis[0-9]+$", indicator) ~ "IIS",
-        grepl("^fesis.+\\.[0-9]+$", indicator) ~ "FESIS",
-        grepl("^tis.+\\.[0-9]+$", indicator) ~ "TIS",
-        grepl("^.+\\.cfesis.+\\.[0-9]+$", indicator) ~ "CFESIS",
-        grepl("^.+\\.csis[0-9]+$", indicator) ~ "CSIS",
-        grepl("^id.+$", indicator) ~ "Unit Fixed Effects",
-        grepl("^time[0-9]+$", indicator) ~ "Time Fixed Effects"
-      )
-    )
-
-  # Ensure that CSIS and CFESIS values are set to 1 if they are not zero
-  df_long <- df_long %>%
-    mutate(
-      value = ifelse(
-        indicator_type %in% c("CSIS", "CFESIS"),
-        ifelse(value != 0, 1, 0),
-        value
-      )
-    )
-
-  # Add coefficients to the data and calculate effects when indicators apply
-  coefficients <- tibble(
-    indicator = names(coef(x$isatpanel.result)),
-    coef = coef(x$isatpanel.result)
-  )
-  df_long <- df_long %>%
-    left_join(coefficients, by = "indicator") %>%
-    mutate(effect = value * coef)
-
-  if (include_fixed_effects) {
-    # Convert the time indicators to a format that includes the unit id instead of the time so they can be plotted in each facet separately
-    df_long <- df_long %>%
-      group_by(id, time, indicator_type) %>%
-      mutate(
-        indicator = ifelse(
-          indicator_type == "Time Fixed Effects",
-          paste0("time", id),
-          indicator
-        )
-      ) %>%
-      group_by(id, time, indicator, indicator_type) %>%
-      summarise(
-        value = 1,
-        coef = min(coef, na.rm = TRUE),
-        effect = sum(effect, na.rm = TRUE),
-        .groups = "drop"
-      )
-  }
-
-  # Combined effects per indicator_type per id and time
-  # test <- df_long %>%
-  #   group_by(id, time, indicator_type) %>%
-  #   summarise(effect = sum(effect, na.rm = TRUE), .groups = "drop")
-
-  # Replace 0 effects with NA for plotting
-  df_long <- df_long %>%
-    mutate(
-      effect = ifelse(effect == 0, NA, effect)
-    )
-
-  # Combine effects of all indicators per id and time
-  df_long <- df_long %>%
-    bind_rows(
-      df_long %>%
-        group_by(id, time) %>%
-        summarise(
-          indicator = "combined",
-          value = NA,
-          indicator_type = "Combined",
-          coef = NA,
-          effect = sum(effect, na.rm = TRUE),
-          .groups = "drop"
-        )
-    )
+  df_long <- get_indicators(x, format = "long")
+  df_long <- df_long[!df_long$type %in% c("CSIS", "CFESIS"), ]
+  df_long$effect[df_long$type == "COMBINED" & is.na(df_long$effect)] <- 0
 
   indicator_colors <- c(
     "IIS" = "grey",
@@ -133,28 +22,28 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
     "FESIS" = "red",
     "CFESIS" = "darkgreen",
     "TIS" = "lightblue",
-    "Combined" = "black",
+    "COMBINED" = "black",
     "Unit Fixed Effects" = "purple",
     "Time Fixed Effects" = "violetred4"
   )
 
   # Create the plot
-  g <- ggplot(df_long, aes(x = time, y = effect, group = indicator, color = indicator_type, fill = indicator_type)) +
+  g <- ggplot(df_long, aes(x = time, y = effect, group = name, color = type, fill = type)) +
     # Bars for IIS and CSIS
     geom_col(
-      data = subset(df_long, indicator_type %in% c("IIS")),
+      data = subset(df_long, type %in% c("IIS")),
       width = 0.75,
     ) +
     # Lines for FESIS, CFESIS, TIS
     geom_line(
-      data = subset(df_long, indicator_type %in% c("FESIS", "CFESIS", "TIS", "CSIS", "Time Fixed Effects", "Unit Fixed Effects")),
-      size = 0.75
+      data = subset(df_long, type %in% c("FESIS", "CFESIS", "TIS", "CSIS", "Time Fixed Effects", "Unit Fixed Effects")),
+      linewidth = 0.75
     ) +
     # Line for Combined, set color manually to black
     geom_line(
-      data = subset(df_long, indicator_type == "Combined"),
-      aes(color = indicator_type),
-      size = 0.75,
+      data = subset(df_long, type == "COMBINED"),
+      aes(color = type),
+      linewidth = 0.75,
       linetype = "dashed"
     ) +
     facet_wrap(~id, scales = "free") +
@@ -174,11 +63,11 @@ plot_indicators <- function(x, title = NULL, regex_exclude_indicators = NULL, ze
         override.aes = list(
           linetype = c(
             setNames(
-              rep("solid", length(unique(df_long$indicator_type))),
-              unique(df_long$indicator_type)
+              rep("solid", length(unique(df_long$type))),
+              unique(df_long$type)
             ),
-            Combined = "dashed"
-          )[levels(factor(df_long$indicator_type, levels = unique(df_long$indicator_type)))],
+            COMBINED = "dashed"
+          )[levels(factor(df_long$type, levels = unique(df_long$type)))],
           shape = NA
         )
       )
