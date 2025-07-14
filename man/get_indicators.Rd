@@ -7,17 +7,49 @@
 get_indicators(object, uis_breaks = NULL, format = "list")
 }
 \arguments{
-\item{object}{An object produced by the \code{isatpanel} function.}
+\item{object}{An object of class "isatpanel" produced by the \code{isatpanel()} function.}
 
-\item{uis_breaks}{A string with the names of user-specified indicators.}
+\item{uis_breaks}{A character vector with the names of user-specified indicators.
+If NULL (default), user-specified indicators are not included in the result.}
 
-\item{format}{A string indicating the format of the output. Can be "list", "table" or "long". Default is "list".}
+\item{format}{A character string indicating the format of the output. Must be one of:
+\itemize{
+\item "list" (default): Returns a list of data frames for backward compatibility
+\item "table": Returns a single data frame with all indicators
+\item "long": Returns a panel-shaped data frame suitable for plotting
+}}
 }
 \value{
-A list of data frames (if \code{format = "list"}) or a single data frame (if \code{format = "table"} or \code{format = "long"}) containing information about the indicators identified in the \code{isatpanel} object. The list is provided for backward-compatibility and contains differently shaped data frames for each indicator type that can be accessed by name ("impulses", "fesis", "tis", "cfesis", "csis", "uis_breaks"). The "table" format returns a single data frame with all indicators that can be filtered by the "type" column. The "long" format returns a panel-shaped data frame that can be used for plotting (see \code{plot_indicators} and \code{plot_comp}). The column names between the formats differ slightly (see examples).
+Depending on the \code{format} parameter:
+\itemize{
+\item If \code{format = "list"}: A list of data frames with elements named "impulses", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
+\item If \code{format = "table"}: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
+\item If \code{format = "long"}: A panel-shaped data with all indicators plus a "COMBINED" type that sums all effects per id/time
+}
 }
 \description{
-Extract the retained indicators from an \code{isatpanel} object
+This function extracts and processes indicator information from an isatpanel object,
+returning the results in different formats suitable for analysis and plotting.
+}
+\details{
+The resulting data frame(s) contain the following columns:
+\itemize{
+\item id: The panel identifier. For compatibility with \code{plot.isatpanel}, CSIS indicators do not have an id column in the list format.
+\item time: The panel time period
+\item name: The name of the indicator. For compatibility with \code{plot.isatpanel}, CFESIS and CSIS indicators are renamed to their variable name in the list format.
+\item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
+\item coef: The coefficient of the indicator
+\item variable: The corresponding variable name for CFESIS/CSIS indicators
+\item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
+\item effect: The effect of the indicator (value * coef). Only present in the "long" format.
+}
+Dimensions of the output depend on the \code{format} parameter:
+\itemize{
+\item If \code{format = "list"}: Returns a list with data frames for each indicator type with one row per indicator.
+\item If \code{format = "table"}: Returns a single data frame with one row per indicator/id combination (resulting in multiple rows for CSIS each indicator).
+\item If \code{format = "long"}: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
+}
+The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the overall impact of these indicators on the model.
 }
 \examples{
 \donttest{
@@ -52,4 +84,7 @@ get_indicators(result, format = "table")[type == "IIS"] # Table format with addi
 get_indicators(result, format = "long") # Long format with additional "coef", "value", and "effect" columns (useful to see the time-varying impact of e.g. trend indicators) and a "combined" indicator that sums up all IIS/TIS/FESIS-effects per id/time
 plot_indicators(result) # Plots the long format
 }
+}
+\seealso{
+\code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}
 }

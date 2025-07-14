@@ -1,10 +1,46 @@
 #' Extract the retained indicators from an `isatpanel` object
 #'
-#' @param object An object produced by the `isatpanel` function.
-#' @param uis_breaks A string with the names of user-specified indicators.
-#' @param format A string indicating the format of the output. Can be "list", "table" or "long". Default is "list".
+#' This function extracts and processes indicator information from an isatpanel object,
+#' returning the results in different formats suitable for analysis and plotting.
 #'
-#' @return A list of data frames (if `format = "list"`) or a single data frame (if `format = "table"` or `format = "long"`) containing information about the indicators identified in the `isatpanel` object. The list is provided for backward-compatibility and contains differently shaped data frames for each indicator type that can be accessed by name ("impulses", "fesis", "tis", "cfesis", "csis", "uis_breaks"). The "table" format returns a single data frame with all indicators that can be filtered by the "type" column. The "long" format returns a panel-shaped data frame that can be used for plotting (see `plot_indicators` and `plot_comp`). The column names between the formats differ slightly (see examples).
+#' @param object An object of class "isatpanel" produced by the `isatpanel()` function.
+#' @param uis_breaks A character vector with the names of user-specified indicators.
+#'   If NULL (default), user-specified indicators are not included in the result.
+#' @param format A character string indicating the format of the output. Must be one of:
+#'   \itemize{
+#'     \item "list" (default): Returns a list of data frames for backward compatibility
+#'     \item "table": Returns a single data frame with all indicators
+#'     \item "long": Returns a panel-shaped data frame suitable for plotting
+#'   }
+#'
+#' @return Depending on the `format` parameter:
+#'   \itemize{
+#'     \item If `format = "list"`: A list of data frames with elements named "impulses", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
+#'     \item If `format = "table"`: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
+#'     \item If `format = "long"`: A panel-shaped data frame with all indicators plus a "COMBINED" type that sums all effects per id/time
+#'   }
+#'
+#' @details
+#' The resulting data frame(s) contain the following columns:
+#' \itemize{
+#'   \item id: The panel identifier. For compatibility with `plot.isatpanel`, CSIS indicators do not have an id column in the list format.
+#'   \item time: The panel time period
+#'   \item name: The name of the indicator. For compatibility with `plot.isatpanel`, CFESIS and CSIS indicators are renamed to their variable name in the list format.
+#'   \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
+#'   \item coef: The coefficient of the indicator
+#'   \item variable: The corresponding variable name for CFESIS/CSIS indicators
+#'   \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
+#'   \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
+#' }
+#' Dimensions of the output depend on the `format` parameter:
+#' \itemize{
+#'   \item If `format = "list"`: Returns a list with data frames for each indicator type with one row per indicator.
+#'   \item If `format = "table"`: Returns a single data frame with one row per indicator/id combination (resulting in multiple rows for CSIS each indicator).
+#'   \item If `format = "long"`: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
+#' }
+#' The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the overall impact of these indicators on the model.
+#'
+#' @seealso \code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}
 #'
 #' @export
 #'
@@ -45,6 +81,20 @@
 #' plot_indicators(result) # Plots the long format
 #' }
 get_indicators <- function(object, uis_breaks = NULL, format = "list") {
+  # Input validation ----------------------------------------------------------
+  if (!inherits(object, "isatpanel")) {
+    stop("object must be an isatpanel object")
+  }
+
+  if (!format %in% c("list", "table", "long")) {
+    stop("format must be one of 'list', 'table', or 'long'")
+  }
+
+  if (!is.null(uis_breaks) && !is.character(uis_breaks)) {
+    stop("uis_breaks must be a character vector")
+  }
+
+  # Prepare the data ----------------------------------------------------------
   # Get the indicator matrix from the isatpanel object
   df <- object$isatpanel.result$aux$mX
 
@@ -76,11 +126,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
 
   # Initialize output based on format
-  if (format == "list") {
-    output <- list()
-  } else {
-    output <- data.frame()
-  }
+  output <- if (format == "list") list() else data.frame()
 
   # IIS - Impulse Indicators
   iis_result <- process_indicators(all_indicators_long, "^iis[0-9]+", "IIS", format)
@@ -111,7 +157,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
   if (format == "list") {
     # Some adjustments to column names to be compatible with plot.isatpanel
     rownames(cfesis_result) <- cfesis_result[, "name"]
-    cfesis_result[, c("name")] <- cfesis_result[, c("variable")]
+    cfesis_result[, "name"] <- cfesis_result[, "variable"]
     cfesis_result <- cfesis_result[, c("id", "time", "name", "type", "coef")]
     output$cfesis <- cfesis_result
   } else {
@@ -124,7 +170,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
     # Some adjustments to column names to be compatible with plot.isatpanel
     csis_result <- csis_result[!duplicated(csis_result[, "name"]), ]
     rownames(csis_result) <- csis_result[, "name"]
-    csis_result[, c("name")] <- csis_result[, c("variable")]
+    csis_result[, "name"] <- csis_result[, "variable"]
     csis_result <- csis_result[, c("time", "name", "type", "coef")]
     output$csis <- csis_result
   } else {
@@ -133,8 +179,13 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
 
   # Handle UIS (User-specified Indicators) if present
   if (!is.null(uis_breaks)) {
-    uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*", "UIS", format)
-    if (list) {
+    uis_result <- process_indicators(
+      all_indicators_long[all_indicators_long$name %in% uis_breaks, ],
+      ".*",
+      "UIS",
+      format
+    )
+    if (format == "list") {
       output$uis_breaks <- uis_result
     } else {
       output <- rbind(output, uis_result)
@@ -142,27 +193,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
   }
 
   if (format == "long") {
-    # Calculate combined effect for each id/time by summing effect
-    # Exclude cfesis and csis indicators from combined effect
-    combined <- aggregate(
-      effect ~ id + time,
-      data = output[!output$type %in% c("CFESIS", "CSIS"), ],
-      sum
-    )
-    # Expand to full id/time grid to deliver correct bounds for plotting
-    # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_comp filters for NA when blanks = FALSE)
-    all_ids <- unique(panel_rows$id)
-    all_times <- unique(panel_rows$time)
-    full_grid <- expand.grid(id = all_ids, time = all_times)
-    combined <- merge(full_grid, combined, by = c("id", "time"), all.x = TRUE)
-    combined$effect[is.na(combined$effect)] <- NA
-    combined$type <- "COMBINED"
-    combined$name <- "combined"
-    combined$variable <- NA
-    combined$coef <- NA
-    combined$value <- NA
-    combined <- combined[, c("id", "time", "name", "type", "variable", "value", "coef", "effect")]
-    output <- rbind(output, combined)
+    output <- add_combined_effect(output, panel_rows)
   }
 
   return(output)
@@ -189,17 +220,41 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
     filtered$variable <- NA
   }
 
-  # Reduce output to one row per indicator for list and table format
-  if (format == "list" || format == "table") {
+  if (format %in% c("list", "table")) {
+    # Reduce output to one row per indicator for list/table format
     filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
-  }
-
-  if (format == "list" || format == "table") {
     # Don't need value column for list/table format
     return(filtered[, c("id", "time", "name", "type", "variable", "coef")])
   } else {
-    # For long format, keep value column and add effect
+    # Keep value column and add effect for long format
     filtered$effect <- filtered$value * filtered$coef
     return(filtered[, c("id", "time", "name", "type", "variable", "value", "coef", "effect")])
   }
+}
+
+# Helper function to add combined effect for long format
+add_combined_effect <- function(output, panel_rows) {
+  # Calculate combined effect for each id/time by summing effect
+  # Exclude cfesis and csis indicators from combined effect
+  combined <- aggregate(
+    effect ~ id + time,
+    data = output[!output$type %in% c("CFESIS", "CSIS"), ],
+    sum
+  )
+
+  # Expand to full id/time grid to deliver correct bounds for plotting
+  # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_comp filters for NA when blanks = FALSE)
+  all_ids <- unique(panel_rows$id)
+  all_times <- unique(panel_rows$time)
+  full_grid <- expand.grid(id = all_ids, time = all_times, stringsAsFactors = FALSE)
+  combined <- merge(full_grid, combined, by = c("id", "time"), all.x = TRUE)
+  combined$effect[is.na(combined$effect)] <- NA
+  combined$type <- "COMBINED"
+  combined$name <- "combined"
+  combined$variable <- NA
+  combined$coef <- NA
+  combined$value <- NA
+  combined <- combined[, c("id", "time", "name", "type", "variable", "value", "coef", "effect")]
+
+  return(rbind(output, combined))
 }
