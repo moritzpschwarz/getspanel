@@ -4,7 +4,12 @@
 \alias{get_indicators}
 \title{Extract the retained indicators from an \code{isatpanel} object}
 \usage{
-get_indicators(object, uis_breaks = NULL, format = "list")
+get_indicators(
+  object,
+  uis_breaks = NULL,
+  format = "list",
+  regex_exclude_indicators = NULL
+)
 }
 \arguments{
 \item{object}{An object of class "isatpanel" produced by the \code{isatpanel()} function.}
@@ -18,13 +23,15 @@ If NULL (default), user-specified indicators are not included in the result.}
 \item "table": Returns a single data frame with all indicators
 \item "long": Returns a panel-shaped data frame suitable for plotting
 }}
+
+\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.}
 }
 \value{
 Depending on the \code{format} parameter:
 \itemize{
 \item If \code{format = "list"}: A list of data frames with elements named "impulses", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
 \item If \code{format = "table"}: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
-\item If \code{format = "long"}: A panel-shaped data with all indicators plus a "COMBINED" type that sums all effects per id/time
+\item If \code{format = "long"}: A panel-shaped data frame with all indicators plus a "COMBINED" type that sums all effects per id/time
 }
 }
 \description{
@@ -50,6 +57,9 @@ Dimensions of the output depend on the \code{format} parameter:
 \item If \code{format = "long"}: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
 }
 The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the overall impact of these indicators on the model.
+
+regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
+Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
 }
 \examples{
 \donttest{

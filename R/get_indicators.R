@@ -12,6 +12,7 @@
 #'     \item "table": Returns a single data frame with all indicators
 #'     \item "long": Returns a panel-shaped data frame suitable for plotting
 #'   }
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.
 #'
 #' @return Depending on the `format` parameter:
 #'   \itemize{
@@ -39,6 +40,9 @@
 #'   \item If `format = "long"`: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
 #' }
 #' The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the overall impact of these indicators on the model.
+#'
+#' regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
+#' Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
 #'
 #' @seealso \code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}
 #'
@@ -80,7 +84,7 @@
 #' get_indicators(result, format = "long") # Long format with additional "coef", "value", and "effect" columns (useful to see the time-varying impact of e.g. trend indicators) and a "combined" indicator that sums up all IIS/TIS/FESIS-effects per id/time
 #' plot_indicators(result) # Plots the long format
 #' }
-get_indicators <- function(object, uis_breaks = NULL, format = "list") {
+get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exclude_indicators = NULL) {
   # Input validation ----------------------------------------------------------
   if (!inherits(object, "isatpanel")) {
     stop("object must be an isatpanel object")
@@ -104,6 +108,9 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
 
   # Get indicator names from the isatpanel object
   indicator_names <- object$isatpanel.result$ISnames
+  if (!is.null(regex_exclude_indicators)) {
+    indicator_names <- indicator_names[!grepl(regex_exclude_indicators, indicator_names)]
+  }
 
   # Reshape to long format (one row for every id/time/indicator combination)
   all_indicators_long <- reshape(
@@ -128,6 +135,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list") {
   # Initialize output based on format
   output <- if (format == "list") list() else data.frame()
 
+  # Process indicators ---------------------------------------------------------
   # IIS - Impulse Indicators
   iis_result <- process_indicators(all_indicators_long, "^iis[0-9]+", "IIS", format)
   if (format == "list") {
