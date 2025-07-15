@@ -9,8 +9,9 @@ plot_indicators(
   title = NULL,
   zero_line = FALSE,
   scales = "fixed",
-  regex_exclude_indicators = NULL,
-  id_list = NULL
+  id_list = NULL,
+  sign = NULL,
+  regex_exclude_indicators = NULL
 )
 }
 \arguments{
@@ -23,10 +24,11 @@ plot_indicators(
 \item{scales}{The scales argument for \code{\link[ggplot2]{facet_wrap}}. Default is \code{"fixed"}.
 Use \code{"free"} to allow different y-axis scales for each facet.}
 
-\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.}
-
 \item{id_list}{A character vector of ids to include only those in the plot.
-Default is \code{NULL}, meaning all ids are included.}
+Default is \code{NULL}, meaning all ids are included.
+#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
+
+\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded. See \code{\link{get_indicators}} for details on this parameter.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object that plots the effect of retained IIS/FESIS/TIS-indicators.
@@ -35,9 +37,6 @@ A \code{\link[ggplot2]{ggplot}} object that plots the effect of retained IIS/FES
 Plot isatpanel indicator coefficients
 }
 \details{
-The regex allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
-Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
-
 The function automatically filters out CSIS and CFESIS indicators as these indicators act on different variables than IIS/FESIS/TIS indicators. See \code{\link{plot_grid}} for plotting these indicators.
 }
 \examples{

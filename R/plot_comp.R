@@ -73,7 +73,7 @@ plot_comp <- function(mod, is_col = "is", model_col = "model", panel = "unit", t
   }
 
   if (!is.null(sign) && !sign %in% c("pos", "neg")) {
-    stop("The 'sign' must be one of: 'pos', 'neg', NULL ('all').", call. = FALSE)
+    stop("The 'sign' must be one of: 'pos', 'neg', NULL (both).", call. = FALSE)
   }
 
   # Check for duplicate model names

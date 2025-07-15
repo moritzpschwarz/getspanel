@@ -5,16 +5,14 @@
 #' @param zero_line Logical. If \code{TRUE}, plot a horizontal line at y = 0. Default is \code{FALSE}.
 #' @param scales The scales argument for \code{\link[ggplot2]{facet_wrap}}. Default is \code{"fixed"}.
 #'   Use \code{"free"} to allow different y-axis scales for each facet.
-#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.
-#' @param id_list A character vector of ids to include only those in the plot. 
+#' @param id_list A character vector of ids to include only those in the plot.
 #'   Default is \code{NULL}, meaning all ids are included.
+#' #' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded. See \code{\link{get_indicators}} for details on this parameter.
 #'
 #' @return A \code{\link[ggplot2]{ggplot}} object that plots the effect of retained IIS/FESIS/TIS-indicators.
 #'
 #' @details
-#' The regex allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
-#' Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
-#'
 #' The function automatically filters out CSIS and CFESIS indicators as these indicators act on different variables than IIS/FESIS/TIS indicators. See \code{\link{plot_grid}} for plotting these indicators.
 #'
 #' @examples
@@ -35,7 +33,7 @@
 #' @export
 #'
 #' @importFrom ggplot2 ggplot aes geom_col geom_line geom_hline facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides theme_minimal theme_bw guide_legend
-plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "fixed", regex_exclude_indicators = NULL, id_list = NULL) {
+plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "fixed", id_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
   # Input validation -----------------------------------------------------------
   if (!inherits(object, "isatpanel")) {
     stop("The 'object' must be of class 'isatpanel'.", call. = FALSE)
@@ -47,6 +45,10 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
 
   if (!is.null(regex_exclude_indicators) && !is.character(regex_exclude_indicators)) {
     stop("The 'regex_exclude_indicators' must be a character vector.", call. = FALSE)
+  }
+
+  if (!is.null(sign) && !sign %in% c("pos", "neg")) {
+    stop("The 'sign' must be one of: 'pos', 'neg', NULL (both).", call. = FALSE)
   }
 
   # Data preparation -----------------------------------------------------------

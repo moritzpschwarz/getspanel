@@ -12,13 +12,13 @@
 #'     \item "table": Returns a single data frame with all indicators
 #'     \item "long": Returns a panel-shaped data frame suitable for plotting
 #'   }
-#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the result. Combine multiple expressions with "|". Default is \code{NULL}, meaning no indicators are excluded.
 #'
 #' @return Depending on the `format` parameter:
 #'   \itemize{
 #'     \item If `format = "list"`: A list of data frames with elements named "impulses", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
 #'     \item If `format = "table"`: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
-#'     \item If `format = "long"`: A panel-shaped data frame with all indicators plus a "COMBINED" type that sums all effects per id/time
+#'     \item If `format = "long"`: A panel-shaped data frame with all indicators plus a "combined" indicator that sums effects per id/time
 #'   }
 #'
 #' @details
@@ -29,7 +29,7 @@
 #'   \item name: The name of the indicator. For compatibility with `plot.isatpanel`, CFESIS and CSIS indicators are renamed to their variable name in the list format.
 #'   \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 #'   \item coef: The coefficient of the indicator
-#'   \item variable: The corresponding variable name for CFESIS/CSIS indicators
+#'   \item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop"). Only present in the "table" and "long" format.
 #'   \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 #'   \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
 #' }
