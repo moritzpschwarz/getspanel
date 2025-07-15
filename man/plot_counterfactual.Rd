@@ -10,7 +10,8 @@ plot_counterfactual(
   facet.scales = "free",
   title = NULL,
   zero_line = FALSE,
-  regex_exclude_indicators = NULL
+  regex_exclude_indicators = NULL,
+  sign = NULL
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ plot_counterfactual(
 
 \item{plus_t}{Number of time periods for the counterfactual to be displayed (default = 5).}
 
-\item{facet.scales}{To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".}
+\item{facet.scales}{To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", "fixed_x", and "centered" (same y-axis range centered around each panel's mean).}
 
 \item{title}{Plot title. Must be a character vector.}
 
 \item{zero_line}{Plot a horizontal line at y = 0. Default is FALSE.}
 
 \item{regex_exclude_indicators}{A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.}
+
+\item{sign}{Character. If "pos", only effects of indicators with positive coefficients are shown; if "neg", only negative effects are shown; if NULL (default), all indicator effects are shown}
 }
 \value{
 A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.

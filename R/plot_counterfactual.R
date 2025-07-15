@@ -2,10 +2,11 @@
 #'
 #' @param x An object produced by the isatpanel function
 #' @param plus_t Number of time periods for the counterfactual to be displayed (default = 5).
-#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", and "fixed_x".
+#' @param facet.scales To be passed to ggplot2::facet_wrap. Default is "free" (i.e. a separate y axis for each panel group/id). Alternatives are: "fixed", "fixed_y", "fixed_x", and "centered" (same y-axis range centered around each panel's mean).
 #' @param title Plot title. Must be a character vector.
 #' @param zero_line Plot a horizontal line at y = 0. Default is FALSE.
 #' @param regex_exclude_indicators A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.
+#' @param sign Character. If "pos", only effects of indicators with positive coefficients are shown; if "neg", only negative effects are shown; if NULL (default), all indicator effects are shown
 #'
 #' @return A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
 #' @export
@@ -42,7 +43,7 @@
 #' plot_counterfactual(result)
 #'}
 
-plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = FALSE, regex_exclude_indicators = NULL){
+plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = FALSE, regex_exclude_indicators = NULL, sign = NULL) {
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
@@ -54,7 +55,7 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
 
   df <- cbind(df,indicators)
 
-  df_ident_fesis <- identify_indicator_timings(df)$fesis
+  df_ident_fesis <- getspanel:::identify_indicator_timings(df)$fesis
 
   if(is.null(x$isatpanel.result$fit)){
     fitted <- as.numeric(x$isatpanel.result$mean.fit)
@@ -68,6 +69,18 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   df_ident <- break_uncertainty(x)
   df_ident <- merge(df_ident, max_times, by = "id")
   df_ident$origtime <- df_ident$time
+
+  if (!is.null(sign)) {
+    if (sign == "pos") {
+      keep <- df_ident[df_ident$coef > 0, "name"]
+      df_ident <- df_ident[df_ident$name %in% keep, , drop = FALSE]
+      df_ident_fesis <- df_ident_fesis[df_ident_fesis$name %in% keep, , drop = FALSE]
+    } else if (sign == "neg") {
+      keep <- df_ident[df_ident$coef < 0, "name"]
+      df_ident <- df_ident[df_ident$name %in% keep, , drop = FALSE]
+      df_ident_fesis <- df_ident_fesis[df_ident_fesis$name %in% keep, , drop = FALSE]
+    }
+  } 
 
   if(!is.null(regex_exclude_indicators)){
     df_ident <- df_ident[!grepl(regex_exclude_indicators,df_ident$name),,drop = FALSE]
@@ -110,6 +123,57 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
 
   sub_title <- NULL
 
+  # Handle centered scaling option
+  centered_scaling <- FALSE
+  step_size <- 1.0  # Default step size
+  if(facet.scales == "centered") {
+    centered_scaling <- TRUE
+    facet.scales <- "free"  # Use free scaling but we'll add invisible points to control limits
+    
+    # Find the panel with the maximum range to determine the standard range
+    panel_data <- merge(df, data.frame(id = df$id, time = df$time, fitted = fitted), by = c("id", "time"))
+    
+    # Calculate range for each panel individually
+    panel_ranges <- by(panel_data, panel_data$id, function(panel_subset) {
+      all_panel_values <- c(panel_subset$y, panel_subset$fitted, 
+                           effects$cf[effects$id == panel_subset$id[1]], 
+                           effects$cf_upr[effects$id == panel_subset$id[1]], 
+                           effects$cf_lwr[effects$id == panel_subset$id[1]])
+      all_panel_values <- all_panel_values[!is.na(all_panel_values)]
+      diff(range(all_panel_values))
+    })
+    
+    # Use the maximum range as the standard range for all panels
+    standard_range <- max(unlist(panel_ranges))
+    
+    # Calculate mean for each panel
+    panel_means <- aggregate(cbind(y = panel_data$y, fitted = panel_data$fitted), 
+                            by = list(id = panel_data$id), FUN = mean, na.rm = TRUE)
+    panel_means$mean_all <- (panel_means$y + panel_means$fitted) / 2
+    
+    # Create invisible points to control y-axis limits for each panel
+    # Each panel gets the same range (standard_range) centered around its own mean
+    limit_points <- data.frame(
+      id = rep(panel_means$id, each = 2),
+      time = rep(range(df$time), length(panel_means$id)),
+      y_limit = as.vector(sapply(panel_means$mean_all, function(mean) c(mean - standard_range/2, mean + standard_range/2)))
+    )
+    
+    # Determine appropriate step size for consistent y-axis labels
+    # Choose step size based on the standard range
+    if(standard_range <= 2) {
+      step_size <- 0.5
+    } else if(standard_range <= 5) {
+      step_size <- 1.0
+    } else if(standard_range <= 10) {
+      step_size <- 2.0
+    } else if(standard_range <= 20) {
+      step_size <- 5.0
+    } else {
+      step_size <- 10.0
+    }
+  }
+
 
   ggplot(df, aes(
     x = .data$time,
@@ -120,6 +184,11 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
 
 
   if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
+
+  # Add invisible points to control y-axis limits for centered scaling
+  if(centered_scaling) {
+    g <- g + ggplot2::geom_point(data = limit_points, aes(x = .data$time, y = .data$y_limit), alpha = 0, size = 0)
+  }
 
   g +
     geom_line(aes(y = .data$y, color = "black"), linewidth = 0.7) +
@@ -154,6 +223,53 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     ) +
 
     labs(title = title, subtitle = sub_title, y = NULL, x = NULL) -> plotoutput
+
+  # Apply consistent y-axis breaks for centered scaling
+  if(centered_scaling) {
+    # Force evaluation of step_size to capture it in the closure
+    step_size <- force(step_size)
+    plotoutput <- plotoutput + 
+      ggplot2::scale_y_continuous(breaks = function(limits) {
+        # Ensure step_size is positive
+        step_size <- abs(step_size)
+        
+        # Calculate the range of the limits
+        range_size <- diff(limits)
+        
+        # Adjust step_size if it would result in too few breaks
+        # We want at least 3-5 breaks per panel
+        if(range_size / step_size < 3) {
+          # Find a nice step size that gives us about 4-5 breaks
+          # Use a selection of "nice" numbers
+          nice_steps <- c(0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100)
+          target_step <- range_size / 4
+          
+          # Find the closest nice step size
+          step_size <- nice_steps[which.min(abs(nice_steps - target_step))]
+        }
+        
+        # Calculate the range of breaks
+        min_break <- ceiling(limits[1]/step_size) * step_size
+        max_break <- floor(limits[2]/step_size) * step_size
+        
+        # Generate sequence - only if max_break >= min_break
+        if(max_break >= min_break) {
+          breaks <- seq(from = min_break, to = max_break, by = step_size)
+          
+          # Ensure we have at least 3 breaks by expanding the range if needed
+          if(length(breaks) < 3) {
+            # Add breaks outside the current range
+            breaks <- c(min_break - step_size, breaks, max_break + step_size)
+          }
+          
+          # Filter breaks to only include those within reasonable bounds
+          breaks[breaks >= limits[1] - step_size & breaks <= limits[2] + step_size]
+        } else {
+          # Fallback to default breaks if the range is too small
+          pretty(limits, n = 5)
+        }
+      })
+  }
 
   return(plotoutput)
 
