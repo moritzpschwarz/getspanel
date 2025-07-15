@@ -6,50 +6,72 @@
 \usage{
 plot_comp(
   mod,
-  sign,
+  is_col = "is",
+  model_col = "model",
   panel = "unit",
-  main_text = NULL,
-  blanks = TRUE,
-  t_range,
-  id_list = NULL
+  title = NULL,
+  include_blanks = TRUE,
+  id_list = NULL,
+  mod_list = NULL,
+  sign = NULL,
+  regex_exclude_indicators = NULL
 )
 }
 \arguments{
-\item{mod}{Dataframe of model objects. At minimum, requires one column with
-one isatpanel object wrapped in a list per row and a second column with a unique model description.}
+\item{mod}{A data frame containing isatpanel objects and model descriptions.
+Must have at least two columns: one with isatpanel objects (wrapped in lists) and another with unique model descriptions.}
 
-\item{sign}{Type of break to display in plot ("all", negative ("neg"), or positive ("pos")).}
+\item{is_col}{Character. Name of the column containing isatpanel objects.
+Default is "is".}
 
-\item{panel}{Whether the results should be displayed by panel cross-section or by model ("model" or "unit")}
+\item{model_col}{Character. Name of the column containing model descriptions.
+Default is "model".}
 
-\item{main_text}{Plot title (optional)}
+\item{panel}{Character. How to organize the plot panels: "unit" (default) displays results by cross-sectional unit, "model" displays by model.}
 
-\item{blanks}{Boolean - whether to include models in which no break is detected for a panel cross-section.}
+\item{title}{Character. Plot title. If NULL, no title is displayed.}
 
-\item{t_range}{provide time range of panel from tt:TT.}
+\item{include_blanks}{Logical. Whether to include combinations where no indicators are detected (creates blank rows). Default is TRUE.}
 
-\item{id_list}{provide a character vector of unit names to isolate only certain units}
+\item{id_list}{Character vector. If provided, only these units will be included in the plot.}
+
+\item{mod_list}{Character vector. If provided, only these models will be included in the plot.}
+
+\item{sign}{Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
+
+\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded. See \code{\link{get_indicators}} for details on this parameter.}
 }
 \value{
-ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
+A ggplot object displaying the indicator effects across the specified models and units.
 }
 \description{
-The following function takes a dataframe of isatpanel objects with associated
-model names and builds a plot that allows for comparison of detected breaks
-by panel cross-section.
-Each line should represent a unique model specification-sample pair (no check implemented yet, user must verify).
-The function can only handle one outcome/dependent variable at a time.
+Creates a comparative visualization of detected breaks across multiple isatpanel model specifications. The function displays results as a heatmap similar to \code{\link{plot_grid}}.
+}
+\details{
+The function extracts indicator data from each isatpanel object and combines
+them into a single visualization. Only combined effects from IIS/TIS/FESIS indicators are plotted, but types can be filtered using the \code{regex_exclude_indicators} parameter (e.g. \code{regex_exclude_indicators = "^iis|^tis"} to only show FESIS indicator effects). For separate plots of IIS, TIS, and FESIS indicators in a single model, use \code{\link{plot_indicators}}.
 }
 \examples{
-library(tidyverse)
-library(gridExtra)
+\dontrun{
+library(ggplot2)
 library(gets)
 library(getspanel)
-res <- readRDS(here('data/standard_results_example.RDS')) 
-res \%>\% select(is, model) \%>\% plot_comp(t_range = 2000:2021)
-# Example isolating specific units
-res \%>\% select(is, model) \%>\% plot_comp(t_range = 2000:2021, id_list = c("Argentina", "Bulgaria", "China"))
 
+# Load example data
+data(standard_results_example, package = "getspanel")
 
+# Basic comparison plot
+plot_comp(standard_results_example)
+
+# Example showing only FESIS indicator effects
+plot_comp(standard_results_example, regex_exclude_indicators = "^iis|^tis")
+
+# Example isolating a specific unit
+plot_comp(standard_results_example, id_list = c("Argentina"))
+
+# Example isolating a specific model
+plot_comp(standard_results_example, mod_list = standard_results_example$model[[1]], panel = "model")
+# This creates the same plot as plot_grid(standard_results_example$is[[1]])
+}
 
 }

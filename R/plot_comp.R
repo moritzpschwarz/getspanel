@@ -1,209 +1,200 @@
-###############################################################################
-###################### PLOTTING FUNCTIONS #####################################
-###############################################################################
-
-# The following contains three functions for plotting multiple models side by side. 
-# plot_comp: The first plots multiple isatpanel objects by panel cross-section or 
-#     model description using the break_uncertainty() function of getspanel
-# plot_unit: final function can plot both multiple model specifications and multiple 
-#     dependent variables for a single panel cross-section/unit for higher-dim comparisons 
-
-###############################################################################
-
-
-###############################################################################
 #' Plotting multiple isatpanel objects for comparison across units
 #'
-#' The following function takes a dataframe of isatpanel objects with associated 
-#' model names and builds a plot that allows for comparison of detected breaks 
-#' by panel cross-section. 
-#' Each line should represent a unique model specification-sample pair (no check implemented yet, user must verify).
-#' The function can only handle one outcome/dependent variable at a time.
+#' Creates a comparative visualization of detected breaks across multiple isatpanel model specifications. The function displays results as a heatmap similar to \code{\link{plot_grid}}.
 #'
-#' @param mod Dataframe of model objects. At minimum, requires one column with 
-#' one isatpanel object wrapped in a list per row and a second column with a unique model description.
-#' @param sign Type of break to display in plot ("all", negative ("neg"), or positive ("pos")). 
-#' @param panel Whether the results should be displayed by panel cross-section or by model ("model" or "unit")
-#' @param main_text Plot title (optional)
-#' @param blanks Boolean - whether to include models in which no break is detected for a panel cross-section.
-#' @param t_range provide time range of panel from tt:TT.
-#' @param id_list provide a character vector of unit names to isolate only certain units
+#' @param mod A data frame containing isatpanel objects and model descriptions.
+#'   Must have at least two columns: one with isatpanel objects (wrapped in lists) and another with unique model descriptions.
+#' @param is_col Character. Name of the column containing isatpanel objects.
+#'   Default is "is".
+#' @param model_col Character. Name of the column containing model descriptions.
+#'   Default is "model".
+#' @param panel Character. How to organize the plot panels: "unit" (default) displays results by cross-sectional unit, "model" displays by model.
+#' @param title Character. Plot title. If NULL, no title is displayed.
+#' @param include_blanks Logical. Whether to include combinations where no indicators are detected (creates blank rows). Default is TRUE.
+#' @param id_list Character vector. If provided, only these units will be included in the plot.
+#' @param mod_list Character vector. If provided, only these models will be included in the plot.
+#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.
+#' @param regex_exclude_indicators A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded. See \code{\link{get_indicators}} for details on this parameter.
 #'
-#' @return ggplot object that displays multiple isatpanel results by panel-cross section for quick comparison across multiple specifications.
+#' @return A ggplot object displaying the indicator effects across the specified models and units.
+#'
+#' @details
+#' The function extracts indicator data from each isatpanel object and combines
+#' them into a single visualization. Only combined effects from IIS/TIS/FESIS indicators are plotted, but types can be filtered using the \code{regex_exclude_indicators} parameter (e.g. \code{regex_exclude_indicators = "^iis|^tis"} to only show FESIS indicator effects). For separate plots of IIS, TIS, and FESIS indicators in a single model, use \code{\link{plot_indicators}}.
+#'
 #' @export
 #' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs element_text element_blank element_rect
 #'
 #' @examples
+#' \dontrun{
 #' library(ggplot2)
 #' library(gets)
 #' library(getspanel)
-#' res <- readRDS(here('data/standard_results_example.RDS')) 
-#' plot_comp(res[c("is", "model")], t_range = 2000:2021)
-#' # Example isolating specific units
-#' plot_comp(res[c("is", "model")], t_range = 2000:2021, id_list = c("Argentina", "Bulgaria", "China"))
 #'
+#' # Load example data
+#' data(standard_results_example, package = "getspanel")
 #'
+#' # Basic comparison plot
+#' plot_comp(standard_results_example)
 #'
-plot_comp <- function(mod, sign, panel = "unit", main_text = NULL, blanks = TRUE, t_range, id_list = NULL, regex_exclude_indicators = NULL, mod_list = NULL){
-  p_data <- data.frame()
-  if(nrow(mod) == 0){
-    stop("No models to plot.")
+#' # Example showing only FESIS indicator effects
+#' plot_comp(standard_results_example, regex_exclude_indicators = "^iis|^tis")
+#'
+#' # Example isolating a specific unit
+#' plot_comp(standard_results_example, id_list = c("Argentina"))
+#'
+#' # Example isolating a specific model
+#' plot_comp(standard_results_example, mod_list = standard_results_example$model[[1]], panel = "model")
+#' # This creates the same plot as plot_grid(standard_results_example$is[[1]])
+#' }
+#'
+plot_comp <- function(mod, is_col = "is", model_col = "model", panel = "unit", title = NULL, include_blanks = TRUE, id_list = NULL, mod_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
+  # Input validation -----------------------------------------------------------
+  # Check basic data frame structure
+  if (!is.data.frame(mod) || ncol(mod) < 2) {
+    stop("The 'mod' must be a data frame with at least two columns: one with isatpanel objects and another with model descriptions.", call. = FALSE)
+  }
+
+  if (nrow(mod) == 0) {
+    stop("No models to plot.", call. = FALSE)
+  }
+
+  # Check column existence
+  if (!is_col %in% names(mod)) {
+    stop(paste("Column", is_col, "not found in data frame."), call. = FALSE)
+  }
+
+  if (!model_col %in% names(mod)) {
+    stop(paste("Column", model_col, "not found in data frame."), call. = FALSE)
+  }
+
+  if (!panel %in% c("unit", "model")) {
+    stop("The 'panel' must be either 'unit' or 'model'.", call. = FALSE)
+  }
+
+  if (!is.null(sign) && !sign %in% c("pos", "neg")) {
+    stop("The 'sign' must be one of: 'pos', 'neg', NULL ('all').", call. = FALSE)
+  }
+
+  # Check for duplicate model names
+  if (any(duplicated(mod[[model_col]]))) {
+    warning("Duplicate model names detected. This may cause issues in the plot.", call. = FALSE)
+  }
+
+  # Data extraction and preparation --------------------------------------------
+  # Pre-allocate list for plot data of each model
+  plot_data_list <- vector("list", nrow(mod))
+
+  # Extract indicator data from each model
+  for (n in seq_len(nrow(mod))) {
+    tmp <- mod[n, ]
+
+    # Validate individual model object
+    if (!is.list(tmp[[is_col]]) || length(tmp[[is_col]]) != 1 || !inherits(tmp[[is_col]][[1]], "isatpanel")) {
+      stop(paste("Row", n, "does not contain a valid isatpanel object in column", is_col), call. = FALSE)
     }
-  
-  for(r in seq_len(nrow(mod))){
-    print(r)
-    tmp <- mod[r, ]
-    
-    df_long <- get_indicators(tmp$is[[1]], format = "long")
+
+    if (!is.character(tmp[[model_col]]) || length(tmp[[model_col]]) != 1) {
+      stop(paste("Row", n, "does not contain a valid model description in column", model_col), call. = FALSE)
+    }
+
+    # Get indicators in long format and filter out CSIS and CFESIS indicators
+    if (is.null(regex_exclude_indicators)) {
+      regex_exclude_indicators <- "csis|cfesis"
+    } else {
+      regex_exclude_indicators <- paste0(regex_exclude_indicators, "|csis|cfesis")
+    }
+    df_long <- get_indicators(tmp[[is_col]][[1]], format = "long", regex_exclude_indicators = regex_exclude_indicators)
+
+    # Only keep COMBINED data for this plot
     df_long <- df_long[df_long$type %in% c("COMBINED"), ]
-    
-    # Create data frame with base R
-    df_subset <- data.frame(
-      id = df_long$id,
-      time = df_long$time,
-      model = tmp$model,
-      effect = df_long$effect,
-      stringsAsFactors = FALSE
-    )
-    
-    p_data <- rbind(p_data, df_subset)
+
+    # Add model description to the data and add data to the list
+    if (nrow(df_long) > 0) {
+      plot_data_list[[n]] <- data.frame(
+        id = df_long$id,
+        time = df_long$time,
+        coef = df_long$coef,
+        effect = df_long$effect,
+        model = tmp[[model_col]],
+        stringsAsFactors = FALSE
+      )
+    }
   }
-  
-  if(!is.null(id_list)){
-    p_data <- p_data[p_data$id %in% id_list, ]
+
+  # Combine all datasets
+  plot_data <- do.call(rbind, plot_data_list[!sapply(plot_data_list, is.null)])
+
+  if (is.null(plot_data) || nrow(plot_data) == 0) {
+    stop("No valid indicator data found in any of the models.", call. = FALSE)
   }
-  if(!is.null(mod_list)){
-    p_data <- p_data[p_data$model %in% mod_list, ]
+
+  # Apply user filters ---------------------------------------------------------
+  if (!is.null(id_list)) {
+    plot_data <- plot_data[plot_data$id %in% id_list, , drop = FALSE]
   }
-  
-  # Create complete grid for blanks
-  if(blanks){
-    # Get unique combinations
-    unique_ids <- unique(p_data$id)
-    unique_times <- unique(c(p_data$time, t_range))
-    unique_models <- unique(p_data$model)
-    
-    # Create full grid
+
+  if (!is.null(mod_list)) {
+    plot_data <- plot_data[plot_data$model %in% mod_list, , drop = FALSE]
+  }
+
+  if (!is.null(sign)) {
+    if (sign == "pos") {
+      plot_data <- plot_data[plot_data$coef > 0, , drop = FALSE]
+    } else if (sign == "neg") {
+      plot_data <- plot_data[plot_data$coef < 0, , drop = FALSE]
+    }
+  }
+
+  if (nrow(plot_data) == 0) {
+    stop("No data remaining after applying filters.", call. = FALSE)
+  }
+
+  # Create complete grid with blanks if requested
+  if (include_blanks) {
+    # Get unique values
+    unique_ids <- unique(plot_data$id)
+    unique_times <- unique(plot_data$time)
+    unique_models <- unique(plot_data$model)
+
+    # Create full grid of combinations
     full_grid <- expand.grid(
       id = unique_ids,
       time = unique_times,
       model = unique_models,
       stringsAsFactors = FALSE
     )
-    
+
     # Merge with existing data
-    p_data <- merge(full_grid, p_data, by = c("id", "time", "model"), all.x = TRUE)
-  }
-  
-  # Handle panel switch
-  if(panel == "model"){
-    temp_id <- p_data$id
-    p_data$id <- p_data$model
-    p_data$model <- temp_id
+    plot_data <- merge(full_grid, plot_data, by = c("id", "time", "model"), all.x = TRUE)
   }
 
-  p <- ggplot(p_data, aes(x = time, y = model)) +
-    geom_tile(aes(fill = effect), na.rm = TRUE) +  
-    scale_fill_gradient2(na.value = NA, name = "Effect", mid = "white")+
-    scale_x_continuous(expand = c(0,0)) +
-    scale_y_discrete(expand = c(0,0), limits = rev) +
-    facet_grid(id~., scales = "free_y", space = "free") +
+  # Handle panel grouping switch
+  if (panel == "model") {
+    temp_id <- plot_data$id
+    plot_data$id <- plot_data$model
+    plot_data$model <- temp_id
+  }
+
+  # Create and return the plot -------------------------------------------------
+  p <- ggplot(plot_data, aes(x = time, y = model)) +
+    geom_tile(aes(fill = effect), na.rm = TRUE) +
+    scale_fill_gradient2(na.value = NA, name = "Effect", mid = "white") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0), limits = rev) +
+    facet_grid(id ~ ., scales = "fixed", space = "fixed") +
     theme_bw() +
-    theme(panel.grid = element_blank(),
-          panel.border = element_rect(fill = NA),
-          strip.background = element_blank(),
-          axis.text.y = element_text(size = 6, color = "black"),
-          axis.text.x = element_text(size = 10, color = "black"),
-          strip.text.y = element_text(size = 12, angle = 0),
-          plot.caption = element_text(size = 12, hjust = 0.5),
-          legend.position = "bottom"
+    theme(
+      panel.grid = element_blank(),
+      panel.border = element_rect(fill = NA),
+      strip.background = element_blank(),
+      axis.text.y = element_text(size = 6, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black"),
+      strip.text.y = element_text(size = 12, angle = 0),
+      plot.caption = element_text(size = 12, hjust = 0.5),
+      legend.position = "bottom"
     ) +
-    labs(x = NULL, y = NULL, title = main_text)
-  
+    labs(x = NULL, y = NULL, title = title)
+
   return(p)
-}
-
-###############################################################################
-#' This function plots multiple isatpanel objects by single panel cross-section allowing for 
-#' comparison across both multiple dependent variables and multiple model specifications.
-#'
-#'
-#' @param mod Dataframe of model objects. At minimum, requires one column with 
-#' one isatpanel object wrapped in a list per row, a second column with a unique model description, 
-#' and a third column with dependent variable names.
-#' @param unit Exact string identifier of panel cross-section/unit of interest in isatpanel result.
-#' @param blanks Boolean - whether to include models in which no break is detected for a panel cross-section.
-#' @param t_range provide time range of panel from tt:TT.
-#'
-#' @return ggplot object that displays multiple isatpanel results for a single unit for quick comparison across multiple specifications.
-#' @export
-#' @importFrom ggplot2 ggplot aes geom_tile scale_fill_gradient2 scale_x_continuous scale_y_discrete facet_grid theme_bw theme labs element_blank element_text
-#' @importFrom gridExtra grid.arrange
-#' @examples
-#' res <- readRDS(here('standard_results_example.RDS')) 
-#' plot_unit(res[c("is", "model", "dep")], t_range = 2000:2021, unit = "Peru")
-#'
-#'
-
-plot_unit <- function(mod, unit, blanks = TRUE, t_range, regex_exclude_indicators = NULL){
-  p_data <- data.frame()
-  if(nrow(mod) == 0){
-    stop("No models to plot.")
-  }
-  if(missing(t_range)){
-    stop("Please specify t_range.")
-  }
-  
-  for(r in seq_len(nrow(mod))){
-    print(r)
-    tmp <- mod[r, ]
-    
-    df_long <- get_indicators(tmp$is[[1]], format = "long")
-    df_long <- df_long[df_long$type %in% c("COMBINED"), ]
-    
-    # Create data frame with base R
-    df_subset <- data.frame(
-      id = df_long$id,
-      time = df_long$time,
-      model = tmp$model,
-      dep = tmp$dep,
-      effect = df_long$effect,
-      stringsAsFactors = FALSE
-    )
-    
-    p_data <- rbind(p_data, df_subset)
-  }
-  
-  # Filter for specific unit
-  cmod <- p_data[p_data$id == unit, ]
-  
-  if(!blanks){
-    cmod <- cmod[ave(!is.na(cmod$effect), cmod$dep, FUN = any), ]
-  }
-  if(nrow(cmod)== 0){return()}
-
-  # Replace NAs with 0 for effect
-  cmod$effect[is.na(cmod$effect)] <- 0
-
-  # Split by dep and plot each
-  dep_levels <- unique(cmod$dep)
-  plot_list <- list()
-  for(dep_val in dep_levels) {
-    subdat <- cmod[cmod$dep == dep_val, ]
-    p <- ggplot(subdat, aes(x = time, y = model)) +
-      geom_tile(aes(fill = effect)) +
-      scale_fill_gradient2(na.value = NA, name = "Effect") +
-      scale_x_continuous(expand = c(0,0)) +
-      scale_y_discrete(expand = c(0,0), limits = rev, labels = function(x) x) +
-      facet_grid(dep~.) +
-      theme_bw() +
-      theme(panel.grid = element_blank(),
-            legend.position = "bottom",
-            strip.background = element_blank(),
-            axis.text = element_text(size = 10, color = "black"),
-            strip.text.y = element_text(size = 12)) +
-      labs(x = NULL, y = NULL, title = NULL)
-    plot_list[[dep_val]] <- p
-  }
-  grid.arrange(grobs = plot_list, ncol = 1, top = unit)
 }
