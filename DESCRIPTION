@@ -39,11 +39,7 @@ Imports:
     Matrix,
     ggplot2,
     stats,
-    mvtnorm,
-    dplyr,
-    tidyr,
-    tibble,
-    gridExtra
+    mvtnorm
 Depends: 
     R (>= 3.5.0)
 VignetteBuilder: knitr, rmarkdown
