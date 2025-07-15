@@ -5,27 +5,54 @@
 \title{Plot isatpanel indicator coefficients}
 \usage{
 plot_indicators(
-  x,
+  object,
   title = NULL,
-  regex_exclude_indicators = NULL,
   zero_line = FALSE,
-  include_fixed_effects = FALSE
+  scales = "fixed",
+  regex_exclude_indicators = NULL,
+  id_list = NULL
 )
 }
 \arguments{
-\item{x}{An object produced by the isatpanel function}
+\item{object}{An object produced by the \code{\link{isatpanel}} function.}
 
-\item{title}{Plot title. Must be a character vector.}
+\item{title}{Plot title. Must be a character vector. Default is \code{NULL}.}
 
-\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Filter out multiple indicators using "|" (e.g. regex_exclude_indicators = "cfesis|csis". Filter out Unit or Time fixed effects indicators using "id" or "time". Default is NULL, meaning no indicators are excluded.}
+\item{zero_line}{Logical. If \code{TRUE}, plot a horizontal line at y = 0. Default is \code{FALSE}.}
 
-\item{zero_line}{Logical. If TRUE, plot a horizontal line at y = 0. Default is FALSE.}
+\item{scales}{The scales argument for \code{\link[ggplot2]{facet_wrap}}. Default is \code{"fixed"}.
+Use \code{"free"} to allow different y-axis scales for each facet.}
 
-\item{include_fixed_effects}{Logical. If TRUE, fixed effects are included in the plot. Default is FALSE.}
+\item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded.}
+
+\item{id_list}{A character vector of ids to include only those in the plot.
+Default is \code{NULL}, meaning all ids are included.}
 }
 \value{
-A ggplot2 plot that plots an 'isatpanel' object and shows observed data, the fitted values, and all identified breaks and impulses.
+A \code{\link[ggplot2]{ggplot}} object that plots the effect of retained IIS/FESIS/TIS-indicators.
 }
 \description{
 Plot isatpanel indicator coefficients
+}
+\details{
+The regex allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
+Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
+
+The function automatically filters out CSIS and CFESIS indicators as these indicators act on different variables than IIS/FESIS/TIS indicators. See \code{\link{plot_grid}} for plotting these indicators.
+}
+\examples{
+\dontrun{
+# Basic usage
+plot_indicators(isatpanel_result)
+
+# With title and zero line
+plot_indicators(isatpanel_result, title = "Indicator Effects", zero_line = TRUE)
+
+# Exclude specific indicators
+plot_indicators(isatpanel_result, regex_exclude_indicators = "^iis|2008")
+
+# Plot only specific countries
+plot_indicators(isatpanel_result, id_list = c("Austria", "Germany"))
+}
+
 }
