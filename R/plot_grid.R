@@ -102,23 +102,8 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+|\\.csis[0-9]+-[0-9]+-[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
 
     # Deal with CFESIS within facets
-    matches <- grepl("\\.cfesis.*[0-9]+", indicators_l$name)
-    new_vals <- mapply(function(nm, id, val) {
-      pattern <- paste0("\\.cfesis", id, ".*[0-9]+")
-      if (grepl(pattern, nm) && val != 0) {
-        return(1)
-      } else {
-        return(0)
-      }
-    }, indicators_l$name, indicators_l$id, indicators_l$value)
-
-    # Now update only the rows that match the original grepl
-    indicators_l$value[matches] <- new_vals[matches]
-    indicators_l$facet[matches] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[matches,"name"])))
-
-    # indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl(paste0("\\.cfesis",indicators_l$id,".*[0-9]+"),indicators_l$name),"value"] != 0, 1, 0)
-    # indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-    # indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"name"])))
+    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"name"])))
 
     # Control the order of the facets
     facet_order <- unique(indicators_l$facet)

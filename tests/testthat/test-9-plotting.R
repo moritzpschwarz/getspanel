@@ -222,6 +222,11 @@ test_that("plotting cfesis", {
   expect_snapshot_plot("plot_grid_cfesis_1", code = plot_grid(result))
   expect_snapshot_plot("plot_grid_cfesis_2", code = plot_grid(result, regex_exclude_indicators = "fesisFinland.2000|Austria|Greece"))
   expect_snapshot_plot("plot_grid_cfesis_3", code = plot_grid(result, regex_exclude_indicators = "fesisFinland.2000|Austria|Greece|Luxembourg|lgdp.csis|lgdp_sq|iis1"))
+  expect_snapshot_plot("plot_grid_cfesis_4", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|lgdp.cfesisFinland.2000"))
+  expect_snapshot_plot("plot_grid_cfesis_5", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|lgdp.cfesisFinland.2000"))
+  expect_snapshot_plot("plot_grid_cfesis_6", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|lgdp.cfesisFinland.2000|lpop"))
+  expect_snapshot_plot("plot_grid_cfesis_7", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|Finland|lpop|Greece"))
+  expect_snapshot_plot("plot_grid_cfesis_8", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|Finland|lpop|Greece|lgdp\\."))
 
 })
 
