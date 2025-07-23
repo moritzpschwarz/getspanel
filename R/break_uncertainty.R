@@ -157,8 +157,6 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
                               data.frame(name = names(coef(x$isatpanel.result)),
                                          sd = sqrt(diag(vcov(x$isatpanel.result)))), by = "name")
 
-  print(df_identified_coef)
-
   dat <- df_identified_coef$coef/sqrt(x$isatpanel.result$sigma2)
   prob <- matrix(NA, NROW(dat), 2*m+1)
   ci <- matrix(NA, NROW(dat), 4)

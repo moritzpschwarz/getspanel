@@ -166,8 +166,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   }
 
   # FESIS - Fixed Effects Step Indicators
-  fesis_result <- process_indicators(all_indicators_long, "^fesis.+\\.[0-9-]+$", "FESIS", format)
-
+  fesis_result <- process_indicators(all_indicators_long, "^fesis.+\\.[0-9/-]+$", "FESIS", format)
   if (!is.null(fesis_result) && nrow(fesis_result) > 0) {
     if (format == "list") {
       output$fesis <- fesis_result
@@ -177,7 +176,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   }
 
   # TIS - Trend Indicators
-  tis_result <- process_indicators(all_indicators_long, "^tis.+\\.[0-9-]+$", "TIS", format)
+  tis_result <- process_indicators(all_indicators_long, "^tis.+\\.[0-9/-]+$", "TIS", format)
   if (!is.null(tis_result) && nrow(tis_result) > 0) {
     if (format == "list") {
       output$tis <- tis_result
@@ -187,7 +186,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   }
 
   # CFESIS - Conditional Fixed Effects Step Indicators
-  cfesis_result <- process_indicators(all_indicators_long, "^.+\\.cfesis.+\\.[0-9-]+$", "CFESIS", format, extract_variable = TRUE)
+  cfesis_result <- process_indicators(all_indicators_long, "^.+\\.cfesis.+\\.[0-9/-]+$", "CFESIS", format, extract_variable = TRUE)
   if (!is.null(cfesis_result) && nrow(cfesis_result) > 0) {
     if (format == "list") {
       output$cfesis <- cfesis_result
@@ -197,7 +196,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   }
 
   # CSIS - Common Step Indicators
-  csis_result <- process_indicators(all_indicators_long, "^.+\\.csis[0-9-]+$", "CSIS", format, extract_variable = TRUE)
+  csis_result <- process_indicators(all_indicators_long, "^.+\\.csis[0-9/-]+$", "CSIS", format, extract_variable = TRUE)
   if (!is.null(csis_result) && nrow(csis_result) > 0) {
     if (format == "list") {
       # plot.isatpanel expects CSIS without duplicates since they affect all ids
@@ -222,6 +221,10 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
 
   if (format == "long") {
     output <- add_combined_effect(output, panel_rows)
+  }
+
+  if (format %in% c("table", "long")) {
+    rownames(output) <- seq_len(nrow(output))
   }
 
   return(output)
@@ -252,6 +255,7 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
     # Reduce output to one row per indicator for list/table format
     filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
     # Don't need value column for list/table format
+    rownames(filtered) <- seq_len(nrow(filtered))
     return(filtered[, c("id", "time", "name", "type", "variable", "coef")])
   } else {
     # Keep value column and add effect for long format
