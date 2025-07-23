@@ -111,7 +111,7 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
   df_long$type <- factor(df_long$type, levels = names(indicator_styles))
 
   # Create the plot
-  g <- ggplot(df_long, aes(x = time, y = effect, group = name, color = type, fill = type)) +
+  g <- ggplot(df_long, aes(x = .data$time, y = .data$effect, group = .data$name, color = .data$type, fill = .data$type)) +
     # Bars for IIS
     geom_col(
       data = subset(df_long, type %in% c("IIS")),
@@ -149,7 +149,7 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
       fill = "none"
     ) +
     # Facet by id
-    facet_wrap(~id, scales = scales) +
+    facet_wrap(~.data$id, scales = scales) +
     theme_minimal() +
     theme_bw() +
     theme(panel.grid = element_line(),
