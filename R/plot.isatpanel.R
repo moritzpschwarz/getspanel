@@ -64,12 +64,12 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
   # cfesis
   if(!is.null(df_identified$cfesis)){
-    g = g + geom_vline(data = df_identified$cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$name))
+    g = g + geom_vline(data = df_identified$cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$variable))
   }
 
   # csis
   if(!is.null(df_identified$csis)){
-    g = g + geom_vline(data = df_identified$csis, aes(xintercept = .data$time, color="orange", linetype = .data$name))
+    g = g + geom_vline(data = df_identified$csis, aes(xintercept = .data$time, color="orange", linetype = .data$variable))
   }
 
 
