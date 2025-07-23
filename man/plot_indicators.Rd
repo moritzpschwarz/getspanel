@@ -25,8 +25,9 @@ plot_indicators(
 Use \code{"free"} to allow different y-axis scales for each facet.}
 
 \item{id_list}{A character vector of ids to include only those in the plot.
-Default is \code{NULL}, meaning all ids are included.
-#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
+Default is \code{NULL}, meaning all ids are included.}
+
+\item{sign}{Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
 
 \item{regex_exclude_indicators}{A regular expression to filter out indicators from the plot. Combine multiple expressions with \code{"|"}. Default is \code{NULL}, meaning no indicators are excluded. See \code{\link{get_indicators}} for details on this parameter.}
 }

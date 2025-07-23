@@ -58,20 +58,20 @@ library(gets)
 library(getspanel)
 
 # Load example data
-data(standard_results_example, package = "getspanel")
+data(compare_models_example, package = "getspanel")
 
 # Basic comparison plot
-plot_comp(standard_results_example)
+plot_comp(compare_models_example)
 
 # Example showing only FESIS indicator effects
-plot_comp(standard_results_example, regex_exclude_indicators = "^iis|^tis")
+plot_comp(compare_models_example, regex_exclude_indicators = "^iis|^tis")
 
 # Example isolating a specific unit
-plot_comp(standard_results_example, id_list = c("Argentina"))
+plot_comp(compare_models_example, id_list = c("Argentina"))
 
 # Example isolating a specific model
-plot_comp(standard_results_example, mod_list = standard_results_example$model[[1]], panel = "model")
-# This creates the same plot as plot_grid(standard_results_example$is[[1]])
+plot_comp(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
+# This creates the same plot as plot_grid(compare_models_example$is[[1]])
 }
 
 }

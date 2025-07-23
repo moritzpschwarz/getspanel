@@ -79,10 +79,15 @@
 #' plot(result)
 #'
 #' # Different ways to retrieve information about the indicators:
-#' get_indicators(result, format = "list")$impulses # Legacy list format
-#' get_indicators(result, format = "table")[type == "IIS"] # Table format with additional columns "coef" and "variable" (used for CFESIS/CSIS)
-#' get_indicators(result, format = "long") # Long format with additional "coef", "value", and "effect" columns (useful to see the time-varying impact of e.g. trend indicators) and a "combined" indicator that sums up all IIS/TIS/FESIS-effects per id/time
-#' plot_indicators(result) # Plots the long format
+#' # Legacy list format
+#' get_indicators(result, format = "list")$impulses
+#' # Table format with additional columns "coef" and "variable"
+#' ind <- get_indicators(result, format = "table")
+#' ind <- ind[ind$type == "IIS", ]
+#' # Long format with additional columns "coef", "value", and "effect" (useful to see the time-varying impact of e.g. trend indicators)
+#' get_indicators(result, format = "long")
+#' # Example plot of both individual indicators and the combined effect
+#' plot_indicators(result)
 #' }
 get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exclude_indicators = NULL) {
   # Input validation ----------------------------------------------------------
