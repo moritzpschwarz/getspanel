@@ -46,17 +46,17 @@ The resulting data frame(s) contain the following columns:
 \item name: The name of the indicator. For compatibility with \code{plot.isatpanel}, CFESIS and CSIS indicators are renamed to their variable name in the list format.
 \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 \item coef: The coefficient of the indicator
-\item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop"). Only present in the "table" and "long" format.
+\item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
 \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
 }
 Dimensions of the output depend on the \code{format} parameter:
 \itemize{
 \item If \code{format = "list"}: Returns a list with data frames for each indicator type with one row per indicator.
-\item If \code{format = "table"}: Returns a single data frame with one row per indicator/id combination (resulting in multiple rows for CSIS each indicator).
+\item If \code{format = "table"}: Returns a single data frame with one row per indicator/id combination (resulting in multiple rows for each CSIS indicator).
 \item If \code{format = "long"}: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
 }
-The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the overall impact of these indicators on the model.
+The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see \code{plot_grid()}.
 
 regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
 Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
@@ -96,5 +96,5 @@ plot_indicators(result) # Plots the long format
 }
 }
 \seealso{
-\code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}
+\code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}, \code{\link{plot_grid}}
 }

@@ -57,8 +57,10 @@ test_that("Testing whether Date inputs work for fesis, csis, cfesis", {
   expect_silent(a <- isatpanel(data = date_df,formula = gdp~temp, index = c("country","date"),cfesis = TRUE, print.searchinfo = FALSE))
   expect_equal(get_indicators(a)$cfesis, structure(list(id = c("1", "2"),
                                                         time = structure(c(14061, 14061), class = "Date"),
-                                                        name = c("temp", "temp")),
-                                                   row.names = c("1.temp.cfesis1.2008-07-01", "1.temp.cfesis2.2008-07-01"),
+                                                        name = c("cfesis1.2008-07-01", "cfesis2.2008-07-01"),
+                                                        type = c("CFESIS", "CFESIS"),
+                                                        variable = c("temp", "temp"),
+                                                        coef = c(2.047670, 1.838994),),
                                                    class = "data.frame"))
 
   expect_silent(plot(a))
