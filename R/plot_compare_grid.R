@@ -48,7 +48,7 @@
 #' # This creates the same plot as plot_grid(compare_models_example$is[[1]])
 #' }
 #'
-plot_comp <- function(mod, is_col = "is", model_col = "model", panel = "unit", title = NULL, include_blanks = TRUE, id_list = NULL, mod_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
+plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "unit", title = NULL, include_blanks = TRUE, id_list = NULL, mod_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
   # Input validation -----------------------------------------------------------
   # Check basic data frame structure
   if (!is.data.frame(mod) || ncol(mod) < 2) {
@@ -188,8 +188,6 @@ plot_comp <- function(mod, is_col = "is", model_col = "model", panel = "unit", t
       panel.grid = element_blank(),
       panel.border = element_rect(fill = NA),
       strip.background = element_blank(),
-      axis.text.y = element_text(size = 6, color = "black"),
-      axis.text.x = element_text(size = 10, color = "black"),
       strip.text.y = element_text(size = 12, angle = 0),
       plot.caption = element_text(size = 12, hjust = 0.5),
       legend.position = "bottom"

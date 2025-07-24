@@ -32,7 +32,7 @@
 #'
 #' @export
 #'
-#' @importFrom ggplot2 ggplot aes geom_col geom_line geom_hline facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides theme_minimal theme_bw guide_legend
+#' @importFrom ggplot2 ggplot aes geom_col geom_line geom_hline facet_wrap labs theme element_blank element_rect element_line scale_color_manual scale_fill_manual guides theme_bw guide_legend
 plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "fixed", id_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
   # Input validation -----------------------------------------------------------
   if (!inherits(object, "isatpanel")) {
@@ -150,7 +150,6 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
     ) +
     # Facet by id
     facet_wrap(~.data$id, scales = scales) +
-    theme_minimal() +
     theme_bw() +
     theme(panel.grid = element_line(),
           panel.border = element_rect(fill = NA),

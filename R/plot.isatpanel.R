@@ -39,8 +39,8 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
   )) -> g
 
   # Impulses
-  if(!is.null(df_identified$impulses)){
-    g = g + geom_vline(data = df_identified$impulses,aes(xintercept = .data$time,color="grey"))
+  if(!is.null(df_identified$iis)){
+    g = g + geom_vline(data = df_identified$iis,aes(xintercept = .data$time,color="grey"))
   }
   # Steps
   if(!is.null(df_identified$steps)){

@@ -3,12 +3,12 @@
 #' This function extracts and processes indicator information from an isatpanel object,
 #' returning the results in different formats suitable for analysis and plotting.
 #'
-#' @param object An object of class "isatpanel" produced by the `isatpanel()` function.
+#' @param object An object of class "isatpanel" produced by the \code{\link{isatpanel}} function.
 #' @param uis_breaks A character vector with the names of user-specified indicators.
 #'   If NULL (default), user-specified indicators are not included in the result.
 #' @param format A character string indicating the format of the output. Must be one of:
 #'   \itemize{
-#'     \item "list" (default): Returns a list of data frames for backward compatibility
+#'     \item "list" (default): Returns a list with one data frame for each indicator type
 #'     \item "table": Returns a single data frame with all indicators
 #'     \item "long": Returns a panel-shaped data frame suitable for plotting
 #'   }
@@ -16,7 +16,7 @@
 #'
 #' @return Depending on the `format` parameter:
 #'   \itemize{
-#'     \item If `format = "list"`: A list of data frames with elements named "impulses", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
+#'     \item If `format = "list"`: A list of data frames with elements named "iis", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
 #'     \item If `format = "table"`: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
 #'     \item If `format = "long"`: A panel-shaped data frame with all indicators plus a "combined" indicator that sums effects per id/time
 #'   }
@@ -24,11 +24,12 @@
 #' @details
 #' The resulting data frame(s) contain the following columns:
 #' \itemize{
-#'   \item id: The panel identifier. For compatibility with `plot.isatpanel`, CSIS indicators do not have an id column in the list format.
+#'   \item id: The panel identifier. Since CSIS indicators affect all ids simultaneously, they do not have an id column in the "list" format.
 #'   \item time: The panel time period
-#'   \item name: The name of the indicator. For compatibility with `plot.isatpanel`, CFESIS and CSIS indicators are renamed to their variable name in the list format.
+#'   \item name: The name of the indicator
 #'   \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 #'   \item coef: The coefficient of the indicator
+#'   \item coef_sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
 #'   \item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
 #'   \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 #'   \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
@@ -36,10 +37,10 @@
 #' Dimensions of the output depend on the `format` parameter:
 #' \itemize{
 #'   \item If `format = "list"`: Returns a list with data frames for each indicator type with one row per indicator.
-#'   \item If `format = "table"`: Returns a single data frame with one row per indicator/id combination (resulting in multiple rows for each CSIS indicator).
+#'   \item If `format = "table"`: Returns a single data frame with one row per indicator/id combination.
 #'   \item If `format = "long"`: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
 #' }
-#' The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see `plot_grid()`.
+#' The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see \code{\link{plot_grid}}.
 #'
 #' regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
 #' Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
@@ -50,6 +51,7 @@
 #'
 #' @importFrom gets coef.gets
 #' @importFrom stats reshape aggregate
+#' @importFrom stats vcov
 #'
 #' @examples
 #' \donttest{
@@ -79,12 +81,12 @@
 #' plot(result)
 #'
 #' # Different ways to retrieve information about the indicators:
-#' # Legacy list format
-#' get_indicators(result, format = "list")$impulses
-#' # Table format with additional columns "coef" and "variable"
+#' # Access indicator types through list
+#' get_indicators(result, format = "list")$fesis
+#' # Table format can be filtered by type
 #' ind <- get_indicators(result, format = "table")
-#' ind <- ind[ind$type == "IIS", ]
-#' # Long format with additional columns "coef", "value", and "effect" (useful to see the time-varying impact of e.g. trend indicators)
+#' ind <- ind[ind$type == "FESIS", ]
+#' # Long format with additional columns "value" and "effect" (useful to see the time-varying impact of e.g. trend indicators)
 #' get_indicators(result, format = "long")
 #' # Example plot of both individual indicators and the combined effect
 #' plot_indicators(result)
@@ -147,19 +149,24 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   # Add coefficients
   coefficients <- data.frame(
     name = colnames(object$isatpanel.result$aux$mX),
-    coef = object$isatpanel.result$coefficients
+    coef = object$isatpanel.result$coefficients,
+    coef_sd = sqrt(diag(vcov(object$isatpanel.result)))
   )
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
 
   # Initialize output based on format
-  output <- if (format == "list") list() else data.frame()
+  output <- if (format == "list") {
+    list()
+  } else {
+    data.frame()
+  }
 
   # Process indicators ---------------------------------------------------------
   # IIS - Impulse Indicators
   iis_result <- process_indicators(all_indicators_long, "^iis[0-9]+", "IIS", format)
   if (!is.null(iis_result) && nrow(iis_result) > 0) {
     if (format == "list") {
-      output$impulses <- iis_result
+      output$iis <- iis_result
     } else {
       output <- rbind(output, iis_result)
     }
@@ -201,7 +208,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
     if (format == "list") {
       # plot.isatpanel expects CSIS without duplicates since they affect all ids
       csis_result <- csis_result[!duplicated(csis_result[, "name"]), ]
-      output$csis <- csis_result[, c("time", "name", "type", "variable", "coef")]
+      output$csis <- csis_result[, c("time", "name", "type", "variable", "coef", "coef_sd")]
     } else {
       output <- rbind(output, csis_result)
     }
@@ -256,7 +263,7 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
     filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
     # Don't need value column for list/table format
     rownames(filtered) <- seq_len(nrow(filtered))
-    return(filtered[, c("id", "time", "name", "type", "variable", "coef")])
+    return(filtered[, c("id", "time", "name", "type", "variable", "coef", "coef_sd")])
   } else {
     # Keep value column and add effect for long format
     filtered$effect <- filtered$value * filtered$coef
