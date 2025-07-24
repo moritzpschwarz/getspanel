@@ -149,9 +149,9 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
 
-  df_identified_coef <- get_indicators(x)
+  df_identified_coef <- get_indicators(x)$fesis
 
-  if(is.null(df_identified_coef$fesis)){stop("Function currently only works on FESIS variables - No FESIS Indicators found in this isatpanel object.")}
+  if(is.null(df_identified_coef)){stop("Function currently only works on FESIS variables - No FESIS Indicators found in this isatpanel object.")}
 
   dat <- df_identified_coef$coef/sqrt(x$isatpanel.result$sigma2)
   prob <- matrix(NA, NROW(dat), 2*m+1)

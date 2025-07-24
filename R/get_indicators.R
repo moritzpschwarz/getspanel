@@ -29,7 +29,7 @@
 #'   \item name: The name of the indicator
 #'   \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 #'   \item coef: The coefficient of the indicator
-#'   \item coef_sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
+#'   \item sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
 #'   \item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
 #'   \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 #'   \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
@@ -45,7 +45,7 @@
 #' regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
 #' Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
 #'
-#' @seealso \code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_comp}}, \code{\link{plot.isatpanel}}, \code{\link{plot_grid}}
+#' @seealso \code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_compare_grid}}, \code{\link{plot.isatpanel}}, \code{\link{plot_grid}}
 #'
 #' @export
 #'
@@ -86,7 +86,8 @@
 #' # Table format can be filtered by type
 #' ind <- get_indicators(result, format = "table")
 #' ind <- ind[ind$type == "FESIS", ]
-#' # Long format with additional columns "value" and "effect" (useful to see the time-varying impact of e.g. trend indicators)
+#' # Long format with additional columns "value" and "effect"
+#' # Useful to see the time-varying impact of e.g. trend indicators
 #' get_indicators(result, format = "long")
 #' # Example plot of both individual indicators and the combined effect
 #' plot_indicators(result)
@@ -150,7 +151,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
   coefficients <- data.frame(
     name = colnames(object$isatpanel.result$aux$mX),
     coef = object$isatpanel.result$coefficients,
-    coef_sd = sqrt(diag(vcov(object$isatpanel.result)))
+    sd = sqrt(diag(vcov(object$isatpanel.result)))
   )
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
 
@@ -208,7 +209,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
     if (format == "list") {
       # plot.isatpanel expects CSIS without duplicates since they affect all ids
       csis_result <- csis_result[!duplicated(csis_result[, "name"]), ]
-      output$csis <- csis_result[, c("time", "name", "type", "variable", "coef", "coef_sd")]
+      output$csis <- csis_result[, c("time", "name", "type", "variable", "coef", "sd")]
     } else {
       output <- rbind(output, csis_result)
     }
@@ -263,7 +264,7 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
     filtered <- filtered[!duplicated(filtered[, c("id", "name")]), ]
     # Don't need value column for list/table format
     rownames(filtered) <- seq_len(nrow(filtered))
-    return(filtered[, c("id", "time", "name", "type", "variable", "coef", "coef_sd")])
+    return(filtered[, c("id", "time", "name", "type", "variable", "coef", "sd")])
   } else {
     # Keep value column and add effect for long format
     filtered$effect <- filtered$value * filtered$coef
@@ -282,7 +283,7 @@ add_combined_effect <- function(output, panel_rows) {
   )
 
   # Expand to full id/time grid to deliver correct bounds for plotting
-  # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_comp filters for NA when blanks = FALSE)
+  # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_compare_grid filters for NA when blanks = FALSE)
   all_ids <- unique(panel_rows$id)
   all_times <- unique(panel_rows$time)
   full_grid <- expand.grid(id = all_ids, time = all_times, stringsAsFactors = FALSE)
