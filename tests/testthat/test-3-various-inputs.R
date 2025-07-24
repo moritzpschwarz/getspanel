@@ -60,7 +60,8 @@ test_that("Testing whether Date inputs work for fesis, csis, cfesis", {
                                                         name = c("temp.cfesis1.2008-07-01", "temp.cfesis2.2008-07-01"),
                                                         type = c("CFESIS", "CFESIS"),
                                                         variable = c("temp", "temp"),
-                                                        coef = c(2.04766983, 1.83899355)),
+                                                        coef = c(2.04766983, 1.83899355),
+                                                        sd = c(0.104133999884309, 0.0965675977853382)),
                                                    row.names = as.integer(1:2),
                                                    class = "data.frame"))
 
