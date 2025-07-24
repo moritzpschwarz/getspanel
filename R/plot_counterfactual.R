@@ -54,7 +54,7 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
 
   df <- cbind(df,indicators)
 
-  df_ident_fesis <- identify_indicator_timings(df)$fesis
+  df_ident_fesis <- get_indicators(x)$fesis
 
   if(is.null(x$isatpanel.result$fit)){
     fitted <- as.numeric(x$isatpanel.result$mean.fit)
