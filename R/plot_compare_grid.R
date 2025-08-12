@@ -150,23 +150,11 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
     stop("No data remaining after applying filters.", call. = FALSE)
   }
 
-  # Create complete grid with blanks if requested
-  if (include_blanks) {
-    # Get unique values
-    unique_ids <- unique(plot_data$id)
-    unique_times <- unique(plot_data$time)
-    unique_models <- unique(plot_data$model)
-
-    # Create full grid of combinations
-    full_grid <- expand.grid(
-      id = unique_ids,
-      time = unique_times,
-      model = unique_models,
-      stringsAsFactors = FALSE
-    )
-
-    # Merge with existing data
-    plot_data <- merge(full_grid, plot_data, by = c("id", "time", "model"), all.x = TRUE)
+  if (!include_blanks) {
+    # get_indicators() long format returns a full grid of values for every model/id combination
+    # We remove all NA values here to get rid of model/id combinations where all effect values are NA
+    # ggplot2 will still plot full rows where there is at least one non-NA value
+    plot_data <- plot_data[!is.na(plot_data$effect), ]
   }
 
   # Handle panel grouping switch
@@ -181,8 +169,8 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
     geom_tile(aes(fill = .data$effect), na.rm = TRUE) +
     scale_fill_gradient2(na.value = NA, name = "Effect", mid = "white") +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0), limits = rev) +
-    facet_grid(id ~ ., scales = "fixed", space = "fixed") +
+    scale_y_discrete(expand = c(0, 0)) +
+    facet_grid(id ~ ., scales = "free_y", space = "free_y") +
     theme_bw() +
     theme(
       panel.grid = element_blank(),
