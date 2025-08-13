@@ -460,7 +460,7 @@ isatpanel <- function(
     cfesis_names_mintime <- aggregate(df$time, by = list(df$id), min)
     names(cfesis_names_mintime) <- c("id","mintime")
     # remove the mintime for each id
-    cfesis_names_merged <- merge(df_balanced, cfesis_names_mintime, by = "id")
+    cfesis_names_merged <- merge(df_balanced, cfesis_names_mintime, by = "id", sort = FALSE)
     cfesis_names_intermed <- cfesis_names_merged[cfesis_names_merged$time != cfesis_names_merged$mintime,c("id","time")]
     cfesis_names <- paste0("cfesis",cfesis_names_intermed$id,".",cfesis_names_intermed$time)
 
