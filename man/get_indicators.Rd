@@ -4,18 +4,66 @@
 \alias{get_indicators}
 \title{Extract the retained indicators from an \code{isatpanel} object}
 \usage{
-get_indicators(object, uis_breaks = NULL)
+get_indicators(
+  object,
+  uis_breaks = NULL,
+  format = "list",
+  sign = NULL,
+  regex_exclude_indicators = NULL
+)
 }
 \arguments{
-\item{object}{An object produced by the isatpanel function.}
+\item{object}{An object of class "isatpanel" produced by the \code{\link{isatpanel}} function.}
 
-\item{uis_breaks}{A string with the names of user-specified indicators.}
+\item{uis_breaks}{A character vector with the names of user-specified indicators.
+If NULL (default), user-specified indicators are not included in the result.}
+
+\item{format}{A character string indicating the format of the output. Must be one of:
+\itemize{
+\item "list" (default): Returns a list with one data frame for each indicator type
+\item "table": Returns a single data frame with all indicators
+\item "long": Returns a panel-shaped data frame suitable for plotting
+}}
+
+\item{sign}{Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
+
+\item{regex_exclude_indicators}{A regular expression to filter out indicators from the result. Combine multiple expressions with "|". Default is \code{NULL}, meaning no indicators are excluded.}
 }
 \value{
-A list of indicators.
+Depending on the \code{format} parameter:
+\itemize{
+\item If \code{format = "list"}: A list of data frames with elements named "iis", "fesis", "tis", "cfesis", "csis", and optionally "uis_breaks"
+\item If \code{format = "table"}: A single data frame with all indicators and one row per indicator that can be filtered by the "type" column
+\item If \code{format = "long"}: A panel-shaped data frame with all indicators plus a "combined" indicator that sums effects per id/time
+}
 }
 \description{
-Extract the retained indicators from an \code{isatpanel} object
+This function extracts and processes indicator information from an isatpanel object,
+returning the results in different formats suitable for analysis and plotting.
+}
+\details{
+The resulting data frame(s) contain the following columns:
+\itemize{
+\item id: The panel identifier. Since CSIS indicators affect all ids simultaneously, they do not have an id column in the "list" format.
+\item time: The panel time period
+\item name: The name of the indicator
+\item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
+\item coef: The coefficient of the indicator
+\item sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
+\item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
+\item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
+\item effect: The effect of the indicator (value * coef). Only present in the "long" format.
+}
+Dimensions of the output depend on the \code{format} parameter:
+\itemize{
+\item If \code{format = "list"}: Returns a list with data frames for each indicator type with one row per indicator.
+\item If \code{format = "table"}: Returns a single data frame with one row per indicator/id combination.
+\item If \code{format = "long"}: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
+}
+The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see \code{\link{plot_grid}}.
+
+regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
+Use \code{get_indicators(object, format = "table")} to see the names of all indicators.
 }
 \examples{
 \donttest{
@@ -43,9 +91,20 @@ result <- isatpanel(
   t.pval = 0.01
 )
 plot(result)
-plot_grid(result)
 
-# print the retained indicators
-get_indicators(result)
+# Different ways to retrieve information about the indicators:
+# Access indicator types through list
+get_indicators(result, format = "list")$fesis
+# Table format can be filtered by type
+ind <- get_indicators(result, format = "table")
+ind <- ind[ind$type == "FESIS", ]
+# Long format with additional columns "value" and "effect"
+# Useful to see the time-varying impact of e.g. trend indicators
+get_indicators(result, format = "long")
+# Example plot of both individual indicators and the combined effect
+plot_indicators(result)
 }
+}
+\seealso{
+\code{\link{isatpanel}}, \code{\link{plot_indicators}}, \code{\link{plot_compare_grid}}, \code{\link{plot.isatpanel}}, \code{\link{plot_grid}}
 }

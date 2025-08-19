@@ -39,8 +39,8 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
   )) -> g
 
   # Impulses
-  if(!is.null(df_identified$impulses)){
-    g = g + geom_vline(data = df_identified$impulses,aes(xintercept = .data$time,color="grey"))
+  if(!is.null(df_identified$iis)){
+    g = g + geom_vline(data = df_identified$iis,aes(xintercept = .data$time,color="grey"))
   }
   # Steps
   if(!is.null(df_identified$steps)){
@@ -64,12 +64,12 @@ plot.isatpanel <- function(x, max.id.facet = 16, facet.scales = "free", title = 
 
   # cfesis
   if(!is.null(df_identified$cfesis)){
-    g = g + geom_vline(data = df_identified$cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$name))
+    g = g + geom_vline(data = df_identified$cfesis, aes(xintercept = .data$time, color="darkgreen", linetype = .data$variable))
   }
 
   # csis
   if(!is.null(df_identified$csis)){
-    g = g + geom_vline(data = df_identified$csis, aes(xintercept = .data$time, color="orange", linetype = .data$name))
+    g = g + geom_vline(data = df_identified$csis, aes(xintercept = .data$time, color="orange", linetype = .data$variable))
   }
 
 
