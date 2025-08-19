@@ -104,7 +104,7 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
     } else {
       regex_exclude_indicators <- paste0(regex_exclude_indicators, "|csis|cfesis")
     }
-    df_long <- get_indicators(tmp[[is_col]][[1]], format = "long", regex_exclude_indicators = regex_exclude_indicators)
+    df_long <- get_indicators(tmp[[is_col]][[1]], format = "long", sign = sign, regex_exclude_indicators = regex_exclude_indicators)
     # Skip to next model if no indicators found
     if (nrow(df_long) == 0) {
       next
@@ -114,16 +114,14 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
     df_long <- df_long[df_long$type %in% c("COMBINED"), ]
 
     # Add model description to the data and add data to the list
-    if (nrow(df_long) > 0) {
-      plot_data_list[[n]] <- data.frame(
-        id = df_long$id,
-        time = df_long$time,
-        coef = df_long$coef,
-        effect = df_long$effect,
-        model = tmp[[model_col]],
-        stringsAsFactors = FALSE
-      )
-    }
+    plot_data_list[[n]] <- data.frame(
+      id = df_long$id,
+      time = df_long$time,
+      coef = df_long$coef,
+      effect = df_long$effect,
+      model = tmp[[model_col]],
+      stringsAsFactors = FALSE
+    )
   }
 
   # Combine all datasets
@@ -140,14 +138,6 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
 
   if (!is.null(mod_list)) {
     plot_data <- plot_data[plot_data$model %in% mod_list, , drop = FALSE]
-  }
-
-  if (!is.null(sign)) {
-    if (sign == "pos") {
-      plot_data <- plot_data[plot_data$coef > 0, , drop = FALSE]
-    } else if (sign == "neg") {
-      plot_data <- plot_data[plot_data$coef < 0, , drop = FALSE]
-    }
   }
 
   if (nrow(plot_data) == 0) {

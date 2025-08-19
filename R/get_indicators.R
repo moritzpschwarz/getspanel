@@ -12,6 +12,7 @@
 #'     \item "table": Returns a single data frame with all indicators
 #'     \item "long": Returns a panel-shaped data frame suitable for plotting
 #'   }
+#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown. 
 #' @param regex_exclude_indicators A regular expression to filter out indicators from the result. Combine multiple expressions with "|". Default is \code{NULL}, meaning no indicators are excluded.
 #'
 #' @return Depending on the `format` parameter:
@@ -92,7 +93,7 @@
 #' # Example plot of both individual indicators and the combined effect
 #' plot_indicators(result)
 #' }
-get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exclude_indicators = NULL) {
+get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NULL, regex_exclude_indicators = NULL) {
   # Input validation ----------------------------------------------------------
   if (!inherits(object, "isatpanel")) {
     stop("object must be an isatpanel object")
@@ -104,6 +105,10 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
 
   if (!is.null(uis_breaks) && !is.character(uis_breaks)) {
     stop("uis_breaks must be a character vector")
+  }
+
+  if (!is.null(sign) && !sign %in% c("pos", "neg")) {
+    stop("The 'sign' must be one of: 'pos', 'neg', NULL (both).", call. = FALSE)
   }
 
   # Initialize output based on format
@@ -161,6 +166,13 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
     sd = sqrt(diag(vcov(object$isatpanel.result)))
   )
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
+  if (!is.null(sign)) {
+    if (sign == "pos") {
+      all_indicators_long <- all_indicators_long[all_indicators_long$coef >= 0, , drop = FALSE]
+    } else if (sign == "neg") {
+      all_indicators_long <- all_indicators_long[all_indicators_long$coef <= 0, , drop = FALSE]
+    }
+  }
 
   # Process indicators ---------------------------------------------------------
   # IIS - Impulse Indicators

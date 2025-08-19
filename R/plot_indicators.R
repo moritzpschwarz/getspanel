@@ -58,7 +58,7 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
   } else {
     regex_exclude_indicators <- paste0(regex_exclude_indicators, "|csis|cfesis")
   }
-  df_long <- get_indicators(object, format = "long", regex_exclude_indicators = regex_exclude_indicators)
+  df_long <- get_indicators(object, format = "long", sign = sign, regex_exclude_indicators = regex_exclude_indicators)
 
   # Filter by id_list if provided
   if (!is.null(id_list)) {

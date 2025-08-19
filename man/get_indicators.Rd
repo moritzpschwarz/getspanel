@@ -8,6 +8,7 @@ get_indicators(
   object,
   uis_breaks = NULL,
   format = "list",
+  sign = NULL,
   regex_exclude_indicators = NULL
 )
 }
@@ -23,6 +24,8 @@ If NULL (default), user-specified indicators are not included in the result.}
 \item "table": Returns a single data frame with all indicators
 \item "long": Returns a panel-shaped data frame suitable for plotting
 }}
+
+\item{sign}{Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.}
 
 \item{regex_exclude_indicators}{A regular expression to filter out indicators from the result. Combine multiple expressions with "|". Default is \code{NULL}, meaning no indicators are excluded.}
 }
