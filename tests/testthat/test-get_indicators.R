@@ -33,3 +33,20 @@ test_that("Testing whether problematic names are handled correctly", {
   expect_equal(nrow(res1), nrow(res2))
   expect_equal(res1$coef, res2$coef)
 })
+
+test_that("Testing whether empty objects are returned correctly", {
+  data <- readRDS(test_path("_fixtures", "isatpanel_with_all_indicators.rds"))
+
+  # Exclude all indicator by regex, test each format separately
+  res <- get_indicators(data, format = "list", regex_exclude_indicators = "iis|fesis|tis|csis|cfesis")
+  expect_equal(class(res), "list")
+  expect_equal(length(res), 0)
+
+  res <- get_indicators(data, format = "table", regex_exclude_indicators = "iis|fesis|tis|csis|cfesis")
+  expect_equal(class(res), "data.frame")
+  expect_equal(nrow(res), 0)
+
+  res <- get_indicators(data, format = "long", regex_exclude_indicators = "iis|fesis|tis|csis|cfesis")
+  expect_equal(class(res), "data.frame")
+  expect_equal(nrow(res), 0)
+})
