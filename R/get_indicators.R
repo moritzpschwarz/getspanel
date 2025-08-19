@@ -106,6 +106,13 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
     stop("uis_breaks must be a character vector")
   }
 
+  # Initialize output based on format
+  output <- if (format == "list") {
+    list()
+  } else {
+    data.frame()
+  }
+
   # Prepare the data ----------------------------------------------------------
   # Get the indicator matrix from the isatpanel object
   df <- object$isatpanel.result$aux$mX
@@ -122,7 +129,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
 
   if (length(indicator_names) == 0) {
     # print("No Indicators found. Check the regex_exclude_indicators argument or the isatpanel object.")
-    return(list())
+    return(output)
   }
 
   # Only keep relevant columns (removes fixed effects columns)
@@ -154,13 +161,6 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", regex_exc
     sd = sqrt(diag(vcov(object$isatpanel.result)))
   )
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
-
-  # Initialize output based on format
-  output <- if (format == "list") {
-    list()
-  } else {
-    data.frame()
-  }
 
   # Process indicators ---------------------------------------------------------
   # IIS - Impulse Indicators

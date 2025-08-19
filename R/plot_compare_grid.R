@@ -105,6 +105,10 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
       regex_exclude_indicators <- paste0(regex_exclude_indicators, "|csis|cfesis")
     }
     df_long <- get_indicators(tmp[[is_col]][[1]], format = "long", regex_exclude_indicators = regex_exclude_indicators)
+    # Skip to next model if no indicators found
+    if (nrow(df_long) == 0) {
+      next
+    }
 
     # Only keep COMBINED data for this plot
     df_long <- df_long[df_long$type %in% c("COMBINED"), ]
