@@ -114,20 +114,20 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
   g <- ggplot(df_long, aes(x = .data$time, y = .data$effect, group = .data$name, color = .data$type, fill = .data$type)) +
     # Bars for IIS
     geom_col(
-      data = subset(df_long, type %in% c("IIS")),
+      data = subset(df_long, df_long$type %in% c("IIS")),
       width = indicator_styles[["IIS"]]$width,
       show.legend = TRUE
     ) +
     # Lines for FESIS, TIS
     geom_line(
-      data = subset(df_long, type %in% c("FESIS", "TIS")),
+      data = subset(df_long, df_long$type %in% c("FESIS", "TIS")),
       # Both FESIS and TIS use same linewidth
       linewidth = indicator_styles[["FESIS"]]$width,
       show.legend = TRUE
     ) +
     # Dashed line for COMBINED
     geom_line(
-      data = subset(df_long, type == "COMBINED"),
+      data = subset(df_long, df_long$type == "COMBINED"),
       linewidth = indicator_styles[["COMBINED"]]$width,
       linetype = indicator_styles[["COMBINED"]]$linetype,
       show.legend = TRUE
