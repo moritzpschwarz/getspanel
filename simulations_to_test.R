@@ -112,7 +112,7 @@ for(indic_method in c("fesis","tis","both")){
   for(n_time in c(20,30,50,100)){
     for(k in c(2,3,5,10)){
       for(eng in c("gets", "lasso")){
-        # browser()
+        browser()
         print(paste0("N:", n_time, ", K:", k, ", Engine:",eng, ", IndicMethod:",indic_method))
 
         means <- rnorm(k, sd = fe_sigma)
@@ -268,7 +268,7 @@ for(indic_method in c("fesis","tis","both")){
 }
 
 
-saveRDS(overall, file = "overall_simulations.rds")
+#save(overall, file = "overall_simulations.RData")
 #load("overall_simulations.RData")
 
 
@@ -277,9 +277,7 @@ overall %>%
   mutate(index = 1:n()) %>%
   #select(index, treatment_collection) %>%
   unnest(treatment_collection) %>%
-  mutate(treated = ifelse(treated == "trendbreak","trend",treated)) %>%
-  # Ensure no list columns remain in A
-  mutate_if(is.list, ~sapply(., function(x) if(is.null(x)) NA else paste(x, collapse = ","))) -> A
+  mutate(treated = ifelse(treated == "trendbreak","trend",treated)) -> A
 
 
 B <- overall %>%
@@ -287,10 +285,9 @@ B <- overall %>%
   #select(index, indicators) %>%
   unnest(indicators) %>%
   unnest(indicators) %>%
-  # Ensure no list columns remain in B
-  mutate_if(is.list, ~sapply(., function(x) if(is.null(x)) NA else paste(x, collapse = ","))) %>%
+  select(-y, -value) %>%
   rowwise() %>%
-  mutate(time = as.numeric(time) - 1900,
+  mutate(time = time - 1900,
          treated = case_when(grepl("^fesis",name) ~ "step",
                              grepl("^tis",name) ~ "trend")) %>%
   ungroup() %>%
@@ -393,5 +390,5 @@ overall %>%
   theme(panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = NA)) -> plt
 
-ggsave("~/Downloads/simulation_results_plot.png", plt, width = 8, height = 8, bg = "white")
+ggsave(plt, "~/Downloads/simulation_results_plot.png", plt, width = 8, height = 8, bg = "white")
 
