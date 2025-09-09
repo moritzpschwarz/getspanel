@@ -522,6 +522,11 @@ analyze_false_detections <- function(true_treatments, detected_treatments) {
 #' Main evaluation function that combines all metrics
 evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0, 1, 2)) {
   
+  # Extract simulation metadata
+  sim_metadata <- overall_tibble %>%
+    select(n_id, n_time, indic_method) %>%
+    mutate(simulation_id = seq_len(n()))
+  
   # Extract true and detected treatments from the overall tibble
   true_treatments <- overall_tibble %>%
     select(treatment_collection) %>%
@@ -560,9 +565,13 @@ evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0
   for(sim_id in unique(true_treatments$simulation_id)) {
     true_sim <- true_treatments %>% filter(simulation_id == sim_id)
     detected_sim <- detected_treatments %>% filter(simulation_id == sim_id)
+    sim_meta <- sim_metadata %>% filter(simulation_id == sim_id)
     
     sim_results <- list()
     sim_results$simulation_id <- sim_id
+    sim_results$n_id <- sim_meta$n_id
+    sim_results$n_time <- sim_meta$n_time
+    sim_results$indic_method <- sim_meta$indic_method
     
     # 1. Exact matches
     sim_results$exact <- exact_matches(true_sim, detected_sim)
@@ -586,7 +595,7 @@ evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0
 }
 
 #' Create Summary Table
-#' Aggregates results across simulations
+#' Aggregates results across simulations including method comparison
 create_summary_table <- function(evaluation_results) {
   summary_data <- data.frame()
   
@@ -595,6 +604,9 @@ create_summary_table <- function(evaluation_results) {
     
     row <- data.frame(
       simulation_id = result$simulation_id,
+      n_id = result$n_id,
+      n_time = result$n_time,
+      indic_method = result$indic_method,
       exact_precision = result$exact$precision,
       exact_recall = result$exact$recall,
       exact_f1 = result$exact$f1_score,
@@ -656,4 +668,181 @@ plot_detection_performance <- function(evaluation_results) {
          x = "Timing Tolerance (periods)",
          y = "Performance Metric") +
     theme_minimal()
+}
+
+#' Compare Method Performance
+#' Compares performance across different indicator methods
+compare_method_performance <- function(evaluation_results) {
+  library(ggplot2)
+  
+  summary_table <- create_summary_table(evaluation_results)
+  
+  # Aggregate by method
+  method_comparison <- summary_table %>%
+    group_by(indic_method) %>%
+    summarise(
+      avg_exact_precision = mean(exact_precision, na.rm = TRUE),
+      avg_exact_recall = mean(exact_recall, na.rm = TRUE),
+      avg_exact_f1 = mean(exact_f1, na.rm = TRUE),
+      avg_tol1_precision = mean(tol1_precision, na.rm = TRUE),
+      avg_tol1_recall = mean(tol1_recall, na.rm = TRUE),
+      avg_tol2_precision = mean(tol2_precision, na.rm = TRUE),
+      avg_tol2_recall = mean(tol2_recall, na.rm = TRUE),
+      avg_fp_rate = mean(fp_rate, na.rm = TRUE),
+      avg_fn_rate = mean(fn_rate, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  # Create multiple comparison plots
+  plots <- list()
+  
+  # 1. Precision and Recall comparison
+  precision_recall_data <- method_comparison %>%
+    select(indic_method, avg_exact_precision, avg_exact_recall, 
+           avg_tol1_precision, avg_tol1_recall, avg_tol2_precision, avg_tol2_recall) %>%
+    pivot_longer(-indic_method, names_to = "metric", values_to = "value") %>%
+    mutate(
+      tolerance = case_when(
+        grepl("exact", metric) ~ "0",
+        grepl("tol1", metric) ~ "1", 
+        grepl("tol2", metric) ~ "2",
+        TRUE ~ NA_character_
+      ),
+      measure = case_when(
+        grepl("precision", metric) ~ "Precision",
+        grepl("recall", metric) ~ "Recall",
+        TRUE ~ NA_character_
+      )
+    ) %>%
+    filter(!is.na(tolerance) & !is.na(measure))
+  
+  plots$precision_recall <- ggplot(precision_recall_data, 
+                                   aes(x = tolerance, y = value, 
+                                       color = indic_method, group = indic_method)) +
+    geom_line(size = 1) +
+    geom_point(size = 3) +
+    facet_wrap(~measure) +
+    labs(title = "Precision and Recall by Method and Tolerance",
+         x = "Timing Tolerance",
+         y = "Performance",
+         color = "Method") +
+    theme_minimal()
+  
+  # 2. F1 Score comparison
+  plots$f1_score <- ggplot(method_comparison, 
+                           aes(x = indic_method, y = avg_exact_f1, fill = indic_method)) +
+    geom_col() +
+    labs(title = "F1 Score by Method (Exact Matches)",
+         x = "Indicator Method",
+         y = "Average F1 Score") +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  # 3. False Positive and False Negative rates
+  fp_fn_data <- method_comparison %>%
+    select(indic_method, avg_fp_rate, avg_fn_rate) %>%
+    pivot_longer(-indic_method, names_to = "rate_type", values_to = "rate") %>%
+    mutate(rate_type = case_when(
+      rate_type == "avg_fp_rate" ~ "False Positive Rate",
+      rate_type == "avg_fn_rate" ~ "False Negative Rate",
+      TRUE ~ rate_type
+    ))
+  
+  plots$fp_fn_rates <- ggplot(fp_fn_data, 
+                              aes(x = indic_method, y = rate, fill = rate_type)) +
+    geom_col(position = "dodge") +
+    labs(title = "False Positive and False Negative Rates by Method",
+         x = "Indicator Method",
+         y = "Rate",
+         fill = "Rate Type") +
+    theme_minimal()
+  
+  return(plots)
+}
+
+#' Detailed Method Analysis
+#' Provides detailed breakdown by method, n_time, and n_id
+detailed_method_analysis <- function(evaluation_results) {
+  library(ggplot2)
+  library(dplyr)
+  
+  summary_table <- create_summary_table(evaluation_results)
+  
+  # Performance by method, n_time, and n_id
+  detailed_comparison <- summary_table %>%
+    group_by(indic_method, n_time, n_id) %>%
+    summarise(
+      avg_exact_precision = mean(exact_precision, na.rm = TRUE),
+      avg_exact_recall = mean(exact_recall, na.rm = TRUE),
+      avg_exact_f1 = mean(exact_f1, na.rm = TRUE),
+      avg_fp_rate = mean(fp_rate, na.rm = TRUE),
+      avg_fn_rate = mean(fn_rate, na.rm = TRUE),
+      n_simulations = n(),
+      .groups = "drop"
+    )
+  
+  plots <- list()
+  
+  # 1. F1 Score by n_time and method
+  plots$f1_by_time <- ggplot(detailed_comparison, 
+                             aes(x = as.factor(n_time), y = avg_exact_f1, 
+                                 color = indic_method, group = indic_method)) +
+    geom_line(size = 1) +
+    geom_point(size = 3) +
+    facet_wrap(~n_id, labeller = label_both) +
+    labs(title = "F1 Score by Time Periods and Number of IDs",
+         x = "Number of Time Periods",
+         y = "Average F1 Score",
+         color = "Method") +
+    theme_minimal()
+  
+  # 2. Precision vs Recall scatter
+  plots$precision_recall_scatter <- ggplot(detailed_comparison, 
+                                           aes(x = avg_exact_precision, y = avg_exact_recall, 
+                                               color = indic_method, shape = as.factor(n_id))) +
+    geom_point(size = 3, alpha = 0.7) +
+    facet_wrap(~n_time, labeller = label_both) +
+    labs(title = "Precision vs Recall Trade-off by Method",
+         x = "Average Precision",
+         y = "Average Recall",
+         color = "Method",
+         shape = "Number of IDs") +
+    theme_minimal()
+  
+  # 3. Heatmap of F1 scores
+  plots$f1_heatmap <- ggplot(detailed_comparison, 
+                             aes(x = as.factor(n_time), y = as.factor(n_id), fill = avg_exact_f1)) +
+    geom_tile() +
+    facet_wrap(~indic_method) +
+    scale_fill_gradient(low = "white", high = "darkblue") +
+    labs(title = "F1 Score Heatmap by Method",
+         x = "Number of Time Periods",
+         y = "Number of IDs",
+         fill = "Average F1 Score") +
+    theme_minimal()
+  
+  return(list(plots = plots, data = detailed_comparison))
+}
+
+#' Method Performance Summary Table
+#' Creates a summary table comparing methods
+method_performance_summary <- function(evaluation_results) {
+  summary_table <- create_summary_table(evaluation_results)
+  
+  method_summary <- summary_table %>%
+    group_by(indic_method) %>%
+    summarise(
+      n_simulations = n(),
+      avg_exact_precision = round(mean(exact_precision, na.rm = TRUE), 3),
+      sd_exact_precision = round(sd(exact_precision, na.rm = TRUE), 3),
+      avg_exact_recall = round(mean(exact_recall, na.rm = TRUE), 3),
+      sd_exact_recall = round(sd(exact_recall, na.rm = TRUE), 3),
+      avg_exact_f1 = round(mean(exact_f1, na.rm = TRUE), 3),
+      sd_exact_f1 = round(sd(exact_f1, na.rm = TRUE), 3),
+      avg_fp_rate = round(mean(fp_rate, na.rm = TRUE), 3),
+      avg_fn_rate = round(mean(fn_rate, na.rm = TRUE), 3),
+      .groups = "drop"
+    )
+  
+  return(method_summary)
 }
