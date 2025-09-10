@@ -408,125 +408,7 @@ run_simulation_study <- function() {
 # Treatment Detection Evaluation Functions
 # =======================================
 
-#' Exact Match Accuracy
-#' Measures perfect matches where id, type, and timing are all correct
-exact_matches <- function(true_treatments, detected_treatments) {
-  true_key <- paste(true_treatments$id, true_treatments$type, true_treatments$timing, sep = "_")
-  detected_key <- paste(detected_treatments$id, detected_treatments$type, detected_treatments$timing, sep = "_")
-  
-  matches <- intersect(true_key, detected_key)
-  
-  precision <- if(length(detected_key) > 0) length(matches) / length(detected_key) else 0
-  recall <- if(length(true_key) > 0) length(matches) / length(true_key) else 0
-  f1_score <- if(precision + recall > 0) 2 * (precision * recall) / (precision + recall) else 0
-  
-  list(
-    n_matches = length(matches),
-    precision = precision,
-    recall = recall,
-    f1_score = f1_score
-  )
-}
-
-#' Timing Tolerant Matches
-#' Allows for small timing errors (e.g., ±1 or ±2 periods)
-timing_tolerant_matches <- function(true_treatments, detected_treatments, tolerance = 1) {
-  matches <- 0
-  matched_true <- c()
-  matched_detected <- c()
-  
-  for(i in 1:nrow(detected_treatments)) {
-    det <- detected_treatments[i, ]
-    
-    # Find potential matches with same id and type
-    candidates <- true_treatments[
-      true_treatments$id == det$id & 
-      true_treatments$type == det$type &
-      abs(true_treatments$timing - det$timing) <= tolerance, 
-    ]
-    
-    if(nrow(candidates) > 0) {
-      # Choose closest timing match
-      best_match <- candidates[which.min(abs(candidates$timing - det$timing)), ]
-      match_key <- paste(best_match$id, best_match$type, best_match$timing, sep = "_")
-      
-      if(!match_key %in% matched_true) {
-        matches <- matches + 1
-        matched_true <- c(matched_true, match_key)
-        matched_detected <- c(matched_detected, i)
-      }
-    }
-  }
-  
-  precision <- if(nrow(detected_treatments) > 0) matches / nrow(detected_treatments) else 0
-  recall <- if(nrow(true_treatments) > 0) matches / nrow(true_treatments) else 0
-  
-  list(
-    n_matches = matches,
-    precision = precision,
-    recall = recall
-  )
-}
-
-#' Type Confusion Analysis
-#' Analyzes cases where timing and id are correct but type is wrong
-type_confusion_analysis <- function(true_treatments, detected_treatments) {
-  # Create id-timing keys
-  true_key <- paste(true_treatments$id, true_treatments$timing, sep = "_")
-  detected_key <- paste(detected_treatments$id, detected_treatments$timing, sep = "_")
-  
-  # Find overlapping id-timing combinations
-  common_keys <- intersect(true_key, detected_key)
-  
-  confusion_cases <- data.frame()
-  
-  for(key in common_keys) {
-    true_subset <- true_treatments[paste(true_treatments$id, true_treatments$timing, sep = "_") == key, ]
-    detected_subset <- detected_treatments[paste(detected_treatments$id, detected_treatments$timing, sep = "_") == key, ]
-    
-    # Check if types match
-    if(!all(true_subset$type %in% detected_subset$type)) {
-      confusion_cases <- rbind(confusion_cases, data.frame(
-        id_timing = key,
-        true_type = paste(true_subset$type, collapse = ","),
-        detected_type = paste(detected_subset$type, collapse = ",")
-      ))
-    }
-  }
-  
-  return(confusion_cases)
-}
-
-#' Analyze False Detections
-#' Categorizes false positives and false negatives
-analyze_false_detections <- function(true_treatments, detected_treatments) {
-  # False positives: detected but not true
-  true_key <- paste(true_treatments$id, true_treatments$type, true_treatments$timing, sep = "_")
-  detected_key <- paste(detected_treatments$id, detected_treatments$type, detected_treatments$timing, sep = "_")
-  
-  false_positives <- detected_treatments[!detected_key %in% true_key, ]
-  false_negatives <- true_treatments[!true_key %in% detected_key, ]
-  
-  fp_rate <- if(nrow(detected_treatments) > 0) nrow(false_positives) / nrow(detected_treatments) else 0
-  fn_rate <- if(nrow(true_treatments) > 0) nrow(false_negatives) / nrow(true_treatments) else 0
-  
-  list(
-    false_positives = false_positives,
-    false_negatives = false_negatives,
-    fp_rate = fp_rate,
-    fn_rate = fn_rate
-  )
-}
-
-#' Comprehensive Treatment Detection Evaluation
-#' Main evaluation function that combines all metrics
-evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0, 1, 2)) {
-  
-  # Extract simulation metadata
-  sim_metadata <- overall_tibble %>%
-    select(n_id, n_time, indic_method) %>%
-    mutate(simulation_id = seq_len(n()))
-  
+extract_treatments <- function(overall_tibble) {
   # Extract true and detected treatments from the overall tibble
   true_treatments <- overall_tibble %>%
     select(treatment_collection) %>%
@@ -558,7 +440,107 @@ evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0
     select(simulation_id, id, type, timing) %>%
     filter(!is.na(timing)) %>%
     mutate(id = as.integer(id))
+
+  list(
+    true_treatments = true_treatments,
+    detected_treatments = detected_treatments
+  )
+}
+
+#' Treatment Matches
+#' Allows for small timing errors (e.g., ±1 or ±2 periods)
+match_treatments <- function(true_treatments = NULL, detected_treatments = NULL, overall = NULL, tolerance = 0, allow_type_mismatch = FALSE) {
+  if (!is.null(overall)) {
+    treatments <- extract_treatments(overall)
+    true_treatments <- treatments$true_treatments
+    detected_treatments <- treatments$detected_treatments
+  } else if (is.null(true_treatments) | is.null(detected_treatments)) {
+    stop("Either overall or both true_treatments and detected_treatments must be provided.")
+  }
+
+  true_treatments <- true_treatments %>%
+    rename(true_timing = timing)
+  detected_treatments <- detected_treatments %>%
+    rename(detected_timing = timing)
+
+  if (allow_type_mismatch) {
+    true_treatments <- true_treatments %>%
+      rename(true_type = type)
+    detected_treatments <- detected_treatments %>%
+      rename(detected_type = type)
+  }
+
+  matches <- full_join(
+    true_treatments,
+    detected_treatments
+  ) %>%
+    mutate(timing_diff = abs(true_timing - detected_timing)) %>%
+    filter(timing_diff <= tolerance)
   
+  if (allow_type_mismatch) {
+    matches <- matches %>%
+      mutate(type_mismatch = true_type != detected_type)
+  }
+
+  precision <- ifelse(
+    nrow(detected_treatments) > 0,
+    nrow(matches) / nrow(detected_treatments),
+    0
+  )
+  recall <- ifelse(
+    nrow(true_treatments) > 0,
+    nrow(matches) / nrow(true_treatments),
+    0
+  )
+  f1_score <- ifelse(
+    precision + recall > 0,
+    2 * (precision * recall) / (precision + recall),
+    0
+  )
+
+  list(
+    matches = matches,
+    precision = precision,
+    recall = recall,
+    f1_score = f1_score
+  )
+}
+
+#' Analyze False Detections
+#' Categorizes false positives and false negatives
+analyze_false_detections <- function(true_treatments, detected_treatments) {
+  # False positives: detected but not true
+  true_key <- paste(true_treatments$id, true_treatments$type, true_treatments$timing, sep = "_")
+  detected_key <- paste(detected_treatments$id, detected_treatments$type, detected_treatments$timing, sep = "_")
+  
+  false_positives <- detected_treatments[!detected_key %in% true_key, ]
+  false_negatives <- true_treatments[!true_key %in% detected_key, ]
+  
+  fp_rate <- if(nrow(detected_treatments) > 0) nrow(false_positives) / nrow(detected_treatments) else 0
+  fn_rate <- if(nrow(true_treatments) > 0) nrow(false_negatives) / nrow(true_treatments) else 0
+  
+  list(
+    false_positives = false_positives,
+    false_negatives = false_negatives,
+    fp_rate = fp_rate,
+    fn_rate = fn_rate
+  )
+}
+
+#' Comprehensive Treatment Detection Evaluation
+#' Main evaluation function that combines all metrics
+evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0, 1, 2)) {
+  
+  # Extract simulation metadata
+  sim_metadata <- overall_tibble %>%
+    select(n_id, n_time, indic_method) %>%
+    mutate(simulation_id = seq_len(n()))
+
+  # Extract true and detected treatments
+  treatments <- extract_treatments(overall_tibble)
+  true_treatments <- treatments$true_treatments
+  detected_treatments <- treatments$detected_treatments
+
   # Run evaluation for each simulation
   results <- list()
   
@@ -574,17 +556,23 @@ evaluate_treatment_detection <- function(overall_tibble, timing_tolerances = c(0
     sim_results$indic_method <- sim_meta$indic_method
     
     # 1. Exact matches
-    sim_results$exact <- exact_matches(true_sim, detected_sim)
+    sim_results$exact <- match_treatments(true_treatments = true_sim, detected_treatments = detected_sim)
     
     # 2. Timing tolerance analysis
     sim_results$timing_tolerance <- lapply(timing_tolerances, function(tol) {
-      timing_tolerant_matches(true_sim, detected_sim, tol)
+      match_treatments(true_treatments = true_sim, detected_treatments = detected_sim, tolerance = tol)
     })
     names(sim_results$timing_tolerance) <- paste0("tolerance_", timing_tolerances)
     
     # 3. Type confusion
-    sim_results$type_confusion <- type_confusion_analysis(true_sim, detected_sim)
-    
+    sim_results$type_confusion <- match_treatments(
+      true_treatments = true_sim,
+      detected_treatments = detected_sim,
+      tolerance = 0,
+      allow_type_mismatch = TRUE
+    )$matches %>%
+      filter(type_mismatch)
+
     # 4. False positives and negatives
     sim_results$false_analysis <- analyze_false_detections(true_sim, detected_sim)
     
