@@ -8,34 +8,27 @@ library(data.table)
 # devtools::load_all()
 base_time <- 1900
 
-create_input_data <- function(id, fe, n_time, beta, sigma) {
-  x <- matrix(rnorm(n_time * length(beta)), ncol = length(beta))
-  eps <- rnorm(n_time, mean = 0, sd = sigma)
-
-  y <- x %*% beta + fe + eps
-  # ggplot(data.frame(x = 1:n_time, y = y),aes(x = x, y = y)) + geom_line() -> p
-
-  data.frame(id = id,
-             time = (1:n_time) + base_time,
-             x = x,
-             y = y)
-}
-
 impose_treatment <- function(type, n_time, location, magnitude, fe) {
   if (!(type %in% c("trend", "trendbreak", "step"))) {
     stop("treatment type not recognized")
   }
 
+  # Initialize treatment vector and determine absolute location
   treatment <- rep(0, n_time)
   abs_location <- max(ceiling(n_time * location), 1)
   if (type == "trend") {
+    # "Trend" always starts at the beginning
     treatment <- 1:n_time
   } else if (type == "trendbreak") {
+    # "Trendbreak" starts at abs_location and sets increasing dummies
     treatment[abs_location:n_time] <- seq_along(treatment[abs_location:n_time])
   } else if (type == "step") {
+    # "Step" sets a constant step-shift from abs_location
     treatment[abs_location:n_time] <- 1
   }
   treatment <- treatment * magnitude
+
+  # Not sure why fixed effects are added again for steps, copied from Moritz
   if (type == "step") {
     treatment <- treatment + fe
   }
@@ -43,38 +36,52 @@ impose_treatment <- function(type, n_time, location, magnitude, fe) {
   list(treatment = treatment, time = abs_location)
 }
 
-run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, plot_data = FALSE, plot_isatpanel = FALSE) {
+create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, plot_data = FALSE) {
+  # Initialize unit fixed effects and return vectors
+  means <- rnorm(n_id, sd = fe_sigma)
   input_data <- data.frame()
   treatment_collection <- tibble()
 
-  means <- rnorm(n_id, sd = fe_sigma)
   for (id in 1:n_id) {
+    # Create random input data (x) and compute outcome variable (y)
     fe <- means[id]
+    x <- matrix(rnorm(n_time * length(beta)), ncol = length(beta))
+    eps <- rnorm(n_time, mean = 0, sd = sigma)
+    y <- x %*% beta + fe + eps
 
-    data <- create_input_data(id = LETTERS[id],
-                              fe = fe,
-                              n_time = n_time,
-                              beta = beta,
-                              sigma = sigma)
+    data <- data.frame(
+      id = LETTERS[id],
+      time = (1:n_time) + base_time,
+      x = x,
+      y = y
+    )
 
+    # Initialize treatment column to NA (only used to plot treatment impact)
     data$treatment <- NA
     if (id %in% treatment_params$id) {
       params <- treatment_params %>% filter(id == !!id)
+      # Get effect and timing for each treatment
+      # Add treatment effect to outcome and store timing for the collection
       for (i in seq_len(nrow(params))) {
-        treat <- impose_treatment(type = params$type[i],
-                                  n_time = n_time,
-                                  location = params$location[i],
-                                  magnitude = params$magnitude[i],
-                                  fe = fe)
-
+        treat <- impose_treatment(
+          type = params$type[i],
+          n_time = n_time,
+          location = params$location[i],
+          magnitude = params$magnitude[i],
+          fe = fe
+        )
         data$y <- data$y + treat$treatment
-        if (is.na(all(data$treatment))) {
-          data$treatment <- 0
-        }
+
+        # Initialize treatment column to 0 if NA, then add treatment effect
+        # This way, overlapping treatments are summed and units without any treatments remain with NA values
+        data$treatment <- ifelse(is.na(data$treatment), 0, data$treatment)
         data$treatment <- data$treatment + treat$treatment
-        treat_entry <- tibble(id = LETTERS[id],
-                              treated = params$type[i],
-                              time = treat$time)
+
+        treat_entry <- tibble(
+          id = LETTERS[id],
+          treated = params$type[i],
+          time = treat$time
+        )
         treatment_collection <- bind_rows(treatment_collection, treat_entry)
       }
     }
@@ -91,15 +98,16 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
         TRUE ~ name
       ))
 
-    # Plot
     p <- ggplot() +
       # Gray lines for "data" group, with plot_group
+      # group/color arguments make sure each x variable is a separate line but they share a legend entry
       geom_line(
         data = tmp %>% filter(plot_group == "data"),
         aes(x = time, y = value, group = name, color = plot_group),
         size = 0.7, alpha = 0.7
       ) +
       # Dashed lines for unit_fe and treatment
+      # na.rm = TRUE for units without treatment
       geom_line(
         data = tmp %>% filter(plot_group %in% c("unit_fe", "treatment")),
         aes(x = time, y = value, color = plot_group),
@@ -124,22 +132,46 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     plot(p)
   }
 
+  # treatment column was only used for plotting
+  list(
+    input_data = input_data %>% select(-treatment), treatment_collection = treatment_collection
+  )
+}
+
+run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, plot_data = FALSE, plot_isatpanel = FALSE) {
+  # Create input data with imposed treatments and treatment information
+  data_creation <- create_input_data(
+    n_id = n_id,
+    n_time = n_time,
+    treatment_params = treatment_params,
+    fe_sigma = fe_sigma,
+    beta = beta,
+    sigma = sigma,
+    plot_data = plot_data
+  )
+  input_data <- data_creation$input_data
+  treatment_collection <- data_creation$treatment_collection
+
+  # Prepare formula and run getspanel
   variables <- paste0(input_data %>% select(-c(id, time, y)) %>% names,
                       collapse = " + ")
   form <- as.formula(paste0("y ~ ", variables))
+  result <- isatpanel(
+    data = input_data,
+    formula = form,
+    effect = "individual",
+    index = c("id", "time"),
+    fesis = ifelse(method %in% c("fesis", "both"), TRUE, FALSE),
+    tis = ifelse(method %in% c("tis", "both"), TRUE, FALSE),
+    iis = FALSE,
+    print.searchinfo = FALSE,
+    t.pval = t.pval,
+    ar = ar,
+    plot = plot_isatpanel,
+    max.block.size = max.block.size
+  )
 
-  result <- isatpanel(input_data, formula = form,
-                      effect = "individual",
-                      index = c("id","time"),
-                      fesis = if(method %in% c("fesis","both")){TRUE}else{FALSE},
-                      tis = if(method %in% c("tis","both")){TRUE}else{FALSE},
-                      iis = FALSE,
-                      print.searchinfo = FALSE,
-                      t.pval = t.pval,
-                      ar = ar,
-                      plot = plot_isatpanel,
-                      max.block.size = max.block.size)
-
+  # Return tibble with all relevant information for the simulation run
   tibble(
     n_id,
     n_time,
@@ -171,8 +203,8 @@ run_simulation_study <- function() {
       ~id, ~type, ~magnitude, ~location,
       3, "step", 2, 0.2,
       5, "step", 2, 0.2,
-      2, "trend", 0.2, NA,
-      1, "trendbreak", -0.65
+      2, "trend", 0.2, 0,
+      1, "trendbreak", -0.4, 0.65
     )
   )
 
@@ -197,20 +229,24 @@ run_simulation_study <- function() {
                 for (n_id in n_ids) {
                   for (rep in 1:n_rep) {
                     print(paste("Running simulation number =", nrow(overall) + 1, "/", n_simulations, "with method =", method, ", t.pval =", t.pval, ", ar =", ar, ", max.block.size =", max.block.size, ", n_time =", n_time, ", n_id =", n_id, ", rep =", rep))
-                    result <- run_single_model(n_id = n_id,
-                                            n_time = n_time,
-                                            engine = engine,
-                                            method = method,
-                                            treatment_params = treatment_params,
-                                            fe_sigma = fe_sigma,
-                                            beta = beta,
-                                            sigma = sigma,
-                                            t.pval = t.pval,
-                                            ar = ar,
-                                            max.block.size = max.block.size)
+                    result <- run_single_model(
+                      n_id = n_id,
+                      n_time = n_time,
+                      engine = engine,
+                      method = method,
+                      treatment_params = treatment_params,
+                      fe_sigma = fe_sigma,
+                      beta = beta,
+                      sigma = sigma,
+                      t.pval = t.pval,
+                      ar = ar,
+                      max.block.size = max.block.size
+                    )
+                    # Add simulation_id and place it at the front
                     result <- result %>%
                       mutate(simulation_id = nrow(overall) + 1) %>%
                       select(simulation_id, everything())
+
                     overall <- bind_rows(overall, result)
                   }
                 }
