@@ -29,7 +29,7 @@ impose_treatment <- function(type, n_time, location, magnitude, fe) {
   treatment <- rep(0, n_time)
   abs_location <- max(ceiling(n_time * location), 1)
   if (type == "trend") {
-    treatment <- abs_location:n_time
+    treatment <- 1:n_time
   } else if (type == "trendbreak") {
     treatment[abs_location:n_time] <- seq_along(treatment[abs_location:n_time])
   } else if (type == "step") {
@@ -43,7 +43,7 @@ impose_treatment <- function(type, n_time, location, magnitude, fe) {
   list(treatment = treatment, time = abs_location)
 }
 
-run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma) {
+run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, plot_data = FALSE, plot_isatpanel = FALSE) {
   input_data <- data.frame()
   treatment_collection <- tibble()
 
@@ -51,12 +51,13 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
   for (id in 1:n_id) {
     fe <- means[id]
 
-    data <- create_input_data(id = id,
+    data <- create_input_data(id = LETTERS[id],
                               fe = fe,
                               n_time = n_time,
                               beta = beta,
                               sigma = sigma)
 
+    data$treatment <- NA
     if (id %in% treatment_params$id) {
       params <- treatment_params %>% filter(id == !!id)
       for (i in seq_len(nrow(params))) {
@@ -67,7 +68,11 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
                                   fe = fe)
 
         data$y <- data$y + treat$treatment
-        treat_entry <- tibble(id = id,
+        if (is.na(all(data$treatment))) {
+          data$treatment <- 0
+        }
+        data$treatment <- data$treatment + treat$treatment
+        treat_entry <- tibble(id = LETTERS[id],
                               treated = params$type[i],
                               time = treat$time)
         treatment_collection <- bind_rows(treatment_collection, treat_entry)
@@ -76,12 +81,48 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     input_data <- bind_rows(input_data, data)
   }
 
-  p <- input_data %>%
-    pivot_longer(-c(id, time)) %>%
-    ggplot(aes(x = time, y = value, color = name)) +
-    geom_line() +
-    facet_wrap(~id)
-  plot(p)
+  if (plot_data == TRUE) {
+    # Prepare data for plotting
+    tmp <- input_data %>%
+      mutate(unit_fe = rep(means, each = n_time)) %>%
+      pivot_longer(-c(id, time)) %>%
+      mutate(plot_group = case_when(
+        name %in% c("x.1", "x.2", "x.3", "x.4", "x.5") ~ "data",
+        TRUE ~ name
+      ))
+
+    # Plot
+    p <- ggplot() +
+      # Gray lines for "data" group, with plot_group
+      geom_line(
+        data = tmp %>% filter(plot_group == "data"),
+        aes(x = time, y = value, group = name, color = plot_group),
+        size = 0.7, alpha = 0.7
+      ) +
+      # Dashed lines for unit_fe and treatment
+      geom_line(
+        data = tmp %>% filter(plot_group %in% c("unit_fe", "treatment")),
+        aes(x = time, y = value, color = plot_group),
+        size = 0.8, na.rm = TRUE, linetype = "dashed"
+      ) +
+      # Solid line for y
+      geom_line(
+        data = tmp %>% filter(plot_group == "y"),
+        aes(x = time, y = value, color = plot_group),
+        size = 1
+      ) +
+      facet_wrap(~id) +
+      scale_color_manual(
+        values = c(
+          "data" = "gray60",
+          "unit_fe" = "#E41A1C",
+          "treatment" = "#377EB8",
+          "y" = "#4DAF4A"
+        )
+      ) +
+      labs(color = "Variable")
+    plot(p)
+  }
 
   variables <- paste0(input_data %>% select(-c(id, time, y)) %>% names,
                       collapse = " + ")
@@ -93,7 +134,11 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
                       fesis = if(method %in% c("fesis","both")){TRUE}else{FALSE},
                       tis = if(method %in% c("tis","both")){TRUE}else{FALSE},
                       iis = FALSE,
-                      print.searchinfo = FALSE)
+                      print.searchinfo = FALSE,
+                      t.pval = t.pval,
+                      ar = ar,
+                      plot = plot_isatpanel,
+                      max.block.size = max.block.size)
 
   tibble(
     n_id,
@@ -103,33 +148,76 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     treatment_collection = list(treatment_collection),
     engine,
     indic_method = method,
+    t.pval = t.pval,
+    ar = ar,
+    max.block.size = max.block.size,
     adaptive = NA
   )
 }
 
 run_simulation_study <- function() {
   set.seed(99726)
-  n_time <- 20
-  n_id <- 3
-  engine <- "gets"
+
+  # Simulation parameters (panel structure and data generation)
+  n_ids <- c(2, 3, 5, 10)
+  n_times <- c(20, 30, 50, 100)
+  beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
   sigma <- 0.5
   fe_sigma <- 5
-  beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
 
-  # Define treatment parameters in a tidy data frame
-  treatment_params <- tibble(
-    id = c(3, 5, 2, 1),
-    type = c("step", "step", "trend", "trendbreak"),
-    magnitude = c(2, 2, 0.2, -0.4),
-    location = c(0.2, 0.2, NA, 0.65)
+  # Treatment parameters (imposed treatments to be detected)
+  treatment_params_list <- list(
+    tribble(
+      ~id, ~type, ~magnitude, ~location,
+      3, "step", 2, 0.2,
+      5, "step", 2, 0.2,
+      2, "trend", 0.2, NA,
+      1, "trendbreak", -0.65
+    )
   )
 
+  # Benchmark parameters (getspanel parameters to be varied)
+  n_rep <- 1
+  engines <- c("gets")
+  methods <- c("fesis", "tis", "both")
+  t.pvals <- c(0.05, 0.01, 0.001)
+  ars <- c(0)
+  max.block.sizes <- c(30)
+
+  n_simulations <- length(engines) * length(methods) * length(t.pvals) * length(ars) * length(max.block.sizes) * length(treatment_params_list) * length(n_times) * length(n_ids) * n_rep
+  print(paste("Total simulations to run:", n_simulations))
   overall <- tibble()
-  for (method in c("fesis", "tis", "both")){
-    for (n_time in c(20, 30, 50, 100)){
-      for (n_id in c(2, 3, 5, 10)){
-        tmp <- run_single_model(n_id = n_id, n_time = n_time, engine = engine, method = method, treatment_params = treatment_params, fe_sigma = fe_sigma, beta = beta, sigma = sigma)
-        overall <- bind_rows(overall, tmp)
+  for (engine in engines) {
+    for (method in methods) {
+      for (t.pval in t.pvals) {
+        for (ar in ars) {
+          for (max.block.size in max.block.sizes) {
+            for (treatment_params in treatment_params_list) {
+              for (n_time in n_times) {
+                for (n_id in n_ids) {
+                  for (rep in 1:n_rep) {
+                    print(paste("Running simulation number =", nrow(overall) + 1, "/", n_simulations, "with method =", method, ", t.pval =", t.pval, ", ar =", ar, ", max.block.size =", max.block.size, ", n_time =", n_time, ", n_id =", n_id, ", rep =", rep))
+                    result <- run_single_model(n_id = n_id,
+                                            n_time = n_time,
+                                            engine = engine,
+                                            method = method,
+                                            treatment_params = treatment_params,
+                                            fe_sigma = fe_sigma,
+                                            beta = beta,
+                                            sigma = sigma,
+                                            t.pval = t.pval,
+                                            ar = ar,
+                                            max.block.size = max.block.size)
+                    result <- result %>%
+                      mutate(simulation_id = nrow(overall) + 1) %>%
+                      select(simulation_id, everything())
+                    overall <- bind_rows(overall, result)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -140,23 +228,16 @@ run_simulation_study <- function() {
 extract_treatments <- function(overall_tibble) {
   # Extract true and detected treatments from the overall tibble
   true_treatments <- overall_tibble %>%
-    select(treatment_collection) %>%
-    mutate(simulation_id = seq_len(n())) %>%
+    select(treatment_collection, simulation_id) %>%
     unnest(treatment_collection) %>%
     mutate(type = ifelse(treated == "trendbreak", "trend", treated)) %>%
     select(simulation_id, id, type, timing = time)
-    # filter(!is.na(timing))
 
-  # temporary
-  true_treatments <- true_treatments %>%
-    mutate(timing = ifelse(is.na(timing), 1, timing))
-  
   detected_treatments <- overall_tibble %>%
-    select(indicators) %>%
-    mutate(simulation_id = seq_len(n())) %>%
+    select(indicators, simulation_id) %>%
     unnest(indicators) %>%
     unnest(indicators) %>%
-    select(-y, -value) %>%
+    select(simulation_id, id, time, name) %>%
     rowwise() %>%
     mutate(
       timing = time - base_time,
@@ -166,9 +247,7 @@ extract_treatments <- function(overall_tibble) {
       )
     ) %>%
     ungroup() %>%
-    select(simulation_id, id, type, timing) %>%
-    filter(!is.na(timing)) %>%
-    mutate(id = as.integer(id))
+    select(simulation_id, id, type, timing)
 
   list(
     true_treatments = true_treatments,
@@ -562,4 +641,76 @@ method_performance_summary <- function(evaluation_results) {
     )
   
   return(method_summary)
+}
+
+#' Plot Number of Breaks Detected per Simulation
+#' Simple scatter plot of number of breaks in the indicators column of the overall tibble
+plot_number_of_breaks <- function(overall_tibble, plot_type = "scatter", factors = NULL) {
+  treatments <- extract_treatments(overall_tibble)
+  true_treatments <- treatments$true_treatments
+  detected_treatments <- treatments$detected_treatments
+
+  true_treatments <- true_treatments %>%
+    group_by(simulation_id) %>%
+    summarise(n_true = n(), .groups = "drop") %>%
+    select(simulation_id, n_true)
+
+  detected_treatments <- detected_treatments %>%
+    group_by(simulation_id) %>%
+    summarise(n_detected = n(), .groups = "drop") %>%
+    select(simulation_id, n_detected)
+
+  overall_tibble <- left_join(overall_tibble, true_treatments, by = "simulation_id")
+  overall_tibble <- left_join(overall_tibble, detected_treatments, by = "simulation_id")
+
+  # break_counts <- overall_tibble %>%
+  #   mutate(num_breaks = map_int(indicators, function(.x) {
+  #     if (is.null(.x) || length(.x) == 0) {
+  #       0
+  #     } else if (is.data.frame(.x)) {
+  #       nrow(.x)
+  #     } else {
+  #       nrow(.x[[1]])
+  #     }
+  #   })) %>%
+  #   mutate(simulation_id = row_number())
+
+  # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, simulation_id, num_breaks)
+  if (is.null(factors)) {
+    varying_factors <- setdiff(
+      names(overall_tibble),
+      c("indicators", "treatment_collection", "getspanel_object", "simulation_id", "num_breaks", "n_true", "n_detected")
+    )
+  }
+
+  if (length(varying_factors) == 0) {
+    print("No varying factors found for plotting, plotting simulation_id vs num_breaks as scatter plot.")
+    # No varying factors, just plot simulation_id vs num_breaks
+    p <- ggplot(overall_tibble, aes(x = simulation_id, y = n_detected, color = n_true)) +
+      geom_point() +
+      labs(title = "Number of Breaks Detected per Simulation",
+           x = "Simulation ID",
+           y = "Number of Breaks")
+  } else {
+    print(paste("Varying factors identified for plotting:", paste(varying_factors, collapse = ", ")))
+
+    # Gather into long format: one row per simulation per factor
+    overall_tibble <- overall_tibble %>%
+      mutate(across(all_of(varying_factors), as.character)) %>%
+      pivot_longer(cols = all_of(varying_factors), names_to = "factor", values_to = "factor_value")
+
+    # Plot: facet by factor, x axis is factor_value, y is num_breaks
+    p <- ggplot(overall_tibble, aes(x = as.factor(factor_value), y = n_detected, color = n_true))
+    if (plot_type == "scatter") {
+      p <- p + geom_jitter(width = 0.2, height = 0, alpha = 0.7)
+    } else if (plot_type == "boxplot") {
+      p <- p + geom_boxplot(outlier.alpha = 0.3)
+    }
+    p <- p +
+      facet_wrap(~factor, scales = "free_x") +
+      labs(title = "Number of Breaks Detected per Simulation (by Factor)",
+          x = "Factor Value",
+          y = "Number of Breaks")
+  }
+  p
 }
