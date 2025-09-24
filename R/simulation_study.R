@@ -293,6 +293,7 @@ extract_treatments <- function(overall_tibble) {
 
 #' Treatment Matches
 #' Allows for small timing errors (e.g., ±1 or ±2 periods or type mismatches)
+#' Only allows one detected treatment to match each true treatment (best match wins)
 match_treatments <- function(true_treatments = NULL, detected_treatments = NULL, overall = NULL, tolerance = 0, allow_type_mismatch = FALSE) {
   if (!is.null(overall)) {
     treatments <- extract_treatments(overall)
@@ -302,29 +303,48 @@ match_treatments <- function(true_treatments = NULL, detected_treatments = NULL,
     stop("Either overall or both true_treatments and detected_treatments must be provided.")
   }
 
+  # Always use both type columns for consistency
   true_treatments <- true_treatments %>%
-    rename(true_timing = timing)
+    rename(true_timing = timing, true_type = type)
   detected_treatments <- detected_treatments %>%
-    rename(detected_timing = timing)
+    rename(detected_timing = timing, detected_type = type)
 
-  if (allow_type_mismatch) {
-    true_treatments <- true_treatments %>%
-      rename(true_type = type)
-    detected_treatments <- detected_treatments %>%
-      rename(detected_type = type)
-  }
-
-  matches <- full_join(
+  # Create all potential matches within tolerance
+  potential_matches <- full_join(
     true_treatments,
-    detected_treatments
+    detected_treatments,
+    by = c("simulation_id", "id")
   ) %>%
-    mutate(timing_diff = abs(true_timing - detected_timing)) %>%
+    mutate(
+      timing_diff = abs(true_timing - detected_timing),
+      type_mismatch = true_type != detected_type
+    ) %>%
     filter(timing_diff <= tolerance)
   
+  # Implement one-to-one matching using greedy algorithm
+  # Create composite score: timing difference primary, type mismatch secondary (if allowed)
   if (allow_type_mismatch) {
-    matches <- matches %>%
-      mutate(type_mismatch = true_type != detected_type)
+    potential_matches <- potential_matches %>%
+      mutate(composite_score = timing_diff + (as.numeric(type_mismatch) * (tolerance + 1)))
+  } else {
+    # Filter by type matching if not allowed
+    potential_matches <- potential_matches %>%
+      filter(!type_mismatch) %>%
+      mutate(composite_score = timing_diff)
   }
+  
+  matches <- potential_matches %>%
+    arrange(composite_score) %>%
+    group_by(simulation_id) %>%
+    # Track used true and detected treatments
+    mutate(
+      true_key = paste(id, true_timing, true_type, sep = "_"),
+      detected_key = paste(id, detected_timing, detected_type, sep = "_")
+    ) %>%
+    # Select matches greedily (best matches first, no duplicates)
+    filter(!duplicated(true_key) & !duplicated(detected_key)) %>%
+    select(-true_key, -detected_key, -composite_score) %>%
+    ungroup()
 
   precision <- ifelse(
     nrow(detected_treatments) > 0,
@@ -342,13 +362,81 @@ match_treatments <- function(true_treatments = NULL, detected_treatments = NULL,
     0
   )
 
+  matches <- matches %>%
+    mutate(match = TRUE)
+
+  # Find unmatched true treatments - always use same column structure
+  unmatched_true <- anti_join(
+    true_treatments,
+    matches,
+    by = c("simulation_id", "id", "true_timing", "true_type")
+  ) %>%
+    mutate(
+      detected_timing = NA_real_,
+      detected_type = NA_character_,
+      timing_diff = NA_real_,
+      type_mismatch = NA,
+      match = FALSE
+    )
+
+  # Find unmatched detected treatments - always use same column structure
+  unmatched_detected <- anti_join(
+    detected_treatments,
+    matches,
+    by = c("simulation_id", "id", "detected_timing", "detected_type")
+  ) %>%
+    mutate(
+      true_timing = NA_real_,
+      true_type = NA_character_,
+      timing_diff = NA_real_,
+      type_mismatch = NA,
+      match = FALSE
+    )
+
+  # Combine all
+  all_results <- bind_rows(matches, unmatched_true, unmatched_detected)
+
   list(
-    matches = matches,
+    matches = all_results,
     precision = precision,
     recall = recall,
     f1_score = f1_score
   )
 }
+
+# Timing tolerance over type mismatch precedence example
+true_treatment <- tribble(
+  ~simulation_id, ~id, ~type, ~timing,
+  1, "A", "step", 5,
+  1, "B", "step", 5,
+  1, "C", "step", 5,
+  1, "D", "step", 5,
+)
+detected_treatments <- tribble(
+  ~simulation_id, ~id, ~type, ~timing,
+  1, "A", "step", 5,
+  1, "A", "step", 6,
+  1, "B", "trend", 5,
+  1, "B", "step", 10,
+  1, "C", "trend", 5,
+  1, "C", "step", 6,
+  1, "D", "trend", 6,
+  1, "D", "step", 6,
+)
+
+
+true_treatment <- tribble(
+  ~simulation_id, ~id, ~type, ~timing,
+  1, "A", "step", 5,
+  1, "A", "trend", 8,
+  1, "A", "step", 10,
+)
+detected_treatments <- tribble(
+  ~simulation_id, ~id, ~type, ~timing,
+  1, "A", "step", 5,
+  1, "A", "step", 6,
+  1, "A", "trend", 8,
+)
 
 #' Analyze False Detections
 #' Categorizes false positives and false negatives
