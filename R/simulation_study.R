@@ -187,35 +187,7 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
   )
 }
 
-run_simulation_study <- function() {
-  set.seed(99726)
-
-  # Simulation parameters (panel structure and data generation)
-  n_ids <- c(2, 3, 5, 10)
-  n_times <- c(20, 30, 50)
-  beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
-  sigma <- 0.5
-  fe_sigma <- 5
-
-  # Treatment parameters (imposed treatments to be detected)
-  treatment_params_list <- list(
-    tribble(
-      ~id, ~type, ~magnitude, ~location,
-      3, "step", 2, 0.2,
-      5, "step", 2, 0.2,
-      2, "trend", 0.2, 0,
-      1, "trendbreak", -0.4, 0.65
-    )
-  )
-
-  # Benchmark parameters (getspanel parameters to be varied)
-  n_rep <- 1
-  engines <- c("gets")
-  methods <- c("both")
-  t.pvals <- c(0.05, 0.01, 0.001)
-  ars <- c(0)
-  max.block.sizes <- c(30)
-
+run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, engines = c("gets"), methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), ars = c(0), max.block.sizes = c(30)) {
   n_simulations <- length(engines) * length(methods) * length(t.pvals) * length(ars) * length(max.block.sizes) * length(treatment_params_list) * length(n_times) * length(n_ids) * n_rep
   print(paste("Total simulations to run:", n_simulations))
   overall <- tibble()
@@ -639,4 +611,48 @@ metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
     )
 
   list(per_simulation = gp, by_method = by_method)
+}
+
+plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics = c("gauge", "potency"), factors = NULL) {
+  # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, simulation_id, num_breaks)
+  if (is.null(factors)) {
+    varying_factors <- setdiff(
+      names(analysis_per_simulation),
+      c("simulation_id", "tolerance", "gauge", "potency", "precision", "recall", "f1", "detected", "true", "matches")
+    )
+  } else {
+    varying_factors <- factors
+  }
+
+  print(paste("Varying factors identified for plotting:", paste(varying_factors, collapse = ", ")))
+
+  # Gather into long format: one row per simulation per factor per metric
+  analysis_long <- analysis_per_simulation %>%
+    mutate(across(all_of(varying_factors), as.character)) %>%
+    pivot_longer(
+      cols = all_of(metrics),
+      names_to = "metric",
+      values_to = "value"
+    ) %>%
+    pivot_longer(
+      cols = all_of(varying_factors),
+      names_to = "factor",
+      values_to = "factor_value"
+    )
+
+  # Plot: facet by factor, x axis is factor_value, y is value, color/fill by metric
+  p <- ggplot(analysis_long, aes(x = as.factor(factor_value), y = value, color = metric, fill = metric))
+  if (plot_type == "scatter") {
+    p <- p + geom_jitter(position = position_dodge(width = 0.75), alpha = 0.7)
+  } else if (plot_type == "boxplot") {
+    p <- p + geom_boxplot(outlier.alpha = 0.3, position = position_dodge(width = 0.75), alpha = 0.5)
+  }
+  p <- p +
+    facet_wrap(~factor, scales = "free_x") +
+    labs(title = "Metrics per Simulation (by Factor)",
+         x = "Factor Value",
+         y = "Metric Value",
+         color = "Metric",
+         fill = "Metric")
+  p
 }
