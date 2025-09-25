@@ -265,9 +265,15 @@ extract_treatments <- function(overall_tibble) {
   # Extract true and detected treatments from the overall tibble
   true_treatments <- overall_tibble %>%
     select(treatment_collection, simulation_id) %>%
-    unnest(treatment_collection) %>%
-    mutate(type = ifelse(treated == "trendbreak", "trend", treated)) %>%
-    select(simulation_id, id, type, timing = time)
+    unnest(treatment_collection)
+
+  if(nrow(true_treatments) == 0) {
+    true_treatments <- tibble(simulation_id = integer(0), id = character(0), type = character(0), timing = integer(0))
+  } else {
+    true_treatments <- true_treatments %>%
+      mutate(type = ifelse(treated == "trendbreak", "trend", treated)) %>%
+      select(simulation_id, id, type, timing = time)
+  }
 
   detected_treatments <- overall_tibble %>%
     select(indicators, simulation_id) %>%
@@ -564,13 +570,13 @@ candidate_count <- function(n_id, n_time, method) {
 
 compute_metrics <- function(overall_tibble, tolerance = 0) {
   meta <- overall_tibble %>%
-    dplyr::select(n_id, n_time, indic_method, simulation_id)
+    dplyr::select(n_id, n_time, indic_method, simulation_id, t.pval)
 
   tx <- extract_treatments(overall_tibble)
   true_all <- tx$true_treatments
   det_all  <- tx$detected_treatments
 
-  purrr::pmap_dfr(meta, function(n_id, n_time, indic_method, simulation_id) {
+  purrr::pmap_dfr(meta, function(n_id, n_time, indic_method, simulation_id, t.pval) {
     rel_types <- relevant_types_for_method(indic_method)
     total_candidates <- candidate_count(n_id, n_time, indic_method)
 
@@ -600,6 +606,7 @@ compute_metrics <- function(overall_tibble, tolerance = 0) {
       n_id = n_id,
       n_time = n_time,
       indic_method = indic_method,
+      t.pval = t.pval,
       tolerance = tolerance,
       gauge   = ifelse(irrel > 0, fp / irrel, NA_real_),
       potency = ifelse(rel  > 0, tp / rel, NA_real_ ),
@@ -621,7 +628,7 @@ metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
   )
 
   by_method <- gp %>%
-    dplyr::group_by(indic_method, tolerance) %>%
+    dplyr::group_by(indic_method, tolerance, t.pval) %>%
     dplyr::summarise(
       avg_gauge = mean(gauge, na.rm = TRUE),
       avg_potency = mean(potency, na.rm = TRUE),
