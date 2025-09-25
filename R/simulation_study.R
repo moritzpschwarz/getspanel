@@ -192,7 +192,7 @@ run_simulation_study <- function() {
 
   # Simulation parameters (panel structure and data generation)
   n_ids <- c(2, 3, 5, 10)
-  n_times <- c(20, 30, 50, 100)
+  n_times <- c(20, 30, 50)
   beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
   sigma <- 0.5
   fe_sigma <- 5
@@ -211,7 +211,7 @@ run_simulation_study <- function() {
   # Benchmark parameters (getspanel parameters to be varied)
   n_rep <- 1
   engines <- c("gets")
-  methods <- c("fesis", "tis", "both")
+  methods <- c("both")
   t.pvals <- c(0.05, 0.01, 0.001)
   ars <- c(0)
   max.block.sizes <- c(30)
@@ -346,22 +346,6 @@ match_treatments <- function(true_treatments = NULL, detected_treatments = NULL,
     select(-true_key, -detected_key, -composite_score) %>%
     ungroup()
 
-  precision <- ifelse(
-    nrow(detected_treatments) > 0,
-    nrow(matches) / nrow(detected_treatments),
-    0
-  )
-  recall <- ifelse(
-    nrow(true_treatments) > 0,
-    nrow(matches) / nrow(true_treatments),
-    0
-  )
-  f1_score <- ifelse(
-    precision + recall > 0,
-    2 * (precision * recall) / (precision + recall),
-    0
-  )
-
   matches <- matches %>%
     mutate(match = TRUE)
 
@@ -396,48 +380,8 @@ match_treatments <- function(true_treatments = NULL, detected_treatments = NULL,
   # Combine all
   all_results <- bind_rows(matches, unmatched_true, unmatched_detected)
 
-  list(
-    matches = all_results,
-    precision = precision,
-    recall = recall,
-    f1_score = f1_score
-  )
+  all_results
 }
-
-# Timing tolerance over type mismatch precedence example
-true_treatments <- tribble(
-  ~simulation_id, ~id, ~type, ~timing,
-  1, "A", "step", 5,
-  1, "B", "step", 5,
-  1, "C", "step", 5,
-  1, "D", "step", 5,
-)
-detected_treatments <- tribble(
-  ~simulation_id, ~id, ~type, ~timing,
-  1, "A", "step", 5,
-  1, "A", "step", 6,
-  1, "B", "trend", 5,
-  1, "B", "step", 10,
-  1, "C", "trend", 5,
-  1, "C", "step", 6,
-  1, "D", "trend", 6,
-  1, "D", "step", 6,
-)
-
-true_treatments <- tribble(
-  ~simulation_id, ~id, ~type, ~timing,
-  1, "A", "step", 5,
-  1, "A", "trend", 8,
-  1, "A", "step", 10,
-)
-detected_treatments <- tribble(
-  ~simulation_id, ~id, ~type, ~timing,
-  1, "A", "step", 5,
-  1, "A", "step", 6,
-  1, "A", "trend", 8,
-)
-
-# match_treatments(true_treatments = true_treatment, detected_treatments = detected_treatments, tolerance = 3, allow_type_mismatch = TRUE)
 
 #' Optimal Bipartite Matching for Treatment Detection
 #' Uses optimal matching algorithm to find best one-to-one assignment
@@ -478,14 +422,14 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
     if (nrow(true_subset) == 0 || nrow(detected_subset) == 0) {
       next
     }
-    
+
     # Create cost matrix for this specific (simulation_id, id) pair
     cost_matrix <- expand_grid(
       true_idx = true_subset$true_idx,
       detected_idx = detected_subset$detected_idx
     ) %>%
-      left_join(true_subset, by = "true_idx") %>%
-      left_join(detected_subset, by = "detected_idx", suffix = c("", ".detected")) %>%
+      left_join(true_subset, "true_idx") %>%
+      left_join(detected_subset, c("detected_idx", "id", "simulation_id")) %>%
       mutate(
         timing_diff = abs(true_timing - detected_timing),
         type_mismatch = true_type != detected_type,
@@ -501,28 +445,16 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
     pair_matches <- find_optimal_assignment(cost_matrix, true_subset, detected_subset)
     all_matches <- bind_rows(all_matches, pair_matches)
   }
-  
-  # Calculate metrics
-  precision <- ifelse(
-    nrow(detected_treatments) > 0,
-    sum(all_matches$match, na.rm = TRUE) / nrow(detected_treatments),
-    0
-  )
-  recall <- ifelse(
-    nrow(true_treatments) > 0,
-    sum(all_matches$match, na.rm = TRUE) / nrow(true_treatments),
-    0
-  )
-  f1_score <- ifelse(
-    precision + recall > 0,
-    2 * (precision * recall) / (precision + recall),
-    0
-  )
 
   # Add unmatched treatments
-  matched_true <- all_matches %>% filter(match) %>% pull(true_idx)
-  matched_detected <- all_matches %>% filter(match) %>% pull(detected_idx)
-  
+  if (nrow(all_matches) == 0) {
+    matched_true <- c()
+    matched_detected <- c()
+  } else {
+    matched_true <- all_matches %>% filter(match) %>% pull(true_idx)
+    matched_detected <- all_matches %>% filter(match) %>% pull(detected_idx)
+  }
+
   unmatched_true <- true_treatments %>%
     filter(!true_idx %in% matched_true) %>%
     mutate(
@@ -546,14 +478,9 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
     )
   
   all_results <- bind_rows(all_matches, unmatched_true, unmatched_detected) %>%
-    select(-true_idx, -detected_idx)
+    select(-true_idx, -detected_idx, -cost)
 
-  list(
-    matches = all_results,
-    precision = precision,
-    recall = recall,
-    f1_score = f1_score
-  )
+  all_results
 }
 
 #' Find Optimal Assignment using brute force enumeration
@@ -610,4 +537,99 @@ find_optimal_assignment <- function(cost_matrix, true_sim, detected_sim) {
     mutate(match = TRUE)
   
   return(result_matches)
+}
+
+relevant_types_for_method <- function(method) {
+  if (method == "fesis") {
+    return("step")
+  } else if (method == "tis") {
+    return("trend")
+  } else if (method == "both") {
+    return(c("step","trend"))
+  } else {
+    return(character(0))
+  }
+}
+
+candidate_count <- function(n_id, n_time, method) {
+  per_family <- n_id * (n_time - 1)
+  if (method == "both") {
+    return(2 * per_family)
+  } else if (method %in% c("fesis","tis")) {
+    return(per_family)
+  } else {
+    return(0L)
+  }
+}
+
+compute_metrics <- function(overall_tibble, tolerance = 0) {
+  meta <- overall_tibble %>%
+    dplyr::select(n_id, n_time, indic_method, simulation_id)
+
+  tx <- extract_treatments(overall_tibble)
+  true_all <- tx$true_treatments
+  det_all  <- tx$detected_treatments
+
+  purrr::pmap_dfr(meta, function(n_id, n_time, indic_method, simulation_id) {
+    rel_types <- relevant_types_for_method(indic_method)
+    total_candidates <- candidate_count(n_id, n_time, indic_method)
+
+    true_sim <- true_all %>%
+      dplyr::filter(simulation_id == !!simulation_id, type %in% rel_types)
+    det_sim  <- det_all %>%
+      dplyr::filter(simulation_id == !!simulation_id, type %in% rel_types)
+
+    matches <- match_treatments(
+      true_treatments = true_sim,
+      detected_treatments = det_sim,
+      tolerance = tolerance
+    )
+
+    tp  <- nrow(matches %>% dplyr::filter(match))
+    det <- nrow(det_sim)
+    fp  <- max(det - tp, 0)
+
+    rel    <- nrow(true_sim)
+    irrel  <- max(total_candidates - rel, 0)
+
+    prec <- ifelse(det > 0, tp / det, NA_real_)
+    rec <- ifelse(rel > 0, tp / rel, NA_real_)
+
+    tibble::tibble(
+      simulation_id = simulation_id,
+      n_id = n_id,
+      n_time = n_time,
+      indic_method = indic_method,
+      tolerance = tolerance,
+      gauge   = ifelse(irrel > 0, fp / irrel, NA_real_),
+      potency = ifelse(rel  > 0, tp / rel, NA_real_ ),
+      precision = prec,
+      recall = rec,
+      f1 = ifelse(prec + rec > 0, 2 * (prec * rec) / (prec + rec), NA_real_),
+      detected = det,
+      true = rel,
+      matches = list(matches)
+    )
+  })
+}
+
+metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
+  gp <- dplyr::bind_rows(
+    lapply(tolerances, function(t) {
+      compute_metrics(overall_tibble, t)
+    })
+  )
+
+  by_method <- gp %>%
+    dplyr::group_by(indic_method, tolerance) %>%
+    dplyr::summarise(
+      avg_gauge = mean(gauge, na.rm = TRUE),
+      avg_potency = mean(potency, na.rm = TRUE),
+      avg_precision = mean(precision, na.rm = TRUE),
+      avg_recall = mean(recall, na.rm = TRUE),
+      avg_f1 = mean(f1, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  list(per_simulation = gp, by_method = by_method)
 }
