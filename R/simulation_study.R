@@ -613,7 +613,7 @@ metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
   list(per_simulation = gp, by_method = by_method)
 }
 
-plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics = c("gauge", "potency"), factors = NULL) {
+plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics = c("gauge", "potency", "f1"), factors = NULL, title = "Metrics per Simulation (by Factor)", separate_metrics = FALSE) {
   # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, simulation_id, num_breaks)
   if (is.null(factors)) {
     varying_factors <- setdiff(
@@ -625,9 +625,37 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
   }
 
   print(paste("Varying factors identified for plotting:", paste(varying_factors, collapse = ", ")))
-
-  # Gather into long format: one row per simulation per factor per metric
+  
+  # Store original values for proper ordering before converting to character
+  factor_types <- sapply(analysis_per_simulation[varying_factors], function(x) {
+    all(suppressWarnings(!is.na(as.numeric(as.character(x)))))
+  })
+  
+  # Calculate scaling factor for gauge if it's included in metrics
+  gauge_scale_factor <- 1
+  if ("gauge" %in% metrics && length(metrics) > 1) {
+    gauge_values <- analysis_per_simulation$gauge[!is.na(analysis_per_simulation$gauge)]
+    
+    if (length(gauge_values) > 0) {
+      # Calculate scaling factor to bring max gauge value to 1 (or close to it)
+      max_gauge <- max(gauge_values, na.rm = TRUE)
+      if (max_gauge > 1) {
+        gauge_scale_factor <- 1 / max_gauge
+      } else if (max_gauge > 0) {
+        # If max is already <= 1, scale to use more of the [0,1] range
+        # Scale so that the 95th percentile reaches around 0.8-0.9
+        percentile_95 <- quantile(gauge_values, 0.95, na.rm = TRUE)
+        if (percentile_95 > 0) {
+          gauge_scale_factor <- 0.85 / percentile_95
+        }
+      }
+      # Ensure scaling factor is reasonable (don't scale down if already in good range)
+      gauge_scale_factor <- max(gauge_scale_factor, 1)
+    }
+  }
+  
   analysis_long <- analysis_per_simulation %>%
+    # Convert varying factors to character so they can be pivoted together
     mutate(across(all_of(varying_factors), as.character)) %>%
     pivot_longer(
       cols = all_of(metrics),
@@ -638,10 +666,26 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
       cols = all_of(varying_factors),
       names_to = "factor",
       values_to = "factor_value"
-    )
-
-  # Plot: facet by factor, x axis is factor_value, y is value, color/fill by metric
-  p <- ggplot(analysis_long, aes(x = as.factor(factor_value), y = value, color = metric, fill = metric))
+    ) %>%
+    # Scale gauge values to [0,1] range for better visualization
+    mutate(
+      value = ifelse(metric == "gauge", pmin(value * gauge_scale_factor, 1), value)
+    ) %>%
+    # Create proper ordering based on pre-computed factor types
+    group_by(factor) %>%
+    mutate(
+      current_factor = cur_group()$factor,
+      factor_value_ordered = if_else(
+        factor_types[current_factor], # Use pre-computed numeric status
+        factor(factor_value, levels = as.character(sort(as.numeric(unique(factor_value))))),
+        factor(factor_value, levels = sort(unique(factor_value)))
+      )
+    ) %>%
+    select(-current_factor) %>%
+    ungroup()
+  
+  # Plot: facet by factor, x axis is factor_value_ordered, y is value, color/fill by metric
+  p <- ggplot(analysis_long, aes(x = factor_value_ordered, y = value, color = metric, fill = metric))
   if (plot_type == "scatter") {
     p <- p + geom_jitter(position = position_dodge(width = 0.75), alpha = 0.7)
   } else if (plot_type == "boxplot") {
@@ -649,10 +693,58 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
   }
   p <- p +
     facet_wrap(~factor, scales = "free_x") +
-    labs(title = "Metrics per Simulation (by Factor)",
+    labs(title = title,
          x = "Factor Value",
          y = "Metric Value",
          color = "Metric",
          fill = "Metric")
+  # Add secondary axis for gauge if it's scaled and present
+  if ("gauge" %in% metrics && gauge_scale_factor > 1 && !separate_metrics) {
+    p <- p + scale_y_continuous(
+      sec.axis = sec_axis(~ . / gauge_scale_factor, name = "Gauge (original scale)")
+    )
+  }
+  
+  # Option to create separate plots for each metric
+  if (separate_metrics && length(metrics) > 1) {
+    library(patchwork)
+    
+    # Create a list to store individual plots
+    plot_list <- list()
+    
+    for (metric_name in metrics) {
+      # Get data for this specific metric
+      metric_data <- analysis_long %>%
+        filter(metric == metric_name)
+      
+      # Revert gauge scaling if needed for separate plot
+      if (metric_name == "gauge" && gauge_scale_factor > 1) {
+        metric_data <- metric_data %>%
+          mutate(value = value / gauge_scale_factor)
+      }
+      
+      # Create plot for this metric
+      p_metric <- ggplot(metric_data, aes(x = factor_value_ordered, y = value, color = metric, fill = metric))
+      if (plot_type == "scatter") {
+        p_metric <- p_metric + geom_jitter(position = position_dodge(width = 0.75), alpha = 0.7)
+      } else if (plot_type == "boxplot") {
+        p_metric <- p_metric + geom_boxplot(outlier.alpha = 0.3, position = position_dodge(width = 0.75), alpha = 0.5)
+      }
+      
+      p_metric <- p_metric +
+        facet_wrap(~factor, scales = "free_x") +
+        labs(title = paste(title, paste0("(", stringr::str_to_title(metric_name), ")")),
+             x = "Factor Value",
+             y = paste(stringr::str_to_title(metric_name), "Value"),
+             color = "Metric",
+             fill = "Metric")
+            
+      plot_list[[metric_name]] <- p_metric
+    }
+    
+    # Combine all plots vertically
+    return(wrap_plots(plot_list, ncol = 1))
+  }
+  
   p
 }
