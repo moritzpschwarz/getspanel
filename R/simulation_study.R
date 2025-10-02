@@ -456,7 +456,7 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
     )
   
   all_results <- bind_rows(all_matches, unmatched_true, unmatched_detected) %>%
-    select(-true_idx, -detected_idx, -cost)
+    select(-true_idx, -detected_idx)
 
   all_results
 }
@@ -540,7 +540,7 @@ candidate_count <- function(n_id, n_time, method) {
   }
 }
 
-compute_metrics <- function(overall_tibble, tolerance = 0) {
+compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch = FALSE) {
   meta <- overall_tibble %>%
     dplyr::select(n_id, n_time, indic_method, simulation_id, t.pval)
 
@@ -557,10 +557,11 @@ compute_metrics <- function(overall_tibble, tolerance = 0) {
     det_sim  <- det_all %>%
       dplyr::filter(simulation_id == !!simulation_id, type %in% rel_types)
 
-    matches <- match_treatments(
+    matches <- optimal_match_treatments(
       true_treatments = true_sim,
       detected_treatments = det_sim,
-      tolerance = tolerance
+      tolerance = tolerance,
+      allow_type_mismatch = allow_type_mismatch
     )
 
     tp  <- nrow(matches %>% dplyr::filter(match))
@@ -592,10 +593,10 @@ compute_metrics <- function(overall_tibble, tolerance = 0) {
   })
 }
 
-metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
+metrics_summary <- function(overall_tibble, tolerances = c(0, 1), allow_type_mismatch = FALSE) {
   gp <- dplyr::bind_rows(
     lapply(tolerances, function(t) {
-      compute_metrics(overall_tibble, t)
+      compute_metrics(overall_tibble, t, allow_type_mismatch)
     })
   )
 
@@ -607,6 +608,7 @@ metrics_summary <- function(overall_tibble, tolerances = c(0, 1)) {
       avg_precision = mean(precision, na.rm = TRUE),
       avg_recall = mean(recall, na.rm = TRUE),
       avg_f1 = mean(f1, na.rm = TRUE),
+      avg_detected = mean(detected, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -747,4 +749,149 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
   }
   
   p
+}
+
+plot_compare_metrics <- function(analyses, study_names = NULL, metrics = c("avg_gauge", "avg_potency", "avg_f1"), 
+                                plot_type = "bar", facet_by = "tolerance", color_by = "indic_method", title = "Average Metric Comparison Across Studies") {
+  # Handle single analysis input
+  if (!is.list(analyses) || !is.null(names(analyses)) && all(c("per_simulation", "by_method") %in% names(analyses))) {
+    analyses <- list(Study1 = analyses)
+  }
+  
+  # Generate study names if not provided
+  if (is.null(study_names)) {
+    study_names <- if (!is.null(names(analyses))) {
+      names(analyses)
+    } else {
+      paste0("Study", seq_along(analyses))
+    }
+  }
+  
+  # Combine all by_method tibbles with study identifiers
+  combined_data <- purrr::map2_dfr(analyses, study_names, function(analysis, study_name) {
+    if (!is.null(analysis$by_method)) {
+      analysis$by_method %>%
+        mutate(study = study_name)
+    } else {
+      # If analyses is a list of by_method tibbles directly
+      analysis %>%
+        mutate(study = study_name)
+    }
+  })
+  
+  print(paste("Available metrics:", paste(names(combined_data), collapse = ", ")))
+  print(paste("Requested metrics:", paste(metrics, collapse = ", ")))
+  
+  # Check which metrics are available
+  available_metrics <- intersect(metrics, names(combined_data))
+  if (length(available_metrics) == 0) {
+    stop("None of the requested metrics are available in the data.")
+  }
+  
+  # Pivot data for plotting
+  plot_data <- combined_data %>%
+    pivot_longer(
+      cols = all_of(available_metrics),
+      names_to = "metric",
+      values_to = "value"
+    ) %>%
+    # Clean up metric names for better display
+    mutate(
+      metric_clean = case_when(
+        metric == "avg_gauge" ~ "Gauge",
+        metric == "avg_potency" ~ "Potency", 
+        metric == "avg_precision" ~ "Precision",
+        metric == "avg_recall" ~ "Recall",
+        metric == "avg_f1" ~ "F1 Score",
+        TRUE ~ stringr::str_remove(metric, "avg_") %>% stringr::str_to_title()
+      ),
+      tolerance = as.factor(tolerance),
+      t.pval = as.factor(t.pval)
+    )
+  # Create base plot
+  p <- ggplot(plot_data, aes_string(x = color_by, y = "value"))
+  
+  if (plot_type == "bar") {
+    p <- p + geom_col(aes(fill = study), position = "dodge", alpha = 0.8)
+  } else if (plot_type == "point") {
+    p <- p + geom_point(aes(color = study, shape = study), size = 3, alpha = 0.8)
+    
+    # For lines, calculate mean across p_val groups to avoid connecting unrelated points
+    if (length(unique(plot_data$t.pval)) > 1) {
+      line_data <- plot_data %>%
+        group_by(study, indic_method, tolerance, metric, metric_clean) %>%
+        summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+      
+      p <- p + geom_line(data = line_data, aes(color = study, group = study), alpha = 0.6)
+    } else {
+      p <- p + geom_line(aes(color = study, group = study), alpha = 0.6)
+    }
+  } else if (plot_type == "line") {
+    # For line plots, always use mean across p_val groups
+    if (length(unique(plot_data$t.pval)) > 1) {
+      line_data <- plot_data %>%
+        group_by(study, indic_method, tolerance, metric, metric_clean) %>%
+        summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+      
+      p <- p + 
+        geom_line(data = line_data, aes(color = study, group = study), size = 1, alpha = 0.8) +
+        geom_point(data = line_data, aes(color = study), size = 2)
+      
+      # Also show individual p_val points with transparency
+      p <- p + geom_point(aes(color = study), alpha = 0.3, size = 1)
+    } else {
+      p <- p + 
+        geom_line(aes(color = study, group = study), size = 1, alpha = 0.8) +
+        geom_point(aes(color = study), size = 2)
+    }
+  }
+  
+  # Add faceting
+  if (facet_by == "tolerance") {
+    p <- p + facet_grid(metric_clean ~ tolerance, scales = "free_y", 
+                        labeller = labeller(tolerance = function(x) paste("Tolerance:", x)))
+  } else if (facet_by == "metric") {
+    p <- p + facet_wrap(~ metric_clean, scales = "free_y")
+  } else if (facet_by == "t.pval") {
+    p <- p + facet_grid(metric_clean ~ t.pval, scales = "free_y",
+                        labeller = labeller(t.pval = function(x) paste("p-value:", x)))
+  } else if (facet_by == "both") {
+    p <- p + facet_grid(metric_clean ~ tolerance + t.pval, scales = "free_y",
+                        labeller = labeller(tolerance = function(x) paste("Tol:", x),
+                                          t.pval = function(x) paste("p:", x)))
+  }
+  
+  # Styling
+  p <- p +
+    labs(
+      title = title,
+      x = stringr::str_to_title(gsub("_", " ", color_by)),
+      y = "Average Metric Value",
+      fill = "Study",
+      color = "Study",
+      shape = "Study"
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      strip.text = element_text(size = 10),
+      legend.position = "bottom"
+    )
+  
+  # Add horizontal line at key values for reference
+  if ("avg_gauge" %in% available_metrics) {
+    # Add reference line at gauge = 0.05 (5% false positive rate)
+    p <- p + geom_hline(data = filter(plot_data, metric_clean == "Gauge"), 
+                        aes(yintercept = 0.05), linetype = "dashed", alpha = 0.5, color = "red")
+  }
+  
+  return(p)
+}
+
+# Convenience function for quick comparison of two studies
+plot_compare_two_studies <- function(study1, study2, study1_name = "Study 1", study2_name = "Study 2", ...) {
+  studies <- list()
+  studies[[study1_name]] <- study1
+  studies[[study2_name]] <- study2
+  
+  plot_compare_metrics(studies, ...)
 }
