@@ -19,19 +19,18 @@ impose_treatment <- function(type, n_time, location, magnitude, fe) {
   if (type == "trend") {
     # "Trend" always starts at the beginning
     treatment <- 1:n_time
+    abs_location <- 1
+    abs_magnitude <- magnitude * fe / n_time
   } else if (type == "trendbreak") {
     # "Trendbreak" starts at abs_location and sets increasing dummies
     treatment[abs_location:n_time] <- seq_along(treatment[abs_location:n_time])
+    abs_magnitude <- magnitude * fe / (n_time - abs_location + 1)
   } else if (type == "step") {
     # "Step" sets a constant step-shift from abs_location
     treatment[abs_location:n_time] <- 1
+    abs_magnitude <- magnitude * fe
   }
-  treatment <- treatment * magnitude
-
-  # Not sure why fixed effects are added again for steps, copied from Moritz
-  if (type == "step") {
-    treatment <- treatment + fe
-  }
+  treatment <- treatment * abs_magnitude
 
   list(treatment = treatment, time = abs_location)
 }
@@ -80,7 +79,8 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
         treat_entry <- tibble(
           id = LETTERS[id],
           treated = params$type[i],
-          time = treat$time
+          time = treat$time,
+          magnitude = params$magnitude[i]
         )
         treatment_collection <- bind_rows(treatment_collection, treat_entry)
       }
@@ -240,11 +240,11 @@ extract_treatments <- function(overall_tibble) {
     unnest(treatment_collection)
 
   if(nrow(true_treatments) == 0) {
-    true_treatments <- tibble(simulation_id = integer(0), id = character(0), type = character(0), timing = integer(0))
+    true_treatments <- tibble(simulation_id = integer(0), id = character(0), type = character(0), timing = integer(0), magnitude = numeric(0))
   } else {
     true_treatments <- true_treatments %>%
       mutate(type = ifelse(treated == "trendbreak", "trend", treated)) %>%
-      select(simulation_id, id, type, timing = time)
+      select(simulation_id, id, type, timing = time, magnitude)
   }
 
   detected_treatments <- overall_tibble %>%
@@ -588,7 +588,8 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       f1 = ifelse(prec + rec > 0, 2 * (prec * rec) / (prec + rec), NA_real_),
       detected = det,
       true = rel,
-      matches = list(matches)
+      matches = list(matches),
+      magnitude = mean(true_sim$magnitude)
     )
   })
 }
