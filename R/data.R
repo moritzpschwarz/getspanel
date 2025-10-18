@@ -37,7 +37,7 @@
 #'   \item{L1.lgdp}{Lag 1 Log GDP}
 #'   \item{L1.lpop}{Lag 1 Log Population}
 #' }
-#' @source EDGAR
+#' @source EDGAR. Data taken from Koch, Naumann, Pretis, Ritter und Schwarz (2022). Nature Energy. \url{https://doi.org/10.1038/s41560-022-01095-6}
 #'
 
 "EU_emissions_road"
@@ -58,7 +58,21 @@
 #'   \item{pop}{Population}
 #'   \item{agg.directem}{Aggregated Direct Emissions}
 #' }
-#' @source IEA
+#' @source IEA.
 #'
 
 "EUCO2residential"
+
+#' Example Results for Comparison Plotting
+#'
+#' @format A data frame with 3 rows and 5 variables:
+#' \describe{
+#'   \item{formula}{Model formula}
+#'   \item{country_sample}{Countries included in the sample}
+#'   \item{p_val}{P-value of the model}
+#'   \item{model}{Unique Model descriptions}
+#'   \item{is}{isatpanel objects}
+#' }
+#' @source Data taken from Koch, Naumann, Pretis, Ritter und Schwarz (2022). Nature Energy. \url{https://doi.org/10.1038/s41560-022-01095-6}
+
+"compare_models_example"

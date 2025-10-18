@@ -19,7 +19,7 @@ A data frame with 1550 rows and 9 variables:
 }
 }
 \source{
-IEA
+IEA.
 }
 \usage{
 EUCO2residential
