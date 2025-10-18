@@ -5,14 +5,14 @@
 #'
 #' @param object An object of class "isatpanel" produced by the \code{\link{isatpanel}} function.
 #' @param uis_breaks A character vector with the names of user-specified indicators.
-#'   If NULL (default), user-specified indicators are not included in the result.
+#'   If NULL (default), user-specified indicators are attempted to be inferred from the object.
 #' @param format A character string indicating the format of the output. Must be one of:
 #'   \itemize{
 #'     \item "list" (default): Returns a list with one data frame for each indicator type
 #'     \item "table": Returns a single data frame with all indicators
 #'     \item "long": Returns a panel-shaped data frame suitable for plotting
 #'   }
-#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown. 
+#' @param sign Character. If "pos", only positive effects are shown; if "neg", only negative effects are shown; if NULL (default), all effects are shown.
 #' @param regex_exclude_indicators A regular expression to filter out indicators from the result. Combine multiple expressions with "|". Default is \code{NULL}, meaning no indicators are excluded.
 #'
 #' @return Depending on the `format` parameter:
@@ -30,7 +30,7 @@
 #'   \item name: The name of the indicator
 #'   \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 #'   \item coef: The coefficient of the indicator
-#'   \item sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
+#'   \item sd: The standard deviation of the indicator coefficient. Only present in the "list" and "table" formats.
 #'   \item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
 #'   \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 #'   \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
@@ -50,9 +50,6 @@
 #'
 #' @export
 #'
-#' @importFrom gets coef.gets
-#' @importFrom stats reshape aggregate
-#' @importFrom stats vcov
 #'
 #' @examples
 #' \donttest{
@@ -87,6 +84,7 @@
 #' # Table format can be filtered by type
 #' ind <- get_indicators(result, format = "table")
 #' ind <- ind[ind$type == "FESIS", ]
+#' ind
 #' # Long format with additional columns "value" and "effect"
 #' # Useful to see the time-varying impact of e.g. trend indicators
 #' get_indicators(result, format = "long")
@@ -141,7 +139,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NU
   df <- df[, c("id", "time", indicator_names), drop = FALSE]
 
   # Reshape to long format (one row for every id/time/indicator combination)
-  all_indicators_long <- reshape(
+  all_indicators_long <- stats::reshape(
     df,
     varying = indicator_names,
     idvar = c("id", "time"),
@@ -163,7 +161,7 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NU
   coefficients <- data.frame(
     name = colnames(object$isatpanel.result$aux$mX),
     coef = object$isatpanel.result$coefficients,
-    sd = sqrt(diag(vcov(object$isatpanel.result)))
+    sd = sqrt(diag(stats::vcov(object$isatpanel.result)))
   )
   all_indicators_long <- merge(all_indicators_long, coefficients, by = c("name"), all.x = TRUE)
   if (!is.null(sign)) {
@@ -228,9 +226,12 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NU
   }
 
   # Handle UIS (User-specified Indicators) if present
+  if (is.null(uis_breaks)) {
+    uis_breaks <- names(object$arguments$uis)
+    }
   if (!is.null(uis_breaks)) {
     uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*", "UIS", format)
-    if (!is.null(csis_result) && nrow(csis_result) > 0) {
+    if (!is.null(uis_result) && nrow(uis_result) > 0) {
       if (format == "list") {
         output$uis_breaks <- uis_result
       } else {
@@ -288,7 +289,7 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
 add_combined_effect <- function(output, panel_rows) {
   # Calculate combined effect for each id/time by summing effect
   # Exclude cfesis and csis indicators from combined effect
-  combined <- aggregate(
+  combined <- stats::aggregate(
     effect ~ id + time,
     data = output[!output$type %in% c("CFESIS", "CSIS"), ],
     sum

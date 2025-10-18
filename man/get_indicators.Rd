@@ -16,7 +16,7 @@ get_indicators(
 \item{object}{An object of class "isatpanel" produced by the \code{\link{isatpanel}} function.}
 
 \item{uis_breaks}{A character vector with the names of user-specified indicators.
-If NULL (default), user-specified indicators are not included in the result.}
+If NULL (default), user-specified indicators are attempted to be inferred from the object.}
 
 \item{format}{A character string indicating the format of the output. Must be one of:
 \itemize{
@@ -49,7 +49,7 @@ The resulting data frame(s) contain the following columns:
 \item name: The name of the indicator
 \item type: The type of the indicator (e.g., "IIS", "FESIS", "TIS", "CFESIS", "CSIS", "UIS")
 \item coef: The coefficient of the indicator
-\item sd: The standard devation of the indicator coefficient. Only present in the "list" and "table" formats.
+\item sd: The standard deviation of the indicator coefficient. Only present in the "list" and "table" formats.
 \item variable: The corresponding variable name for CFESIS/CSIS indicators (e.g., "gdp", "pop") or "Intercept" for IIS/FESIS/TIS indicators.
 \item value: The value of the indicator (1 for IIS/FESIS, >=1 for TIS, value of the variable for CFESIS/CSIS). Only present in the "long" format.
 \item effect: The effect of the indicator (value * coef). Only present in the "long" format.
@@ -98,6 +98,7 @@ get_indicators(result, format = "list")$fesis
 # Table format can be filtered by type
 ind <- get_indicators(result, format = "table")
 ind <- ind[ind$type == "FESIS", ]
+ind
 # Long format with additional columns "value" and "effect"
 # Useful to see the time-varying impact of e.g. trend indicators
 get_indicators(result, format = "long")

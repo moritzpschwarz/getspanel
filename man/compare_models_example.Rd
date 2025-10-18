@@ -15,7 +15,7 @@ A data frame with 3 rows and 5 variables:
 }
 }
 \source{
-\url{https://doi.org/10.1038/s41560-022-01095-6}
+Data taken from Koch, Naumann, Pretis, Ritter und Schwarz (2022). Nature Energy. \url{https://doi.org/10.1038/s41560-022-01095-6}
 }
 \usage{
 compare_models_example

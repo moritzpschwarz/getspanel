@@ -108,7 +108,7 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
   )
 
   # Set factor levels to ensure consistent ordering and always show all types
-  df_long$type <- factor(df_long$type, levels = names(indicator_styles))
+  df_long$type <- factor(df_long$type, levels = names(indicator_styles)[names(indicator_styles) %in% unique(df_long$type)])
 
   # Create the plot
   g <- ggplot(df_long, aes(x = .data$time, y = .data$effect, group = .data$name, color = .data$type, fill = .data$type)) +
@@ -140,10 +140,10 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
       color = guide_legend(
         title = "Indicator Type",
         override.aes = list(
-          shape = sapply(indicator_styles, function(x) x$shape),
-          linetype = sapply(indicator_styles, function(x) x$linetype),
-          linewidth = sapply(indicator_styles, function(x) x$width),
-          fill = sapply(indicator_styles, function(x) x$legend_fill)
+          shape = sapply(indicator_styles[names(indicator_styles) %in% unique(df_long$type)], function(x) x$shape),
+          linetype = sapply(indicator_styles[names(indicator_styles) %in% unique(df_long$type)], function(x) x$linetype),
+          linewidth = sapply(indicator_styles[names(indicator_styles) %in% unique(df_long$type)], function(x) x$width),
+          fill = sapply(indicator_styles[names(indicator_styles) %in% unique(df_long$type)], function(x) x$legend_fill)
         )
       ),
       fill = "none"

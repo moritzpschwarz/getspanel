@@ -705,6 +705,7 @@ isatpanel <- function(
   out$arguments$cluster <- cluster
   out$arguments$effect <- effect
   out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
+  out$arguments$formula <- formula
   #out$arguments$id_orig <- id_orig
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))
