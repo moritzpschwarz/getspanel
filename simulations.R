@@ -164,7 +164,7 @@ two_breaks <- run_simulation_study(
 saveRDS(two_breaks, file = "two_breaks_fesis_tis_both.rds")
 
 # Analyze results
-# TODO: should be evaluated with allow_type_mismatch
+# TODO: should be evaluated with allow_type_mismatch -> not much difference
 two_breaks_analysis <- metrics_summary(two_breaks, tolerances = c(0, 1, 2))
 two_breaks_analysis_mismatch <- metrics_summary(two_breaks, tolerances = c(0, 1, 2), allow_type_mismatch = TRUE)
 # print(two_breaks_analysis)
@@ -200,4 +200,210 @@ plot_compare_metrics(
   studies,
   plot_type = "line",
   metrics = c("avg_gauge", "avg_potency", "avg_f1", "avg_detected"),
+)
+
+# One break per type with varying magnitude ------------------------------------
+set.seed(99726)
+# Simulation parameters (panel structure and data generation)
+n_ids <- c(3, 5, 10)
+n_times <- c(20, 30, 50)
+beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
+sigma <- 0.5
+fe_sigma <- 5
+
+# Treatment parameters (imposed treatments to be detected)
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "step", 3, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "step", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "step", 1, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "step", 0.5, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "step", 0.25, 0.2,
+  )
+)
+
+# Benchmark parameters (getspanel parameters to be varied)
+n_rep <- 3
+engines <- c("gets")
+methods <- c("fesis")
+t.pvals <- c(0.05, 0.01, 0.001)
+ars <- c(0)
+max.block.sizes <- c(30)
+
+# Run the simulation study
+r1 <- run_simulation_study_parallel(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list,
+  n_rep, engines, methods, t.pvals, ars, max.block.sizes
+)
+
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 3, 0.2,
+    3, "step", 5, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 1, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 0.5, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 0.25, 0.2,
+  )
+)
+
+methods <- c("tis")
+
+r2 <- run_simulation_study_parallel(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list,
+  n_rep, engines, methods, t.pvals, ars, max.block.sizes
+)
+
+r2 <- r2 %>%
+  dplyr::mutate(simulation_id = simulation_id + max(r1$simulation_id))
+
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 3, 0.2,
+    3, "step", 3, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 2, 0.2,
+    3, "step", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 1, 0.2,
+    3, "step", 1, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 0.5, 0.2,
+    3, "step", 0.5, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    2, "trendbreak", 0.25, 0.2,
+    3, "step", 0.25, 0.2,
+  )
+)
+
+methods <- c("both")
+
+r3 <- run_simulation_study_parallel(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list,
+  n_rep, engines, methods, t.pvals, ars, max.block.sizes
+)
+
+r3 <- r3 %>%
+  dplyr::mutate(simulation_id = simulation_id + max(r2$simulation_id))
+
+varying_magnitude <- rbind(r1, r2, r3)
+
+# Save results
+saveRDS(varying_magnitude, file = "varying_magnitude.rds")
+
+# Analyze results
+varying_magnitude_analysis <- metrics_summary(varying_magnitude, tolerances = c(0, 1, 2))
+# print(varying_magnitude_analysis)
+
+# Visualize results
+plot_metrics(
+  varying_magnitude_analysis$per_simulation,
+  metrics = c("gauge", "detected"),
+  plot_type = "boxplot",
+  factors <- c("n_id", "n_time", "indic_method", "t.pval", "magnitude", "tolerance"),
+  title = "Gauge/Detected Breaks by factor; One break with varying magnitude in DGP",
+  separate_metrics = TRUE
+)
+
+# Multiple breaks per type with equal magnitude --------------------------------
+set.seed(99726)
+# Simulation parameters (panel structure and data generation)
+n_ids <- c(3, 5, 10)
+n_times <- c(20, 30, 50)
+beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
+sigma <- 0.5
+fe_sigma <- 5
+
+# Treatment parameters (imposed treatments to be detected)
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    1, "step", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    1, "step", 2, 0.2,
+    2, "step", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    1, "step", 2, 0.2,
+    2, "step", 2, 0.2,
+    3, "step", 2, 0.2,
+  ),
+  tribble(
+    ~id, ~type, ~magnitude, ~location,
+    1, "step", 2, 0.2,
+    2, "step", 2, 0.2,
+    3, "step", 2, 0.2,
+    1, "step", -1, 0.6,
+    2, "step", -1, 0.6,
+    3, "step", -1, 0.6,
+  ),
+)
+
+# Benchmark parameters (getspanel parameters to be varied)
+n_rep <- 3
+engines <- c("gets")
+methods <- c("fesis")
+t.pvals <- c(0.05, 0.01, 0.001)
+ars <- c(0)
+max.block.sizes <- c(30)
+
+# Run the simulation study
+multiple_breaks <- run_simulation_study(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list,
+  n_rep, engines, methods, t.pvals, ars, max.block.sizes
+)
+
+# Save results
+saveRDS(no_breaks, file = "no_breaks_fesis_tis_both.rds")
+
+# Analyze results
+no_breaks_analysis <- metrics_summary(no_breaks, tolerances = c(0))
+# print(no_breaks)
+
+# Visualize results
+plot_metrics(
+  no_breaks_analysis$per_simulation,
+  metrics = c("gauge", "detected"),
+  plot_type = "boxplot",
+  factors <- c("n_id", "n_time", "indic_method", "t.pval"),
+  title = "Gauge/Detected Breaks by factor; No breaks in DGP",
+  separate_metrics = TRUE
 )
