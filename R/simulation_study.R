@@ -4,6 +4,9 @@ library(tidyr)
 library(purrr)
 library(gets)
 library(data.table)
+library(future)
+library(furrr)
+library(progressr)
 
 # devtools::load_all()
 base_time <- 1900
@@ -230,6 +233,74 @@ run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatmen
     }
   }
   overall
+}
+
+run_simulation_study_parallel <- function(n_ids, n_times, beta, sigma, fe_sigma, 
+                                        treatment_params_list, n_rep = 1, 
+                                        engines = c("gets"), methods = c("both"), 
+                                        t.pvals = c(0.05, 0.01, 0.001), 
+                                        ars = c(0), max.block.sizes = c(30),
+                                        n_cores = parallel::detectCores() - 1) {
+
+  # Set up parallel processing
+  plan(multisession, workers = n_cores)
+  
+  # Create parameter combinations
+  param_grid <- expand_grid(
+    engine = engines,
+    method = methods,
+    t.pval = t.pvals,
+    ar = ars,
+    max.block.size = max.block.sizes,
+    treatment_params = treatment_params_list,
+    n_time = n_times,
+    n_id = n_ids,
+    rep = 1:n_rep
+  ) %>%
+    mutate(simulation_id = row_number())
+  
+  print(paste("Total simulations to run:", nrow(param_grid)))
+  # p <- progressr::progressor(along = param_grid)
+
+  # Run simulations in parallel
+  overall <- param_grid %>%
+    mutate(result = future_pmap(
+      list(engine, method, t.pval, ar, max.block.size, 
+           treatment_params, n_time, n_id, rep, simulation_id),
+      function(engine, method, t.pval, ar, max.block.size, 
+               treatment_params, n_time, n_id, rep, sim_id) {
+        
+        devtools::load_all()  # Ensure all functions are loaded in each worker
+        # print(paste("Running simulation", sim_id))
+        
+        result <- run_single_model(
+          n_id = n_id,
+          n_time = n_time,
+          engine = engine,
+          method = method,
+          treatment_params = treatment_params,
+          fe_sigma = fe_sigma,
+          beta = beta,
+          sigma = sigma,
+          t.pval = t.pval,
+          ar = ar,
+          max.block.size = max.block.size
+        )
+        # p()
+
+        result %>%
+          mutate(simulation_id = sim_id) %>%
+          select(simulation_id, everything())
+      },
+      .options = furrr_options(seed = TRUE)
+    )) %>%
+    select(result) %>%
+    unnest(result)
+  
+  # Clean up
+  plan(sequential)
+  
+  return(overall)
 }
 
 # Treatment Extraction
@@ -580,7 +651,7 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       n_time = n_time,
       indic_method = indic_method,
       t.pval = t.pval,
-      tolerance = tolerance,
+      tolerance = as.numeric(tolerance),
       gauge   = ifelse(irrel > 0, fp / irrel, NA_real_),
       potency = ifelse(rel  > 0, tp / rel, NA_real_ ),
       precision = prec,
@@ -621,7 +692,7 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
   if (is.null(factors)) {
     varying_factors <- setdiff(
       names(analysis_per_simulation),
-      c("simulation_id", "tolerance", "gauge", "potency", "precision", "recall", "f1", "detected", "true", "matches")
+      c("simulation_id", "gauge", "potency", "precision", "recall", "f1", "detected", "true", "matches")
     )
   } else {
     varying_factors <- factors
@@ -636,26 +707,26 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
   
   # Calculate scaling factor for gauge if it's included in metrics
   gauge_scale_factor <- 1
-  if ("gauge" %in% metrics && length(metrics) > 1) {
-    gauge_values <- analysis_per_simulation$gauge[!is.na(analysis_per_simulation$gauge)]
+  # if ("gauge" %in% metrics && length(metrics) > 1) {
+  #   gauge_values <- analysis_per_simulation$gauge[!is.na(analysis_per_simulation$gauge)]
     
-    if (length(gauge_values) > 0) {
-      # Calculate scaling factor to bring max gauge value to 1 (or close to it)
-      max_gauge <- max(gauge_values, na.rm = TRUE)
-      if (max_gauge > 1) {
-        gauge_scale_factor <- 1 / max_gauge
-      } else if (max_gauge > 0) {
-        # If max is already <= 1, scale to use more of the [0,1] range
-        # Scale so that the 95th percentile reaches around 0.8-0.9
-        percentile_95 <- quantile(gauge_values, 0.95, na.rm = TRUE)
-        if (percentile_95 > 0) {
-          gauge_scale_factor <- 0.85 / percentile_95
-        }
-      }
-      # Ensure scaling factor is reasonable (don't scale down if already in good range)
-      gauge_scale_factor <- max(gauge_scale_factor, 1)
-    }
-  }
+  #   if (length(gauge_values) > 0) {
+  #     # Calculate scaling factor to bring max gauge value to 1 (or close to it)
+  #     max_gauge <- max(gauge_values, na.rm = TRUE)
+  #     if (max_gauge > 1) {
+  #       gauge_scale_factor <- 1 / max_gauge
+  #     } else if (max_gauge > 0) {
+  #       # If max is already <= 1, scale to use more of the [0,1] range
+  #       # Scale so that the 95th percentile reaches around 0.8-0.9
+  #       percentile_95 <- quantile(gauge_values, 0.95, na.rm = TRUE)
+  #       if (percentile_95 > 0) {
+  #         gauge_scale_factor <- 0.85 / percentile_95
+  #       }
+  #     }
+  #     # Ensure scaling factor is reasonable (don't scale down if already in good range)
+  #     gauge_scale_factor <- max(gauge_scale_factor, 1)
+  #   }
+  # }
   
   analysis_long <- analysis_per_simulation %>%
     # Convert varying factors to character so they can be pivoted together
@@ -740,13 +811,14 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics
              x = "Factor Value",
              y = paste(stringr::str_to_title(metric_name), "Value"),
              color = "Metric",
-             fill = "Metric")
+             fill = "Metric") +
+        theme(legend.position = "bottom")
             
       plot_list[[metric_name]] <- p_metric
     }
     
-    # Combine all plots vertically
-    return(wrap_plots(plot_list, ncol = 1))
+    # Combine all plots horizontally
+    return(wrap_plots(plot_list, nrow = 1))
   }
   
   p
