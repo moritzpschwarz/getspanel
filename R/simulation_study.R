@@ -53,7 +53,9 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
   # Initialize unit fixed effects with fe_sigma and return vectors
   means <- rnorm(n_id, sd = fe_sigma)
   input_data <- data.frame()
-  treatment_collection <- tibble()
+  treatment_collection <- tibble(
+    id = character(), type = character(), time = double(), coef = double()
+  )
 
   # Adjust treatment parameters if relative specification is used
   if (rel_treat_params == TRUE) {
@@ -218,6 +220,7 @@ run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_
     t.pval = t.pval,
     max.block.size = max.block.size,
     treatment_collection = list(treatment_collection),
+    indicators = list(get_indicators(result)),
     getspanel_object = list(result)
   )
 }
@@ -278,36 +281,30 @@ run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatmen
   return(overall)
 }
 
-# Treatment Extraction
-extract_treatments <- function(overall_tibble) {
   # Extract true and detected treatments from the overall tibble
-  true_treatments <- overall_tibble %>%
-    select(treatment_collection, simulation_id) %>%
-    unnest(treatment_collection)
+extract_treatments <- function(overall_tibble) {
+  true_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double(), coef = double())
+  detected_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double())
 
-  if(nrow(true_treatments) == 0) {
-    true_treatments <- tibble(simulation_id = integer(0), id = character(0), type = character(0), timing = integer(0), magnitude = numeric(0))
-  } else {
-    true_treatments <- true_treatments %>%
-      mutate(type = ifelse(treated == "trendbreak", "trend", treated)) %>%
-      select(simulation_id, id, type, timing = time, magnitude)
-  }
+  true_treatments <- overall_tibble %>%
+    select(sim_id, treatment_collection) %>%
+    unnest(treatment_collection) %>%
+    mutate(type = ifelse(type == "trendbreak", "trend", type)) %>%
+    select(sim_id, id, type, time, coef)
 
   detected_treatments <- overall_tibble %>%
-    select(indicators, simulation_id) %>%
+    select(sim_id, indicators) %>%
     unnest(indicators) %>%
     unnest(indicators) %>%
-    select(simulation_id, id, time, name) %>%
-    rowwise() %>%
+    select(sim_id, id, time, name) %>%
     mutate(
-      timing = time - base_time,
+      time = time - base_time,
       type = case_when(
         grepl("^fesis", name) ~ "step",
         grepl("^tis", name) ~ "trend"
       )
     ) %>%
-    ungroup() %>%
-    select(simulation_id, id, type, timing)
+    select(sim_id, id, type, time)
 
   list(
     true_treatments = true_treatments,
@@ -315,147 +312,44 @@ extract_treatments <- function(overall_tibble) {
   )
 }
 
-#' Treatment Matches
-#' Allows for small timing errors (e.g., ±1 or ±2 periods or type mismatches)
-#' Only allows one detected treatment to match each true treatment (best match wins)
-match_treatments <- function(true_treatments = NULL, detected_treatments = NULL, overall = NULL, tolerance = 0, allow_type_mismatch = FALSE) {
-  if (!is.null(overall)) {
-    treatments <- extract_treatments(overall)
-    true_treatments <- treatments$true_treatments
-    detected_treatments <- treatments$detected_treatments
-  } else if (is.null(true_treatments) | is.null(detected_treatments)) {
-    stop("Either overall or both true_treatments and detected_treatments must be provided.")
-  }
-
-  # Always use both type columns for consistency
+# Optimal bipartite matching for true and detected treatments
+# true_treatments, detected_treatments: tibbles with columns id, type, time
+# tolerance: maximum allowed timing difference for a match
+# allow_type_mismatch: if TRUE, type mismatches are allowed (with penalty); if FALSE, type mismatches are not allowed
+# Returns a tibble with matched treatments (match = TRUE) and unmatched treatments from both true and detected sets (match = FALSE)
+# The matching algorithm prioritizes maximizing the number of matches, and among those, minimizing the cost. Cost is defined as the timing difference, with additional penalty for type mismatches if allowed.
+# This can only be used for matching within a single simulation run (i.e., for one sim_id)
+optimal_match_treatments <- function(true_treatments = NULL, detected_treatments = NULL, tolerance = 0, allow_type_mismatch = FALSE) {
+  # Use explicit column names for joining and index treatments
   true_treatments <- true_treatments %>%
-    rename(true_timing = timing, true_type = type)
-  detected_treatments <- detected_treatments %>%
-    rename(detected_timing = timing, detected_type = type)
-
-  # Create all potential matches within tolerance
-  potential_matches <- full_join(
-    true_treatments,
-    detected_treatments,
-    by = c("simulation_id", "id")
-  ) %>%
-    mutate(
-      timing_diff = abs(true_timing - detected_timing),
-      type_mismatch = true_type != detected_type
-    ) %>%
-    filter(timing_diff <= tolerance)
-  
-  # Implement one-to-one matching using greedy algorithm
-  # Create composite score: timing difference primary, type mismatch secondary (if allowed)
-  if (allow_type_mismatch) {
-    potential_matches <- potential_matches %>%
-      mutate(composite_score = timing_diff + (as.numeric(type_mismatch) * (tolerance + 1)))
-  } else {
-    # Filter by type matching if not allowed
-    potential_matches <- potential_matches %>%
-      filter(!type_mismatch) %>%
-      mutate(composite_score = timing_diff)
-  }
-  
-  matches <- potential_matches %>%
-    arrange(composite_score) %>%
-    group_by(simulation_id) %>%
-    # Track used true and detected treatments
-    mutate(
-      true_key = paste(id, true_timing, true_type, sep = "_"),
-      detected_key = paste(id, detected_timing, detected_type, sep = "_")
-    ) %>%
-    # Select matches greedily (best matches first, no duplicates)
-    filter(!duplicated(true_key) & !duplicated(detected_key)) %>%
-    select(-true_key, -detected_key, -composite_score) %>%
-    ungroup()
-
-  matches <- matches %>%
-    mutate(match = TRUE)
-
-  # Find unmatched true treatments - always use same column structure
-  unmatched_true <- anti_join(
-    true_treatments,
-    matches,
-    by = c("simulation_id", "id", "true_timing", "true_type")
-  ) %>%
-    mutate(
-      detected_timing = NA_real_,
-      detected_type = NA_character_,
-      timing_diff = NA_real_,
-      type_mismatch = NA,
-      match = FALSE
-    )
-
-  # Find unmatched detected treatments - always use same column structure
-  unmatched_detected <- anti_join(
-    detected_treatments,
-    matches,
-    by = c("simulation_id", "id", "detected_timing", "detected_type")
-  ) %>%
-    mutate(
-      true_timing = NA_real_,
-      true_type = NA_character_,
-      timing_diff = NA_real_,
-      type_mismatch = NA,
-      match = FALSE
-    )
-
-  # Combine all
-  all_results <- bind_rows(matches, unmatched_true, unmatched_detected)
-
-  all_results
-}
-
-#' Optimal Bipartite Matching for Treatment Detection
-#' Uses optimal matching algorithm to find best one-to-one assignment
-optimal_match_treatments <- function(true_treatments = NULL, detected_treatments = NULL, overall = NULL, tolerance = 0, allow_type_mismatch = FALSE) {
-  if (!is.null(overall)) {
-    treatments <- extract_treatments(overall)
-    true_treatments <- treatments$true_treatments
-    detected_treatments <- treatments$detected_treatments
-  } else if (is.null(true_treatments) | is.null(detected_treatments)) {
-    stop("Either overall or both true_treatments and detected_treatments must be provided.")
-  }
-
-  # Setup consistent column names
-  true_treatments <- true_treatments %>%
-    rename(true_timing = timing, true_type = type) %>%
+    rename(true_time = time, true_type = type) %>%
     mutate(true_idx = row_number())
-  
   detected_treatments <- detected_treatments %>%
-    rename(detected_timing = timing, detected_type = type) %>%
+    rename(detected_time = time, detected_type = type) %>%
     mutate(detected_idx = row_number())
 
-  # Process each (simulation_id, id) pair separately
-  all_matches <- tibble()
-  
-  # Get all unique (simulation_id, id) combinations
-  id_combinations <- unique(rbind(
-    true_treatments %>% select(simulation_id, id),
-    detected_treatments %>% select(simulation_id, id)
-  ))
-  
-  for (i in 1:nrow(id_combinations)) {
-    sim_id <- id_combinations$simulation_id[i]
-    entity_id <- id_combinations$id[i]
+  # Process each id separately
+  all_matches <- tibble(
+    id = character(), true_idx = integer(), detected_idx = integer(), true_time = integer(), detected_time = integer(), true_type = character(), detected_type = character(), timing_diff = integer(), type_mismatch = logical(), cost = integer(), match = logical()
+  )
+  for (id in unique(c(true_treatments$id, detected_treatments$id))) {
+    true_subset <- true_treatments %>%
+      dplyr::filter(id == !!id)
+    detected_subset <- detected_treatments %>%
+      dplyr::filter(id == !!id)
     
-    true_subset <- filter(true_treatments, simulation_id == sim_id, id == entity_id)
-    detected_subset <- filter(detected_treatments, simulation_id == sim_id, id == entity_id)
-    
-    if (nrow(true_subset) == 0 || nrow(detected_subset) == 0) {
-      next
-    }
+    if (nrow(true_subset) == 0 || nrow(detected_subset) == 0) next
 
-    # Create cost matrix for this specific (simulation_id, id) pair
+    # Create cost matrix of all (true, detected) pairs for this id
     cost_matrix <- expand_grid(
       true_idx = true_subset$true_idx,
       detected_idx = detected_subset$detected_idx
     ) %>%
-      left_join(true_subset, "true_idx") %>%
-      left_join(detected_subset, c("detected_idx", "id", "simulation_id")) %>%
+      mutate(id = id) %>%
+      left_join(true_subset, by = c("id", "true_idx")) %>%
+      left_join(detected_subset, by = c("id", "detected_idx")) %>%
       mutate(
-        timing_diff = abs(true_timing - detected_timing),
+        timing_diff = abs(true_time - detected_time),
         type_mismatch = true_type != detected_type,
         # Create cost: high cost for invalid matches
         cost = case_when(
@@ -463,14 +357,15 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
           !allow_type_mismatch & type_mismatch ~ Inf,
           TRUE ~ timing_diff + (as.numeric(type_mismatch) * (tolerance + 1))
         )
-      )
-    
-    # Find optimal assignment for this (simulation_id, id) pair
-    pair_matches <- find_optimal_assignment(cost_matrix, true_subset, detected_subset)
+      ) %>%
+      select(id, true_idx, detected_idx, true_time, detected_time, true_type, detected_type, timing_diff, type_mismatch, cost)
+
+    # Find optimal one-to-one assignment for this id and append to all matches
+    pair_matches <- find_optimal_assignment(cost_matrix)
     all_matches <- bind_rows(all_matches, pair_matches)
   }
 
-  # Add unmatched treatments
+  # Add unmatched treatments with match = FALSE for completeness
   if (nrow(all_matches) == 0) {
     matched_true <- c()
     matched_detected <- c()
@@ -478,70 +373,58 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
     matched_true <- all_matches %>% filter(match) %>% pull(true_idx)
     matched_detected <- all_matches %>% filter(match) %>% pull(detected_idx)
   }
-
   unmatched_true <- true_treatments %>%
     filter(!true_idx %in% matched_true) %>%
-    mutate(
-      detected_timing = NA_real_,
-      detected_type = NA_character_,
-      detected_idx = NA_integer_,
-      timing_diff = NA_real_,
-      type_mismatch = NA,
-      match = FALSE
-    )
-  
+    mutate(match = FALSE) %>%
+    select(id, true_type, true_time)
   unmatched_detected <- detected_treatments %>%
     filter(!detected_idx %in% matched_detected) %>%
-    mutate(
-      true_timing = NA_real_,
-      true_type = NA_character_,
-      true_idx = NA_integer_,
-      timing_diff = NA_real_,
-      type_mismatch = NA,
-      match = FALSE
-    )
-  
-  all_results <- bind_rows(all_matches, unmatched_true, unmatched_detected) %>%
-    select(-true_idx, -detected_idx)
+    mutate(match = FALSE) %>%
+    select(id, detected_type, detected_time)
+
+  all_results <- all_matches %>%
+    select(-true_idx, -detected_idx) %>%
+    bind_rows(unmatched_true) %>%
+    bind_rows(unmatched_detected)
 
   all_results
 }
 
-#' Find Optimal Assignment using brute force enumeration
-#' Prioritizes: 1) Maximum number of matches, 2) Minimum total cost
-find_optimal_assignment <- function(cost_matrix, true_sim, detected_sim) {
+# Find Optimal Assignment using brute force enumeration
+# Prioritizes: 1) Maximum number of matches, 2) Minimum total cost
+find_optimal_assignment <- function(cost_matrix) {
   # Get valid matches only
   valid_matches <- cost_matrix %>% 
     filter(is.finite(cost))
-  
+
   if (nrow(valid_matches) == 0) {
     return(tibble())
   }
-  
+
   # For small problems, enumerate all possible subsets of matches
   n_matches <- nrow(valid_matches)
   best_num_matches <- 0
   best_cost <- Inf
   best_selection <- c()
-  
+
   # Try all possible combinations of matches (2^n possibilities)
   for (i in 0:(2^n_matches - 1)) {
     # Convert number to binary to select matches
     selection <- as.logical(intToBits(i)[1:n_matches])
     selected_matches <- valid_matches[selection, ]
-    
+
     if (nrow(selected_matches) == 0) next
-    
+
     # Check if this is a valid assignment (no duplicate true or detected treatments)
     if (any(duplicated(selected_matches$true_idx)) || 
         any(duplicated(selected_matches$detected_idx))) {
       next
     }
-    
+
     # Calculate metrics
     num_matches <- nrow(selected_matches)
     total_cost <- sum(selected_matches$cost)
-    
+
     # Update best solution if this is better
     # Priority: 1) More matches, 2) Lower cost if same number of matches
     if (num_matches > best_num_matches || 
@@ -551,28 +434,16 @@ find_optimal_assignment <- function(cost_matrix, true_sim, detected_sim) {
       best_selection <- selection
     }
   }
-  
+
   if (length(best_selection) == 0 || !any(best_selection)) {
     return(tibble())
   }
-  
+
   # Return best matches
   result_matches <- valid_matches[best_selection, ] %>%
     mutate(match = TRUE)
-  
-  return(result_matches)
-}
 
-relevant_types_for_method <- function(method) {
-  if (method == "fesis") {
-    return("step")
-  } else if (method == "tis") {
-    return("trend")
-  } else if (method == "both") {
-    return(c("step","trend"))
-  } else {
-    return(character(0))
-  }
+  return(result_matches)
 }
 
 candidate_count <- function(n_id, n_time, method) {
@@ -586,22 +457,25 @@ candidate_count <- function(n_id, n_time, method) {
   }
 }
 
+# Compute metrics for each simulation in overall_tibble in parallel
+# overall_tibble: tibble with all simulation runs
+# tolerance: maximum allowed timing difference for a match
+# allow_type_mismatch: if TRUE, type mismatches are allowed (with penalty); if FALSE, type mismatches are not allowed (and are not matched)
+# Returns a tibble with factors and metrics per simulation run
+# Metrics computed: n_detected, gauge, potency, precision, recall, f1
 compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch = FALSE) {
+  # Extract factors/parameters and treatments separately
   meta <- overall_tibble %>%
-    dplyr::select(n_id, n_time, indic_method, simulation_id, t.pval)
-
+    dplyr::select(-treatment_collection, -indicators, -getspanel_object)
   tx <- extract_treatments(overall_tibble)
   true_all <- tx$true_treatments
-  det_all  <- tx$detected_treatments
+  det_all <- tx$detected_treatments
 
-  purrr::pmap_dfr(meta, function(n_id, n_time, indic_method, simulation_id, t.pval) {
-    rel_types <- relevant_types_for_method(indic_method)
-    total_candidates <- candidate_count(n_id, n_time, indic_method)
-
+  purrr::pmap_dfr(meta, function(sim_id, n_id, n_time, treatment_params, indic_method, t.pval, max.block.size) {
     true_sim <- true_all %>%
-      dplyr::filter(simulation_id == !!simulation_id, type %in% rel_types)
+      dplyr::filter(sim_id == !!sim_id)
     det_sim  <- det_all %>%
-      dplyr::filter(simulation_id == !!simulation_id, type %in% rel_types)
+      dplyr::filter(sim_id == !!sim_id)
 
     matches <- optimal_match_treatments(
       true_treatments = true_sim,
@@ -610,56 +484,71 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       allow_type_mismatch = allow_type_mismatch
     )
 
-    tp  <- nrow(matches %>% dplyr::filter(match))
+    tp <- nrow(matches %>% dplyr::filter(match))
     det <- nrow(det_sim)
-    fp  <- max(det - tp, 0)
+    fp <- max(det - tp, 0)
 
-    rel    <- nrow(true_sim)
-    irrel  <- max(total_candidates - rel, 0)
+    total_candidates <- candidate_count(n_id, n_time, indic_method)
+    rel <- nrow(true_sim)
+    irrel <- max(total_candidates - rel, 0)
 
     prec <- ifelse(det > 0, tp / det, NA_real_)
     rec <- ifelse(rel > 0, tp / rel, NA_real_)
 
-    tibble::tibble(
-      simulation_id = simulation_id,
+    metrics <- tibble::tibble(
+      # Simulation parameters/factors
+      sim_id = sim_id,
       n_id = n_id,
       n_time = n_time,
       indic_method = indic_method,
       t.pval = t.pval,
-      tolerance = as.numeric(tolerance),
-      gauge   = ifelse(irrel > 0, fp / irrel, NA_real_),
+      max.block.size = max.block.size,
+      n_true = rel,
+      magnitude = mean(treatment_params$magnitude),
+      tolerance = tolerance,
+      # Metrics
+      n_detected = det,
+      gauge = ifelse(irrel > 0, fp / irrel, NA_real_),
       potency = ifelse(rel  > 0, tp / rel, NA_real_ ),
       precision = prec,
       recall = rec,
       f1 = ifelse(prec + rec > 0, 2 * (prec * rec) / (prec + rec), NA_real_),
-      detected = det,
-      true = rel,
-      matches = list(matches),
-      magnitude = mean(true_sim$magnitude)
+      matches = list(matches)
     )
+
+    return(metrics)
   })
 }
 
-metrics_summary <- function(overall_tibble, tolerances = c(0, 1), allow_type_mismatch = FALSE) {
+# Summarizes metrics over all simulations in overall_tibble
+# overall_tibble: tibble with all simulation runs
+# tolerances: vector of tolerances to compute metrics for
+# allow_type_mismatch: if TRUE, type mismatches are allowed (with penalty); if FALSE, type mismatches are not allowed
+# factors: vector of column names to group by for summary statistics
+# Returns a list with two tibbles:
+# - per_simulation: metrics computed per simulation run (sim_id) for each tolerance (using compute_metrics())
+# - by_factor: average metrics grouped by specified factors
+metrics_summary <- function(overall_tibble, tolerances = c(0), allow_type_mismatch = FALSE, factors = c("indic_method", "t.pval", "tolerance")) {
   gp <- dplyr::bind_rows(
     lapply(tolerances, function(t) {
       compute_metrics(overall_tibble, t, allow_type_mismatch)
     })
   )
 
-  by_method <- gp %>%
-    dplyr::group_by(indic_method, tolerance, t.pval) %>%
+  # Group by the columns specified in 'factors' and then summarise metrics.
+  by_factor <- gp %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(factors))) %>%
     dplyr::summarise(
       avg_gauge = mean(gauge, na.rm = TRUE),
       avg_potency = mean(potency, na.rm = TRUE),
       avg_precision = mean(precision, na.rm = TRUE),
       avg_recall = mean(recall, na.rm = TRUE),
       avg_f1 = mean(f1, na.rm = TRUE),
-      avg_detected = mean(detected, na.rm = TRUE),
+      avg_detected = mean(n_detected, na.rm = TRUE),
       .groups = "drop"
     )
 
-  list(per_simulation = gp, by_method = by_method)
+  list(per_simulation = gp, by_factor = by_factor)
 }
 
 plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics = c("gauge", "potency", "f1"), factors = NULL, title = "Metrics per Simulation (by Factor)", separate_metrics = FALSE) {
