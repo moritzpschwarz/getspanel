@@ -11,38 +11,45 @@ library(progressr)
 # devtools::load_all()
 base_time <- 1900
 
-impose_treatment <- function(type, n_time, location, magnitude, fe) {
+impose_treatment <- function(type, n_time, location, magnitude) {
   if (!(type %in% c("trend", "trendbreak", "step"))) {
     stop("treatment type not recognized")
   }
 
   # Initialize treatment vector and determine absolute location
   treatment <- rep(0, n_time)
-  abs_location <- max(ceiling(n_time * location), 1)
   if (type == "trend") {
     # "Trend" always starts at the beginning
     treatment <- 1:n_time
-    abs_location <- 1
-    abs_magnitude <- magnitude * fe / n_time
+    coef <- magnitude / n_time
   } else if (type == "trendbreak") {
     # "Trendbreak" starts at abs_location and sets increasing dummies
-    treatment[abs_location:n_time] <- seq_along(treatment[abs_location:n_time])
-    abs_magnitude <- magnitude * fe / (n_time - abs_location + 1)
+    treatment[location:n_time] <- seq_along(treatment[location:n_time])
+    coef <- magnitude / (n_time - location + 1)
   } else if (type == "step") {
     # "Step" sets a constant step-shift from abs_location
-    treatment[abs_location:n_time] <- 1
-    abs_magnitude <- magnitude * fe
+    treatment[location:n_time] <- 1
+    coef <- magnitude
   }
-  treatment <- treatment * abs_magnitude
+  treatment <- treatment * coef
 
-  list(treatment = treatment, time = abs_location)
+  list(treatment = treatment, coef = coef)
 }
 
-create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, plot_data = FALSE) {
-  # Initialize unit fixed effects and return vectors
+create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, rel_treat_params = TRUE, plot = FALSE) {
+  # Initialize unit fixed effects with fe_sigma and return vectors
   means <- rnorm(n_id, sd = fe_sigma)
   input_data <- data.frame()
   treatment_collection <- tibble()
+
+  if (rel_treat_params == TRUE) {
+    treatment_params <- treatment_params %>%
+      mutate(id = max(ceiling(n_id * id), 1)) %>%
+      mutate(location = max(ceiling(n_time * location), 1)) %>%
+      group_by(id) %>%
+      mutate(magnitude = magnitude * means[id]) %>%
+      ungroup()
+  }
 
   for (id in 1:n_id) {
     # Create random input data (x) and compute outcome variable (y)
@@ -69,8 +76,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
           type = params$type[i],
           n_time = n_time,
           location = params$location[i],
-          magnitude = params$magnitude[i],
-          fe = fe
+          magnitude = params$magnitude[i]
         )
         data$y <- data$y + treat$treatment
 
@@ -82,8 +88,8 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
         treat_entry <- tibble(
           id = LETTERS[id],
           treated = params$type[i],
-          time = treat$time,
-          magnitude = params$magnitude[i]
+          time = params$location[i],
+          coef = treat$coef
         )
         treatment_collection <- bind_rows(treatment_collection, treat_entry)
       }
@@ -91,7 +97,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
     input_data <- bind_rows(input_data, data)
   }
 
-  if (plot_data == TRUE) {
+  if (plot == TRUE) {
     # Prepare data for plotting
     tmp <- input_data %>%
       mutate(unit_fe = rep(means, each = n_time)) %>%
@@ -141,7 +147,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
   )
 }
 
-run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, plot_data = FALSE, plot_isatpanel = FALSE) {
+run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, ...) {
   # Create input data with imposed treatments and treatment information
   data_creation <- create_input_data(
     n_id = n_id,
@@ -150,7 +156,7 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     fe_sigma = fe_sigma,
     beta = beta,
     sigma = sigma,
-    plot_data = plot_data
+    ...
   )
   input_data <- data_creation$input_data
   treatment_collection <- data_creation$treatment_collection
@@ -170,8 +176,8 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     print.searchinfo = FALSE,
     t.pval = t.pval,
     ar = ar,
-    plot = plot_isatpanel,
-    max.block.size = max.block.size
+    max.block.size = max.block.size,
+    ...,
   )
 
   # Return tibble with all relevant information for the simulation run
@@ -181,6 +187,7 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
     getspanel_object = list(result),
     indicators = list(get_indicators(result)),
     treatment_collection = list(treatment_collection),
+    treatment_params = list(treatment_params),
     engine,
     indic_method = method,
     t.pval = t.pval,
@@ -190,7 +197,7 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
   )
 }
 
-run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, engines = c("gets"), methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), ars = c(0), max.block.sizes = c(30)) {
+run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, engines = c("gets"), methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), ars = c(0), max.block.sizes = c(30), ...) {
   n_simulations <- length(engines) * length(methods) * length(t.pvals) * length(ars) * length(max.block.sizes) * length(treatment_params_list) * length(n_times) * length(n_ids) * n_rep
   print(paste("Total simulations to run:", n_simulations))
   overall <- tibble()
@@ -215,7 +222,8 @@ run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatmen
                       sigma = sigma,
                       t.pval = t.pval,
                       ar = ar,
-                      max.block.size = max.block.size
+                      max.block.size = max.block.size,
+                      ...
                     )
                     # Add simulation_id and place it at the front
                     result <- result %>%
@@ -240,7 +248,7 @@ run_simulation_study_parallel <- function(n_ids, n_times, beta, sigma, fe_sigma,
                                         engines = c("gets"), methods = c("both"), 
                                         t.pvals = c(0.05, 0.01, 0.001), 
                                         ars = c(0), max.block.sizes = c(30),
-                                        n_cores = parallel::detectCores() - 1) {
+                                        n_cores = parallel::detectCores() - 1, ...) {
 
   # Set up parallel processing
   plan(multisession, workers = n_cores)
@@ -284,7 +292,8 @@ run_simulation_study_parallel <- function(n_ids, n_times, beta, sigma, fe_sigma,
           sigma = sigma,
           t.pval = t.pval,
           ar = ar,
-          max.block.size = max.block.size
+          max.block.size = max.block.size,
+          ...
         )
         # p()
 
