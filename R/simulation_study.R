@@ -552,11 +552,11 @@ metrics_summary <- function(overall_tibble, tolerances = c(0), allow_type_mismat
 }
 
 plot_metrics <- function(analysis_per_simulation, plot_type = "scatter", metrics = c("gauge", "potency", "f1"), factors = NULL, title = "Metrics per Simulation (by Factor)", separate_metrics = FALSE) {
-  # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, simulation_id, num_breaks)
+  # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, sim_id, num_breaks)
   if (is.null(factors)) {
     varying_factors <- setdiff(
       names(analysis_per_simulation),
-      c("simulation_id", "gauge", "potency", "precision", "recall", "f1", "detected", "true", "matches")
+      c("sim_id", "gauge", "potency", "precision", "recall", "f1", "detected", "true", "matches")
     )
   } else {
     varying_factors <- factors
