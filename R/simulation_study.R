@@ -11,37 +11,51 @@ library(progressr)
 # devtools::load_all()
 base_time <- 1900
 
+# Creates single treatment effect based on type, location, and magnitude
+# Returns a list with treatment vector and coefficient used
+# For "step", magnitude is applied as a constant shift
+# For "trend" and "trendbreaks", magnitude is scaled to the length of the trend
 impose_treatment <- function(type, n_time, location, magnitude) {
   if (!(type %in% c("trend", "trendbreak", "step"))) {
     stop("treatment type not recognized")
   }
 
   # Initialize treatment vector and determine absolute location
-  treatment <- rep(0, n_time)
+  treat_dummies <- rep(0, n_time)
   if (type == "trend") {
     # "Trend" always starts at the beginning
-    treatment <- 1:n_time
+    treat_dummies <- 1:n_time
     coef <- magnitude / n_time
   } else if (type == "trendbreak") {
     # "Trendbreak" starts at abs_location and sets increasing dummies
-    treatment[location:n_time] <- seq_along(treatment[location:n_time])
+    treat_dummies[location:n_time] <- seq_along(treat_dummies[location:n_time])
     coef <- magnitude / (n_time - location + 1)
   } else if (type == "step") {
     # "Step" sets a constant step-shift from abs_location
-    treatment[location:n_time] <- 1
+    treat_dummies[location:n_time] <- 1
     coef <- magnitude
   }
-  treatment <- treatment * coef
+  treat_eff <- treat_dummies * coef
 
-  list(treatment = treatment, coef = coef)
+  list(treat_eff = treat_eff, coef = coef)
 }
 
-create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, rel_treat_params = TRUE, plot = FALSE) {
+# Creates random panel data with imposed treatments
+# n_id, n_time: panel dimensions
+# fe_sigma: standard deviation of unit fixed effects (giving each unit a different mean level)
+# beta: vector of coefficients for random input data (x variables)
+# sigma: standard deviation of idiosyncratic error term
+# treatment_params: tibble with columns id, type, magnitude, location, each row specifying a treatment to impose
+# rel_treat_params: if TRUE, treatment parameters are interpreted relative to panel setting, i.e., id and location (0-1) are scaled to n_id and n_time, and magnitude is scaled by unit fixed effect. Otherwise, absolute values are used to impose treatments as specified. Default is TRUE for flexibility in simulation design.
+# plot: if TRUE, a plot is generated showing the data, unit fixed effects, treatment effects, and outcome variable for each unit
+# Returns a list with input_data (data.frame with columns id, time, x variables, y) and treatment_collection (tibble with imposed treatments: id, type, time, coef)
+create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, rel_treat_params = TRUE, plot = FALSE, ...) {
   # Initialize unit fixed effects with fe_sigma and return vectors
   means <- rnorm(n_id, sd = fe_sigma)
   input_data <- data.frame()
   treatment_collection <- tibble()
 
+  # Adjust treatment parameters if relative specification is used
   if (rel_treat_params == TRUE) {
     treatment_params <- treatment_params %>%
       mutate(id = max(ceiling(n_id * id), 1)) %>%
@@ -51,10 +65,12 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
       ungroup()
   }
 
+  # Generate data and impose treatments for each unit
   for (id in 1:n_id) {
-    # Create random input data (x) and compute outcome variable (y)
-    fe <- means[id]
+    # Create random input data (x)
     x <- matrix(rnorm(n_time * length(beta)), ncol = length(beta))
+    # Compute outcome variable (y) with unit fixed effect and error term
+    fe <- means[id]
     eps <- rnorm(n_time, mean = 0, sd = sigma)
     y <- x %*% beta + fe + eps
 
@@ -65,35 +81,41 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
       y = y
     )
 
-    # Initialize treatment column to NA (only used to plot treatment impact)
-    data$treatment <- NA
+    # Impose all treatments specified for this unit to outcome variable and collect absolute values for each treatment
+    # Treatment effects are summed up in a separate data column for plotting
+    data$treat_eff <- 0
     if (id %in% treatment_params$id) {
       params <- treatment_params %>% filter(id == !!id)
-      # Get effect and timing for each treatment
-      # Add treatment effect to outcome and store timing for the collection
+
+      # Get effect and coef for each treatment
       for (i in seq_len(nrow(params))) {
-        treat <- impose_treatment(
+        treatment <- impose_treatment(
           type = params$type[i],
           n_time = n_time,
           location = params$location[i],
           magnitude = params$magnitude[i]
         )
-        data$y <- data$y + treat$treatment
 
-        # Initialize treatment column to 0 if NA, then add treatment effect
-        # This way, overlapping treatments are summed and units without any treatments remain with NA values
-        data$treatment <- ifelse(is.na(data$treatment), 0, data$treatment)
-        data$treatment <- data$treatment + treat$treatment
+        # Add treatment effect to outcome variable ond plotting column
+        data$y <- data$y + treatment$treat_eff
+        data$treat_eff <- data$treat_eff + treatment$treat_eff
 
+        # Store treatment information with absolute values (i.e. id and time scaled to panel dimensions and coefficient scaled by unit fixed effect and panel length for trends)
+        # This is later used to match detected treatments to true treatments
         treat_entry <- tibble(
           id = LETTERS[id],
-          treated = params$type[i],
+          type = params$type[i],
           time = params$location[i],
-          coef = treat$coef
+          coef = treatment$coef
         )
         treatment_collection <- bind_rows(treatment_collection, treat_entry)
       }
+    } else {
+      # NA column to avoid zero-lines for units without treatment in plotting
+      data$treat_eff <- NA
     }
+
+    # Append rows for all units into one data frame
     input_data <- bind_rows(input_data, data)
   }
 
@@ -118,7 +140,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
       # Dashed lines for unit_fe and treatment
       # na.rm = TRUE for units without treatment
       geom_line(
-        data = tmp %>% filter(plot_group %in% c("unit_fe", "treatment")),
+        data = tmp %>% filter(plot_group %in% c("unit_fe", "treat_eff")),
         aes(x = time, y = value, color = plot_group),
         size = 0.8, na.rm = TRUE, linetype = "dashed"
       ) +
@@ -133,7 +155,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
         values = c(
           "data" = "gray60",
           "unit_fe" = "#E41A1C",
-          "treatment" = "#377EB8",
+          "treat_eff" = "#377EB8",
           "y" = "#4DAF4A"
         )
       ) +
@@ -141,13 +163,21 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
     plot(p)
   }
 
-  # treatment column was only used for plotting
+  # Remove plotting column and return final data and treatment collection
   list(
-    input_data = input_data %>% select(-treatment), treatment_collection = treatment_collection
+    input_data = input_data %>% select(-treat_eff),
+    treatment_collection = treatment_collection
   )
 }
 
-run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_sigma, beta, sigma, t.pval, ar, max.block.size, ...) {
+# Runs a single simulation model with specified parameters
+# Returns a tibble with all relevant information for the simulation run
+# n_id, n_time, treatment_params, fe_sigma, beta, sigma: see create_input_data()
+# method ("fesis", "tis", "both"), t.pval: see getspanel::isatpanel()
+# max.block.size: see gets::isat()
+# ...: additional parameters passed to create_input_data() and isatpanel() (i.e. rel_treat_params, print.searchinfo, plot, etc.)
+# Any additional factors to be studied can be added to the function signature and return tibble as needed
+run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_sigma, beta, sigma, t.pval, max.block.size, ...) {
   # Create input data with imposed treatments and treatment information
   data_creation <- create_input_data(
     n_id = n_id,
@@ -168,147 +198,83 @@ run_single_model <- function(n_id, n_time, engine, method, treatment_params, fe_
   result <- isatpanel(
     data = input_data,
     formula = form,
-    effect = "individual",
     index = c("id", "time"),
+    effect = "individual",
     fesis = ifelse(method %in% c("fesis", "both"), TRUE, FALSE),
     tis = ifelse(method %in% c("tis", "both"), TRUE, FALSE),
     iis = FALSE,
-    print.searchinfo = FALSE,
     t.pval = t.pval,
-    ar = ar,
     max.block.size = max.block.size,
-    ...,
+    ...
   )
 
   # Return tibble with all relevant information for the simulation run
   tibble(
-    n_id,
-    n_time,
-    getspanel_object = list(result),
-    indicators = list(get_indicators(result)),
-    treatment_collection = list(treatment_collection),
+    sim_id = sim_id,
+    n_id = n_id,
+    n_time = n_time,
     treatment_params = list(treatment_params),
-    engine,
     indic_method = method,
     t.pval = t.pval,
-    ar = ar,
     max.block.size = max.block.size,
-    adaptive = NA
+    treatment_collection = list(treatment_collection),
+    getspanel_object = list(result)
   )
 }
 
-run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, engines = c("gets"), methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), ars = c(0), max.block.sizes = c(30), ...) {
-  n_simulations <- length(engines) * length(methods) * length(t.pvals) * length(ars) * length(max.block.sizes) * length(treatment_params_list) * length(n_times) * length(n_ids) * n_rep
-  print(paste("Total simulations to run:", n_simulations))
-  overall <- tibble()
-  for (engine in engines) {
-    for (method in methods) {
-      for (t.pval in t.pvals) {
-        for (ar in ars) {
-          for (max.block.size in max.block.sizes) {
-            for (treatment_params in treatment_params_list) {
-              for (n_time in n_times) {
-                for (n_id in n_ids) {
-                  for (rep in 1:n_rep) {
-                    print(paste("Running simulation number =", nrow(overall) + 1, "/", n_simulations, "with method =", method, ", t.pval =", t.pval, ", ar =", ar, ", max.block.size =", max.block.size, ", n_time =", n_time, ", n_id =", n_id, ", rep =", rep))
-                    result <- run_single_model(
-                      n_id = n_id,
-                      n_time = n_time,
-                      engine = engine,
-                      method = method,
-                      treatment_params = treatment_params,
-                      fe_sigma = fe_sigma,
-                      beta = beta,
-                      sigma = sigma,
-                      t.pval = t.pval,
-                      ar = ar,
-                      max.block.size = max.block.size,
-                      ...
-                    )
-                    # Add simulation_id and place it at the front
-                    result <- result %>%
-                      mutate(simulation_id = nrow(overall) + 1) %>%
-                      select(simulation_id, everything())
-
-                    overall <- bind_rows(overall, result)
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  overall
-}
-
-run_simulation_study_parallel <- function(n_ids, n_times, beta, sigma, fe_sigma, 
-                                        treatment_params_list, n_rep = 1, 
-                                        engines = c("gets"), methods = c("both"), 
-                                        t.pvals = c(0.05, 0.01, 0.001), 
-                                        ars = c(0), max.block.sizes = c(30),
-                                        n_cores = parallel::detectCores() - 1, ...) {
-
-  # Set up parallel processing
-  plan(multisession, workers = n_cores)
-  
+# Runs a full simulation study over combinations of specified parameters
+# n_rep: number of repetitions per parameter combination
+# All other parameters are lists of values to be combined in the study and are explained in run_single_model()
+# Returns a tibble with results for all simulation runs
+run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), max.block.sizes = c(30), ...) {
   # Create parameter combinations
   param_grid <- expand_grid(
-    engine = engines,
     method = methods,
     t.pval = t.pvals,
-    ar = ars,
     max.block.size = max.block.sizes,
     treatment_params = treatment_params_list,
     n_time = n_times,
     n_id = n_ids,
     rep = 1:n_rep
   ) %>%
-    mutate(simulation_id = row_number())
-  
+    mutate(sim_id = row_number())
+
   print(paste("Total simulations to run:", nrow(param_grid)))
   # p <- progressr::progressor(along = param_grid)
 
-  # Run simulations in parallel
-  overall <- param_grid %>%
-    mutate(result = future_pmap(
-      list(engine, method, t.pval, ar, max.block.size, 
-           treatment_params, n_time, n_id, rep, simulation_id),
-      function(engine, method, t.pval, ar, max.block.size, 
-               treatment_params, n_time, n_id, rep, sim_id) {
-        
-        devtools::load_all()  # Ensure all functions are loaded in each worker
-        # print(paste("Running simulation", sim_id))
-        
-        result <- run_single_model(
-          n_id = n_id,
-          n_time = n_time,
-          engine = engine,
-          method = method,
-          treatment_params = treatment_params,
-          fe_sigma = fe_sigma,
-          beta = beta,
-          sigma = sigma,
-          t.pval = t.pval,
-          ar = ar,
-          max.block.size = max.block.size,
-          ...
-        )
-        # p()
+  # Set up parallel processing
+  n_cores <- min(nrow(param_grid), parallel::detectCores() - 1)
+  plan(multisession, workers = n_cores)
 
-        result %>%
-          mutate(simulation_id = sim_id) %>%
-          select(simulation_id, everything())
-      },
-      .options = furrr_options(seed = TRUE)
-    )) %>%
-    select(result) %>%
-    unnest(result)
-  
+  # Run simulations in parallel
+  overall <- future_pmap(
+    param_grid,
+    function(method, t.pval, max.block.size, treatment_params, n_time, n_id, rep, sim_id) {
+
+      # print(paste("Running simulation", sim_id))
+      suppressMessages(devtools::load_all())
+
+      result <- run_single_model(
+        sim_id = sim_id,
+        n_id = n_id,
+        n_time = n_time,
+        method = method,
+        treatment_params = treatment_params,
+        fe_sigma = fe_sigma,
+        beta = beta,
+        sigma = sigma,
+        t.pval = t.pval,
+        max.block.size = max.block.size,
+        ...
+      )
+    },
+    .options = furrr_options(seed = TRUE),
+    .progress = TRUE
+  )
   # Clean up
   plan(sequential)
-  
+  overall <- bind_rows(overall)
+
   return(overall)
 }
 
