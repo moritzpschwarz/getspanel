@@ -7,6 +7,7 @@ library(data.table)
 library(future)
 library(furrr)
 library(progressr)
+library(patchwork)
 
 # devtools::load_all()
 base_time <- 1900
@@ -229,7 +230,7 @@ run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_
 # n_rep: number of repetitions per parameter combination
 # All other parameters are lists of values to be combined in the study and are explained in run_single_model()
 # Returns a tibble with results for all simulation runs
-run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), max.block.sizes = c(30), ...) {
+run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), max.block.sizes = c(30), n_cores = NULL, ...) {
   # Create parameter combinations
   param_grid <- expand_grid(
     method = methods,
@@ -246,7 +247,9 @@ run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatmen
   # p <- progressr::progressor(along = param_grid)
 
   # Set up parallel processing
-  n_cores <- min(nrow(param_grid), parallel::detectCores() - 1)
+  if (is.null(n_cores)) {
+    n_cores <- min(nrow(param_grid), parallel::detectCores() - 1)
+  }
   plan(multisession, workers = n_cores)
 
   # Run simulations in parallel
@@ -281,11 +284,8 @@ run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatmen
   return(overall)
 }
 
-  # Extract true and detected treatments from the overall tibble
+# Extract true and detected treatments from the overall tibble
 extract_treatments <- function(overall_tibble) {
-  true_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double(), coef = double())
-  detected_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double())
-
   true_treatments <- overall_tibble %>%
     select(sim_id, treatment_collection) %>%
     unnest(treatment_collection) %>%
@@ -305,6 +305,13 @@ extract_treatments <- function(overall_tibble) {
       )
     ) %>%
     select(sim_id, id, type, time)
+
+  if (nrow(true_treatments) == 0) {
+    true_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double(), coef = double())
+  }
+  if (nrow(detected_treatments) == 0) {
+    detected_treatments <- tibble(sim_id = integer(), id = character(), type = character(), time = double())
+  }
 
   list(
     true_treatments = true_treatments,
@@ -494,6 +501,11 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
 
     prec <- ifelse(det > 0, tp / det, NA_real_)
     rec <- ifelse(rel > 0, tp / rel, NA_real_)
+    f1 <- if (!is.na(prec) & !is.na(rec) & (prec + rec) > 0) {
+      2 * (prec * rec) / (prec + rec)
+    } else {
+      NA_real_
+    }
 
     metrics <- tibble::tibble(
       # Simulation parameters/factors
@@ -509,10 +521,10 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       # Metrics
       n_detected = det,
       gauge = ifelse(irrel > 0, fp / irrel, NA_real_),
-      potency = ifelse(rel  > 0, tp / rel, NA_real_ ),
+      potency = ifelse(rel  > 0, tp / rel, NA_real_),
       precision = prec,
       recall = rec,
-      f1 = ifelse(prec + rec > 0, 2 * (prec * rec) / (prec + rec), NA_real_),
+      f1 = f1,
       matches = list(matches)
     )
 
