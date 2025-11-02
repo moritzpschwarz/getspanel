@@ -61,8 +61,8 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
   # Adjust treatment parameters if relative specification is used
   if (rel_treat_params == TRUE) {
     treatment_params <- treatment_params %>%
-      mutate(id = max(ceiling(n_id * id), 1)) %>%
-      mutate(location = max(ceiling(n_time * location), 1)) %>%
+      mutate(id = pmax(ceiling(n_id * id), 1)) %>%
+      mutate(location = pmax(ceiling(n_time * location), 1)) %>%
       group_by(id) %>%
       mutate(magnitude = magnitude * means[id]) %>%
       ungroup()
@@ -162,7 +162,8 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
           "y" = "#4DAF4A"
         )
       ) +
-      labs(color = "Variable")
+      labs(color = "Variable") +
+      theme(text = element_text(size = 20))
     plot(p)
   }
 
@@ -516,6 +517,7 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       t.pval = t.pval,
       max.block.size = max.block.size,
       n_true = rel,
+      n_true_per_method = ifelse(indic_method == "both", rel / 2, rel),
       magnitude = mean(treatment_params$magnitude),
       tolerance = tolerance,
       # Metrics
@@ -620,9 +622,9 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
     p <- ggplot(factor_data, aes(x = factor_value_ordered, y = metric_value, color = metric, fill = metric))
 
     if (plot_type == "scatter") {
-      p <- p + geom_jitter(position = position_dodge(width = 0.75), alpha = 0.7)
+      p <- p + geom_jitter(position = position_dodge(width = 0.75))
     } else if (plot_type == "boxplot") {
-      p <- p + geom_boxplot(outlier.alpha = 0.3, position = position_dodge(width = 0.75), alpha = 0.5)
+      p <- p + geom_boxplot(position = position_dodge(width = 0.75), alpha = 0.5, outlier.alpha = 1.0)
     }
 
     p <- p +
@@ -641,6 +643,7 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
         theme(strip.text = element_blank())
     }
 
+    p <- p + theme(text = element_text(size = 20))
     factor_plots[[factor_name]] <- p
   }
 
@@ -656,177 +659,71 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
   p
 }
 
-# Helper function to create a plot for a single factor with proper ordering
-create_factor_plot <- function(factor_name, data, levels, plot_type, use_facets = FALSE) {
-  factor_data <- data %>% 
-    filter(factor == factor_name) %>%
-    mutate(factor_value_ordered = factor(factor_value, levels = levels))
+plot_compare_experiments <- function(experiments, metric, factors, labels, tolerance = 0, title, scales = "free") {
+  # Combine by_factor metrics from all experiments
+  combined <- dplyr::bind_rows(
+    lapply(names(experiments), function(name) {
+      experiments[[name]]$by_factor %>%
+        dplyr::mutate(scenario = name)
+    })
+  )
 
-  p <- ggplot(factor_data, aes(x = factor_value_ordered, y = metric_value, color = metric, fill = metric))
-
-  if (plot_type == "scatter") {
-    p <- p + geom_jitter(position = position_dodge(width = 0.75), alpha = 0.7)
-  } else if (plot_type == "boxplot") {
-    p <- p + geom_boxplot(outlier.alpha = 0.3, position = position_dodge(width = 0.75), alpha = 0.5)
-  }
-
-  p <- p + labs(
-    x = paste(factor_name),
-    y = "Metric Value",
-    color = "Metric",
-    fill = "Metric"
-  ) +
-  theme(legend.position = "none")
-
-  # Add metric faceting if requested (for separate_metrics = TRUE)
-  if (use_facets && length(unique(factor_data$metric)) > 1) {
-    p <- p + facet_wrap(~metric, ncol = 1, scales = "free_y")
-  }
-
-  return(p)
-}
-
-plot_compare_metrics <- function(analyses, study_names = NULL, metrics = c("avg_gauge", "avg_potency", "avg_f1"), 
-                                plot_type = "bar", facet_by = "tolerance", color_by = "indic_method", title = "Average Metric Comparison Across Studies") {
-  # Handle single analysis input
-  if (!is.list(analyses) || !is.null(names(analyses)) && all(c("per_simulation", "by_method") %in% names(analyses))) {
-    analyses <- list(Study1 = analyses)
-  }
-  
-  # Generate study names if not provided
-  if (is.null(study_names)) {
-    study_names <- if (!is.null(names(analyses))) {
-      names(analyses)
-    } else {
-      paste0("Study", seq_along(analyses))
-    }
-  }
-  
-  # Combine all by_method tibbles with study identifiers
-  combined_data <- purrr::map2_dfr(analyses, study_names, function(analysis, study_name) {
-    if (!is.null(analysis$by_method)) {
-      analysis$by_method %>%
-        mutate(study = study_name)
-    } else {
-      # If analyses is a list of by_method tibbles directly
-      analysis %>%
-        mutate(study = study_name)
-    }
-  })
-  
-  print(paste("Available metrics:", paste(names(combined_data), collapse = ", ")))
-  print(paste("Requested metrics:", paste(metrics, collapse = ", ")))
-  
-  # Check which metrics are available
-  available_metrics <- intersect(metrics, names(combined_data))
-  if (length(available_metrics) == 0) {
-    stop("None of the requested metrics are available in the data.")
-  }
-  
-  # Pivot data for plotting
-  plot_data <- combined_data %>%
+  combined <- combined %>%
+    filter(tolerance == !!tolerance) %>%
     pivot_longer(
-      cols = all_of(available_metrics),
+      cols = starts_with("avg_"),
       names_to = "metric",
-      values_to = "value"
+      values_to = "metric_value"
     ) %>%
-    # Clean up metric names for better display
-    mutate(
-      metric_clean = case_when(
-        metric == "avg_gauge" ~ "Gauge",
-        metric == "avg_potency" ~ "Potency", 
-        metric == "avg_precision" ~ "Precision",
-        metric == "avg_recall" ~ "Recall",
-        metric == "avg_f1" ~ "F1 Score",
-        TRUE ~ stringr::str_remove(metric, "avg_") %>% stringr::str_to_title()
-      ),
-      tolerance = as.factor(tolerance),
-      t.pval = as.factor(t.pval)
-    )
-  # Create base plot
-  p <- ggplot(plot_data, aes_string(x = color_by, y = "value"))
-  
-  if (plot_type == "bar") {
-    p <- p + geom_col(aes(fill = study), position = "dodge", alpha = 0.8)
-  } else if (plot_type == "point") {
-    p <- p + geom_point(aes(color = study, shape = study), size = 3, alpha = 0.8)
-    
-    # For lines, calculate mean across p_val groups to avoid connecting unrelated points
-    if (length(unique(plot_data$t.pval)) > 1) {
-      line_data <- plot_data %>%
-        group_by(study, indic_method, tolerance, metric, metric_clean) %>%
-        summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
-      
-      p <- p + geom_line(data = line_data, aes(color = study, group = study), alpha = 0.6)
-    } else {
-      p <- p + geom_line(aes(color = study, group = study), alpha = 0.6)
-    }
-  } else if (plot_type == "line") {
-    # For line plots, always use mean across p_val groups
-    if (length(unique(plot_data$t.pval)) > 1) {
-      line_data <- plot_data %>%
-        group_by(study, indic_method, tolerance, metric, metric_clean) %>%
-        summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
-      
-      p <- p + 
-        geom_line(data = line_data, aes(color = study, group = study), size = 1, alpha = 0.8) +
-        geom_point(data = line_data, aes(color = study), size = 2)
-      
-      # Also show individual p_val points with transparency
-      p <- p + geom_point(aes(color = study), alpha = 0.3, size = 1)
-    } else {
-      p <- p + 
-        geom_line(aes(color = study, group = study), size = 1, alpha = 0.8) +
-        geom_point(aes(color = study), size = 2)
-    }
-  }
-  
-  # Add faceting
-  if (facet_by == "tolerance") {
-    p <- p + facet_grid(metric_clean ~ tolerance, scales = "free_y", 
-                        labeller = labeller(tolerance = function(x) paste("Tolerance:", x)))
-  } else if (facet_by == "metric") {
-    p <- p + facet_wrap(~ metric_clean, scales = "free_y")
-  } else if (facet_by == "t.pval") {
-    p <- p + facet_grid(metric_clean ~ t.pval, scales = "free_y",
-                        labeller = labeller(t.pval = function(x) paste("p-value:", x)))
-  } else if (facet_by == "both") {
-    p <- p + facet_grid(metric_clean ~ tolerance + t.pval, scales = "free_y",
-                        labeller = labeller(tolerance = function(x) paste("Tol:", x),
-                                          t.pval = function(x) paste("p:", x)))
-  }
-  
-  # Styling
-  p <- p +
-    labs(
-      title = title,
-      x = stringr::str_to_title(gsub("_", " ", color_by)),
-      y = "Average Metric Value",
-      fill = "Study",
-      color = "Study",
-      shape = "Study"
-    ) +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      strip.text = element_text(size = 10),
-      legend.position = "bottom"
-    )
-  
-  # Add horizontal line at key values for reference
-  if ("avg_gauge" %in% available_metrics) {
-    # Add reference line at gauge = 0.05 (5% false positive rate)
-    p <- p + geom_hline(data = filter(plot_data, metric_clean == "Gauge"), 
-                        aes(yintercept = 0.05), linetype = "dashed", alpha = 0.5, color = "red")
-  }
-  
-  return(p)
-}
+    pivot_longer(
+      cols = all_of(factors),
+      names_to = "factor",
+      values_to = "factor_value"
+    ) %>%
+    filter(metric == paste0("avg_", !!metric))
 
-# Convenience function for quick comparison of two studies
-plot_compare_two_studies <- function(study1, study2, study1_name = "Study 1", study2_name = "Study 2", ...) {
-  studies <- list()
-  studies[[study1_name]] <- study1
-  studies[[study2_name]] <- study2
-  
-  plot_compare_metrics(studies, ...)
+  factor_plots <- list()
+  for (cur_fac in factors) {
+    cur_combined <- combined %>%
+      filter(factor == cur_fac) %>%
+      mutate(factor_value = factor(factor_value, levels = sort(unique(factor_value)))) %>%
+      filter(factor_value != "NA")
+
+    p <- ggplot(cur_combined, aes(x = factor_value, y = metric_value, color = indic_method, group = indic_method)) +
+      geom_point(na.rm = TRUE) +
+      geom_line(na.rm = TRUE) +
+      facet_wrap(
+        c("t.pval"),
+        scales = scales,
+        labeller = as_labeller(
+          c(
+            `0.05` = "t.pval = 0.05",
+            `0.01` = "t.pval = 0.01",
+            `0.001` = "t.pval = 0.001"
+          ),
+          multi_line = FALSE
+        ),
+        strip.position = "top",
+      ) +
+      theme(
+        strip.background = element_blank(),
+        text = element_text(size = 20),
+        legend.position = "none",
+      ) +
+      labs(
+        y = paste("Average", metric),
+        x = paste(labels[[cur_fac]])
+      )
+    factor_plots[[cur_fac]] <- p
+  }
+
+  wrap_plots(
+    factor_plots,
+    ncol = 1,
+    axis_titles = "collect",
+    axes = "collect_y"
+  ) +
+    plot_annotation(title = title) +
+    plot_layout(guides = "collect") &
+    theme(legend.position = "right")
 }
