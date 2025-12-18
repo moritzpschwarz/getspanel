@@ -1,0 +1,123 @@
+---
+title: "getspanel: Simulation Framework"
+output: 
+  rmarkdown::html_vignette
+    # code_folding: hide
+#output: prettydoc::html_pretty
+#  code_download: true
+
+vignette: >
+  %\VignetteIndexEntry{getspanel: Simulation Framework}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = NA,
+  echo = TRUE,
+  message = FALSE,
+  error = TRUE,
+  eval = TRUE,
+  out.width = "100%",
+  fig.width = 7,
+  fig.height = 5,
+  dev = "png",
+  dpi = 300
+)
+```
+The simulation framework was developed as part of an interdisciplinary research project by Nils König. It is built as a set of functions that allow users to create simulated panel data sets, impose artificial treatments, and evaluate the performance of `getspanel` to detect imposed treatments. The initial goal was to assess the performance of Trend Break detection in particular, but the framework is flexible enough to be used for other purposes as well.
+
+## Framework overview
+The simulation framework consists of the following components and functions:
+
+1. **Data Generation**: `create_input_data()` (using `impose_treatment()`)
+2. **Break Detection**: `run_single_model()` and `run_simulation_study()`
+3. **Matching**: `optimal_match_treatments()` (using `extract_treatments()` and `find_optimal_assignment()`)
+4. **Evaluation**: `compute_metrics()` and `metrics_summary()`
+5. **Visualization**: `plot_metrics()` and `plot_compare_experiments()`
+
+## Basic Usage
+The functions are currently tightly coupled:
+After setting all parameters, one entire experiment process can be executed by calling `run_simulation_study()`. The function automatically loops through all parameter configurations and performs data generation, treatment imposition, and break detection for each configuration. The resulting data frame contains one row per configuration with the parameters, as well as imposed and detected treatments and the resulting getspanel object. 
+
+```{r}
+devtools::load_all()
+set.seed(99726)
+# Simulation parameters (panel structure and data generation)
+n_ids <- c(3)
+n_times <- c(10)
+beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
+sigma <- 0.5
+fe_sigma <- 5
+# Treatment parameters (imposed treatments to be detected)
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~location, ~magnitude,
+    0.3, "trendbreak", 0.5, 2,
+    0.7, "step", 0.3, 2
+  )
+)
+# Benchmark parameters (getspanel parameters to be varied)
+n_rep <- 1
+methods <- c("both")
+t.pvals <- c(0.05, 0.01, 0.001)
+```
+```{r, warning=FALSE}
+results <- run_simulation_study(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep, methods, t.pvals, print.searchinfo = FALSE, plot = FALSE
+)
+results
+```
+
+Similarly, the full evaluation process can be executed by calling `compute_metrics()` on the results object. The resulting data frame contains two objects: `per_simulation`, which lists the relevant parameters and metrics for each configuration, and `by_factor`, which aggregates the metrics by selected factors. The timing tolerance window and factors can be specified depending of the goal of the experiment. 
+
+```{r}
+metrics <- metrics_summary(results)
+metrics
+```
+
+Finally, the results of all simulations in an experiment can be visualized using `plot_metrics()`.
+
+```{r}
+plot_metrics(metrics$per_simulation, metrics = c("gauge", "potency"), plot_type = "scatter")
+```
+
+When multiple experiments have been run (i.e. multiple calls to `run_simulation_study()` with different parameter configurations), the results can be compared using `plot_compare_experiments()`.
+
+## Detailed Usage
+The underlying functions can also be used separately to inspect each step of the simulation process in more detail. For example, the data generation results can be visualized directly:
+
+```{r}
+input_data <- create_input_data(n_id = 3, n_time = 10, treatment_params = tribble(~id, ~type, ~location, ~magnitude), fe_sigma = 5, beta = c(0.3, 0.7, -0.3, 0, 0), sigma = 0.5, plot = TRUE)
+```
+
+Similarly, the break detection can be run on a single data set and the results can be inspected:
+
+```{r}
+treatment_params <- tribble(
+  ~id, ~type, ~location, ~magnitude,
+  0.3, "trendbreak", 0.5, 2,
+  0.7, "step", 0.3, 2
+)
+single_run <- run_single_model(sim_id = 1, n_id = 3, n_time = 10, method = "both", treatment_params, fe_sigma = 5, beta = c(0.3, 0.7, -0.3, 0, 0), sigma = 0.5, t.pval = 0.05, max.block.size = 30, print.searchinfo = TRUE, plot = TRUE)
+single_run
+```
+
+The matching of imposed and detected treatments can also be inspected separately:
+
+```{r}
+extracted_treatments <- extract_treatments(single_run)
+extracted_treatments$true_treatments
+extracted_treatments$detected_treatments
+matched_treatments <- optimal_match_treatments(extracted_treatments$true_treatments, extracted_treatments$detected_treatments, tolerance = 2)
+matched_treatments
+```
+
+## Future Work Suggestions
+Ideas for improvements and extensions:
+- more modularization by decoupling functions (e.g., create one data set and use for multiple simulations instead of fixed coupling)
+- additional data generation processes (e.g., trends or seasonal components present in explanatory variables)
+- metric to assess accuracy of effect size estimation for correctly detected treatments
+- compare detected treatment effect size from getspanel with simple OLS model (unknown vs. known treatment timing)
+- metric to assess accuracy as proportion of observations that are labeled as treated vs. untreated over the entire panel (not just looking at treatment timing)
