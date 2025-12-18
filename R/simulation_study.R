@@ -566,6 +566,13 @@ metrics_summary <- function(overall_tibble, tolerances = c(0), allow_type_mismat
 }
 
 plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics = c("gauge", "potency", "f1"), factors = NULL, title = "Metrics per Simulation by Factor", separate_metrics = TRUE, ncol = NULL) {
+  # Define custom labels for methods
+  method_labels <- c(
+    "fesis" = "Step",
+    "tis" = "Trend", 
+    "both" = "Both"
+  )
+  
   # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, sim_id, num_breaks)
   if (is.null(factors)) {
     meta <- c("sim_id", "gauge", "potency", "precision", "recall", "f1", "n_detected", "matches")
@@ -582,6 +589,10 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
 
   analysis_long <- analysis_per_simulation %>%
     mutate(across(all_of(varying_factors), as.character)) %>%
+    # Apply custom labeling for indic_method if it's one of the varying factors
+    mutate(indic_method = ifelse("indic_method" %in% varying_factors, 
+                                 recode(indic_method, !!!method_labels), 
+                                 indic_method)) %>%
     pivot_longer(
       cols = all_of(metrics),
       names_to = "metric",
@@ -631,8 +642,8 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
       labs(
         x = paste(factor_name),
         y = "Metric Value",
-        color = "Metric",
-        fill = "Metric"
+        color = ifelse(factor_name == "indic_method", "Method", "Metric"),
+        fill = ifelse(factor_name == "indic_method", "Method", "Metric")
       ) +
       theme(legend.position = "none")
 
@@ -659,7 +670,14 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
   p
 }
 
-plot_compare_experiments <- function(experiments, metric, factors, labels, tolerance = 0, title, scales = "free") {
+plot_compare_experiments <- function(experiments, metric, factors, labels, tolerance = 0, title, scales = "free", tolerance_ribbon = NULL) {
+  # Define custom labels for methods
+  method_labels <- c(
+    "fesis" = "Step",
+    "tis" = "Trend", 
+    "both" = "Both"
+  )
+  
   # Combine by_factor metrics from all experiments
   combined <- dplyr::bind_rows(
     lapply(names(experiments), function(name) {
@@ -668,8 +686,9 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
     })
   )
 
-  combined <- combined %>%
-    filter(tolerance == !!tolerance) %>%
+  combined <- combined %>%  
+    # Apply custom labeling for indic_method
+    mutate(indic_method = recode(indic_method, !!!method_labels)) %>%
     pivot_longer(
       cols = starts_with("avg_"),
       names_to = "metric",
@@ -682,6 +701,22 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
     ) %>%
     filter(metric == paste0("avg_", !!metric))
 
+  # If tolerance_ribbon is provided, use it for ribbon bounds, otherwise filter to single tolerance
+  if (!is.null(tolerance_ribbon)) {
+    combined_for_ribbon <- combined %>%
+      filter(tolerance %in% tolerance_ribbon) %>%
+      group_by(indic_method, t.pval, factor, factor_value) %>%
+      summarise(
+        ymin = ifelse(all(is.na(metric_value)), NA_real_, min(metric_value, na.rm = TRUE)),
+        ymax = ifelse(all(is.na(metric_value)), NA_real_, max(metric_value, na.rm = TRUE)),
+        .groups = "drop"
+      )
+  }
+  
+  # Always filter main combined data to the specified tolerance
+  combined <- combined %>%
+    filter(tolerance == !!tolerance)
+
   factor_plots <- list()
   for (cur_fac in factors) {
     cur_combined <- combined %>%
@@ -689,7 +724,29 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
       mutate(factor_value = factor(factor_value, levels = sort(unique(factor_value)))) %>%
       filter(factor_value != "NA")
 
-    p <- ggplot(cur_combined, aes(x = factor_value, y = metric_value, color = indic_method, group = indic_method)) +
+    # Prepare ribbon data if tolerance_ribbon is provided
+    ribbon_data <- NULL
+    if (!is.null(tolerance_ribbon)) {
+      ribbon_data <- combined_for_ribbon %>%
+        filter(factor == cur_fac) %>%
+        mutate(factor_value = factor(factor_value, levels = sort(unique(factor_value)))) %>%
+        filter(factor_value != "NA")
+    }
+
+    p <- ggplot(cur_combined, aes(x = factor_value, y = metric_value, color = indic_method, group = indic_method))
+    
+    # Add ribbon if data is available
+    if (!is.null(ribbon_data)) {
+      p <- p + geom_ribbon(
+        data = ribbon_data,
+        aes(x = factor_value, ymin = ymin, ymax = ymax, fill = indic_method, group = indic_method),
+        alpha = 0.2,
+        color = NA,
+        inherit.aes = FALSE
+      )
+    }
+    
+    p <- p +
       geom_point(na.rm = TRUE) +
       geom_line(na.rm = TRUE) +
       facet_wrap(
@@ -712,18 +769,32 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
       ) +
       labs(
         y = paste("Average", metric),
-        x = paste(labels[[cur_fac]])
+        x = paste(labels[[cur_fac]]),
+        color = "Method",
+        fill = "Method"
       )
     factor_plots[[cur_fac]] <- p
   }
 
+  # Create subtitle based on whether ribbon is shown
+  subtitle_text <- if (!is.null(tolerance_ribbon)) {
+    paste0("Ribbons show timing tolerances ", 
+           paste(c(min(tolerance_ribbon), max(tolerance_ribbon)), collapse = "-"),
+           "; points show tolerance = ", tolerance)
+  } else {
+    paste0("Timing tolerance = ", tolerance)
+  }
+  
   wrap_plots(
     factor_plots,
     ncol = 1,
     axis_titles = "collect",
     axes = "collect_y"
   ) +
-    plot_annotation(title = title) +
+    plot_annotation(
+      title = title,
+      subtitle = subtitle_text
+    ) +
     plot_layout(guides = "collect") &
-    theme(legend.position = "right")
+    theme(legend.position = "right", text = element_text(size = 20))
 }

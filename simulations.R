@@ -391,7 +391,8 @@ plot_metrics(
 )
 plot_metrics(
   varying_block_size_metrics$per_simulation,
-  metrics = c("potency", "f1"),
+  metrics = c("potency"),
+  factors = c("n_id", "n_time", "indic_method", "t.pval", "max.block.size", "tolerance"),
   title = "Multiple breaks in DGP, varying block size",
   separate_metrics = TRUE
 )
