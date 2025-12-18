@@ -1,3 +1,5 @@
+# This script runs a series of experiments to evaluate the performance of trend breaks
+
 devtools::load_all()
 
 # No breaks in DGP -------------------------------------------------------------

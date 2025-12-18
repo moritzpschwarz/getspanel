@@ -1,4 +1,4 @@
-
+# This script was the initial playground to set up simulation studies for isatpanel
 # Not implemented yet
 # Impulses (but we have quite a few simulation studies already, see Jiao Pretis Schwarz)
 # Time FE (not really of interest)

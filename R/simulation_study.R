@@ -1,3 +1,4 @@
+# This scripts contains various functions to set up, run, and evaluate simulation experiments for assessing the performance of getspanel
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -162,8 +163,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
           "y" = "#4DAF4A"
         )
       ) +
-      labs(color = "Variable") +
-      theme(text = element_text(size = 20))
+      labs(color = "Variable")
     plot(p)
   }
 
@@ -654,7 +654,6 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
         theme(strip.text = element_blank())
     }
 
-    p <- p + theme(text = element_text(size = 20))
     factor_plots[[factor_name]] <- p
   }
 
@@ -764,7 +763,6 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
       ) +
       theme(
         strip.background = element_blank(),
-        text = element_text(size = 20),
         legend.position = "none",
       ) +
       labs(
@@ -796,5 +794,5 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
       subtitle = subtitle_text
     ) +
     plot_layout(guides = "collect") &
-    theme(legend.position = "right", text = element_text(size = 20))
+    theme(legend.position = "right")
 }
