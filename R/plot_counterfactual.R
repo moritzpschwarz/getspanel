@@ -7,8 +7,9 @@
 #' @param zero_line Plot a horizontal line at y = 0. Default is FALSE.
 #' @param regex_exclude_indicators A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.
 #' @param sign Character. If "pos", only effects of indicators with positive coefficients are shown; if "neg", only negative effects are shown; if NULL (default), all indicator effects are shown
+#' @param return_facets_as_list Logical. If TRUE, returns a list of ggplot2 plots, one for each country/ID. If FALSE (default), returns a single faceted plot.
 #'
-#' @return A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
+#' @return A list of ggplot2 plots (one for each country/ID) that shows the counterfactuals for each break. If return_facets_as_list = FALSE, returns a single ggplot2 plot with facets.
 #' @export
 #'
 #' @importFrom ggplot2 geom_ribbon guides geom_rect
@@ -43,7 +44,7 @@
 #' plot_counterfactual(result)
 #'}
 
-plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = FALSE, regex_exclude_indicators = NULL, sign = NULL) {
+plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NULL, zero_line = FALSE, regex_exclude_indicators = NULL, sign = NULL, return_facets_as_list = FALSE) {
 
   df <- x$estimateddata
   indicators <- x$isatpanel.result$aux$mX
@@ -121,6 +122,9 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
   effects$cf_upr[is.na(effects$cf_upr)] <- effects$fitted[is.na(effects$cf_upr)]
   effects$cf_lwr[is.na(effects$cf_lwr)] <- effects$fitted[is.na(effects$cf_lwr)]
 
+  # Merge fitted values with main df for plotting
+  df <- merge(df, data.frame(id = df$id, time = df$time, fitted = fitted), by = c("id", "time"))
+
   sub_title <- NULL
 
   # Handle centered scaling option
@@ -130,11 +134,8 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     centered_scaling <- TRUE
     facet.scales <- "free"  # Use free scaling but we'll add invisible points to control limits
     
-    # Find the panel with the maximum range to determine the standard range
-    panel_data <- merge(df, data.frame(id = df$id, time = df$time, fitted = fitted), by = c("id", "time"))
-    
     # Calculate range for each panel individually
-    panel_ranges <- by(panel_data, panel_data$id, function(panel_subset) {
+    panel_ranges <- by(df, df$id, function(panel_subset) {
       all_panel_values <- c(panel_subset$y, panel_subset$fitted, 
                            effects$cf[effects$id == panel_subset$id[1]], 
                            effects$cf_upr[effects$id == panel_subset$id[1]], 
@@ -147,8 +148,8 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     standard_range <- max(unlist(panel_ranges))
     
     # Calculate mean for each panel
-    panel_means <- aggregate(cbind(y = panel_data$y, fitted = panel_data$fitted), 
-                            by = list(id = panel_data$id), FUN = mean, na.rm = TRUE)
+    panel_means <- aggregate(cbind(y = df$y, fitted = df$fitted), 
+                            by = list(id = df$id), FUN = mean, na.rm = TRUE)
     panel_means$mean_all <- (panel_means$y + panel_means$fitted) / 2
     
     # Create invisible points to control y-axis limits for each panel
@@ -174,103 +175,167 @@ plot_counterfactual <- function(x, plus_t = 5, facet.scales = "free", title = NU
     }
   }
 
+  build_plot <- function(df_plot, limit_points_plot = NULL, effects_plot = effects, df_ident_fesis_plot = df_ident_fesis) {
+    g <- ggplot(df_plot, aes(
+      x = .data$time,
+      y = fitted,
+      group = .data$id
+    ))
 
-  ggplot(df, aes(
-    x = .data$time,
-    y = fitted,
-    group = .data$id
-  )) -> g
+    if (zero_line) {
+      g <- g + geom_hline(yintercept = 0)
+    }
 
+    if (centered_scaling && !is.null(limit_points_plot)) {
+      g <- g + geom_point(
+        data = limit_points_plot,
+        aes(x = .data$time, y = .data$y_limit),
+        alpha = 0, size = 0
+      )
+    }
 
+    p <- g +
+      geom_line(
+        data = df_plot,
+        inherit.aes = FALSE,
+        aes(x = .data$time, y = .data$y, color = "black"),
+        linewidth = 0.5
+      ) +
+      geom_line(
+        data = df_plot,
+        inherit.aes = FALSE,
+        aes(x = .data$time, y = fitted, color = "blue"),
+        linewidth = 0.5
+      ) +
+      geom_rect(
+        data = effects_plot,
+        inherit.aes = FALSE,
+        aes(
+          xmin = .data$start_rect,
+          xmax = .data$end_rect,
+          ymin = -Inf,
+          ymax = Inf,
+          group = .data$name
+        ),
+        fill = "grey", alpha = 0.1, na.rm = TRUE
+      ) +
+      geom_vline(
+        data = df_ident_fesis_plot,
+        inherit.aes = FALSE,
+        aes(xintercept = .data$time, color = "red")
+      ) +
+      geom_ribbon(
+        data = effects_plot,
+        inherit.aes = FALSE,
+        aes(
+          x = .data$time,
+          ymin = .data$cf_lwr,
+          ymax = .data$cf_upr,
+          fill = "red",
+          group = .data$name
+        ),
+        alpha = 0.5
+      ) +
+      geom_line(
+        data = effects_plot,
+        inherit.aes = FALSE,
+        aes(x = .data$time, y = .data$cf, color = "red", group = .data$name)
+      ) +
+      scale_color_identity(
+        name = NULL,
+        breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
+        labels = c("y","Fitted","IIS","SIS","FESIS","CFESIS", "CSIS"),
+        guide = "legend"
+      ) +
+      guides(fill = "none") +
+      theme(
+        strip.background = element_blank(),
+        legend.key = element_rect(fill = NA),
+        panel.border = element_rect(colour = "grey", fill = NA),
+        panel.background = element_blank()
+      ) +
+      labs(title = title, subtitle = sub_title, y = NULL, x = NULL)
 
-  if(zero_line){g = g + geom_hline(aes(yintercept = 0))}
-
-  # Add invisible points to control y-axis limits for centered scaling
-  if(centered_scaling) {
-    g <- g + ggplot2::geom_point(data = limit_points, aes(x = .data$time, y = .data$y_limit), alpha = 0, size = 0)
+    return(p)
   }
 
-  g +
-    geom_line(aes(y = .data$y, color = "black"), linewidth = 0.7) +
+  if (!return_facets_as_list) {
 
-    geom_rect(data = effects, aes(xmin = .data$start_rect, xmax = .data$end_rect, ymin = -Inf, ymax = Inf, group = .data$name),fill = "grey",alpha = 0.1, na.rm = TRUE) +
+    plotoutput <- build_plot(df, limit_points) +
+      facet_wrap(~ id, scales = facet.scales)
 
-    geom_line(aes(color = "blue"),linetype = 1, linewidth = 0.5) +
+  }
 
-    # fesis
-    geom_vline(data = df_ident_fesis, aes(xintercept = .data$time,color="red")) +
+  if (return_facets_as_list) {
+    library(dplyr)
 
-    geom_ribbon(data = effects, aes(ymin = .data$cf_lwr, ymax = .data$cf_upr, fill = "red", group = .data$name), alpha = 0.5, na.rm = FALSE) +
-
-    geom_line(data = effects, aes(y = .data$cf, color = "red", group = .data$name), na.rm = TRUE) +
-
-    # Faceting
-    facet_wrap("id", scales = facet.scales) +
-
-    scale_color_identity(name = NULL,
-                         breaks = c("black", "blue", "grey", "purple", "red","darkgreen", "orange"),
-                         labels = c("y","Fitted","IIS","SIS","FESIS","CFESIS", "CSIS"),
-                         guide = "legend") +
-
-    scale_linetype(name = "Variable") +
-    guides(fill = "none") +
-
-    theme(
-      strip.background = element_blank(),
-      legend.key = element_rect(fill = NA),
-      panel.border = element_rect(colour = "grey",fill = NA),
-      panel.background = element_blank()#,
-    ) +
-
-    labs(title = title, subtitle = sub_title, y = NULL, x = NULL) -> plotoutput
-
-  # Apply consistent y-axis breaks for centered scaling
-  if(centered_scaling) {
-    # Force evaluation of step_size to capture it in the closure
-    step_size <- force(step_size)
-    plotoutput <- plotoutput + 
-      ggplot2::scale_y_continuous(breaks = function(limits) {
-        # Ensure step_size is positive
-        step_size <- abs(step_size)
+    plotoutput <- df %>%
+      split(.$id) %>%
+      lapply(function(d) {
+        current_id <- unique(d$id)
         
-        # Calculate the range of the limits
-        range_size <- diff(limits)
+        lp <- if (centered_scaling) {
+          limit_points[limit_points$id == current_id, , drop = FALSE]
+        } else NULL
         
-        # Adjust step_size if it would result in too few breaks
-        # We want at least 3-5 breaks per panel
-        if(range_size / step_size < 3) {
-          # Find a nice step size that gives us about 4-5 breaks
-          # Use a selection of "nice" numbers
-          nice_steps <- c(0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100)
-          target_step <- range_size / 4
-          
-          # Find the closest nice step size
-          step_size <- nice_steps[which.min(abs(nice_steps - target_step))]
-        }
-        
-        # Calculate the range of breaks
-        min_break <- ceiling(limits[1]/step_size) * step_size
-        max_break <- floor(limits[2]/step_size) * step_size
-        
-        # Generate sequence - only if max_break >= min_break
-        if(max_break >= min_break) {
-          breaks <- seq(from = min_break, to = max_break, by = step_size)
-          
-          # Ensure we have at least 3 breaks by expanding the range if needed
-          if(length(breaks) < 3) {
-            # Add breaks outside the current range
-            breaks <- c(min_break - step_size, breaks, max_break + step_size)
-          }
-          
-          # Filter breaks to only include those within reasonable bounds
-          breaks[breaks >= limits[1] - step_size & breaks <= limits[2] + step_size]
-        } else {
-          # Fallback to default breaks if the range is too small
-          pretty(limits, n = 5)
-        }
+        # Filter effects and df_ident_fesis for current ID
+        effects_filtered <- effects[effects$id == current_id, , drop = FALSE]
+        df_ident_fesis_filtered <- df_ident_fesis[df_ident_fesis$id == current_id, , drop = FALSE]
+
+        build_plot(d, lp, effects_filtered, df_ident_fesis_filtered)
       })
   }
 
-  return(plotoutput)
+  centered_scale_layer <- ggplot2::scale_y_continuous(
+    breaks = function(limits) {
+      # Ensure step_size is positive
+      step_size <- abs(step_size)
+      
+      # Calculate the range of the limits
+      range_size <- diff(limits)
+      
+      # Adjust step_size if it would result in too few breaks
+      # We want at least 3-5 breaks per panel
+      if(range_size / step_size < 3) {
+        # Find a nice step size that gives us about 4-5 breaks
+        # Use a selection of "nice" numbers
+        nice_steps <- c(0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100)
+        target_step <- range_size / 4
+        
+        # Find the closest nice step size
+        step_size <- nice_steps[which.min(abs(nice_steps - target_step))]
+      }
+      
+      # Calculate the range of breaks
+      min_break <- ceiling(limits[1]/step_size) * step_size
+      max_break <- floor(limits[2]/step_size) * step_size
+      
+      # Generate sequence - only if max_break >= min_break
+      if(max_break >= min_break) {
+        breaks <- seq(from = min_break, to = max_break, by = step_size)
+        
+        # Ensure we have at least 3 breaks by expanding the range if needed
+        if(length(breaks) < 3) {
+          # Add breaks outside the current range
+          breaks <- c(min_break - step_size, breaks, max_break + step_size)
+        }
+        
+        # Filter breaks to only include those within reasonable bounds
+        breaks[breaks >= limits[1] - step_size & breaks <= limits[2] + step_size]
+      } else {
+        # Fallback to default breaks if the range is too small
+        pretty(limits, n = 5)
+      }
+    }
+  )
 
+  if (!return_facets_as_list && centered_scaling) {
+    plotoutput <- plotoutput + centered_scale_layer
+  }
+
+  if (return_facets_as_list && centered_scaling) {
+    plotoutput <- lapply(plotoutput, `+`, centered_scale_layer)
+  }
+
+  return(plotoutput)
 }

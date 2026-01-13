@@ -11,7 +11,8 @@ plot_counterfactual(
   title = NULL,
   zero_line = FALSE,
   regex_exclude_indicators = NULL,
-  sign = NULL
+  sign = NULL,
+  return_facets_as_list = FALSE
 )
 }
 \arguments{
@@ -28,9 +29,11 @@ plot_counterfactual(
 \item{regex_exclude_indicators}{A regex character vector to exclude the inclusion of certain indicators in the plot. Default = NULL. Use with care, experimental.}
 
 \item{sign}{Character. If "pos", only effects of indicators with positive coefficients are shown; if "neg", only negative effects are shown; if NULL (default), all indicator effects are shown}
+
+\item{return_facets_as_list}{Logical. If TRUE, returns a list of ggplot2 plots, one for each country/ID. If FALSE (default), returns a single faceted plot.}
 }
 \value{
-A ggplot2 plot that plots an 'isatpanel' object and shows the counterfactuals for each break.
+A list of ggplot2 plots (one for each country/ID) that shows the counterfactuals for each break. If return_facets_as_list = FALSE, returns a single ggplot2 plot with facets.
 }
 \description{
 Plot the Counterfactual Path
