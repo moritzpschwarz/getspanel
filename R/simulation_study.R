@@ -139,20 +139,20 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
       geom_line(
         data = tmp %>% filter(plot_group == "data"),
         aes(x = time, y = value, group = name, color = plot_group),
-        size = 0.7, alpha = 0.7
+        linewidth = 0.7, alpha = 0.7
       ) +
       # Dashed lines for unit_fe and treatment
       # na.rm = TRUE for units without treatment
       geom_line(
         data = tmp %>% filter(plot_group %in% c("unit_fe", "treat_eff")),
         aes(x = time, y = value, color = plot_group),
-        size = 0.8, na.rm = TRUE, linetype = "dashed"
+        linewidth = 0.8, na.rm = TRUE, linetype = "dashed"
       ) +
       # Solid line for y
       geom_line(
         data = tmp %>% filter(plot_group == "y"),
         aes(x = time, y = value, color = plot_group),
-        size = 1
+        linewidth = 1
       ) +
       facet_wrap(~id) +
       scale_color_manual(
@@ -231,7 +231,21 @@ run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_
 # n_rep: number of repetitions per parameter combination
 # All other parameters are lists of values to be combined in the study and are explained in run_single_model()
 # Returns a tibble with results for all simulation runs
-run_simulation_study <- function(n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep = 1, methods = c("both"), t.pvals = c(0.05, 0.01, 0.001), max.block.sizes = c(30), n_cores = NULL, ...) {
+run_simulation_study <- function(
+    n_ids,
+    n_times,
+    beta,
+    sigma,
+    fe_sigma,
+    treatment_params_list,
+    n_rep = 1,
+    methods = c("both"),
+    t.pvals = c(0.05, 0.01, 0.001),
+    max.block.sizes = c(30),
+    n_cores = NULL,
+    ...
+) {
+
   # Create parameter combinations
   param_grid <- expand_grid(
     method = methods,
@@ -345,7 +359,7 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
       dplyr::filter(id == !!id)
     detected_subset <- detected_treatments %>%
       dplyr::filter(id == !!id)
-    
+
     if (nrow(true_subset) == 0 || nrow(detected_subset) == 0) next
 
     # Create cost matrix of all (true, detected) pairs for this id
@@ -402,7 +416,7 @@ optimal_match_treatments <- function(true_treatments = NULL, detected_treatments
 # Prioritizes: 1) Maximum number of matches, 2) Minimum total cost
 find_optimal_assignment <- function(cost_matrix) {
   # Get valid matches only
-  valid_matches <- cost_matrix %>% 
+  valid_matches <- cost_matrix %>%
     filter(is.finite(cost))
 
   if (nrow(valid_matches) == 0) {
@@ -424,7 +438,7 @@ find_optimal_assignment <- function(cost_matrix) {
     if (nrow(selected_matches) == 0) next
 
     # Check if this is a valid assignment (no duplicate true or detected treatments)
-    if (any(duplicated(selected_matches$true_idx)) || 
+    if (any(duplicated(selected_matches$true_idx)) ||
         any(duplicated(selected_matches$detected_idx))) {
       next
     }
@@ -435,7 +449,7 @@ find_optimal_assignment <- function(cost_matrix) {
 
     # Update best solution if this is better
     # Priority: 1) More matches, 2) Lower cost if same number of matches
-    if (num_matches > best_num_matches || 
+    if (num_matches > best_num_matches ||
         (num_matches == best_num_matches && total_cost < best_cost)) {
       best_num_matches <- num_matches
       best_cost <- total_cost
@@ -569,10 +583,10 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
   # Define custom labels for methods
   method_labels <- c(
     "fesis" = "Step",
-    "tis" = "Trend", 
+    "tis" = "Trend",
     "both" = "Both"
   )
-  
+
   # Identify varying factors (exclude indicators, treatment_collection, getspanel_object, sim_id, num_breaks)
   if (is.null(factors)) {
     meta <- c("sim_id", "gauge", "potency", "precision", "recall", "f1", "n_detected", "matches")
@@ -590,8 +604,8 @@ plot_metrics <- function(analysis_per_simulation, plot_type = "boxplot", metrics
   analysis_long <- analysis_per_simulation %>%
     mutate(across(all_of(varying_factors), as.character)) %>%
     # Apply custom labeling for indic_method if it's one of the varying factors
-    mutate(indic_method = ifelse("indic_method" %in% varying_factors, 
-                                 recode(indic_method, !!!method_labels), 
+    mutate(indic_method = ifelse("indic_method" %in% varying_factors,
+                                 recode(indic_method, !!!method_labels),
                                  indic_method)) %>%
     pivot_longer(
       cols = all_of(metrics),
@@ -673,10 +687,10 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
   # Define custom labels for methods
   method_labels <- c(
     "fesis" = "Step",
-    "tis" = "Trend", 
+    "tis" = "Trend",
     "both" = "Both"
   )
-  
+
   # Combine by_factor metrics from all experiments
   combined <- dplyr::bind_rows(
     lapply(names(experiments), function(name) {
@@ -685,7 +699,7 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
     })
   )
 
-  combined <- combined %>%  
+  combined <- combined %>%
     # Apply custom labeling for indic_method
     mutate(indic_method = recode(indic_method, !!!method_labels)) %>%
     pivot_longer(
@@ -711,7 +725,7 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
         .groups = "drop"
       )
   }
-  
+
   # Always filter main combined data to the specified tolerance
   combined <- combined %>%
     filter(tolerance == !!tolerance)
@@ -733,7 +747,7 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
     }
 
     p <- ggplot(cur_combined, aes(x = factor_value, y = metric_value, color = indic_method, group = indic_method))
-    
+
     # Add ribbon if data is available
     if (!is.null(ribbon_data)) {
       p <- p + geom_ribbon(
@@ -744,7 +758,7 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
         inherit.aes = FALSE
       )
     }
-    
+
     p <- p +
       geom_point(na.rm = TRUE) +
       geom_line(na.rm = TRUE) +
@@ -776,13 +790,13 @@ plot_compare_experiments <- function(experiments, metric, factors, labels, toler
 
   # Create subtitle based on whether ribbon is shown
   subtitle_text <- if (!is.null(tolerance_ribbon)) {
-    paste0("Ribbons show timing tolerances ", 
+    paste0("Ribbons show timing tolerances ",
            paste(c(min(tolerance_ribbon), max(tolerance_ribbon)), collapse = "-"),
            "; points show tolerance = ", tolerance)
   } else {
     paste0("Timing tolerance = ", tolerance)
   }
-  
+
   wrap_plots(
     factor_plots,
     ncol = 1,

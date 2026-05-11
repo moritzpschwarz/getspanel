@@ -38,7 +38,9 @@ The simulation framework consists of the following components and functions:
 5. **Visualization**: `plot_metrics()` and `plot_compare_experiments()`
 
 ## Basic Usage
+
 The functions are currently tightly coupled:
+
 After setting all parameters, one entire experiment process can be executed by calling `run_simulation_study()`. The function automatically loops through all parameter configurations and performs data generation, treatment imposition, and break detection for each configuration. The resulting data frame contains one row per configuration with the parameters, as well as imposed and detected treatments and the resulting getspanel object. 
 
 ```{r}
@@ -63,6 +65,7 @@ n_rep <- 1
 methods <- c("both")
 t.pvals <- c(0.05, 0.01, 0.001)
 ```
+
 ```{r, warning=FALSE}
 results <- run_simulation_study(
   n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep, methods, t.pvals, print.searchinfo = FALSE, plot = FALSE
@@ -89,7 +92,15 @@ When multiple experiments have been run (i.e. multiple calls to `run_simulation_
 The underlying functions can also be used separately to inspect each step of the simulation process in more detail. For example, the data generation results can be visualized directly:
 
 ```{r}
-input_data <- create_input_data(n_id = 3, n_time = 10, treatment_params = tribble(~id, ~type, ~location, ~magnitude), fe_sigma = 5, beta = c(0.3, 0.7, -0.3, 0, 0), sigma = 0.5, plot = TRUE)
+input_data <- create_input_data(
+  n_id = 3,
+  n_time = 10,
+  treatment_params = tribble( ~ id, ~ type, ~ location, ~ magnitude),
+  fe_sigma = 5,
+  beta = c(0.3, 0.7, -0.3, 0, 0),
+  sigma = 0.5,
+  plot = TRUE
+)
 ```
 
 Similarly, the break detection can be run on a single data set and the results can be inspected:
@@ -100,7 +111,20 @@ treatment_params <- tribble(
   0.3, "trendbreak", 0.5, 2,
   0.7, "step", 0.3, 2
 )
-single_run <- run_single_model(sim_id = 1, n_id = 3, n_time = 10, method = "both", treatment_params, fe_sigma = 5, beta = c(0.3, 0.7, -0.3, 0, 0), sigma = 0.5, t.pval = 0.05, max.block.size = 30, print.searchinfo = TRUE, plot = TRUE)
+single_run <- run_single_model(
+  sim_id = 1,
+  n_id = 3,
+  n_time = 10,
+  method = "both",
+  treatment_params,
+  fe_sigma = 5,
+  beta = c(0.3, 0.7, -0.3, 0, 0),
+  sigma = 0.5,
+  t.pval = 0.05,
+  max.block.size = 30,
+  print.searchinfo = TRUE,
+  plot = TRUE
+)
 single_run
 ```
 
@@ -114,8 +138,70 @@ matched_treatments <- optimal_match_treatments(extracted_treatments$true_treatme
 matched_treatments
 ```
 
+## More substantial run
+
+
+```{r}
+set.seed(99726)
+# Simulation parameters (panel structure and data generation)
+n_ids <- c(2,6)
+n_times <- c(20,30)
+beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
+sigma <- 0.5
+fe_sigma <- 5
+# Treatment parameters (imposed treatments to be detected)
+treatment_params_list <- list(
+  tribble(
+    ~id, ~type, ~location, ~magnitude,
+    0.3, "trendbreak", 0.5, 2,
+    0.7, "step", 0.3, 4 # ,
+    #0.45, "impulse", -0.3, 2.5
+  )
+)
+# Benchmark parameters (getspanel parameters to be varied)
+n_rep <- 5
+methods <- c("both")
+t.pvals <- c(0.05, 0.01, 0.001)
+
+# not yet in there
+# ar
+# impulses
+# max.block.size
+# more treatments
+# check TIS location and treatment table again
+
+
+```
+
+```{r, warning=FALSE}
+results <- run_simulation_study(
+  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep, methods, t.pvals, print.searchinfo = FALSE, plot = TRUE
+)
+results
+
+
+results %>% 
+  slice(10) %>% 
+  pull(getspanel_object) %>% 
+  first %>% 
+  plot
+
+```
+
+```{r}
+metrics <- metrics_summary(results)
+metrics
+```
+
+```{r}
+plot_metrics(metrics$per_simulation, metrics = c("gauge", "potency"), plot_type = "scatter")
+```
+```
+
+
 ## Future Work Suggestions
 Ideas for improvements and extensions:
+
 - more modularization by decoupling functions (e.g., create one data set and use for multiple simulations instead of fixed coupling)
 - additional data generation processes (e.g., trends or seasonal components present in explanatory variables)
 - metric to assess accuracy of effect size estimation for correctly detected treatments
