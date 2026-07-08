@@ -1,14 +1,14 @@
 # This scripts contains various functions to set up, run, and evaluate simulation experiments for assessing the performance of getspanel
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-library(purrr)
-library(gets)
-library(data.table)
-library(future)
-library(furrr)
-library(progressr)
-library(patchwork)
+library(dplyr, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(tidyr, quietly = TRUE)
+library(purrr, quietly = TRUE)
+library(gets, quietly = TRUE)
+library(data.table, quietly = TRUE)
+library(future, quietly = TRUE)
+library(furrr, quietly = TRUE)
+library(progressr, quietly = TRUE)
+library(patchwork, quietly = TRUE)
 
 # devtools::load_all()
 base_time <- 1900
@@ -18,7 +18,8 @@ base_time <- 1900
 # For "step", magnitude is applied as a constant shift
 # For "trend" and "trendbreaks", magnitude is scaled to the length of the trend
 impose_treatment <- function(type, n_time, location, magnitude) {
-  if (!(type %in% c("trend", "trendbreak", "step"))) {
+
+  if (!(type %in% c("trend", "trendbreak", "step", "impulse"))) {
     stop("treatment type not recognized")
   }
 
@@ -36,7 +37,12 @@ impose_treatment <- function(type, n_time, location, magnitude) {
     # "Step" sets a constant step-shift from abs_location
     treat_dummies[location:n_time] <- 1
     coef <- magnitude
+  } else if (type == "impulse"){
+    # "Impulse" sets a one-time shift at abs_location
+    treat_dummies[location] <- 1
+    coef <- magnitude
   }
+
   treat_eff <- treat_dummies * coef
 
   list(treat_eff = treat_eff, coef = coef)
@@ -51,8 +57,9 @@ impose_treatment <- function(type, n_time, location, magnitude) {
 # rel_treat_params: if TRUE, treatment parameters are interpreted relative to panel setting, i.e., id and location (0-1) are scaled to n_id and n_time, and magnitude is scaled by unit fixed effect. Otherwise, absolute values are used to impose treatments as specified. Default is TRUE for flexibility in simulation design.
 # plot: if TRUE, a plot is generated showing the data, unit fixed effects, treatment effects, and outcome variable for each unit
 # Returns a list with input_data (data.frame with columns id, time, x variables, y) and treatment_collection (tibble with imposed treatments: id, type, time, coef)
-create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, rel_treat_params = TRUE, plot = FALSE, ...) {
+create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, sigma, rel_treat_params = TRUE, plot = FALSE, x_sigma = 1, ...) {
   # Initialize unit fixed effects with fe_sigma and return vectors
+
   means <- rnorm(n_id, sd = fe_sigma)
   input_data <- data.frame()
   treatment_collection <- tibble(
@@ -61,28 +68,40 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
 
   # Adjust treatment parameters if relative specification is used
   if (rel_treat_params == TRUE) {
-    treatment_params <- treatment_params %>%
-      mutate(id = pmax(ceiling(n_id * id), 1)) %>%
-      mutate(location = pmax(ceiling(n_time * location), 1)) %>%
-      group_by(id) %>%
-      mutate(magnitude = magnitude * means[id]) %>%
-      ungroup()
+
+    if(is.character(treatment_params$id)){
+      treatment_params <- treatment_params %>%
+        mutate(id = id) %>%
+        mutate(location = pmax(ceiling(n_time * location), 1)) %>%
+        group_by(id) %>%
+        mutate(magnitude = magnitude * sigma) %>%
+        ungroup()
+    } else {
+      treatment_params <- treatment_params %>%
+        mutate(id = pmax(ceiling(n_id * id), 1)) %>%
+        mutate(location = pmax(ceiling(n_time * location), 1)) %>%
+        group_by(id) %>%
+        mutate(magnitude = magnitude * sigma) %>%
+        ungroup()
+    }
   }
 
   # Generate data and impose treatments for each unit
-  for (id in 1:n_id) {
+  for (id in LETTERS[1:n_id]) {
     # Create random input data (x)
-    x <- matrix(rnorm(n_time * length(beta)), ncol = length(beta))
+    x <- matrix(rnorm(n_time * length(beta), sd = x_sigma), ncol = length(beta))
     # Compute outcome variable (y) with unit fixed effect and error term
-    fe <- means[id]
+    fe <- means[which(id == LETTERS[1:n_id])]
     eps <- rnorm(n_time, mean = 0, sd = sigma)
     y <- x %*% beta + fe + eps
+    y_error <- fe + eps
 
     data <- data.frame(
-      id = LETTERS[id],
+      id = id,
       time = (1:n_time) + base_time,
       x = x,
-      y = y
+      y = y,
+      y_error = y_error
     )
 
     # Impose all treatments specified for this unit to outcome variable and collect absolute values for each treatment
@@ -102,12 +121,13 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
 
         # Add treatment effect to outcome variable ond plotting column
         data$y <- data$y + treatment$treat_eff
+        data$y_error <- data$y_error + treatment$treat_eff
         data$treat_eff <- data$treat_eff + treatment$treat_eff
 
         # Store treatment information with absolute values (i.e. id and time scaled to panel dimensions and coefficient scaled by unit fixed effect and panel length for trends)
         # This is later used to match detected treatments to true treatments
         treat_entry <- tibble(
-          id = LETTERS[id],
+          id = id,
           type = params$type[i],
           time = params$location[i],
           coef = treatment$coef
@@ -154,13 +174,22 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
         aes(x = time, y = value, color = plot_group),
         linewidth = 1
       ) +
+
+      # Solid line for y_error
+      geom_line(
+        data = tmp %>% filter(plot_group == "y_error"),
+        aes(x = time, y = value, color = plot_group),
+        linewidth = 1
+      ) +
+
       facet_wrap(~id) +
       scale_color_manual(
         values = c(
           "data" = "gray60",
           "unit_fe" = "#E41A1C",
           "treat_eff" = "#377EB8",
-          "y" = "#4DAF4A"
+          "y" = "#4DAF4A",
+          "y_error" = "#984EA3"
         )
       ) +
       labs(color = "Variable")
@@ -183,6 +212,7 @@ create_input_data <- function(n_id, n_time, treatment_params, fe_sigma, beta, si
 # Any additional factors to be studied can be added to the function signature and return tibble as needed
 run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_sigma, beta, sigma, t.pval, max.block.size, ...) {
   # Create input data with imposed treatments and treatment information
+
   data_creation <- create_input_data(
     n_id = n_id,
     n_time = n_time,
@@ -199,14 +229,19 @@ run_single_model <- function(sim_id, n_id, n_time, method, treatment_params, fe_
   variables <- paste0(input_data %>% select(-c(id, time, y)) %>% names,
                       collapse = " + ")
   form <- as.formula(paste0("y ~ ", variables))
+
+  iis <- grepl("iis|all", method, ignore.case = TRUE)
+  fesis <- grepl("fesis|all|both", method, ignore.case = TRUE)
+  tis <- grepl("tis|all|both", method, ignore.case = TRUE)
+
   result <- isatpanel(
     data = input_data,
     formula = form,
     index = c("id", "time"),
     effect = "individual",
-    fesis = ifelse(method %in% c("fesis", "both"), TRUE, FALSE),
-    tis = ifelse(method %in% c("tis", "both"), TRUE, FALSE),
-    iis = FALSE,
+    fesis = fesis,
+    tis = tis,
+    iis = iis,
     t.pval = t.pval,
     max.block.size = max.block.size,
     ...
@@ -243,6 +278,7 @@ run_simulation_study <- function(
     t.pvals = c(0.05, 0.01, 0.001),
     max.block.sizes = c(30),
     n_cores = NULL,
+    parallel = TRUE,
     ...
 ) {
 
@@ -254,47 +290,83 @@ run_simulation_study <- function(
     treatment_params = treatment_params_list,
     n_time = n_times,
     n_id = n_ids,
-    rep = 1:n_rep
+    rep = 1:n_rep,
+    sigma = sigma,
   ) %>%
     mutate(sim_id = row_number())
 
   print(paste("Total simulations to run:", nrow(param_grid)))
   # p <- progressr::progressor(along = param_grid)
 
-  # Set up parallel processing
-  if (is.null(n_cores)) {
-    n_cores <- min(nrow(param_grid), parallel::detectCores() - 1)
-  }
-  plan(multisession, workers = n_cores)
+  if(parallel) {
+    # Set up parallel processing
+    if (is.null(n_cores)) {
+      n_cores <- min(nrow(param_grid), parallel::detectCores() - 1)
+    }
 
-  # Run simulations in parallel
-  overall <- future_pmap(
-    param_grid,
-    function(method, t.pval, max.block.size, treatment_params, n_time, n_id, rep, sim_id) {
+    print(paste("Running simulations in parallel with", n_cores, "cores..."))
 
-      # print(paste("Running simulation", sim_id))
-      suppressMessages(devtools::load_all())
+    plan(multisession, workers = n_cores)
 
-      result <- run_single_model(
-        sim_id = sim_id,
-        n_id = n_id,
-        n_time = n_time,
-        method = method,
-        treatment_params = treatment_params,
+    # Run simulations in parallel
+    overall <- future_pmap(
+      param_grid,
+      function(method, t.pval, max.block.size, treatment_params, n_time, n_id, rep, sim_id, sigma) {
+
+        # print(paste("Running simulation", sim_id))
+        suppressMessages(devtools::load_all())
+
+        result <- run_single_model(
+          sim_id = sim_id,
+          n_id = n_id,
+          n_time = n_time,
+          method = method,
+          treatment_params = treatment_params,
+          fe_sigma = fe_sigma,
+          beta = beta,
+          sigma = sigma,
+          t.pval = t.pval,
+          max.block.size = max.block.size,
+          ...
+        )
+      },
+      .options = furrr_options(seed = TRUE, packages = c("getspanel", "future", "furrr", "progressr", "patchwork")),
+      .progress = TRUE
+    )
+    # Clean up
+    plan(sequential)
+    overall <- bind_rows(overall)
+  } else {
+    print("Running simulations sequentially...")
+
+    overall <- vector("list", nrow(param_grid))
+
+    for (i in seq_len(nrow(param_grid))) {
+
+      row <- param_grid[i, ]
+
+      # print(paste("Running simulation", row$sim_id))
+
+      overall[[i]] <- run_single_model(
+        sim_id = row$sim_id,
+        n_id = row$n_id,
+        n_time = row$n_time,
+        method = row$method,
+        treatment_params = row$treatment_params[[1]],
         fe_sigma = fe_sigma,
         beta = beta,
-        sigma = sigma,
-        t.pval = t.pval,
-        max.block.size = max.block.size,
+        sigma = row$sigma,
+        t.pval = row$t.pval,
+        max.block.size = row$max.block.size,
         ...
       )
-    },
-    .options = furrr_options(seed = TRUE),
-    .progress = TRUE
-  )
-  # Clean up
-  plan(sequential)
-  overall <- bind_rows(overall)
+    }
+
+    overall <- dplyr::bind_rows(overall)
+
+  }
+
+  param_grid %>% select(sim_id, sigma) %>% full_join(overall, by = "sim_id") -> overall
 
   return(overall)
 }
@@ -486,6 +558,7 @@ candidate_count <- function(n_id, n_time, method) {
 # Returns a tibble with factors and metrics per simulation run
 # Metrics computed: n_detected, gauge, potency, precision, recall, f1
 compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch = FALSE) {
+
   # Extract factors/parameters and treatments separately
   meta <- overall_tibble %>%
     dplyr::select(-treatment_collection, -indicators, -getspanel_object)
@@ -493,7 +566,8 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
   true_all <- tx$true_treatments
   det_all <- tx$detected_treatments
 
-  purrr::pmap_dfr(meta, function(sim_id, n_id, n_time, treatment_params, indic_method, t.pval, max.block.size) {
+  purrr::pmap_dfr(meta, function(sim_id, n_id, n_time, treatment_params, indic_method, t.pval, max.block.size, sigma) {
+    browser()
     true_sim <- true_all %>%
       dplyr::filter(sim_id == !!sim_id)
     det_sim  <- det_all %>%
@@ -529,6 +603,7 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
       n_time = n_time,
       indic_method = indic_method,
       t.pval = t.pval,
+      sigma = sigma,
       max.block.size = max.block.size,
       n_true = rel,
       n_true_per_method = ifelse(indic_method == "both", rel / 2, rel),
@@ -557,6 +632,7 @@ compute_metrics <- function(overall_tibble, tolerance = 0, allow_type_mismatch =
 # - per_simulation: metrics computed per simulation run (sim_id) for each tolerance (using compute_metrics())
 # - by_factor: average metrics grouped by specified factors
 metrics_summary <- function(overall_tibble, tolerances = c(0), allow_type_mismatch = FALSE, factors = c("indic_method", "t.pval", "tolerance")) {
+
   gp <- dplyr::bind_rows(
     lapply(tolerances, function(t) {
       compute_metrics(overall_tibble, t, allow_type_mismatch)

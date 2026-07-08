@@ -3,14 +3,14 @@ title: "getspanel: Simulation Framework"
 output: 
   rmarkdown::html_vignette
     # code_folding: hide
-#output: prettydoc::html_pretty
-#  code_download: true
-
+    #output: prettydoc::html_pretty
+    #  code_download: true
 vignette: >
   %\VignetteIndexEntry{getspanel: Simulation Framework}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
   dev = "png",
   dpi = 300
 )
+library(tidyverse)
+devtools::load_all()
 ```
 The simulation framework was developed as part of an interdisciplinary research project by Nils König. It is built as a set of functions that allow users to create simulated panel data sets, impose artificial treatments, and evaluate the performance of `getspanel` to detect imposed treatments. The initial goal was to assess the performance of Trend Break detection in particular, but the framework is flexible enough to be used for other purposes as well.
 
@@ -37,12 +39,13 @@ The simulation framework consists of the following components and functions:
 4. **Evaluation**: `compute_metrics()` and `metrics_summary()`
 5. **Visualization**: `plot_metrics()` and `plot_compare_experiments()`
 
+
+
 ## Basic Usage
 
 The functions are currently tightly coupled:
 
 After setting all parameters, one entire experiment process can be executed by calling `run_simulation_study()`. The function automatically loops through all parameter configurations and performs data generation, treatment imposition, and break detection for each configuration. The resulting data frame contains one row per configuration with the parameters, as well as imposed and detected treatments and the resulting getspanel object. 
-
 ```{r}
 devtools::load_all()
 set.seed(99726)
@@ -65,6 +68,7 @@ n_rep <- 1
 methods <- c("both")
 t.pvals <- c(0.05, 0.01, 0.001)
 ```
+
 
 ```{r, warning=FALSE}
 results <- run_simulation_study(
@@ -95,7 +99,11 @@ The underlying functions can also be used separately to inspect each step of the
 input_data <- create_input_data(
   n_id = 3,
   n_time = 10,
-  treatment_params = tribble( ~ id, ~ type, ~ location, ~ magnitude),
+  treatment_params = tribble(
+  ~id, ~type, ~location, ~magnitude,
+  0.3, "trendbreak", 0.5, 2,
+  0.7, "step", 0.3, 2
+),
   fe_sigma = 5,
   beta = c(0.3, 0.7, -0.3, 0, 0),
   sigma = 0.5,
@@ -138,30 +146,84 @@ matched_treatments <- optimal_match_treatments(extracted_treatments$true_treatme
 matched_treatments
 ```
 
-## More substantial run
+## More substantial run as a basis for `gets` / `BISAM` comparison
 
 
 ```{r}
 set.seed(99726)
 # Simulation parameters (panel structure and data generation)
-n_ids <- c(2,6)
-n_times <- c(20,30)
-beta <- c(0.3, 0.7, -.3, 0, 0) # the betas for the coefficients
-sigma <- 0.5
-fe_sigma <- 5
-# Treatment parameters (imposed treatments to be detected)
+n_ids <- c(2,5,10)
+n_times <- c(30, 50) # 100
+sigma <- c(0.1, 0.5, 1)
+n_rep <- c(5) # 10, 50, 100
+
+
 treatment_params_list <- list(
-  tribble(
+  exp_1.A = tribble(
     ~id, ~type, ~location, ~magnitude,
-    0.3, "trendbreak", 0.5, 2,
-    0.7, "step", 0.3, 4 # ,
-    #0.45, "impulse", -0.3, 2.5
-  )
-)
+    "B", "step", 0.3, 2
+  ),
+  exp_1.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4
+  ),
+  exp_1.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 6
+  ),
+  
+  exp_2.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 4
+  ),
+  exp_2.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 6
+  ),
+  exp_2.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 6
+  ),
+  
+  exp_3.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 4,
+    "B", "impulse", 0.5, 2 
+  ),
+  exp_3.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 6,
+    "B", "impulse", 0.5, 4 
+  ),
+  exp_3.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 6,
+    "B", "impulse", 0.5, 6 
+  ),
+  
+  exp_4.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.7, 4,
+    "B", "step", 0.7, 4
+  ),
+  exp_4.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 4
+  ))
+
 # Benchmark parameters (getspanel parameters to be varied)
-n_rep <- 5
-methods <- c("both")
-t.pvals <- c(0.05, 0.01, 0.001)
+#methods <- c("IIS", "SIS")
+methods <- c("IIS+FESIS")
+t.pvals <- c(0.05, 
+             #0.01, 
+             0.001)
 
 # not yet in there
 # ar
@@ -169,15 +231,156 @@ t.pvals <- c(0.05, 0.01, 0.001)
 # max.block.size
 # more treatments
 # check TIS location and treatment table again
+# steps should be % of unit FE
 
+beta <- c(0.3, 0.7, -.2, 0, 0) # the betas for the coefficients
+fe_sigma <- 1
 
+results <- run_simulation_study(
+  n_ids,
+  n_times,
+  beta,
+  sigma,
+  fe_sigma,
+  treatment_params_list,
+  n_rep,
+  methods,
+  t.pvals,
+  print.searchinfo = FALSE,
+  plot = FALSE, 
+  parallel = TRUE # set to FALSE for debugging
+)
 ```
 
-```{r, warning=FALSE}
-results <- run_simulation_study(
-  n_ids, n_times, beta, sigma, fe_sigma, treatment_params_list, n_rep, methods, t.pvals, print.searchinfo = FALSE, plot = TRUE
+
+# Short trial run
+```{r}
+set.seed(99726)
+# Simulation parameters (panel structure and data generation)
+n_ids <- c(2,5,10)
+n_times <- c(30, 50) # 100
+sigma <- c(0.1, 0.5, 1)
+n_rep <- c(5) # 10, 50, 100
+
+
+treatment_params_list <- list(
+  exp_1.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2
+  ),
+  exp_1.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4
+  ),
+  exp_1.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 6
+  ),
+  
+  exp_2.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 4
+  ),
+  exp_2.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 6
+  ),
+  exp_2.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 6
+  ),
+  
+  exp_3.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 4,
+    "B", "impulse", 0.5, 2 
+  ),
+  exp_3.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 6,
+    "B", "impulse", 0.5, 4 
+  ),
+  exp_3.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 2,
+    "B", "step", 0.7, 6,
+    "B", "impulse", 0.5, 6 
+  ),
+  
+  exp_4.A = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.7, 4,
+    "B", "step", 0.7, 4
+  ),
+  exp_4.B = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 4,
+    "B", "step", 0.7, 4
+  ))
+
+# Benchmark parameters (getspanel parameters to be varied)
+#methods <- c("IIS", "SIS")
+methods <- c("IIS+FESIS")
+t.pvals <- c(0.05, 
+             #0.01, 
+             0.001)
+
+# not yet in there
+# ar
+# impulses
+# max.block.size
+# more treatments
+# check TIS location and treatment table again
+# steps should be % of unit FE
+
+beta <- c(0.3, 0.7, -.2, 0, 0) # the betas for the coefficients
+fe_sigma <- 1
+
+results2 <- run_simulation_study(
+  n_ids = 5,
+  n_times = 50,
+  beta,
+  sigma = 0.2,
+  fe_sigma,
+  treatment_params_list = list(exp_1.C = tribble(
+    ~id, ~type, ~location, ~magnitude,
+    "B", "step", 0.3, 6
+  )),
+  n_rep,
+  methods = "FESIS",
+  t.pvals,
+  print.searchinfo = FALSE,
+  plot = FALSE, 
+  parallel = TRUE # set to FALSE for debugging
 )
-results
+```
+
+
+```{r, warning=FALSE}
+
+
+# 
+# run_simulation_study(
+#   n_ids[1],
+#   n_times[1],
+#   beta,
+#   sigma[1],
+#   fe_sigma,
+#   treatment_params_list$exp_1.A,
+#   n_rep,
+#   methods,
+#   t.pvals[1],
+#   print.searchinfo = FALSE,
+#   plot = FALSE, 
+#   parallel = TRUE # set to FALSE for debugging
+# )
+# results
+
 
 
 results %>% 
@@ -185,6 +388,13 @@ results %>%
   pull(getspanel_object) %>% 
   first %>% 
   plot
+
+results %>% 
+  filter(sim_id == 535) %>% 
+  pull(getspanel_object) %>% 
+  first %>% 
+  plot
+  
 
 ```
 
@@ -196,7 +406,13 @@ metrics
 ```{r}
 plot_metrics(metrics$per_simulation, metrics = c("gauge", "potency"), plot_type = "scatter")
 ```
+
+```{r}
+saveRDS(results, "20260603_results_simulation_study.rds")
 ```
+
+
+
 
 
 ## Future Work Suggestions
