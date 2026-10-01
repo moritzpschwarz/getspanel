@@ -54,7 +54,7 @@ fixestFun <- function(y, x, effect, time, id, cluster = "individual", ...){
     #  stop("The cluster variable is not selected as a Fixed Effect. This is currently not recommended.")
     #}
     if (!cluster %in% c("individual","time", "none")) {
-      stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implmented.")
+      stop("Please only use 'none', 'individual' or 'time' for the cluster variable. Other specifications have not yet been implemented.")
     }
 
     parsed_formula <- as.formula(paste0("y ~ ",paste0(paste0("`",colnames(x),"`"),collapse = " + "),parse_FE))
