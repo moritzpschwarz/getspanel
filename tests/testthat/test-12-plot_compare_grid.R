@@ -104,6 +104,11 @@ test_that("Testing whether plot_compare_grid produces the same data as plot_grid
   data_compare <- p_compare$data[, c("model", "time", "effect")]
   names(data_compare)[1] <- "id"
 
+  data_grid <- data_grid[order(data_grid$id, data_grid$time),]
+  data_compare <- data_compare[order(data_compare$id, data_compare$time),]
+  row.names(data_grid) <- NULL
+  row.names(data_compare) <- NULL
+
   expect_true(all.equal(data_grid, data_compare))
 })
 
