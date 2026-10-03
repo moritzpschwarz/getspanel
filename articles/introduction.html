@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>getspanel: Getting Started • getspanel</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="getspanel: Getting Started">
 </head>
@@ -129,27 +129,25 @@ each individual)</p></li>
 sector.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"EUCO2residential"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">head</span>(EUCO2residential)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co"># A tibble: 6 × 9 [39m</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  country  year  lgdp  lhdd  lcdd urban av.rate     pop agg.directem</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>   [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m    [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m    [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m    [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m         [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dbl<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m1 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m969  <span class="fl">25.6</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.2</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m       [<span class="dv">31</span>mNA [<span class="dv">39</span>m            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m2 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m970  <span class="fl">25.7</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.3</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m       [<span class="dv">31</span>mNA [<span class="dv">39</span>m            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m3 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m971  <span class="fl">25.8</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.3</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m <span class="dv">7</span> [<span class="dv">4</span>m5 [<span class="dv">24</span>m [<span class="dv">4</span>m0 [<span class="dv">24</span>m [<span class="dv">4</span>m0 [<span class="dv">24</span>m482            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m4 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m972  <span class="fl">25.8</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.3</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m <span class="dv">7</span> [<span class="dv">4</span>m5 [<span class="dv">24</span>m [<span class="dv">4</span>m4 [<span class="dv">24</span>m [<span class="dv">4</span>m4 [<span class="dv">24</span>m201            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m5 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m973  <span class="fl">25.9</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.3</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m <span class="dv">7</span> [<span class="dv">4</span>m5 [<span class="dv">24</span>m [<span class="dv">4</span>m8 [<span class="dv">24</span>m [<span class="dv">4</span>m6 [<span class="dv">24</span>m115            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m6 [<span class="dv">39</span>m Austria   [<span class="dv">4</span>m1 [<span class="dv">24</span>m974  <span class="fl">25.9</span>     [<span class="dv">31</span>mNA [<span class="dv">39</span>m     [<span class="dv">31</span>mNA [<span class="dv">39</span>m  <span class="fl">65.3</span>       [<span class="dv">31</span>mNA [<span class="dv">39</span>m <span class="dv">7</span> [<span class="dv">4</span>m5 [<span class="dv">24</span>m [<span class="dv">4</span>m9 [<span class="dv">24</span>m [<span class="dv">4</span>m9 [<span class="dv">24</span>m038            [<span class="dv">31</span>mNA [<span class="dv">39</span>m</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co"># let's subset this a little bit to speed this up</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>EUCO2residential <span class="ot">&lt;-</span> EUCO2residential[EUCO2residential<span class="sc">$</span>year <span class="sc">&gt;</span> <span class="dv">2000</span> <span class="sc">&amp;</span> </span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>                                       EUCO2residential<span class="sc">$</span>country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Germany"</span>, <span class="st">"Austria"</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>                                                                       <span class="st">"Belgium"</span>, <span class="st">"Italy"</span>, </span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>                                                                       <span class="st">"Sweden"</span>, <span class="st">"Denmark"</span>),]</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># let's create a log emissions per capita variable</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>EUCO2residential<span class="sc">$</span>lagg.directem_pc <span class="ot">&lt;-</span> <span class="fu">log</span>(EUCO2residential<span class="sc">$</span>agg.directem<span class="sc">/</span>EUCO2residential<span class="sc">$</span>pop)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co"># and let's also turn off printing the intermediate output from isatpanel</span></span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="fu">options</span>(<span class="at">print.searchoutput =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  country year     lgdp lhdd lcdd  urban av.rate     pop agg.directem</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="dv">1</span> Austria <span class="dv">1969</span> <span class="fl">25.64667</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.208</span>      <span class="cn">NA</span>      <span class="cn">NA</span>           <span class="cn">NA</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="dv">2</span> Austria <span class="dv">1970</span> <span class="fl">25.70797</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.258</span>      <span class="cn">NA</span>      <span class="cn">NA</span>           <span class="cn">NA</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="dv">3</span> Austria <span class="dv">1971</span> <span class="fl">25.75785</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.301</span>      <span class="cn">NA</span> <span class="dv">7500482</span>           <span class="cn">NA</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="dv">4</span> Austria <span class="dv">1972</span> <span class="fl">25.81808</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.311</span>      <span class="cn">NA</span> <span class="dv">7544201</span>           <span class="cn">NA</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="dv">5</span> Austria <span class="dv">1973</span> <span class="fl">25.86582</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.321</span>      <span class="cn">NA</span> <span class="dv">7586115</span>           <span class="cn">NA</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="dv">6</span> Austria <span class="dv">1974</span> <span class="fl">25.90449</span>   <span class="cn">NA</span>   <span class="cn">NA</span> <span class="fl">65.331</span>      <span class="cn">NA</span> <span class="dv">7599038</span>           <span class="cn">NA</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># let's subset this a little bit to speed this up</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>EUCO2residential <span class="ot">&lt;-</span> EUCO2residential[EUCO2residential<span class="sc">$</span>year <span class="sc">&gt;</span> <span class="dv">2000</span> <span class="sc">&amp;</span> </span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>                                       EUCO2residential<span class="sc">$</span>country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Germany"</span>, <span class="st">"Austria"</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>                                                                       <span class="st">"Belgium"</span>, <span class="st">"Italy"</span>, </span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>                                                                       <span class="st">"Sweden"</span>, <span class="st">"Denmark"</span>),]</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># let's create a log emissions per capita variable</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>EUCO2residential<span class="sc">$</span>lagg.directem_pc <span class="ot">&lt;-</span> <span class="fu">log</span>(EUCO2residential<span class="sc">$</span>agg.directem<span class="sc">/</span>EUCO2residential<span class="sc">$</span>pop)</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co"># and let's also turn off printing the intermediate output from isatpanel</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="fu">options</span>(<span class="at">print.searchoutput =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>Let’s look at how we input what we want to model. Each
 <code>isatpanel</code> command takes:</p>
 <div class="section level3">
@@ -186,7 +184,7 @@ result:</p>
 <span>                   effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span>                   </span>
 <span>                   fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="100%"></p>
 <p>Using the traditional method</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">is_gets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/isatpanel.html">isatpanel</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">EUCO2residential</span><span class="op">$</span><span class="va">lagg.directem_pc</span>,</span>
@@ -197,7 +195,7 @@ result:</p>
 <span>                     effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span></span>
 <span>                     fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-5-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="100%"></p>
 <p>From here onwards, I will use the <code>lm</code> notation.</p>
 </div>
 <div class="section level3">
@@ -207,13 +205,13 @@ result:</p>
 the <strong>ggplot2</strong> package):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-7-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_counterfactual.html">plot_counterfactual</a></span><span class="op">(</span><span class="va">is_lm</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-8-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="100%"></p>
 <!-- ![](getspanel_plot.png) -->
 </div>
 <div class="section level3">
@@ -235,10 +233,10 @@ observation.</p>
 <span></span>
 <span>                         iis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-9-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iis_example</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-10-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="step-indicator-saturation">Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#step-indicator-saturation"></a>
@@ -265,7 +263,7 @@ effects.</p>
 <span>                          effect <span class="op">=</span> <span class="st">"individual"</span>,</span>
 <span></span>
 <span>                          jsis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-11-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="coefficient-step-indicator-saturation">Coefficient Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#coefficient-step-indicator-saturation"></a>
@@ -288,7 +286,7 @@ variable using <code>I(lgdp^2)</code>:</p>
 <span>                          t.pval <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span></span>
 <span>                          csis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-12-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%"></p>
 <p>By default, all coefficients will be interacted and added to the
 indicator list - but his can be controlled using the
 <code>csis_var</code>, which takes a character vector of column names
@@ -302,7 +300,7 @@ i.e. <code>csis_var = "lgdp"</code>.</p>
 <span></span>
 <span>                           csis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                           csis_var <span class="op">=</span> <span class="st">"lgdp"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-13-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="fixed-effect-step-indicator-saturation">Fixed Effect Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#fixed-effect-step-indicator-saturation"></a>
@@ -318,10 +316,10 @@ i.e. the individual fixed effect.</p>
 <span>                           effect <span class="op">=</span> <span class="st">"twoways"</span>,</span>
 <span></span>
 <span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-14-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="100%"></p>
 <p>Similar to the <code>csis_var</code> idea, we can specify the
 <code>fesis</code> method for a subset of individuals as well using the
 <code>fesis_id</code> variable, which takes a character vector of
@@ -336,10 +334,10 @@ e.g. <code>fesis_id = c("Austria","Denmark")</code>.</p>
 <span></span>
 <span>                           fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                           fesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Austria"</span>,<span class="st">"Denmark"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-16-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fesis_example2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-17-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level3">
@@ -349,7 +347,8 @@ e.g. <code>fesis_id = c("Austria","Denmark")</code>.</p>
 Standard Errors, use a standard White Standard Error Correction (with
 the option of clustering the S.E. within groups or time):</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">robust_isatpanel</span>(fesis_example, <span class="at">HAC =</span> <span class="cn">TRUE</span>, <span class="at">robust =</span> <span class="cn">TRUE</span>, <span class="at">cluster =</span> <span class="st">"group"</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>Error <span class="cf">in</span> <span class="fu">solve.default</span>(<span class="fu">crossprod</span>(demX))<span class="sc">:</span> system is computationally singular<span class="sc">:</span> reciprocal condition number <span class="ot">=</span> <span class="fl">1.00556e-17</span></span></code></pre></div>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a> [<span class="dv">1</span>m [<span class="dv">33</span>mError [<span class="dv">39</span>m <span class="cf">in</span> <span class="st">`</span><span class="at">solve.default()</span><span class="st">`</span><span class="sc">:</span> [<span class="dv">22</span>m</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a> [<span class="dv">33</span>m<span class="sc">!</span> [<span class="dv">39</span>m system is computationally singular<span class="sc">:</span> reciprocal condition number <span class="ot">=</span> <span class="fl">1.00556e-17</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="coefficient-fixed-effect-step-indicator-saturation">Coefficient Fixed Effect Step Indicator Saturation<a class="anchor" aria-label="anchor" href="#coefficient-fixed-effect-step-indicator-saturation"></a>
 </h4>
@@ -370,10 +369,10 @@ and in the individual units using <code>cfesis_id</code> and
 <span>                            cfesis_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Belgium"</span>,<span class="st">"Germany"</span><span class="op">)</span>,</span>
 <span>                            cfesis_var <span class="op">=</span> <span class="st">"lgdp"</span>,</span>
 <span>                            t.pval <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cfesis_example</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-20-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level3">
@@ -391,7 +390,7 @@ coefficients, using the <code>ar</code> argument.</p>
 <span>                               fesis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span></span>
 <span>                               ar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-21-1.png" width="100%"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="the-engine-argument">The <code>engine</code> argument<a class="anchor" aria-label="anchor" href="#the-engine-argument"></a>
@@ -451,7 +450,7 @@ true - clustering is therefore currently not recommended.</strong></p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
