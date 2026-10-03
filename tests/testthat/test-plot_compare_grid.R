@@ -1,3 +1,19 @@
+# Data description
+# Example Results for Comparison Plotting
+#
+# @format A data frame with 3 rows and 5 variables:
+# \describe{
+#   \item{formula}{Model formula}
+#   \item{country_sample}{Countries included in the sample}
+#   \item{p_val}{P-value of the model}
+#   \item{model}{Unique Model descriptions}
+#   \item{is}{isatpanel objects}
+# }
+# @source Data taken from Koch, Naumann, Pretis, Ritter und Schwarz (2022). Nature Energy. \url{https://doi.org/10.1038/s41560-022-01095-6}
+
+# "compare_models_example"
+
+
 test_that("Test that input parameters work", {
   data(compare_models_example, package = "getspanel")
 

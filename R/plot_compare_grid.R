@@ -27,29 +27,43 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ggplot2)
-#' library(gets)
-#' library(getspanel)
 #'
 #' # Load example data
 #' data(compare_models_example, package = "getspanel")
 #'
 #' # Basic comparison plot
-#' plot_comp(compare_models_example)
+#' plot_compare_grid(compare_models_example)
 #'
 #' # Example showing only FESIS indicator effects
-#' plot_comp(compare_models_example, regex_exclude_indicators = "^iis|^tis")
+#' plot_compare_grid(compare_models_example, regex_exclude_indicators = "^iis|^tis")
 #'
 #' # Example isolating a specific unit
-#' plot_comp(compare_models_example, id_list = c("Argentina"))
+#' plot_compare_grid(compare_models_example, id_list = c("Argentina"))
 #'
 #' # Example isolating a specific model
-#' plot_comp(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
+#' plot_compare_grid(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
 #' # This creates the same plot as plot_grid(compare_models_example$is[[1]])
 #' }
 #'
 plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "unit", title = NULL, include_blanks = TRUE, id_list = NULL, mod_list = NULL, sign = NULL, regex_exclude_indicators = NULL) {
   # Input validation -----------------------------------------------------------
+
+  if (is.list(mod) && !is.data.frame(mod)) {
+    # check if the list is named
+    if (is.null(names(mod))) {
+      # if not named, name 1 to length of list as Model 1, 2, etc
+      names(mod) <- paste0("Model ", seq_along(mod))
+    }
+
+    # get all elements that are isatpanel.results
+    mod <- dplyr::tibble(is = mod, #lapply(mod, function(x){x$isatpanel.result}),
+                         formula = lapply(mod, function(x){x$arguments$formula}),
+                         p_val = lapply(mod, function(x){x$isatpanel.result$aux$t.pval}),
+                         model = names(mod))
+  }
+
+
+
   # Check basic data frame structure
   if (!is.data.frame(mod) || ncol(mod) < 2) {
     stop("The 'mod' must be a data frame with at least two columns: one with isatpanel objects and another with model descriptions.", call. = FALSE)

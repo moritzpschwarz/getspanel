@@ -53,24 +53,21 @@ them into a single visualization. Only combined effects from IIS/TIS/FESIS indic
 }
 \examples{
 \dontrun{
-library(ggplot2)
-library(gets)
-library(getspanel)
 
 # Load example data
 data(compare_models_example, package = "getspanel")
 
 # Basic comparison plot
-plot_comp(compare_models_example)
+plot_compare_grid(compare_models_example)
 
 # Example showing only FESIS indicator effects
-plot_comp(compare_models_example, regex_exclude_indicators = "^iis|^tis")
+plot_compare_grid(compare_models_example, regex_exclude_indicators = "^iis|^tis")
 
 # Example isolating a specific unit
-plot_comp(compare_models_example, id_list = c("Argentina"))
+plot_compare_grid(compare_models_example, id_list = c("Argentina"))
 
 # Example isolating a specific model
-plot_comp(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
+plot_compare_grid(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
 # This creates the same plot as plot_grid(compare_models_example$is[[1]])
 }
 
