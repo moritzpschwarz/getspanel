@@ -148,7 +148,8 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NU
     times = indicator_names,
     direction = "long"
   )
-  if (all(is.na(suppressWarnings(as.numeric(all_indicators_long$time))))) {
+
+  if (all(is.na(suppressWarnings(as.numeric(all_indicators_long$time))))|inherits(all_indicators_long$time, "Date")) {
     all_indicators_long$time <- as.Date(all_indicators_long$time)
   } else {
     all_indicators_long$time <- as.numeric(all_indicators_long$time)
