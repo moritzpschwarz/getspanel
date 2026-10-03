@@ -96,8 +96,33 @@ test_that("Standard Error Options using fixest",{
   skip_on_cran()
   expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1,
                                     print.searchinfo=FALSE,engine = "fixest"))
-  expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1,
-                                    print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
+  # expect_silent(result <- isatpanel(data = pandata_simulated,formula = gdp~temp + I(temp^2), index = c("country","year"),fesis=TRUE, ar = 1,
+  #                                   print.searchinfo=FALSE,engine = "fixest", cluster = "individual"))
+
+  # should fail because two-way cluster-robust is not implemented
+  expect_error(result <- isatpanel(data = EU_emissions_road,
+                                    formula = ltransport.emissions ~ lgdp + lpop,
+                                    index = c("country","year"),fesis=FALSE, ar = 1,
+                                    print.searchinfo=FALSE,
+                                    engine = "fixest",
+                                    effect = "twoways",
+                                    cluster = "twoways",
+                                    plot = FALSE),
+               regexp = "for the cluster variable. Other specifications have not yet been implemented")
+
+  expect_silent(result <- isatpanel(data = EU_emissions_road,
+                                    formula = ltransport.emissions ~ lgdp + lpop,
+                                    index = c("country","year"),fesis=FALSE, ar = 1,
+                                    print.searchinfo=FALSE,
+                                    engine = "fixest",
+                                    effect = "twoways",
+                                    cluster = "individual",
+                                    plot = FALSE))
+
+  expect_true(result$isatpanel.result$aux$vcov.type == "Cluster-Robust (Individual)")
+
+  expect_output(print(result), regexp = "Estimation: ")
+
 })
 
 
@@ -139,7 +164,7 @@ test_that("Simple Fixest Test",{
     fesis = TRUE,
     t.pval = 0.01,
     engine = "fixest",
-    cluster = "individual",
+    #cluster = "individual",
     print.searchinfo = FALSE
   ))
 })
@@ -188,7 +213,6 @@ test_that("Simple Default Test with AR1",{
       fesis = TRUE,
       t.pval = 0.01,
       engine = "fixest",
-      cluster = "individual",
       ar = 1,
       print.searchinfo = FALSE
     ))

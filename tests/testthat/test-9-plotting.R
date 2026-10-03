@@ -238,7 +238,7 @@ test_that("ggplot checks without snapshotting the plot", {
   expect_s3_class(p_grid, "gg")
 
   # Retrieve the underlying list
-  class(p_grid) <- "list"
+  p_grid <- as.list(p_grid)
 
   # Remove the "environment" element which is not predictible
   p_grid$plot_env <- NULL
@@ -255,7 +255,7 @@ test_that("ggplot checks without snapshotting the plot", {
   expect_s3_class(p_counter, "gg")
 
   # Retrieve the underlying list
-  class(p_counter) <- "list"
+  p_counter <- as.list(p_counter)
 
   # Remove the "environment" element which is not predictible
   p_counter$plot_env <- NULL

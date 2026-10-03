@@ -496,7 +496,10 @@ isatpanel <- function(
     }
 
     # Set all indicators to 0 for ids which are not in cfesis_id
-    cfesis_out[!cfesis_out$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
+    # cfesis_out[!cfesis_out$id %in% cfesis_id,!names(cfesis_df) %in% c("id","time")] <- 0
+    rows_to_zero <- !cfesis_out$id %in% cfesis_id
+    indicator_cols <- setdiff(names(cfesis_out), c("id", "time"))
+    cfesis_out[rows_to_zero, indicator_cols] <- 0
 
     # merge with df to ensure order is correct
     current <- merge(df,cfesis_out,by = c("id","time"),all.x = TRUE, sort = FALSE)
@@ -683,6 +686,19 @@ isatpanel <- function(
   # don't allow sis argument - does not make sense in a panel context, only JSIS makes sense
   ispan <- gets::isat(y, mxreg = mx, iis = iis, sis = FALSE, uis = sispanx, user.estimator = user.estimator, mc = FALSE, t.pval = t.pval,
                       print.searchinfo = print.searchinfo, ...)
+
+  if(!is.null(engine)){
+    ispan$gets.type <- paste0(ispan$gets.type, " (",engine," engine)")
+    ispan$aux$vcov.type <- switch(EXPR = cluster,
+                                  NULL = "ordinary",
+                                  "none" = "ordinary",
+                                  "individual" = "Cluster-Robust (Individual)",
+                                  "time" = "Cluster-Robust (Time)",
+                                  "twoways" = "Cluster-Robust (Two-ways)")
+
+
+  }
+
   # Return output ------------
   out$isatpanel.result <- ispan
 
