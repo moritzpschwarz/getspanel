@@ -61,13 +61,16 @@ data(compare_models_example, package = "getspanel")
 plot_compare_grid(compare_models_example)
 
 # Example showing only FESIS indicator effects
-plot_compare_grid(compare_models_example, regex_exclude_indicators = "^iis|^tis")
+plot_compare_grid(compare_models_example,
+                  regex_exclude_indicators = "^iis|^tis")
 
 # Example isolating a specific unit
 plot_compare_grid(compare_models_example, id_list = c("Argentina"))
 
 # Example isolating a specific model
-plot_compare_grid(compare_models_example, mod_list = compare_models_example$model[[1]], panel = "model")
+plot_compare_grid(compare_models_example,
+                  mod_list = compare_models_example$model[[1]],
+                  panel = "model")
 # This creates the same plot as plot_grid(compare_models_example$is[[1]])
 }
 

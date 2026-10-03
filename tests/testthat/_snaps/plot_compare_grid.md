@@ -1087,9 +1087,9 @@
       1080 UnitedKingdom 2018   NA           NA 0.001; CO2
       
       $layers
-      $layers[[1]]
+      $layers$geom_tile
       mapping: fill = ~.data$effect 
-      geom_tile: linejoin = mitre, na.rm = TRUE
+      geom_tile: na.rm = TRUE, lineend = butt, linejoin = mitre
       stat_identity: na.rm = TRUE
       position_identity 
       
@@ -1109,6 +1109,7 @@
           n: function
           non_position_scales: function
           scales: list
+          set_palettes: function
           train_df: function
           transform_df: function
           super:  <ggproto object: Class ScalesList, gg>
@@ -1124,191 +1125,250 @@
       * `y` -> `.data$model`
       
       $theme
-      List of 136
-       $ line                            :List of 6
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ lineend      : chr "butt"
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
-       $ rect                            :List of 5
-        ..$ fill         : chr "white"
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ text                            :List of 11
-        ..$ family       : chr ""
-        ..$ face         : chr "plain"
-        ..$ colour       : chr "black"
-        ..$ size         : num 11
-        ..$ hjust        : num 0.5
-        ..$ vjust        : num 0.5
-        ..$ angle        : num 0
-        ..$ lineheight   : num 0.9
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ title                           : NULL
+      <theme> List of 144
+       $ line                            : <ggplot2::element_line>
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ lineend      : chr "butt"
+        ..@ linejoin     : chr "round"
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "black"
+        ..@ inherit.blank: logi TRUE
+       $ rect                            : <ggplot2::element_rect>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ text                            : <ggplot2::element_text>
+        ..@ family       : chr ""
+        ..@ face         : chr "plain"
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "black"
+        ..@ size         : num 11
+        ..@ hjust        : num 0.5
+        ..@ vjust        : num 0.5
+        ..@ angle        : num 0
+        ..@ lineheight   : num 0.9
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 0
+        ..@ debug        : logi FALSE
+        ..@ inherit.blank: logi TRUE
+       $ title                           : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ point                           : <ggplot2::element_point>
+        ..@ colour       : chr "black"
+        ..@ shape        : num 19
+        ..@ size         : num 1.5
+        ..@ fill         : chr "white"
+        ..@ stroke       : num 0.5
+        ..@ inherit.blank: logi TRUE
+       $ polygon                         : <ggplot2::element_polygon>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ geom                            : <ggplot2::element_geom>
+        ..@ ink        : chr "black"
+        ..@ paper      : chr "white"
+        ..@ accent     : chr "#3366FF"
+        ..@ linewidth  : num 0.5
+        ..@ borderwidth: num 0.5
+        ..@ linetype   : int 1
+        ..@ bordertype : int 1
+        ..@ family     : chr ""
+        ..@ fontsize   : num 3.87
+        ..@ pointsize  : num 1.5
+        ..@ pointshape : num 19
+        ..@ colour     : NULL
+        ..@ fill       : NULL
+       $ spacing                         : 'simpleUnit' num 5.5points
+        ..- attr(*, "unit")= int 8
+       $ margins                         : <ggplot2::margin> num [1:4] 5.5 5.5 5.5 5.5
        $ aspect.ratio                    : NULL
        $ axis.title                      : NULL
-       $ axis.title.x                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.75points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.title.x.top                :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.75points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.x                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.75 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.title.x.top                : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.75 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.x.bottom             : NULL
-       $ axis.title.y                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num 90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.75points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num 90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.75 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.y.left               : NULL
-       $ axis.title.y.right              :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num -90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.75points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text                       :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : chr "grey30"
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.2points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x.top                 :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.2points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y.right              : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num -90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.75
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text                       : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "#4D4D4DFF"
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.2 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x.top                 : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.2 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.x.bottom              : NULL
-       $ axis.text.y                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 1
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 1
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.y.left                : NULL
-       $ axis.text.y.right               :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y.right               : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.theta                 : NULL
-       $ axis.text.r                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0.5
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.ticks                      :List of 6
-        ..$ colour       : chr "grey20"
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ lineend      : NULL
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
+       $ axis.text.r                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0.5
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.ticks                      : <ggplot2::element_line>
+        ..@ colour       : chr "#333333FF"
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ lineend      : NULL
+        ..@ linejoin     : NULL
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "#333333FF"
+        ..@ inherit.blank: logi TRUE
        $ axis.ticks.x                    : NULL
        $ axis.ticks.x.top                : NULL
        $ axis.ticks.x.bottom             : NULL
@@ -1323,8 +1383,7 @@
        $ axis.minor.ticks.y.right        : NULL
        $ axis.minor.ticks.theta          : NULL
        $ axis.minor.ticks.r              : NULL
-       $ axis.ticks.length               : 'simpleUnit' num 2.75points
-        ..- attr(*, "unit")= int 8
+       $ axis.ticks.length               : 'rel' num 0.5
        $ axis.ticks.length.x             : NULL
        $ axis.ticks.length.x.top         : NULL
        $ axis.ticks.length.x.bottom      : NULL
@@ -1342,8 +1401,7 @@
        $ axis.minor.ticks.length.y.right : NULL
        $ axis.minor.ticks.length.theta   : NULL
        $ axis.minor.ticks.length.r       : NULL
-       $ axis.line                       : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+       $ axis.line                       : <ggplot2::element_blank>
        $ axis.line.x                     : NULL
        $ axis.line.x.top                 : NULL
        $ axis.line.x.bottom              : NULL
@@ -1352,17 +1410,15 @@
        $ axis.line.y.right               : NULL
        $ axis.line.theta                 : NULL
        $ axis.line.r                     : NULL
-       $ legend.background               :List of 5
-        ..$ fill         : NULL
-        ..$ colour       : logi NA
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ legend.margin                   : 'margin' num [1:4] 5.5points 5.5points 5.5points 5.5points
-        ..- attr(*, "unit")= int 8
-       $ legend.spacing                  : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
+       $ legend.background               : <ggplot2::element_rect>
+        ..@ fill         : NULL
+        ..@ colour       : logi NA
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ linejoin     : NULL
+        ..@ inherit.blank: logi TRUE
+       $ legend.margin                   : NULL
+       $ legend.spacing                  : 'rel' num 2
        $ legend.spacing.x                : NULL
        $ legend.spacing.y                : NULL
        $ legend.key                      : NULL
@@ -1370,41 +1426,45 @@
         ..- attr(*, "unit")= int 3
        $ legend.key.height               : NULL
        $ legend.key.width                : NULL
-       $ legend.key.spacing              : 'simpleUnit' num 5.5points
-        ..- attr(*, "unit")= int 8
+       $ legend.key.spacing              : NULL
        $ legend.key.spacing.x            : NULL
        $ legend.key.spacing.y            : NULL
+       $ legend.key.justification        : NULL
        $ legend.frame                    : NULL
        $ legend.ticks                    : NULL
        $ legend.ticks.length             : 'rel' num 0.2
        $ legend.axis.line                : NULL
-       $ legend.text                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.text                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.text.position            : NULL
-       $ legend.title                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.title                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.title.position           : NULL
        $ legend.position                 : chr "bottom"
        $ legend.position.inside          : NULL
@@ -1416,19 +1476,9 @@
        $ legend.justification.left       : NULL
        $ legend.justification.right      : NULL
        $ legend.justification.inside     : NULL
-       $ legend.location                 : NULL
-       $ legend.box                      : NULL
-       $ legend.box.just                 : NULL
-       $ legend.box.margin               : 'margin' num [1:4] 0cm 0cm 0cm 0cm
-        ..- attr(*, "unit")= int 1
-       $ legend.box.background           : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-       $ legend.box.spacing              : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
         [list output truncated]
-       - attr(*, "class")= chr [1:2] "theme" "gg"
-       - attr(*, "complete")= logi TRUE
-       - attr(*, "validate")= logi TRUE
+       @ complete: logi TRUE
+       @ validate: logi TRUE
       
       $coordinates
       <ggproto object: Class CoordCartesian, Coord, gg>
@@ -1437,6 +1487,7 @@
           clip: on
           default: TRUE
           distance: function
+          draw_panel: function
           expand: TRUE
           is_free: function
           is_linear: function
@@ -1444,10 +1495,12 @@
           limits: list
           modify_scales: function
           range: function
+          ratio: NULL
           render_axis_h: function
           render_axis_v: function
           render_bg: function
           render_fg: function
+          reverse: none
           setup_data: function
           setup_layout: function
           setup_panel_guides: function
@@ -1459,16 +1512,23 @@
       
       $facet
       <ggproto object: Class FacetGrid, Facet, gg>
+          attach_axes: function
+          attach_strips: function
           compute_layout: function
           draw_back: function
           draw_front: function
           draw_labels: function
+          draw_panel_content: function
           draw_panels: function
           finish_data: function
+          format_strip_labels: function
+          init_gtable: function
           init_scales: function
           map_data: function
           params: list
+          set_panel_size: function
           setup_data: function
+          setup_panel_params: function
           setup_params: function
           shrink: TRUE
           train_scales: function
@@ -1499,18 +1559,13 @@
           super:  <ggproto object: Class Layout, gg>
       
       $labels
-      $labels$x
-      NULL
+      <ggplot2::labels> List of 3
+       $ x    : NULL
+       $ y    : NULL
+       $ title: NULL
       
-      $labels$y
-      NULL
-      
-      $labels$title
-      NULL
-      
-      $labels$fill
-      [1] "effect"
-      
+      $meta
+      list()
       
 
 ---
@@ -2242,9 +2297,9 @@
       720 UnitedKingdom 2018   NA          NA 0.01; CO2
       
       $layers
-      $layers[[1]]
+      $layers$geom_tile
       mapping: fill = ~.data$effect 
-      geom_tile: linejoin = mitre, na.rm = TRUE
+      geom_tile: na.rm = TRUE, lineend = butt, linejoin = mitre
       stat_identity: na.rm = TRUE
       position_identity 
       
@@ -2264,6 +2319,7 @@
           n: function
           non_position_scales: function
           scales: list
+          set_palettes: function
           train_df: function
           transform_df: function
           super:  <ggproto object: Class ScalesList, gg>
@@ -2279,191 +2335,250 @@
       * `y` -> `.data$model`
       
       $theme
-      List of 136
-       $ line                            :List of 6
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ lineend      : chr "butt"
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
-       $ rect                            :List of 5
-        ..$ fill         : chr "white"
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ text                            :List of 11
-        ..$ family       : chr ""
-        ..$ face         : chr "plain"
-        ..$ colour       : chr "black"
-        ..$ size         : num 11
-        ..$ hjust        : num 0.5
-        ..$ vjust        : num 0.5
-        ..$ angle        : num 0
-        ..$ lineheight   : num 0.9
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ title                           : NULL
+      <theme> List of 144
+       $ line                            : <ggplot2::element_line>
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ lineend      : chr "butt"
+        ..@ linejoin     : chr "round"
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "black"
+        ..@ inherit.blank: logi TRUE
+       $ rect                            : <ggplot2::element_rect>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ text                            : <ggplot2::element_text>
+        ..@ family       : chr ""
+        ..@ face         : chr "plain"
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "black"
+        ..@ size         : num 11
+        ..@ hjust        : num 0.5
+        ..@ vjust        : num 0.5
+        ..@ angle        : num 0
+        ..@ lineheight   : num 0.9
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 0
+        ..@ debug        : logi FALSE
+        ..@ inherit.blank: logi TRUE
+       $ title                           : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ point                           : <ggplot2::element_point>
+        ..@ colour       : chr "black"
+        ..@ shape        : num 19
+        ..@ size         : num 1.5
+        ..@ fill         : chr "white"
+        ..@ stroke       : num 0.5
+        ..@ inherit.blank: logi TRUE
+       $ polygon                         : <ggplot2::element_polygon>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ geom                            : <ggplot2::element_geom>
+        ..@ ink        : chr "black"
+        ..@ paper      : chr "white"
+        ..@ accent     : chr "#3366FF"
+        ..@ linewidth  : num 0.5
+        ..@ borderwidth: num 0.5
+        ..@ linetype   : int 1
+        ..@ bordertype : int 1
+        ..@ family     : chr ""
+        ..@ fontsize   : num 3.87
+        ..@ pointsize  : num 1.5
+        ..@ pointshape : num 19
+        ..@ colour     : NULL
+        ..@ fill       : NULL
+       $ spacing                         : 'simpleUnit' num 5.5points
+        ..- attr(*, "unit")= int 8
+       $ margins                         : <ggplot2::margin> num [1:4] 5.5 5.5 5.5 5.5
        $ aspect.ratio                    : NULL
        $ axis.title                      : NULL
-       $ axis.title.x                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.75points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.title.x.top                :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.75points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.x                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.75 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.title.x.top                : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.75 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.x.bottom             : NULL
-       $ axis.title.y                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num 90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.75points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num 90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.75 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.y.left               : NULL
-       $ axis.title.y.right              :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num -90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.75points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text                       :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : chr "grey30"
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.2points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x.top                 :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.2points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y.right              : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num -90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.75
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text                       : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "#4D4D4DFF"
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.2 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x.top                 : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.2 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.x.bottom              : NULL
-       $ axis.text.y                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 1
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 1
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.y.left                : NULL
-       $ axis.text.y.right               :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y.right               : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.theta                 : NULL
-       $ axis.text.r                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0.5
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.ticks                      :List of 6
-        ..$ colour       : chr "grey20"
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ lineend      : NULL
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
+       $ axis.text.r                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0.5
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.ticks                      : <ggplot2::element_line>
+        ..@ colour       : chr "#333333FF"
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ lineend      : NULL
+        ..@ linejoin     : NULL
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "#333333FF"
+        ..@ inherit.blank: logi TRUE
        $ axis.ticks.x                    : NULL
        $ axis.ticks.x.top                : NULL
        $ axis.ticks.x.bottom             : NULL
@@ -2478,8 +2593,7 @@
        $ axis.minor.ticks.y.right        : NULL
        $ axis.minor.ticks.theta          : NULL
        $ axis.minor.ticks.r              : NULL
-       $ axis.ticks.length               : 'simpleUnit' num 2.75points
-        ..- attr(*, "unit")= int 8
+       $ axis.ticks.length               : 'rel' num 0.5
        $ axis.ticks.length.x             : NULL
        $ axis.ticks.length.x.top         : NULL
        $ axis.ticks.length.x.bottom      : NULL
@@ -2497,8 +2611,7 @@
        $ axis.minor.ticks.length.y.right : NULL
        $ axis.minor.ticks.length.theta   : NULL
        $ axis.minor.ticks.length.r       : NULL
-       $ axis.line                       : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+       $ axis.line                       : <ggplot2::element_blank>
        $ axis.line.x                     : NULL
        $ axis.line.x.top                 : NULL
        $ axis.line.x.bottom              : NULL
@@ -2507,17 +2620,15 @@
        $ axis.line.y.right               : NULL
        $ axis.line.theta                 : NULL
        $ axis.line.r                     : NULL
-       $ legend.background               :List of 5
-        ..$ fill         : NULL
-        ..$ colour       : logi NA
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ legend.margin                   : 'margin' num [1:4] 5.5points 5.5points 5.5points 5.5points
-        ..- attr(*, "unit")= int 8
-       $ legend.spacing                  : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
+       $ legend.background               : <ggplot2::element_rect>
+        ..@ fill         : NULL
+        ..@ colour       : logi NA
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ linejoin     : NULL
+        ..@ inherit.blank: logi TRUE
+       $ legend.margin                   : NULL
+       $ legend.spacing                  : 'rel' num 2
        $ legend.spacing.x                : NULL
        $ legend.spacing.y                : NULL
        $ legend.key                      : NULL
@@ -2525,41 +2636,45 @@
         ..- attr(*, "unit")= int 3
        $ legend.key.height               : NULL
        $ legend.key.width                : NULL
-       $ legend.key.spacing              : 'simpleUnit' num 5.5points
-        ..- attr(*, "unit")= int 8
+       $ legend.key.spacing              : NULL
        $ legend.key.spacing.x            : NULL
        $ legend.key.spacing.y            : NULL
+       $ legend.key.justification        : NULL
        $ legend.frame                    : NULL
        $ legend.ticks                    : NULL
        $ legend.ticks.length             : 'rel' num 0.2
        $ legend.axis.line                : NULL
-       $ legend.text                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.text                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.text.position            : NULL
-       $ legend.title                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.title                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.title.position           : NULL
        $ legend.position                 : chr "bottom"
        $ legend.position.inside          : NULL
@@ -2571,19 +2686,9 @@
        $ legend.justification.left       : NULL
        $ legend.justification.right      : NULL
        $ legend.justification.inside     : NULL
-       $ legend.location                 : NULL
-       $ legend.box                      : NULL
-       $ legend.box.just                 : NULL
-       $ legend.box.margin               : 'margin' num [1:4] 0cm 0cm 0cm 0cm
-        ..- attr(*, "unit")= int 1
-       $ legend.box.background           : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-       $ legend.box.spacing              : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
         [list output truncated]
-       - attr(*, "class")= chr [1:2] "theme" "gg"
-       - attr(*, "complete")= logi TRUE
-       - attr(*, "validate")= logi TRUE
+       @ complete: logi TRUE
+       @ validate: logi TRUE
       
       $coordinates
       <ggproto object: Class CoordCartesian, Coord, gg>
@@ -2592,6 +2697,7 @@
           clip: on
           default: TRUE
           distance: function
+          draw_panel: function
           expand: TRUE
           is_free: function
           is_linear: function
@@ -2599,10 +2705,12 @@
           limits: list
           modify_scales: function
           range: function
+          ratio: NULL
           render_axis_h: function
           render_axis_v: function
           render_bg: function
           render_fg: function
+          reverse: none
           setup_data: function
           setup_layout: function
           setup_panel_guides: function
@@ -2614,16 +2722,23 @@
       
       $facet
       <ggproto object: Class FacetGrid, Facet, gg>
+          attach_axes: function
+          attach_strips: function
           compute_layout: function
           draw_back: function
           draw_front: function
           draw_labels: function
+          draw_panel_content: function
           draw_panels: function
           finish_data: function
+          format_strip_labels: function
+          init_gtable: function
           init_scales: function
           map_data: function
           params: list
+          set_panel_size: function
           setup_data: function
+          setup_panel_params: function
           setup_params: function
           shrink: TRUE
           train_scales: function
@@ -2654,17 +2769,12 @@
           super:  <ggproto object: Class Layout, gg>
       
       $labels
-      $labels$x
-      NULL
+      <ggplot2::labels> List of 3
+       $ x    : NULL
+       $ y    : NULL
+       $ title: NULL
       
-      $labels$y
-      NULL
-      
-      $labels$title
-      NULL
-      
-      $labels$fill
-      [1] "effect"
-      
+      $meta
+      list()
       
 

@@ -153,6 +153,7 @@ plot_indicators <- function(object, title = NULL, zero_line = FALSE, scales = "f
     theme_bw() +
     theme(panel.grid = element_line(),
           panel.border = element_rect(fill = NA),
+          panel.grid.minor = element_blank(),
           strip.background = element_blank()) +
     labs(x = NULL, y = "Indicator Effect (Coefficient * Value)")
 

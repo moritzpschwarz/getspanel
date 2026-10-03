@@ -60,7 +60,7 @@ Dimensions of the output depend on the \code{format} parameter:
 \item If \code{format = "table"}: Returns a single data frame with one row per indicator/id combination.
 \item If \code{format = "long"}: Returns a panel-shaped data frame with one row per id/time/indicator combination where an indicator is active.
 }
-The "COMBINED" type in the long format sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see \code{\link{plot_grid}}.
+In the long format, an additional set of rows will be added that contain the "COMBINED" level of indicators that sums all effects of IIS, TIS, and FESIS indicators for each id/time combination, providing a comprehensive view of the impact of Intercept-based indicators on the model. To see how different indicator type effects are grouped, see \code{\link{plot_grid}}.
 
 regex_exclude_indicators allows filtering multiple indicators by matching their type (e.g., \code{regex_exclude_indicators = "^iis|^tis"}) or parts of indicator names (e.g., \code{regex_exclude_indicators = "iis1|Austria|2008"}).
 Use \code{get_indicators(object, format = "table")} to see the names of all indicators.

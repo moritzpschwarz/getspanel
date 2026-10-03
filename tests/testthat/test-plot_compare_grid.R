@@ -14,8 +14,11 @@
 # "compare_models_example"
 
 
+compare_models_example <- readRDS(test_path("_fixtures", "compare_models_example.rds"))
+
+
 test_that("Test that input parameters work", {
-  data(compare_models_example, package = "getspanel")
+  #data(compare_models_example, package = "getspanel")
 
   # Test with different id_list
   p <- plot_compare_grid(compare_models_example, id_list = c("Austria", "Germany"))
@@ -47,7 +50,7 @@ test_that("Test that input parameters work", {
 })
 
 test_that("Testing whether include_blanks works", {
-  data(compare_models_example, package = "getspanel")
+  #data(compare_models_example, package = "getspanel")
 
   p <- plot_compare_grid(compare_models_example, include_blanks = FALSE)
   ids <- unique(p$data$id)
@@ -63,7 +66,7 @@ test_that("Testing whether include_blanks works", {
 })
 
 test_that("Test that regex_exclude_indicators works", {
-  data(compare_models_example, package = "getspanel")
+  #data(compare_models_example, package = "getspanel")
 
   # The plot data doesn't include the indicators names anymore,
   # so we can't directly test for excluded indicators in the plot data
@@ -73,7 +76,7 @@ test_that("Test that regex_exclude_indicators works", {
   # First check that you really have a plot
   expect_s3_class(p, "gg")
   # Retrieve the underlying list
-  class(p) <- "list"
+  p <- as.list(p)
   # Remove the "environment" element which is not predictible
   p$plot_env <- NULL
   expect_snapshot(p)
@@ -82,14 +85,14 @@ test_that("Test that regex_exclude_indicators works", {
   # First check that you really have a plot
   expect_s3_class(p, "gg")
   # Retrieve the underlying list
-  class(p) <- "list"
+  p <- as.list(p)
   # Remove the "environment" element which is not predictible
   p$plot_env <- NULL
   expect_snapshot(p)
 })
 
 test_that("Testing whether plot_compare_grid produces the same data as plot_grid", {
-  data(compare_models_example, package = "getspanel")
+  #data(compare_models_example, package = "getspanel")
 
   p_grid <- plot_grid(compare_models_example$is[[1]])
   data_grid <- p_grid$data[, c("id", "time", "effect")]
@@ -105,6 +108,6 @@ test_that("Testing whether plot_compare_grid produces the same data as plot_grid
 })
 
 test_that("Standard compare plot", {
-  data(compare_models_example, package = "getspanel")
+  #data(compare_models_example, package = "getspanel")
   expect_snapshot_plot("Standard_compare_plot", code = plot_compare_grid(compare_models_example))
 })
