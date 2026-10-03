@@ -23,7 +23,7 @@ A data frame with 1550 rows and 13 variables:
 }
 }
 \source{
-EDGAR
+EDGAR. Data taken from Koch, Naumann, Pretis, Ritter und Schwarz (2022). Nature Energy. \url{https://doi.org/10.1038/s41560-022-01095-6}
 }
 \usage{
 EU_emissions_road

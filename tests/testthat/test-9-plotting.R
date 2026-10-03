@@ -55,12 +55,12 @@ trial_df_step$y[40:50] <- trial_df_step$y[40:50]*1.02
 trial_df_date <- trial_df_step
 trial_df_date$year <- rep(seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month"),3)
 
-outcome1 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, tis = TRUE) # TIS approximates step shift
-outcome2 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = TRUE) # Step Shift approximates trend (esp in B)
-outcome3 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, fesis = TRUE, tis = TRUE) # correct specification
+outcome1 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = FALSE, print.searchinfo = FALSE, tis = TRUE) # TIS approximates step shift
+outcome2 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = FALSE, print.searchinfo = FALSE, fesis = TRUE) # Step Shift approximates trend (esp in B)
+outcome3 <- isatpanel(trial_df_step, formula = y ~ x, index = c("id","year"), plot = FALSE, print.searchinfo = FALSE, fesis = TRUE, tis = TRUE) # correct specification
 
-outcome4 <- isatpanel(trial_df, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis_time = 1960:1990, cfesis = TRUE)
-outcome5 <- isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), print.searchinfo = FALSE, cfesis = TRUE,
+outcome4 <- isatpanel(trial_df, formula = y ~ x, index = c("id","year"),  plot = FALSE, print.searchinfo = FALSE, cfesis_time = 1960:1990, cfesis = TRUE)
+outcome5 <- isatpanel(trial_df_date, formula = y ~ x, index = c("id","year"), plot = FALSE, print.searchinfo = FALSE, cfesis = TRUE,
                       cfesis_time = list(A = seq.Date(from = as.Date("2000-01-01"), length.out = 10, by = "month"),
                                          B = seq.Date(from = as.Date("2003-01-01"), length.out = 12, by = "month"),
                                          C = seq.Date(from = as.Date("2000-01-01"), length.out = 50, by = "month")))

@@ -578,6 +578,9 @@ isatpanel <- function(
 
   # If someone supplies the uis argument to pass a user-specified indicator list to the function
   if(!missing(uis)){
+    if(is.null(colnames(uis))){
+      colnames(uis) <- paste0("uis",seq_len(ncol(uis)))
+    }
     if(identical(sispanx,FALSE)){
       sispanx <- uis
     } else {
@@ -595,7 +598,7 @@ isatpanel <- function(
     if (effect %in% c("individual", "twoways")) {FE <- append(FE,"id")}
     if (effect %in% c("time", "twoways")) {FE <- append(FE,"time")}
 
-    dummies <- dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
+    dummies <- fastDummies::dummy_cols(df,select_columns = FE,remove_first_dummy = FALSE,remove_selected_columns = FALSE)
     dummies <- dummies[,!names(dummies) %in% c("id","time")]
     names(dummies) <- gsub("_","",names(dummies))
 
@@ -721,6 +724,7 @@ isatpanel <- function(
   out$arguments$cluster <- cluster
   out$arguments$effect <- effect
   out$arguments$uis <- if(!is.null(uis_args)){uis_args}else{NULL}
+  out$arguments$formula <- formula
   #out$arguments$id_orig <- id_orig
 
   #out$arguments <- mget(names(formals()),sys.frame(sys.nframe()))

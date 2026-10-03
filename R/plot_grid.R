@@ -42,101 +42,221 @@
 
 plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
 
-  #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
-  df <- x$estimateddata
-  indicators <- x$isatpanel.result$aux$mX
-  indicators <- indicators[,!colnames(indicators) %in% names(df), drop = FALSE]
-  indicators <- indicators[,!grepl("^id|^time",colnames(indicators)), drop = FALSE]
+  indicators_l <- get_indicators(
+    x,
+    format = "long",
+    regex_exclude_indicators = regex_exclude_indicators
+  )
 
-  if(!is.null(regex_exclude_indicators)){
-    indicators <- indicators[,!grepl(regex_exclude_indicators,colnames(indicators)),drop = FALSE]
-  }
+  # The combined indicator is produced for plot_indicators(), but is not
+  # an individual indicator category required by plot_grid().
+  indicators_l <- indicators_l[indicators_l$type != "COMBINED", ,drop = FALSE]
 
-  df <- cbind(df,indicators)
+  if (nrow(indicators_l) != 0L) {
 
-  if(dim(indicators)[2] != 0){
-
-    if(is.null(x$isatpanel.result$fit)){
+    if (is.null(x$isatpanel.result$fit)) {
       fitted <- as.numeric(x$isatpanel.result$mean.fit)
     } else {
       fitted <- as.numeric(x$isatpanel.result$fit)
     }
 
-    # df_identified <- identify_indicator_timings(df)
-    # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
-    # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
-    #
-    # fesis <- df_identified$fesis[names(df_identified$fesis) %in% c("id","time")]
-    # fesis$value <- 1
-    # merge_fesis <- merge(x$estimateddata, fesis, by = c("id","time"), all.x = TRUE)
-    # merge_fesis[is.na(merge_fesis$value),"value"] <- 0
-    # merge_fesis$id <- as.factor(merge_fesis$id)
-    # aggregate(merge_fesis$value, by = list(merge_fesis$id), cumsum)
-    #
-    #
-    # steps <- df_identified$steps[names(df_identified$impulses) %in% c("id","time","value")]
-    #
-    # merge(x$estimateddata, impulses, by = c("id","time"), all.x = TRUE)
-    indicators_df <- cbind(df[,names(df) %in% c("id","time")],indicators)
-    varying_vars <- names(indicators_df)[!names(indicators_df)%in% c("id","time","y","fitted")]
-
-    indicators_l <- reshape(indicators_df,
-                            varying = varying_vars,
-                            idvar = c("id","time"),
-                            v.names = "value",
-                            timevar = "name",
-                            times = varying_vars,
-                            direction = "long")
 
     # introduce facets
     default_facet_name <- "Intercept (IIS, FESIS, TIS)"
     #default_facet_name <- "Intercept (IIS, FESIS)"
     indicators_l$facet <- default_facet_name
 
-    # Deal with TIS within facets
-    #indicators_l[grepl("^tis",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("^tis",indicators_l$name),"value"] != 0, 1, 0)
-    #indicators_l[grepl("^tis",indicators_l$name),"facet"] <- "TIS"
+    # Deal with UIS within facets
+    indicators_l[indicators_l$type == "UIS", "facet"] <- "UIS"
 
     # Deal with CSIS within facets
-    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-    indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+|\\.csis[0-9]+-[0-9]+-[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
+    indicators_l[indicators_l$type == "CSIS", "value"] <- ifelse(indicators_l[indicators_l$type == "CSIS", "value"] != 0,1,0)
+
+    indicators_l[indicators_l$type == "CSIS", "facet"] <- paste0("CSIS: ", indicators_l[indicators_l$type == "CSIS", "variable"])
 
     # Deal with CFESIS within facets
-    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
-    indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"name"])))
+    indicators_l[indicators_l$type == "CFESIS", "value"] <- ifelse(indicators_l[indicators_l$type == "CFESIS", "value"] != 0,1,0)
+
+    indicators_l[indicators_l$type == "CFESIS", "facet"] <- paste0("CFESIS: ", indicators_l[indicators_l$type == "CFESIS", "variable"])
+
+    # Recalculate the effect because CSIS and CFESIS have been converted
+    # to binary indicators for this plot.
+    indicators_l$effect <- indicators_l$value * indicators_l$coef
 
     # Control the order of the facets
     facet_order <- unique(indicators_l$facet)
-    facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
-    indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
+    facet_order <- c(
+      default_facet_name,
+      facet_order[!facet_order %in% default_facet_name]
+    )
 
-    indicators_l_merged <- merge(indicators_l,
-                                 data.frame(name = names(coef(x$isatpanel.result)),
-                                            coef = coef(x$isatpanel.result)),
-                                 by = "name", all.x = TRUE)
+    indicators_toplot <- aggregate(
+      effect ~ time + id + facet,
+      data = indicators_l,
+      FUN = function(x) sum(x, na.rm = TRUE)
+    )
 
-    indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
+    # Restore the complete panel grid. This ensures that ids and time periods
+    # remain in the plot even if all their indicators have been excluded.
+    panel_grid <- expand.grid(
+      id = unique(x$finaldata$id),
+      time = unique(x$finaldata$time),
+      facet = facet_order,
+      KEEP.OUT.ATTRS = FALSE,
+      stringsAsFactors = FALSE
+    )
 
-    indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), function(x){sum(x,na.rm = TRUE)})
-    names(indicators_toplot) <- c("time","id","facet","effect")
-    indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
-    indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
+    indicators_toplot <- merge(
+      panel_grid,
+      indicators_toplot,
+      by = c("id", "time", "facet"),
+      all.x = TRUE,
+      sort = FALSE
+    )
+
+    indicators_toplot[identical(indicators_toplot$effect,0), "effect"] <- NA
+
+    indicators_toplot$facet <- factor(
+      indicators_toplot$facet,
+      levels = facet_order
+    )
+
+    # remove facets that are fully NA
+    facets_to_keep <- sapply(
+      split(indicators_toplot$effect, indicators_toplot$facet),
+      function(x) !all(is.na(x))
+    )
+    indicators_toplot <- indicators_toplot[indicators_toplot$facet %in% names(facets_to_keep[facets_to_keep]), ]
+
+    # Swapping the order of the factors to make sure they are in
+    # alphabetical order in the plot
+    indicators_toplot$id <- factor(
+      indicators_toplot$id,
+      levels = rev(unique(x$finaldata$id))
+    )
 
     # Figure out the colours if there is only one break
-    col_limits <- c(min(indicators_toplot$effect, na.rm = TRUE), max(indicators_toplot$effect, na.rm = TRUE))
+    col_limits <- c(
+      min(indicators_toplot$effect, na.rm = TRUE),
+      max(indicators_toplot$effect, na.rm = TRUE)
+    )
 
-    if(col_limits[1] == col_limits[2]){
-      if(col_limits[1]<0){col_limits[2] <- col_limits[2] * -1} else {col_limits[1] <- col_limits[1] * -1}
-    } else if(sign(col_limits[1]) == sign(col_limits[2])){
-      if(sign(col_limits[1]) < 0){col_limits[2] <- col_limits[1]*-1} else {col_limits[1] <- col_limits[2]*-1}
+    if (col_limits[1] == col_limits[2]) {
+      if (col_limits[1] < 0) {
+        col_limits[2] <- col_limits[2] * -1
+      } else {
+        col_limits[1] <- col_limits[1] * -1
+      }
+    } else if (sign(col_limits[1]) == sign(col_limits[2])) {
+      if (sign(col_limits[1]) < 0) {
+        col_limits[2] <- col_limits[1] * -1
+      } else {
+        col_limits[1] <- col_limits[2] * -1
+      }
     }
 
-    x_axis <- if(is.numeric(indicators_toplot$time)){
-      list(scale_x_continuous(expand = c(0,0)))
-    #} else if(is(indicators_toplot$time, class2 = "Date")){
-    } else if(inherits(indicators_toplot$time, "Date")){
-      list(scale_x_date(expand = c(0,0)))
+    x_axis <- if (is.numeric(indicators_toplot$time)) {
+      list(scale_x_continuous(expand = c(0, 0)))
+      #} else if(is(indicators_toplot$time, class2 = "Date")){
+    } else if (inherits(indicators_toplot$time, "Date")) {
+      list(scale_x_date(expand = c(0, 0)))
     }
+
+    # #interactive = TRUE, currently not implemented. Roxygen: Logical (TRUE or FALSE). Default is TRUE. When True, plot will be passed to plotly using ggplotly.
+    # df <- x$estimateddata
+    # indicators <- x$isatpanel.result$aux$mX
+    # indicators <- indicators[,!colnames(indicators) %in% names(df), drop = FALSE]
+    # indicators <- indicators[,!grepl("^id|^time",colnames(indicators)), drop = FALSE]
+    #
+    # if(!is.null(regex_exclude_indicators)){
+    #   indicators <- indicators[,!grepl(regex_exclude_indicators,colnames(indicators)),drop = FALSE]
+    # }
+    #
+    # df <- cbind(df,indicators)
+    #
+    # if(dim(indicators)[2] != 0){
+    #
+    #   if(is.null(x$isatpanel.result$fit)){
+    #     fitted <- as.numeric(x$isatpanel.result$mean.fit)
+    #   } else {
+    #     fitted <- as.numeric(x$isatpanel.result$fit)
+    #   }
+    #
+    #   # df_identified <- identify_indicator_timings(df)
+    #   # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
+    #   # impulses <- df_identified$impulses[names(df_identified$impulses) %in% c("id","time","value")]
+    #   #
+    #   # fesis <- df_identified$fesis[names(df_identified$fesis) %in% c("id","time")]
+    #   # fesis$value <- 1
+    #   # merge_fesis <- merge(x$estimateddata, fesis, by = c("id","time"), all.x = TRUE)
+    #   # merge_fesis[is.na(merge_fesis$value),"value"] <- 0
+    #   # merge_fesis$id <- as.factor(merge_fesis$id)
+    #   # aggregate(merge_fesis$value, by = list(merge_fesis$id), cumsum)
+    #   #
+    #   #
+    #   # steps <- df_identified$steps[names(df_identified$impulses) %in% c("id","time","value")]
+    #   #
+    #   # merge(x$estimateddata, impulses, by = c("id","time"), all.x = TRUE)
+    #   indicators_df <- cbind(df[,names(df) %in% c("id","time")],indicators)
+    #   varying_vars <- names(indicators_df)[!names(indicators_df)%in% c("id","time","y","fitted")]
+    #   browser()
+    #   indicators_l <- reshape(indicators_df,
+    #                           varying = varying_vars,
+    #                           idvar = c("id","time"),
+    #                           v.names = "value",
+    #                           timevar = "name",
+    #                           times = varying_vars,
+    #                           direction = "long")
+    #
+    #   # introduce facets
+    #   default_facet_name <- "Intercept (IIS, FESIS, TIS)"
+    #   #default_facet_name <- "Intercept (IIS, FESIS)"
+    #   indicators_l$facet <- default_facet_name
+    #
+    #   # Deal with TIS within facets
+    #   #indicators_l[grepl("^tis",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("^tis",indicators_l$name),"value"] != 0, 1, 0)
+    #   #indicators_l[grepl("^tis",indicators_l$name),"facet"] <- "TIS"
+    #
+    #   # Deal with CSIS within facets
+    #   indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    #   indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"facet"] <- paste0("CSIS: ",gsub("\\.csis[0-9]+|\\.csis[0-9]+-[0-9]+-[0-9]+","",indicators_l[grepl("\\.csis[0-9]+",indicators_l$name),"name"]))
+    #
+    #   # Deal with CFESIS within facets
+    #   indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] <- ifelse(indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"value"] != 0, 1, 0)
+    #   indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"facet"] <- paste0("CFESIS: ",gsub("\\.[0-9]+$","",gsub("\\.cfesis.*[0-9]+","",indicators_l[grepl("\\.cfesis.*[0-9]+",indicators_l$name),"name"])))
+    #
+    #   # Control the order of the facets
+    #   facet_order <- unique(indicators_l$facet)
+    #   facet_order <- c(default_facet_name, facet_order[!facet_order %in% default_facet_name])
+    #   indicators_l$facet <- factor(indicators_l$facet, levels = facet_order)
+    #
+    #   indicators_l_merged <- merge(indicators_l,
+    #                                data.frame(name = names(coef(x$isatpanel.result)),
+    #                                           coef = coef(x$isatpanel.result)),
+    #                                by = "name", all.x = TRUE)
+    #
+    #   indicators_l_merged$effect <-  indicators_l_merged$value*indicators_l_merged$coef
+    #
+    #   indicators_toplot <- aggregate(indicators_l_merged$effect, by = list(indicators_l_merged$time, indicators_l_merged$id, indicators_l_merged$facet), function(x){sum(x,na.rm = TRUE)})
+    #   names(indicators_toplot) <- c("time","id","facet","effect")
+    #   indicators_toplot[indicators_toplot$effect == 0,"effect"] <- NA
+    #   indicators_toplot$id <- factor(indicators_toplot$id, levels = rev(unique(indicators_toplot$id))) # swapping the order of the factors to make sure they are in alphabetical order in the plot
+    #
+    #   # Figure out the colours if there is only one break
+    #   col_limits <- c(min(indicators_toplot$effect, na.rm = TRUE), max(indicators_toplot$effect, na.rm = TRUE))
+    #
+    #   if(col_limits[1] == col_limits[2]){
+    #     if(col_limits[1]<0){col_limits[2] <- col_limits[2] * -1} else {col_limits[1] <- col_limits[1] * -1}
+    #   } else if(sign(col_limits[1]) == sign(col_limits[2])){
+    #     if(sign(col_limits[1]) < 0){col_limits[2] <- col_limits[1]*-1} else {col_limits[1] <- col_limits[2]*-1}
+    #   }
+    #
+    #   x_axis <- if(is.numeric(indicators_toplot$time)){
+    #     list(scale_x_continuous(expand = c(0,0)))
+    #   #} else if(is(indicators_toplot$time, class2 = "Date")){
+    #   } else if(inherits(indicators_toplot$time, "Date")){
+    #     list(scale_x_date(expand = c(0,0)))
+    #   }
 
     ggplot(indicators_toplot, aes(x = .data$time, y = .data$id, fill = .data$effect)) +
       geom_tile(na.rm = TRUE, colour = "white", linewidth = 0.05) +

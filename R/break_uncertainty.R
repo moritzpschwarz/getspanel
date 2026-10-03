@@ -118,7 +118,7 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
     ###A0
     A0 <- mextrc(Agb, 0, a_lim )*(-1)
     A0gsigma <- A0%*%sigma%*%t(A0)
-    p0 <- pmvnorm(mean=rep(0, NROW(A0gsigma)), sigma=A0gsigma, lower=rep(-Inf, NROW(A0gsigma)), upper=up.tot[,1] )[1]
+    p0 <- mvtnorm::pmvnorm(mean=rep(0, NROW(A0gsigma)), sigma=A0gsigma, lower=rep(-Inf, NROW(A0gsigma)), upper=up.tot[,1] )[1]
     p0
 
     p_m <- matrix(NA, m, 1)
@@ -127,7 +127,7 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
     for (i in 1:m){
       Ai <- mextrc(Agb, i, a_lim )
       Aisigma <- Ai%*%sigma%*%t(Ai)
-      pi <- pmvnorm(mean=rep(0, NROW(Aisigma)), sigma=Aisigma, lower=rep(-Inf, NROW(Aisigma)), upper=up.tot[,(i+1)] )[1]
+      pi <- mvtnorm::pmvnorm(mean=rep(0, NROW(Aisigma)), sigma=Aisigma, lower=rep(-Inf, NROW(Aisigma)), upper=up.tot[,(i+1)] )[1]
       p_m[i,1] <- pi
     }
 
@@ -149,14 +149,9 @@ break_uncertainty <- function(x, m = 15, interval = 0.99){
   indicators <- indicators[,!colnames(indicators) %in% names(df)]
   df <- cbind(df,indicators)
 
-  df_identified <- identify_indicator_timings(df)
+  df_identified_coef <- get_indicators(x)$fesis
 
-  if(is.null(df_identified$fesis)){stop("Function currently only works on FESIS variables - No FESIS Indicators found in this isatpanel object.")}
-
-  df_identified_coef <- merge(df_identified$fesis,
-                              data.frame(name = names(coef(x$isatpanel.result)),
-                                         coef = coef(x$isatpanel.result),
-                                         sd = sqrt(diag(vcov(x$isatpanel.result)))), by = "name")
+  if(is.null(df_identified_coef)){stop("Function currently only works on FESIS variables - No FESIS Indicators found in this isatpanel object.")}
 
   dat <- df_identified_coef$coef/sqrt(x$isatpanel.result$sigma2)
   prob <- matrix(NA, NROW(dat), 2*m+1)
