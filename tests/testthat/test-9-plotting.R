@@ -167,6 +167,68 @@ test_that("plotting functions work with regex_exclude_indicators", {
   expect_snapshot_plot("plot_counterfactual_outcome2_regex", code = plot_counterfactual(outcome2, regex_exclude_indicators = "fesisA"))
 })
 
+test_that("plotting cfesis", {
+
+  skip_on_ci()
+  skip_on_cran()
+
+  # Prepare Data
+  set.seed(1230)
+  data("EU_emissions_road")
+  data <- EU_emissions_road
+  data$lgdp_sq <- data$lgdp^2
+
+  data$transport.emissions_pc <- data$transport.emissions/data$pop
+  data$ltransport.emissions_pc <- log(data$transport.emissions_pc)
+
+  data$L1.ltransport.emissions_pc <- NA
+  # For each country, shift the values of 'ltransport.emissions_pc' by one position
+  for (i in unique(data$country)) {
+    # Extract the 'ltransport.emissions_pc' values for the current country
+    current_country_values <- data$ltransport.emissions_pc[data$country == i]
+
+    # Shift the values by one position and insert an NA value at the beginning
+    shifted_values <- c(NA, current_country_values[-length(current_country_values)])
+
+    # Assign the shifted values to the corresponding rows in 'L1.ltransport.emissions_pc'
+    data$L1.ltransport.emissions_pc[data$country == i] <- shifted_values
+  }
+
+  # Group specification
+  EU15 <- c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland",
+            "France", "United Kingdom", "Ireland", "Italy", "Luxembourg",
+            "Netherlands", "Greece", "Portugal", "Sweden")
+
+  # Prepare sample and data
+  sample <- EU15
+  dat <- data[data$country %in% sample & data$year >= 1995, ]
+
+  # Run
+  result <- isatpanel(
+    data = dat,
+    formula = ltransport.emissions_pc ~ lgdp + lgdp_sq + lpop,
+    index = c("country", "year"),
+    effect = "twoways",
+    iis = TRUE,
+    fesis = TRUE,
+    tis = TRUE,
+    csis = TRUE,
+    cfesis = TRUE,
+    t.pval = .05,
+    print.searchinfo = FALSE,
+    plot = FALSE,
+  )
+
+  expect_snapshot_plot("plot_grid_cfesis_1", code = plot_grid(result))
+  expect_snapshot_plot("plot_grid_cfesis_2", code = plot_grid(result, regex_exclude_indicators = "fesisFinland.2000|Austria|Greece"))
+  expect_snapshot_plot("plot_grid_cfesis_3", code = plot_grid(result, regex_exclude_indicators = "fesisFinland.2000|Austria|Greece|Luxembourg|lgdp.csis|lgdp_sq|iis1"))
+  expect_snapshot_plot("plot_grid_cfesis_4", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|lgdp.cfesisFinland.2000"))
+  expect_snapshot_plot("plot_grid_cfesis_5", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|lgdp.cfesisFinland.2000"))
+  expect_snapshot_plot("plot_grid_cfesis_6", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|lgdp.cfesisFinland.2000|lpop"))
+  expect_snapshot_plot("plot_grid_cfesis_7", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|Finland|lpop|Greece"))
+  expect_snapshot_plot("plot_grid_cfesis_8", code = plot_grid(result, regex_exclude_indicators = "tis|iis|^fesis|csis|Finland|lpop|Greece|lgdp\\."))
+
+})
 
 test_that("ggplot checks without snapshotting the plot", {
 

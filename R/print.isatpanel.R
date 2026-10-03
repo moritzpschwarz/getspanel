@@ -8,5 +8,11 @@
 #'
 #'
 print.isatpanel <- function(x, ...){
+
+  if(!is.null(x$arguments$engine)){
+    cat("\n")
+    cat("Estimation:", x$isatpanel.result$gets.type)
+  }
+
   gets::print.isat(x$isatpanel.result)
 }

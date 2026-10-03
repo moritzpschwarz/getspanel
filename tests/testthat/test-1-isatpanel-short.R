@@ -101,13 +101,13 @@ test_that("Standard Error Options using fixest",{
 
   # should fail because two-way cluster-robust is not implemented
   expect_error(result <- isatpanel(data = EU_emissions_road,
-                                   formula = ltransport.emissions ~ lgdp + lpop,
-                                   index = c("country","year"),fesis=FALSE, ar = 1,
-                                   print.searchinfo=FALSE,
-                                   engine = "fixest",
-                                   effect = "twoways",
-                                   cluster = "twoways",
-                                   plot = FALSE),
+                                    formula = ltransport.emissions ~ lgdp + lpop,
+                                    index = c("country","year"),fesis=FALSE, ar = 1,
+                                    print.searchinfo=FALSE,
+                                    engine = "fixest",
+                                    effect = "twoways",
+                                    cluster = "twoways",
+                                    plot = FALSE),
                regexp = "for the cluster variable. Other specifications have not yet been implemented")
 
   expect_silent(result <- isatpanel(data = EU_emissions_road,

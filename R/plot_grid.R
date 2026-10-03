@@ -259,7 +259,7 @@ plot_grid <- function(x, title = NULL, regex_exclude_indicators = NULL, ...){
     #   }
 
     ggplot(indicators_toplot, aes(x = .data$time, y = .data$id, fill = .data$effect)) +
-      geom_tile(na.rm = TRUE) +
+      geom_tile(na.rm = TRUE, colour = "white", linewidth = 0.05) +
       #scale_fill_viridis_c(na.value = NA) +
       scale_fill_gradient2(limits = col_limits, na.value = NA, name = "Effect", midpoint = 0) +
       x_axis +
