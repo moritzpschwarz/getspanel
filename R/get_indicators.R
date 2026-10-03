@@ -228,10 +228,12 @@ get_indicators <- function(object, uis_breaks = NULL, format = "list", sign = NU
 
   # Handle UIS (User-specified Indicators) if present
   if (is.null(uis_breaks)) {
-    uis_breaks <- names(object$arguments$uis)
+    uis_breaks <- colnames(object$arguments$uis)
     }
   if (!is.null(uis_breaks)) {
-    uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*", "UIS", format)
+    uis_result <- process_indicators(all_indicators_long[all_indicators_long$name %in% uis_breaks, ], ".*",
+                                     "UIS", format,
+                                     extract_variable = "UIS")
     if (!is.null(uis_result) && nrow(uis_result) > 0) {
       if (format == "list") {
         output$uis_breaks <- uis_result
@@ -266,7 +268,11 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
 
   # Extract variable name if needed, otherwise set to Intercept
   # Used for CFESIS/CSIS indicators where the variable name is part of the name
-  if (extract_variable) {
+
+  if(extract_variable == "UIS"){
+    filtered$variable <- "UIS"
+
+  } else if (extract_variable) {
     split_list <- strsplit(x = filtered$name, split = "\\.")
     filtered$variable <- unlist(lapply(split_list, `[[`, 1))
   } else {
@@ -290,11 +296,15 @@ process_indicators <- function(long_data, pattern, type, format, extract_variabl
 add_combined_effect <- function(output, panel_rows) {
   # Calculate combined effect for each id/time by summing effect
   # Exclude cfesis and csis indicators from combined effect
+
+  if(nrow(output[!output$type %in% c("CFESIS", "CSIS"), ]) > 0) {
   combined <- stats::aggregate(
     effect ~ id + time,
     data = output[!output$type %in% c("CFESIS", "CSIS"), ],
     sum
-  )
+  )} else {
+    combined <- cbind(output[,c("id", "time")],effect = NA)
+  }
 
   # Expand to full id/time grid to deliver correct bounds for plotting
   # Default effect = NA when no indicators are active, so plotting can handle how to display these (e.g., plot_compare_grid filters for NA when blanks = FALSE)

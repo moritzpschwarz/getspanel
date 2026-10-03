@@ -4,161 +4,161 @@
       p_grid
     Output
       $data
-          time id     facet       effect
-      1   1951  A CFESIS: x           NA
-      2   1952  A CFESIS: x           NA
-      3   1953  A CFESIS: x           NA
-      4   1954  A CFESIS: x           NA
-      5   1955  A CFESIS: x           NA
-      6   1956  A CFESIS: x           NA
-      7   1957  A CFESIS: x           NA
-      8   1958  A CFESIS: x           NA
-      9   1959  A CFESIS: x           NA
-      10  1960  A CFESIS: x  0.011129459
-      11  1961  A CFESIS: x  0.011129459
-      12  1962  A CFESIS: x  0.011129459
-      13  1963  A CFESIS: x  0.011129459
-      14  1964  A CFESIS: x  0.011129459
-      15  1965  A CFESIS: x  0.011129459
-      16  1966  A CFESIS: x  0.011129459
-      17  1967  A CFESIS: x  0.011129459
-      18  1968  A CFESIS: x  0.011129459
-      19  1969  A CFESIS: x  0.011129459
-      20  1970  A CFESIS: x  0.011129459
-      21  1971  A CFESIS: x  0.011129459
-      22  1972  A CFESIS: x  0.011129459
-      23  1973  A CFESIS: x  0.011129459
-      24  1974  A CFESIS: x  0.011129459
-      25  1975  A CFESIS: x  0.011129459
-      26  1976  A CFESIS: x  0.011129459
-      27  1977  A CFESIS: x  0.011129459
-      28  1978  A CFESIS: x  0.004204517
-      29  1979  A CFESIS: x  0.004204517
-      30  1980  A CFESIS: x  0.004204517
-      31  1981  A CFESIS: x  0.004204517
-      32  1982  A CFESIS: x  0.004204517
-      33  1983  A CFESIS: x  0.004204517
-      34  1984  A CFESIS: x  0.004204517
-      35  1985  A CFESIS: x  0.004204517
-      36  1986  A CFESIS: x  0.004204517
-      37  1987  A CFESIS: x  0.004204517
-      38  1988  A CFESIS: x -0.009819537
-      39  1989  A CFESIS: x -0.009819537
-      40  1990  A CFESIS: x -0.009819537
-      41  1991  A CFESIS: x -0.009819537
-      42  1992  A CFESIS: x -0.009819537
-      43  1993  A CFESIS: x -0.009819537
-      44  1994  A CFESIS: x -0.009819537
-      45  1995  A CFESIS: x -0.009819537
-      46  1996  A CFESIS: x -0.009819537
-      47  1997  A CFESIS: x -0.009819537
-      48  1998  A CFESIS: x -0.009819537
-      49  1999  A CFESIS: x -0.009819537
-      50  2000  A CFESIS: x -0.009819537
-      51  1951  B CFESIS: x           NA
-      52  1952  B CFESIS: x           NA
-      53  1953  B CFESIS: x           NA
-      54  1954  B CFESIS: x           NA
-      55  1955  B CFESIS: x           NA
-      56  1956  B CFESIS: x           NA
-      57  1957  B CFESIS: x           NA
-      58  1958  B CFESIS: x           NA
-      59  1959  B CFESIS: x           NA
-      60  1960  B CFESIS: x           NA
-      61  1961  B CFESIS: x           NA
-      62  1962  B CFESIS: x           NA
-      63  1963  B CFESIS: x           NA
-      64  1964  B CFESIS: x           NA
-      65  1965  B CFESIS: x           NA
-      66  1966  B CFESIS: x           NA
-      67  1967  B CFESIS: x           NA
-      68  1968  B CFESIS: x           NA
-      69  1969  B CFESIS: x           NA
-      70  1970  B CFESIS: x           NA
-      71  1971  B CFESIS: x           NA
-      72  1972  B CFESIS: x           NA
-      73  1973  B CFESIS: x  0.041526061
-      74  1974  B CFESIS: x  0.041526061
-      75  1975  B CFESIS: x  0.041526061
-      76  1976  B CFESIS: x  0.041526061
-      77  1977  B CFESIS: x  0.041526061
-      78  1978  B CFESIS: x  0.041526061
-      79  1979  B CFESIS: x  0.041526061
-      80  1980  B CFESIS: x  0.041526061
-      81  1981  B CFESIS: x  0.041526061
-      82  1982  B CFESIS: x  0.041526061
-      83  1983  B CFESIS: x  0.041526061
-      84  1984  B CFESIS: x  0.041526061
-      85  1985  B CFESIS: x  0.083814116
-      86  1986  B CFESIS: x  0.083814116
-      87  1987  B CFESIS: x  0.083814116
-      88  1988  B CFESIS: x  0.083814116
-      89  1989  B CFESIS: x  0.083814116
-      90  1990  B CFESIS: x  0.083814116
-      91  1991  B CFESIS: x  0.083814116
-      92  1992  B CFESIS: x  0.083814116
-      93  1993  B CFESIS: x  0.083814116
-      94  1994  B CFESIS: x  0.083814116
-      95  1995  B CFESIS: x  0.083814116
-      96  1996  B CFESIS: x  0.083814116
-      97  1997  B CFESIS: x  0.083814116
-      98  1998  B CFESIS: x  0.083814116
-      99  1999  B CFESIS: x  0.083814116
-      100 2000  B CFESIS: x  0.083814116
-      101 1951  C CFESIS: x           NA
-      102 1952  C CFESIS: x           NA
-      103 1953  C CFESIS: x           NA
-      104 1954  C CFESIS: x           NA
-      105 1955  C CFESIS: x           NA
-      106 1956  C CFESIS: x           NA
-      107 1957  C CFESIS: x           NA
-      108 1958  C CFESIS: x           NA
-      109 1959  C CFESIS: x           NA
-      110 1960  C CFESIS: x           NA
-      111 1961  C CFESIS: x           NA
-      112 1962  C CFESIS: x           NA
-      113 1963  C CFESIS: x           NA
-      114 1964  C CFESIS: x           NA
-      115 1965  C CFESIS: x           NA
-      116 1966  C CFESIS: x           NA
-      117 1967  C CFESIS: x           NA
-      118 1968  C CFESIS: x           NA
-      119 1969  C CFESIS: x           NA
-      120 1970  C CFESIS: x           NA
-      121 1971  C CFESIS: x           NA
-      122 1972  C CFESIS: x           NA
-      123 1973  C CFESIS: x           NA
-      124 1974  C CFESIS: x           NA
-      125 1975  C CFESIS: x           NA
-      126 1976  C CFESIS: x           NA
-      127 1977  C CFESIS: x           NA
-      128 1978  C CFESIS: x           NA
-      129 1979  C CFESIS: x           NA
-      130 1980  C CFESIS: x           NA
-      131 1981  C CFESIS: x           NA
-      132 1982  C CFESIS: x           NA
-      133 1983  C CFESIS: x           NA
-      134 1984  C CFESIS: x           NA
-      135 1985  C CFESIS: x           NA
-      136 1986  C CFESIS: x           NA
-      137 1987  C CFESIS: x           NA
-      138 1988  C CFESIS: x           NA
-      139 1989  C CFESIS: x           NA
-      140 1990  C CFESIS: x           NA
-      141 1991  C CFESIS: x           NA
-      142 1992  C CFESIS: x           NA
-      143 1993  C CFESIS: x           NA
-      144 1994  C CFESIS: x           NA
-      145 1995  C CFESIS: x           NA
-      146 1996  C CFESIS: x           NA
-      147 1997  C CFESIS: x           NA
-      148 1998  C CFESIS: x           NA
-      149 1999  C CFESIS: x           NA
-      150 2000  C CFESIS: x           NA
+          id time     facet       effect
+      1    A 1960 CFESIS: x  0.011129459
+      2    A 1961 CFESIS: x  0.011129459
+      3    A 1962 CFESIS: x  0.011129459
+      4    A 1963 CFESIS: x  0.011129459
+      5    A 1964 CFESIS: x  0.011129459
+      6    A 1965 CFESIS: x  0.011129459
+      7    A 1966 CFESIS: x  0.011129459
+      8    A 1967 CFESIS: x  0.011129459
+      9    A 1968 CFESIS: x  0.011129459
+      10   A 1969 CFESIS: x  0.011129459
+      11   A 1970 CFESIS: x  0.011129459
+      12   A 1971 CFESIS: x  0.011129459
+      13   A 1972 CFESIS: x  0.011129459
+      14   A 1973 CFESIS: x  0.011129459
+      15   B 1973 CFESIS: x  0.041526061
+      16   A 1974 CFESIS: x  0.011129459
+      17   B 1974 CFESIS: x  0.041526061
+      18   A 1975 CFESIS: x  0.011129459
+      19   B 1975 CFESIS: x  0.041526061
+      20   A 1976 CFESIS: x  0.011129459
+      21   B 1976 CFESIS: x  0.041526061
+      22   A 1977 CFESIS: x  0.011129459
+      23   B 1977 CFESIS: x  0.041526061
+      24   A 1978 CFESIS: x  0.004204517
+      25   B 1978 CFESIS: x  0.041526061
+      26   A 1979 CFESIS: x  0.004204517
+      27   B 1979 CFESIS: x  0.041526061
+      28   A 1980 CFESIS: x  0.004204517
+      29   B 1980 CFESIS: x  0.041526061
+      30   A 1981 CFESIS: x  0.004204517
+      31   B 1981 CFESIS: x  0.041526061
+      32   A 1982 CFESIS: x  0.004204517
+      33   B 1982 CFESIS: x  0.041526061
+      34   A 1983 CFESIS: x  0.004204517
+      35   B 1983 CFESIS: x  0.041526061
+      36   A 1984 CFESIS: x  0.004204517
+      37   B 1984 CFESIS: x  0.041526061
+      38   A 1985 CFESIS: x  0.004204517
+      39   B 1985 CFESIS: x  0.083814116
+      40   A 1986 CFESIS: x  0.004204517
+      41   B 1986 CFESIS: x  0.083814116
+      42   A 1987 CFESIS: x  0.004204517
+      43   B 1987 CFESIS: x  0.083814116
+      44   A 1988 CFESIS: x -0.009819537
+      45   B 1988 CFESIS: x  0.083814116
+      46   A 1989 CFESIS: x -0.009819537
+      47   B 1989 CFESIS: x  0.083814116
+      48   A 1990 CFESIS: x -0.009819537
+      49   B 1990 CFESIS: x  0.083814116
+      50   A 1991 CFESIS: x -0.009819537
+      51   B 1991 CFESIS: x  0.083814116
+      52   A 1992 CFESIS: x -0.009819537
+      53   B 1992 CFESIS: x  0.083814116
+      54   A 1993 CFESIS: x -0.009819537
+      55   B 1993 CFESIS: x  0.083814116
+      56   A 1994 CFESIS: x -0.009819537
+      57   B 1994 CFESIS: x  0.083814116
+      58   A 1995 CFESIS: x -0.009819537
+      59   B 1995 CFESIS: x  0.083814116
+      60   A 1996 CFESIS: x -0.009819537
+      61   B 1996 CFESIS: x  0.083814116
+      62   A 1997 CFESIS: x -0.009819537
+      63   B 1997 CFESIS: x  0.083814116
+      64   A 1998 CFESIS: x -0.009819537
+      65   B 1998 CFESIS: x  0.083814116
+      66   A 1999 CFESIS: x -0.009819537
+      67   B 1999 CFESIS: x  0.083814116
+      68   A 2000 CFESIS: x -0.009819537
+      69   B 2000 CFESIS: x  0.083814116
+      220  A 1951 CFESIS: x           NA
+      221  B 1951 CFESIS: x           NA
+      222  C 1951 CFESIS: x           NA
+      223  A 1952 CFESIS: x           NA
+      224  B 1952 CFESIS: x           NA
+      225  C 1952 CFESIS: x           NA
+      226  A 1953 CFESIS: x           NA
+      227  B 1953 CFESIS: x           NA
+      228  C 1953 CFESIS: x           NA
+      229  A 1954 CFESIS: x           NA
+      230  B 1954 CFESIS: x           NA
+      231  C 1954 CFESIS: x           NA
+      232  A 1955 CFESIS: x           NA
+      233  B 1955 CFESIS: x           NA
+      234  C 1955 CFESIS: x           NA
+      235  A 1956 CFESIS: x           NA
+      236  B 1956 CFESIS: x           NA
+      237  C 1956 CFESIS: x           NA
+      238  A 1957 CFESIS: x           NA
+      239  B 1957 CFESIS: x           NA
+      240  C 1957 CFESIS: x           NA
+      241  A 1958 CFESIS: x           NA
+      242  B 1958 CFESIS: x           NA
+      243  C 1958 CFESIS: x           NA
+      244  A 1959 CFESIS: x           NA
+      245  B 1959 CFESIS: x           NA
+      246  C 1959 CFESIS: x           NA
+      247  C 1986 CFESIS: x           NA
+      248  B 1960 CFESIS: x           NA
+      249  C 1960 CFESIS: x           NA
+      250  C 1987 CFESIS: x           NA
+      251  B 1961 CFESIS: x           NA
+      252  C 1961 CFESIS: x           NA
+      253  C 1988 CFESIS: x           NA
+      254  B 1962 CFESIS: x           NA
+      255  C 1962 CFESIS: x           NA
+      256  C 1989 CFESIS: x           NA
+      257  B 1963 CFESIS: x           NA
+      258  C 1963 CFESIS: x           NA
+      259  C 1990 CFESIS: x           NA
+      260  B 1964 CFESIS: x           NA
+      261  C 1964 CFESIS: x           NA
+      262  C 1991 CFESIS: x           NA
+      263  B 1965 CFESIS: x           NA
+      264  C 1965 CFESIS: x           NA
+      265  C 1992 CFESIS: x           NA
+      266  B 1966 CFESIS: x           NA
+      267  C 1966 CFESIS: x           NA
+      268  C 1993 CFESIS: x           NA
+      269  B 1967 CFESIS: x           NA
+      270  C 1967 CFESIS: x           NA
+      271  C 1994 CFESIS: x           NA
+      272  B 1968 CFESIS: x           NA
+      273  C 1968 CFESIS: x           NA
+      274  C 1995 CFESIS: x           NA
+      275  B 1969 CFESIS: x           NA
+      276  C 1969 CFESIS: x           NA
+      277  C 1996 CFESIS: x           NA
+      278  B 1970 CFESIS: x           NA
+      279  C 1970 CFESIS: x           NA
+      280  C 1997 CFESIS: x           NA
+      281  B 1971 CFESIS: x           NA
+      282  C 1971 CFESIS: x           NA
+      283  C 1998 CFESIS: x           NA
+      284  B 1972 CFESIS: x           NA
+      285  C 1972 CFESIS: x           NA
+      286  C 1999 CFESIS: x           NA
+      287  C 1977 CFESIS: x           NA
+      288  C 1973 CFESIS: x           NA
+      289  C 2000 CFESIS: x           NA
+      290  C 1978 CFESIS: x           NA
+      291  C 1974 CFESIS: x           NA
+      292  C 1983 CFESIS: x           NA
+      293  C 1979 CFESIS: x           NA
+      294  C 1975 CFESIS: x           NA
+      295  C 1984 CFESIS: x           NA
+      296  C 1980 CFESIS: x           NA
+      297  C 1976 CFESIS: x           NA
+      298  C 1985 CFESIS: x           NA
+      299  C 1981 CFESIS: x           NA
+      300  C 1982 CFESIS: x           NA
       
       $layers
-      $layers[[1]]
-      geom_tile: linejoin = mitre, na.rm = TRUE
+      $layers$geom_tile
+      geom_tile: na.rm = TRUE, lineend = butt, linejoin = mitre
       stat_identity: na.rm = TRUE
       position_identity 
       
@@ -178,6 +178,7 @@
           n: function
           non_position_scales: function
           scales: list
+          set_palettes: function
           train_df: function
           transform_df: function
           super:  <ggproto object: Class ScalesList, gg>
@@ -194,191 +195,250 @@
       * `fill` -> `.data$effect`
       
       $theme
-      List of 136
-       $ line                            :List of 6
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ lineend      : chr "butt"
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
-       $ rect                            :List of 5
-        ..$ fill         : chr "white"
-        ..$ colour       : chr "black"
-        ..$ linewidth    : num 0.5
-        ..$ linetype     : num 1
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ text                            :List of 11
-        ..$ family       : chr ""
-        ..$ face         : chr "plain"
-        ..$ colour       : chr "black"
-        ..$ size         : num 11
-        ..$ hjust        : num 0.5
-        ..$ vjust        : num 0.5
-        ..$ angle        : num 0
-        ..$ lineheight   : num 0.9
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ title                           : NULL
+      <theme> List of 144
+       $ line                            : <ggplot2::element_line>
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ lineend      : chr "butt"
+        ..@ linejoin     : chr "round"
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "black"
+        ..@ inherit.blank: logi TRUE
+       $ rect                            : <ggplot2::element_rect>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ text                            : <ggplot2::element_text>
+        ..@ family       : chr ""
+        ..@ face         : chr "plain"
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "black"
+        ..@ size         : num 11
+        ..@ hjust        : num 0.5
+        ..@ vjust        : num 0.5
+        ..@ angle        : num 0
+        ..@ lineheight   : num 0.9
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 0
+        ..@ debug        : logi FALSE
+        ..@ inherit.blank: logi TRUE
+       $ title                           : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ point                           : <ggplot2::element_point>
+        ..@ colour       : chr "black"
+        ..@ shape        : num 19
+        ..@ size         : num 1.5
+        ..@ fill         : chr "white"
+        ..@ stroke       : num 0.5
+        ..@ inherit.blank: logi TRUE
+       $ polygon                         : <ggplot2::element_polygon>
+        ..@ fill         : chr "white"
+        ..@ colour       : chr "black"
+        ..@ linewidth    : num 0.5
+        ..@ linetype     : num 1
+        ..@ linejoin     : chr "round"
+        ..@ inherit.blank: logi TRUE
+       $ geom                            : <ggplot2::element_geom>
+        ..@ ink        : chr "black"
+        ..@ paper      : chr "white"
+        ..@ accent     : chr "#3366FF"
+        ..@ linewidth  : num 0.5
+        ..@ borderwidth: num 0.5
+        ..@ linetype   : int 1
+        ..@ bordertype : int 1
+        ..@ family     : chr ""
+        ..@ fontsize   : num 3.87
+        ..@ pointsize  : num 1.5
+        ..@ pointshape : num 19
+        ..@ colour     : NULL
+        ..@ fill       : NULL
+       $ spacing                         : 'simpleUnit' num 5.5points
+        ..- attr(*, "unit")= int 8
+       $ margins                         : <ggplot2::margin> num [1:4] 5.5 5.5 5.5 5.5
        $ aspect.ratio                    : NULL
        $ axis.title                      : NULL
-       $ axis.title.x                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.75points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.title.x.top                :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.75points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.x                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.75 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.title.x.top                : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.75 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.x.bottom             : NULL
-       $ axis.title.y                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num 90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.75points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num 90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.75 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.title.y.left               : NULL
-       $ axis.title.y.right              :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : num -90
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.75points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text                       :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : chr "grey30"
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 1
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 2.2points 0points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.text.x.top                 :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : NULL
-        ..$ vjust        : num 0
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 2.2points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.title.y.right              : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : num -90
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.75
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text                       : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : chr "#4D4D4DFF"
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 1
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 2.2 0 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.text.x.top                 : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : NULL
+        ..@ vjust        : num 0
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 2.2 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.x.bottom              : NULL
-       $ axis.text.y                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 1
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 0points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 1
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 0
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.y.left                : NULL
-       $ axis.text.y.right               :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ axis.text.y.right               : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 0 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ axis.text.theta                 : NULL
-       $ axis.text.r                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0.5
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 2.2points
-        .. ..- attr(*, "unit")= int 8
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
-       $ axis.ticks                      :List of 6
-        ..$ colour       : chr "grey20"
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ lineend      : NULL
-        ..$ arrow        : logi FALSE
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_line" "element"
+       $ axis.text.r                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0.5
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : <ggplot2::margin> num [1:4] 0 2.2 0 2.2
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
+       $ axis.ticks                      : <ggplot2::element_line>
+        ..@ colour       : chr "#333333FF"
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ lineend      : NULL
+        ..@ linejoin     : NULL
+        ..@ arrow        : logi FALSE
+        ..@ arrow.fill   : chr "#333333FF"
+        ..@ inherit.blank: logi TRUE
        $ axis.ticks.x                    : NULL
        $ axis.ticks.x.top                : NULL
        $ axis.ticks.x.bottom             : NULL
@@ -393,8 +453,7 @@
        $ axis.minor.ticks.y.right        : NULL
        $ axis.minor.ticks.theta          : NULL
        $ axis.minor.ticks.r              : NULL
-       $ axis.ticks.length               : 'simpleUnit' num 2.75points
-        ..- attr(*, "unit")= int 8
+       $ axis.ticks.length               : 'rel' num 0.5
        $ axis.ticks.length.x             : NULL
        $ axis.ticks.length.x.top         : NULL
        $ axis.ticks.length.x.bottom      : NULL
@@ -412,8 +471,7 @@
        $ axis.minor.ticks.length.y.right : NULL
        $ axis.minor.ticks.length.theta   : NULL
        $ axis.minor.ticks.length.r       : NULL
-       $ axis.line                       : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+       $ axis.line                       : <ggplot2::element_blank>
        $ axis.line.x                     : NULL
        $ axis.line.x.top                 : NULL
        $ axis.line.x.bottom              : NULL
@@ -422,17 +480,15 @@
        $ axis.line.y.right               : NULL
        $ axis.line.theta                 : NULL
        $ axis.line.r                     : NULL
-       $ legend.background               :List of 5
-        ..$ fill         : NULL
-        ..$ colour       : logi NA
-        ..$ linewidth    : NULL
-        ..$ linetype     : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-       $ legend.margin                   : 'margin' num [1:4] 5.5points 5.5points 5.5points 5.5points
-        ..- attr(*, "unit")= int 8
-       $ legend.spacing                  : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
+       $ legend.background               : <ggplot2::element_rect>
+        ..@ fill         : NULL
+        ..@ colour       : logi NA
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ linejoin     : NULL
+        ..@ inherit.blank: logi TRUE
+       $ legend.margin                   : NULL
+       $ legend.spacing                  : 'rel' num 2
        $ legend.spacing.x                : NULL
        $ legend.spacing.y                : NULL
        $ legend.key                      : NULL
@@ -440,41 +496,45 @@
         ..- attr(*, "unit")= int 3
        $ legend.key.height               : NULL
        $ legend.key.width                : NULL
-       $ legend.key.spacing              : 'simpleUnit' num 5.5points
-        ..- attr(*, "unit")= int 8
+       $ legend.key.spacing              : NULL
        $ legend.key.spacing.x            : NULL
        $ legend.key.spacing.y            : NULL
+       $ legend.key.justification        : NULL
        $ legend.frame                    : NULL
        $ legend.ticks                    : NULL
        $ legend.ticks.length             : 'rel' num 0.2
        $ legend.axis.line                : NULL
-       $ legend.text                     :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : 'rel' num 0.8
-        ..$ hjust        : NULL
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.text                     : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : 'rel' num 0.8
+        ..@ hjust        : NULL
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.text.position            : NULL
-       $ legend.title                    :List of 11
-        ..$ family       : NULL
-        ..$ face         : NULL
-        ..$ colour       : NULL
-        ..$ size         : NULL
-        ..$ hjust        : num 0
-        ..$ vjust        : NULL
-        ..$ angle        : NULL
-        ..$ lineheight   : NULL
-        ..$ margin       : NULL
-        ..$ debug        : NULL
-        ..$ inherit.blank: logi TRUE
-        ..- attr(*, "class")= chr [1:2] "element_text" "element"
+       $ legend.title                    : <ggplot2::element_text>
+        ..@ family       : NULL
+        ..@ face         : NULL
+        ..@ italic       : chr NA
+        ..@ fontweight   : num NA
+        ..@ fontwidth    : num NA
+        ..@ colour       : NULL
+        ..@ size         : NULL
+        ..@ hjust        : num 0
+        ..@ vjust        : NULL
+        ..@ angle        : NULL
+        ..@ lineheight   : NULL
+        ..@ margin       : NULL
+        ..@ debug        : NULL
+        ..@ inherit.blank: logi TRUE
        $ legend.title.position           : NULL
        $ legend.position                 : chr "right"
        $ legend.position.inside          : NULL
@@ -486,19 +546,9 @@
        $ legend.justification.left       : NULL
        $ legend.justification.right      : NULL
        $ legend.justification.inside     : NULL
-       $ legend.location                 : NULL
-       $ legend.box                      : NULL
-       $ legend.box.just                 : NULL
-       $ legend.box.margin               : 'margin' num [1:4] 0cm 0cm 0cm 0cm
-        ..- attr(*, "unit")= int 1
-       $ legend.box.background           : list()
-        ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-       $ legend.box.spacing              : 'simpleUnit' num 11points
-        ..- attr(*, "unit")= int 8
         [list output truncated]
-       - attr(*, "class")= chr [1:2] "theme" "gg"
-       - attr(*, "complete")= logi TRUE
-       - attr(*, "validate")= logi TRUE
+       @ complete: logi TRUE
+       @ validate: logi TRUE
       
       $coordinates
       <ggproto object: Class CoordCartesian, Coord, gg>
@@ -507,6 +557,7 @@
           clip: on
           default: TRUE
           distance: function
+          draw_panel: function
           expand: TRUE
           is_free: function
           is_linear: function
@@ -514,10 +565,12 @@
           limits: list
           modify_scales: function
           range: function
+          ratio: NULL
           render_axis_h: function
           render_axis_v: function
           render_bg: function
           render_fg: function
+          reverse: none
           setup_data: function
           setup_layout: function
           setup_panel_guides: function
@@ -529,16 +582,23 @@
       
       $facet
       <ggproto object: Class FacetWrap, Facet, gg>
+          attach_axes: function
+          attach_strips: function
           compute_layout: function
           draw_back: function
           draw_front: function
           draw_labels: function
+          draw_panel_content: function
           draw_panels: function
           finish_data: function
+          format_strip_labels: function
+          init_gtable: function
           init_scales: function
           map_data: function
           params: list
+          set_panel_size: function
           setup_data: function
+          setup_panel_params: function
           setup_params: function
           shrink: TRUE
           train_scales: function
@@ -569,15 +629,12 @@
           super:  <ggproto object: Class Layout, gg>
       
       $labels
-      $labels$x
-      NULL
+      <ggplot2::labels> List of 2
+       $ x: NULL
+       $ y: NULL
       
-      $labels$y
-      NULL
-      
-      $labels$fill
-      [1] "effect"
-      
+      $meta
+      list()
       
 
 ---
@@ -1796,39 +1853,39 @@
       150           0           1           1
       
       $layers
-      $layers[[1]]
+      $layers$geom_line
       mapping: y = ~.data$y, colour = black 
-      geom_line: na.rm = FALSE, orientation = NA
+      geom_line: na.rm = FALSE, orientation = NA, arrow = NULL, arrow.fill = NULL, lineend = butt, linejoin = round, linemitre = 10
       stat_identity: na.rm = FALSE
       position_identity 
       
-      $layers[[2]]
+      $layers$geom_rect
       mapping: xmin = ~.data$start_rect, xmax = ~.data$end_rect, ymin = ~-Inf, ymax = Inf, group = ~.data$name 
-      geom_rect: linejoin = mitre, na.rm = TRUE
+      geom_rect: na.rm = TRUE, lineend = butt, linejoin = mitre
       stat_identity: na.rm = TRUE
       position_identity 
       
-      $layers[[3]]
+      $layers$geom_line...3
       mapping: colour = blue 
-      geom_line: na.rm = FALSE, orientation = NA
+      geom_line: na.rm = FALSE, orientation = NA, arrow = NULL, arrow.fill = NULL, lineend = butt, linejoin = round, linemitre = 10
       stat_identity: na.rm = FALSE
       position_identity 
       
-      $layers[[4]]
+      $layers$geom_vline
       mapping: xintercept = ~.data$time, colour = red 
       geom_vline: na.rm = FALSE
       stat_identity: na.rm = FALSE
       position_identity 
       
-      $layers[[5]]
+      $layers$geom_ribbon
       mapping: ymin = ~.data$cf_lwr, ymax = ~.data$cf_upr, fill = red, group = ~.data$name 
-      geom_ribbon: na.rm = FALSE, orientation = NA, outline.type = both
+      geom_ribbon: na.rm = FALSE, orientation = NA, lineend = butt, linejoin = round, linemitre = 10, outline.type = both
       stat_identity: na.rm = FALSE
       position_identity 
       
-      $layers[[6]]
+      $layers$geom_line...6
       mapping: y = ~.data$cf, colour = red, group = ~.data$name 
-      geom_line: na.rm = TRUE, orientation = NA
+      geom_line: na.rm = TRUE, orientation = NA, arrow = NULL, arrow.fill = NULL, lineend = butt, linejoin = round, linemitre = 10
       stat_identity: na.rm = TRUE
       position_identity 
       
@@ -1848,6 +1905,7 @@
           n: function
           non_position_scales: function
           scales: list
+          set_palettes: function
           train_df: function
           transform_df: function
           super:  <ggproto object: Class ScalesList, gg>
@@ -1864,36 +1922,25 @@
       * `group` -> `.data$id`
       
       $theme
-      $theme$legend.key
-      List of 5
-       $ fill         : logi NA
-       $ colour       : NULL
-       $ linewidth    : NULL
-       $ linetype     : NULL
-       $ inherit.blank: logi FALSE
-       - attr(*, "class")= chr [1:2] "element_rect" "element"
-      
-      $theme$panel.background
-       list()
-       - attr(*, "class")= chr [1:2] "element_blank" "element"
-      
-      $theme$panel.border
-      List of 5
-       $ fill         : logi NA
-       $ colour       : chr "grey"
-       $ linewidth    : NULL
-       $ linetype     : NULL
-       $ inherit.blank: logi FALSE
-       - attr(*, "class")= chr [1:2] "element_rect" "element"
-      
-      $theme$strip.background
-       list()
-       - attr(*, "class")= chr [1:2] "element_blank" "element"
-      
-      attr(,"complete")
-      [1] FALSE
-      attr(,"validate")
-      [1] TRUE
+      <theme> List of 4
+       $ legend.key      : <ggplot2::element_rect>
+        ..@ fill         : logi NA
+        ..@ colour       : NULL
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ linejoin     : NULL
+        ..@ inherit.blank: logi FALSE
+       $ panel.background: <ggplot2::element_blank>
+       $ panel.border    : <ggplot2::element_rect>
+        ..@ fill         : logi NA
+        ..@ colour       : chr "grey"
+        ..@ linewidth    : NULL
+        ..@ linetype     : NULL
+        ..@ linejoin     : NULL
+        ..@ inherit.blank: logi FALSE
+       $ strip.background: <ggplot2::element_blank>
+       @ complete: logi FALSE
+       @ validate: logi TRUE
       
       $coordinates
       <ggproto object: Class CoordCartesian, Coord, gg>
@@ -1902,6 +1949,7 @@
           clip: on
           default: TRUE
           distance: function
+          draw_panel: function
           expand: TRUE
           is_free: function
           is_linear: function
@@ -1909,10 +1957,12 @@
           limits: list
           modify_scales: function
           range: function
+          ratio: NULL
           render_axis_h: function
           render_axis_v: function
           render_bg: function
           render_fg: function
+          reverse: none
           setup_data: function
           setup_layout: function
           setup_panel_guides: function
@@ -1924,16 +1974,23 @@
       
       $facet
       <ggproto object: Class FacetWrap, Facet, gg>
+          attach_axes: function
+          attach_strips: function
           compute_layout: function
           draw_back: function
           draw_front: function
           draw_labels: function
+          draw_panel_content: function
           draw_panels: function
           finish_data: function
+          format_strip_labels: function
+          init_gtable: function
           init_scales: function
           map_data: function
           params: list
+          set_panel_size: function
           setup_data: function
+          setup_panel_params: function
           setup_params: function
           shrink: TRUE
           train_scales: function
@@ -1964,41 +2021,13 @@
           super:  <ggproto object: Class Layout, gg>
       
       $labels
-      $labels$y
-      NULL
+      <ggplot2::labels> List of 4
+       $ y       : NULL
+       $ x       : NULL
+       $ title   : NULL
+       $ subtitle: NULL
       
-      $labels$x
-      NULL
-      
-      $labels$title
-      NULL
-      
-      $labels$subtitle
-      NULL
-      
-      $labels$group
-      [1] "id"
-      
-      $labels$colour
-      [1] "colour"
-      
-      $labels$xmin
-      [1] "start_rect"
-      
-      $labels$xmax
-      [1] "end_rect"
-      
-      $labels$ymin
-      [1] "-Inf"
-      
-      $labels$ymax
-      [1] "ymax"
-      
-      $labels$xintercept
-      [1] "time"
-      
-      $labels$fill
-      [1] "fill"
-      
+      $meta
+      list()
       
 

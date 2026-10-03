@@ -59,10 +59,15 @@ plot_compare_grid <- function(mod, is_col = "is", model_col = "model", panel = "
     }
 
     # get all elements that are isatpanel.results
-    mod <- dplyr::tibble(is = mod, #lapply(mod, function(x){x$isatpanel.result}),
-                         formula = lapply(mod, function(x){x$arguments$formula}),
-                         p_val = lapply(mod, function(x){x$isatpanel.result$aux$t.pval}),
-                         model = names(mod))
+    mod <- list(is = mod, #lapply(mod, function(x){x$isatpanel.result}),
+                formula = lapply(mod, function(x){x$arguments$formula}),
+                p_val = lapply(mod, function(x){x$isatpanel.result$aux$t.pval}),
+                model = names(mod))
+
+    # mod <- dplyr::tibble(is = mod, #lapply(mod, function(x){x$isatpanel.result}),
+    #                      formula = lapply(mod, function(x){x$arguments$formula}),
+    #                      p_val = lapply(mod, function(x){x$isatpanel.result$aux$t.pval}),
+    #                      model = names(mod))
   }
 
 
