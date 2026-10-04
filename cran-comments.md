@@ -1,15 +1,14 @@
-## Resubmission
+### Changes in version 0.2.2: 
 
-This is a resubmission for version 0.2.1 - I corrected an error in the URL of the package. 
+This is an update to fix the test failures on CRAN. 
+These were caused by changes to other packages (fixest).  
+These changes did not affect any of the functionality of the package, but they did break some of the tests.
 
-### General changes in version 0.2.1: 
+In addition, this version makes small changes, including: 
 
-This is an update to extend the package with a new method to enable further analysis tools. 
-
-- Added a new method to `isatpanel()`
-- This necessitated a few changes throughout the package, including all plotting functions
-- I also enabled more specific control of subsetting my methods by id and time in `isatpanel()`. For this, I added quite extensive testing. 
-- I also implemented codecov to gain a better understanding of code testing coverage in the future. 
+- `print.isatpanel()` to make it more informative (especially when using an engine and different vcov settings).
+- Small change to `plot_grid()` to retain dividers between observations.
+- Test updates and fixing breaking tests
 
 ## R CMD Checks
 
