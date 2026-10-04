@@ -34,6 +34,7 @@ devtools::install_github("moritzpschwarz/getspanel")
 
 ``` r
 library(getspanel)
+Warning: package 'getspanel' was built under R version 4.5.3
 
 data("EU_emissions_road")
 # let's subset a few countries to make this faster
@@ -50,13 +51,14 @@ is1 <- isatpanel(data = EU_emissions_road,
                  
                  print.searchinfo = FALSE # to save space we suppress the status information in the estimation
 )
-Loading required namespace: gets
 ```
+
+![](reference/figures/README-example-1.png)
 
 ``` r
 is1
 
-Date: Sat Jan 28 18:02:02 2023 
+Date: Sun Oct  4 23:30:09 2026 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -211,10 +213,12 @@ is2 <- isatpanel(data = EU_emissions_road,
 )
 ```
 
+![](reference/figures/README-unnamed-chunk-5-1.png)
+
 ``` r
 is2     
 
-Date: Sat Jan 28 18:04:11 2023 
+Date: Sun Oct  4 23:34:41 2026 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -306,8 +310,7 @@ plot(is2)
 
 ``` r
 plot_grid(is2)
-Warning in plot_grid(is2): No indicators identified in the isatpanel object. No
-plot produced.
+No indicators identified in the isatpanel object. No plot produced.
 ```
 
 and an example of Coefficient Fixed-Effect Step indicator saturation:
@@ -322,6 +325,8 @@ is3 <- isatpanel(data = EU_emissions_road,
                  print.searchinfo = FALSE # to save space we suppress the status information in the estimation
 )
 ```
+
+![](reference/figures/README-unnamed-chunk-8-1.png)
 
 ``` r
 
@@ -344,6 +349,8 @@ is4 <- isatpanel(data = EU_emissions_road,
                  print.searchinfo = FALSE # to save space we suppress the status information in the estimation
 )
 ```
+
+![](reference/figures/README-unnamed-chunk-10-1.png)
 
 ``` r
 
