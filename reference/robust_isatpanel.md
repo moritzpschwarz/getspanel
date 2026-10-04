@@ -409,7 +409,7 @@ robust_isatpanel(result)
 #>     fesisIreland.2006 + fesisIreland.2010 + fesisIreland.2015 + 
 #>     fesisLuxembourg.2004 + fesisLuxembourg.2015 + fesisNetherlands.2014 + 
 #>     fesisPortugal.2011
-#> <environment: 0x5581c9ab4910>
+#> <environment: 0x562c2afbd1c0>
 #> 
 #> Coefficients:
 #>                  lgdp             I.lgdp.2.                  lpop 

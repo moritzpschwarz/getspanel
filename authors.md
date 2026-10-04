@@ -13,13 +13,13 @@ Source:
 [`DESCRIPTION`](https://github.com/moritzpschwarz/getspanel/blob/main/DESCRIPTION)
 
 Pretis F, Schwarz M (2026). *getspanel: General-to-Specific Modelling of
-Panel Data*. R package version 0.2.1,
+Panel Data*. R package version 0.2.2,
 <https://github.com/moritzpschwarz/getspanel>.
 
     @Manual{,
       title = {getspanel: General-to-Specific Modelling of Panel Data},
       author = {Felix Pretis and Moritz Schwarz},
       year = {2026},
-      note = {R package version 0.2.1},
+      note = {R package version 0.2.2},
       url = {https://github.com/moritzpschwarz/getspanel},
     }
