@@ -25,8 +25,8 @@ robust_isatpanel(
 
   Logical (TRUE or FALSE). Should the Standard Errors be robustified for
   Heterogeneity? This uses
-  [plm::vcovHC](https://rdrr.io/pkg/plm/man/vcovHC.plm.html) with the
-  specified type (default is "HC0").
+  [plm::vcovHC](https://zeileis.codeberg.page/sandwich/reference/vcovHC.html)
+  with the specified type (default is "HC0").
 
 - HAC:
 
@@ -51,8 +51,8 @@ robust_isatpanel(
 
   Should an object with clustered S.E. be included? Choose between
   'group' or 'time' or FALSE. Uses
-  [plm::vcovHC](https://rdrr.io/pkg/plm/man/vcovHC.plm.html) with the
-  cluster argument.
+  [plm::vcovHC](https://zeileis.codeberg.page/sandwich/reference/vcovHC.html)
+  with the cluster argument.
 
 ## Value
 
@@ -409,7 +409,7 @@ robust_isatpanel(result)
 #>     fesisIreland.2006 + fesisIreland.2010 + fesisIreland.2015 + 
 #>     fesisLuxembourg.2004 + fesisLuxembourg.2015 + fesisNetherlands.2014 + 
 #>     fesisPortugal.2011
-#> <environment: 0x562c2afbd1c0>
+#> <environment: 0x55986fe86130>
 #> 
 #> Coefficients:
 #>                  lgdp             I.lgdp.2.                  lpop 
