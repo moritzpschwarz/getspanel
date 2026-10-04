@@ -9,6 +9,7 @@
 status](https://github.com/moritzpschwarz/getspanel/workflows/R-CMD-check/badge.svg)](https://github.com/moritzpschwarz/getspanel/actions)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/getspanel)](https://CRAN.R-project.org/package=getspanel)
+[![codecov](https://codecov.io/gh/moritzpschwarz/getspanel/graph/badge.svg?token=LXJVKLN55H)](https://codecov.io/gh/moritzpschwarz/getspanel)
 <!-- badges: end -->
 
 The package is a panel adaptation of the gets package [see
@@ -43,6 +44,7 @@ devtools::install_github("moritzpschwarz/getspanel")
 
 ``` r
 library(getspanel)
+Warning: package 'getspanel' was built under R version 4.5.3
 
 data("EU_emissions_road")
 # let's subset a few countries to make this faster
@@ -59,13 +61,14 @@ is1 <- isatpanel(data = EU_emissions_road,
                  
                  print.searchinfo = FALSE # to save space we suppress the status information in the estimation
 )
-Loading required namespace: gets
 ```
+
+<img src="man/figures/README-example-1.png" alt="" width="100%" />
 
 ``` r
 is1
 
-Date: Sat Jan 28 18:02:02 2023 
+Date: Sun Oct  4 23:30:09 2026 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -175,7 +178,7 @@ Log-lik.(n=576)  -5523.26673
 plot(is1)
 ```
 
-<img src="man/figures/README-example_plot-1.png" width="100%" />
+<img src="man/figures/README-example_plot-1.png" alt="" width="100%" />
 
 Let’s explore the other plots that we can use:
 
@@ -183,7 +186,7 @@ Let’s explore the other plots that we can use:
 plot_grid(is1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
 
 We can plot the counterfactuals as well:
 
@@ -191,7 +194,7 @@ We can plot the counterfactuals as well:
 plot_counterfactual(is1, plus_t = 5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 We can plot the residuals against an OLS model:
 
@@ -199,7 +202,7 @@ We can plot the residuals against an OLS model:
 plot_residuals(is1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
 
 An example using coefficient step indicator saturation and impulse
 indicator saturation:
@@ -215,10 +218,12 @@ is2 <- isatpanel(data = EU_emissions_road,
 )
 ```
 
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
+
 ``` r
 is2     
 
-Date: Sat Jan 28 18:04:11 2023 
+Date: Sun Oct  4 23:34:41 2026 
 Dependent var.: y 
 Method: Ordinary Least Squares (OLS)
 Variance-Covariance: Ordinary 
@@ -306,12 +311,11 @@ Log-lik.(n=576)  -6103.03163
 plot(is2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 ``` r
 plot_grid(is2)
-Warning in plot_grid(is2): No indicators identified in the isatpanel object. No
-plot produced.
+No indicators identified in the isatpanel object. No plot produced.
 ```
 
 and an example of Coefficient Fixed-Effect Step indicator saturation:
@@ -326,12 +330,14 @@ is3 <- isatpanel(data = EU_emissions_road,
 )
 ```
 
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+
 ``` r
 is3    
 plot(is3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
 
 We can also use e.g. the `fixest` package to estimate our models:
 
@@ -346,8 +352,10 @@ is4 <- isatpanel(data = EU_emissions_road,
 )
 ```
 
+<img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
+
 ``` r
 plot(is4)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" alt="" width="100%" />
