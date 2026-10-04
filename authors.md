@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/moritzpschwarz/getspanel/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/moritzpschwarz/getspanel/blob/v0.2.2/DESCRIPTION)
 
 Pretis F, Schwarz M (2026). *getspanel: General-to-Specific Modelling of
 Panel Data*. R package version 0.2.2,
