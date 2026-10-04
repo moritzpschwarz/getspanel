@@ -1,5 +1,17 @@
 # Changelog
 
+## getspanel 0.2.2
+
+### Minor changes
+
+- [`print.isatpanel()`](http://moritzschwarz.org/getspanel/reference/print.isatpanel.md)
+  to make it more informative (especially when using an engine and
+  different vcov settings).
+- Small change to
+  [`plot_grid()`](http://moritzschwarz.org/getspanel/reference/plot_grid.md)
+  to retain dividers between observations.
+- minor update to testing to fix testing issues on CRAN
+
 ## getspanel 0.2.1
 
 CRAN release: 2025-05-13
