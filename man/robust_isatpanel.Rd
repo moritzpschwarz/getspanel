@@ -16,7 +16,7 @@ robust_isatpanel(
 \arguments{
 \item{object}{An isatpanel object}
 
-\item{robust}{Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity? This uses \link[plm:vcovHC.plm]{plm::vcovHC} with the specified type (default is "HC0").}
+\item{robust}{Logical (TRUE or FALSE). Should the Standard Errors be robustified for Heterogeneity? This uses \link[plm:vcovHC]{plm::vcovHC} with the specified type (default is "HC0").}
 
 \item{HAC}{Should Heteroscedasticity and Autocorrelation Robust Standard Errors be used? This uses \link[plm:vcovNW]{plm::vcovNW}, which uses the Newey-West estimator.}
 
@@ -24,7 +24,7 @@ robust_isatpanel(
 
 \item{type}{Character string. Type of Robust procedure e.g. 'HC0' for White SE or 'HC3' for Lang.}
 
-\item{cluster}{Should an object with clustered S.E. be included? Choose between 'group' or 'time' or FALSE. Uses \link[plm:vcovHC.plm]{plm::vcovHC} with the cluster argument.}
+\item{cluster}{Should an object with clustered S.E. be included? Choose between 'group' or 'time' or FALSE. Uses \link[plm:vcovHC]{plm::vcovHC} with the cluster argument.}
 }
 \value{
 A list with robust estimates
