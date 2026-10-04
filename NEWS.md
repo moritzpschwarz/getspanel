@@ -1,3 +1,12 @@
+# getspanel 0.2.2
+
+## Minor changes
+
+- `print.isatpanel()` to make it more informative (especially when using an engine and different vcov settings).
+- Small change to `plot_grid()` to retain dividers between observations.
+- minor update to testing to fix testing issues on CRAN
+
+
 # getspanel 0.2.1
 
 ## Minor changes
