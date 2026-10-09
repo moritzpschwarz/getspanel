@@ -2,6 +2,8 @@
 
 ## getspanel 0.2.2
 
+CRAN release: 2026-10-04
+
 ### Minor changes
 
 - [`print.isatpanel()`](http://moritzschwarz.org/getspanel/reference/print.isatpanel.md)
